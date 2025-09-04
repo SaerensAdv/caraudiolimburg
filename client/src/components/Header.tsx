@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
+import logoUrl from "@assets/Caraudiolimburg-logo_1757008375383.png";
 import { 
-  Radio,
   Search,
   ShoppingCart,
   User,
@@ -34,13 +34,11 @@ export function Header({ onCartOpen }: HeaderProps) {
       <div className="container flex h-16 items-center justify-between px-4 mx-auto">
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-3" data-testid="link-home">
-          <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-            <Radio className="w-6 h-6 text-primary-foreground" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-foreground">Car Audio Limburg</h1>
-            <p className="text-xs text-muted-foreground">Premium installaties</p>
-          </div>
+          <img 
+            src={logoUrl} 
+            alt="Car Audio Limburg" 
+            className="h-12 w-auto"
+          />
         </Link>
 
         {/* Navigation */}

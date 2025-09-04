@@ -1,5 +1,6 @@
 import { Link } from "wouter";
-import { Radio, Facebook, Instagram, Youtube, MapPin, Phone, Mail, Clock } from "lucide-react";
+import logoUrl from "@assets/Caraudiolimburg-logo_1757008375383.png";
+import { Facebook, Instagram, Youtube, MapPin, Phone, Mail, Clock } from "lucide-react";
 
 export function Footer() {
   return (
@@ -9,13 +10,11 @@ export function Footer() {
           {/* Company Info */}
           <div data-testid="footer-company-info">
             <div className="flex items-center space-x-3 mb-4">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <Radio className="w-6 h-6 text-primary-foreground" />
-              </div>
-              <div>
-                <h3 className="font-bold text-foreground">Car Audio Limburg</h3>
-                <p className="text-xs text-muted-foreground">Premium installaties</p>
-              </div>
+              <img 
+                src={logoUrl} 
+                alt="Car Audio Limburg" 
+                className="h-12 w-auto"
+              />
             </div>
             <p className="text-sm text-muted-foreground mb-4">
               Specialist in premium car audio systemen met professionele installatie. 

@@ -218,7 +218,7 @@ export default function Checkout() {
   const { isAuthenticated } = useAuth();
   const { toast } = useToast();
 
-  const { data: cartItems } = useQuery({
+  const { data: cartItems = [] } = useQuery({
     queryKey: ["/api/cart"],
     enabled: isAuthenticated,
   });

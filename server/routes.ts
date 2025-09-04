@@ -19,7 +19,7 @@ let stripe: Stripe | null = null;
 
 if (process.env.STRIPE_SECRET_KEY) {
   stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: "2023-10-16",
+    apiVersion: "2025-08-27.basil",
   });
 }
 
@@ -278,12 +278,100 @@ export async function registerRoutes(app: Express): Promise<Server> {
         automatic_payment_methods: {
           enabled: true,
         },
+        metadata: {
+          userId: (req as any).user.claims.sub,
+        },
       });
       res.json({ clientSecret: paymentIntent.client_secret });
     } catch (error: any) {
       res
         .status(500)
         .json({ message: "Error creating payment intent: " + error.message });
+    }
+  });
+
+  // Order confirmation after successful payment
+  app.post("/api/orders/confirm", isAuthenticated, async (req, res) => {
+    try {
+      const { paymentIntentId, shippingDetails } = req.body;
+      const userId = (req as any).user.claims.sub;
+      
+      if (!stripe) {
+        return res.status(500).json({ message: "Payment system not configured" });
+      }
+
+      // Verify payment was successful
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      if (paymentIntent.status !== 'succeeded') {
+        return res.status(400).json({ message: "Payment not successful" });
+      }
+
+      // Get cart items to create order
+      const cartItems = await storage.getCartItems(userId);
+      if (cartItems.length === 0) {
+        return res.status(400).json({ message: "Cart is empty" });
+      }
+
+      // Calculate totals
+      const subtotal = cartItems.reduce((sum, item) => {
+        const price = parseFloat(item.product?.price || "0");
+        return sum + (price * item.quantity);
+      }, 0);
+      
+      const installationFee = cartItems.some(item => item.needsInstallation) ? 89 : 0;
+      const shipping = subtotal >= 50 ? 0 : 5.95;
+      const total = subtotal + installationFee + shipping;
+
+      // Generate unique order number
+      const orderNumber = `CAL-${Date.now()}`;
+
+      // Create order
+      const order = await storage.createOrder({
+        userId,
+        orderNumber,
+        status: "confirmed",
+        totalAmount: total.toString(),
+        stripePaymentIntentId: paymentIntentId,
+        shippingAddress: shippingDetails,
+      });
+
+      // Create order items
+      for (const cartItem of cartItems) {
+        await storage.createOrderItem({
+          orderId: order.id,
+          productId: cartItem.productId,
+          quantity: cartItem.quantity,
+          price: cartItem.product?.price || "0",
+          needsInstallation: cartItem.needsInstallation,
+        });
+
+        // If installation is needed, create a booking placeholder
+        if (cartItem.needsInstallation) {
+          await storage.createBooking({
+            userId,
+            orderId: order.id,
+            customerName: shippingDetails.firstName + " " + shippingDetails.lastName,
+            customerEmail: shippingDetails.email,
+            customerPhone: shippingDetails.phone || "",
+            vehicleMake: "Te bepalen", // Will be filled later by customer
+            vehicleModel: "Te bepalen",
+            vehicleYear: new Date().getFullYear(),
+            serviceType: "installation",
+            scheduledDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week from now as placeholder
+            duration: 2, // 2 hours default
+            status: "pending_scheduling",
+            totalCost: installationFee.toString(),
+          });
+        }
+      }
+
+      // Clear cart
+      await storage.clearCart(userId);
+
+      res.json({ orderId: order.id, order });
+    } catch (error) {
+      console.error("Error confirming order:", error);
+      res.status(500).json({ message: "Failed to confirm order" });
     }
   });
 

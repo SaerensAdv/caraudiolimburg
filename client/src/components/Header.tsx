@@ -100,7 +100,7 @@ export function Header({ onCartOpen }: HeaderProps) {
                 variant="ghost" 
                 size="sm" 
                 className="p-2"
-                onClick={() => window.location.href = '/api/logout'}
+                onClick={() => window.location.href = '/api/auth/logout'}
                 data-testid="button-logout"
               >
                 <LogOut className="w-5 h-5" />
@@ -110,7 +110,7 @@ export function Header({ onCartOpen }: HeaderProps) {
             <Button 
               variant="outline"
               size="sm"
-              onClick={() => window.location.href = '/api/login'}
+              onClick={() => window.location.href = '/login'}
               data-testid="button-login"
             >
               Inloggen

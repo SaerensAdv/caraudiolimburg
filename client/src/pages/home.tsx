@@ -109,6 +109,10 @@ export default function Home() {
               <video
                 className="w-full h-full object-cover"
                 controls
+                autoPlay
+                muted
+                loop
+                playsInline
                 poster="https://caraudiolimburg.shop/wp-content/uploads/2025/05/Android-Audi-A3.png"
                 data-testid="promotional-video"
               >

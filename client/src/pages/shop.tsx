@@ -22,11 +22,11 @@ import type { Product, Category, Brand, VehicleMake } from "@shared/schema";
 export default function Shop() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedBrand, setSelectedBrand] = useState("");
-  const [selectedMake, setSelectedMake] = useState("");
-  const [selectedModel, setSelectedModel] = useState("");
-  const [selectedYear, setSelectedYear] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all-categories");
+  const [selectedBrand, setSelectedBrand] = useState("all-brands");
+  const [selectedMake, setSelectedMake] = useState("all-makes");
+  const [selectedModel, setSelectedModel] = useState("all-models");
+  const [selectedYear, setSelectedYear] = useState("all-years");
   const [sortBy, setSortBy] = useState("name");
   const [showFilters, setShowFilters] = useState(false);
 
@@ -37,11 +37,11 @@ export default function Shop() {
   const { data: products, isLoading: isLoadingProducts } = useQuery({
     queryKey: ["/api/products", {
       search,
-      categoryId: selectedCategory,
-      brandId: selectedBrand,
-      vehicleMakeId: selectedMake,
-      vehicleModelId: selectedModel,
-      vehicleYear: selectedYear ? parseInt(selectedYear) : undefined,
+      categoryId: selectedCategory.startsWith('all-') ? '' : selectedCategory,
+      brandId: selectedBrand.startsWith('all-') ? '' : selectedBrand,
+      vehicleMakeId: selectedMake.startsWith('all-') ? '' : selectedMake,
+      vehicleModelId: selectedModel.startsWith('all-') ? '' : selectedModel,
+      vehicleYear: selectedYear && !selectedYear.startsWith('all-') ? parseInt(selectedYear) : undefined,
       limit: 50,
     }],
   });
@@ -65,14 +65,21 @@ export default function Shop() {
 
   const clearFilters = () => {
     setSearch("");
-    setSelectedCategory("");
-    setSelectedBrand("");
-    setSelectedMake("");
-    setSelectedModel("");
-    setSelectedYear("");
+    setSelectedCategory("all-categories");
+    setSelectedBrand("all-brands");
+    setSelectedMake("all-makes");
+    setSelectedModel("all-models");
+    setSelectedYear("all-years");
   };
 
-  const activeFiltersCount = [search, selectedCategory, selectedBrand, selectedMake, selectedModel, selectedYear].filter(Boolean).length;
+  const activeFiltersCount = [
+    search,
+    selectedCategory && !selectedCategory.startsWith('all-') ? selectedCategory : '',
+    selectedBrand && !selectedBrand.startsWith('all-') ? selectedBrand : '',
+    selectedMake && !selectedMake.startsWith('all-') ? selectedMake : '',
+    selectedModel && !selectedModel.startsWith('all-') ? selectedModel : '',
+    selectedYear && !selectedYear.startsWith('all-') ? selectedYear : ''
+  ].filter(Boolean).length;
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 30 }, (_, i) => currentYear - i);
@@ -143,8 +150,8 @@ export default function Shop() {
                         <SelectValue placeholder="Alle categorieën" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Alle categorieën</SelectItem>
-                        {categories?.map((category: Category) => (
+                        <SelectItem value="all-categories">Alle categorieën</SelectItem>
+                        {categories && Array.isArray(categories) && categories.map((category: Category) => (
                           <SelectItem key={category.id} value={category.id}>
                             {category.name}
                           </SelectItem>
@@ -161,8 +168,8 @@ export default function Shop() {
                         <SelectValue placeholder="Alle merken" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Alle merken</SelectItem>
-                        {brands?.map((brand: Brand) => (
+                        <SelectItem value="all-brands">Alle merken</SelectItem>
+                        {brands && Array.isArray(brands) && brands.map((brand: Brand) => (
                           <SelectItem key={brand.id} value={brand.id}>
                             {brand.name}
                           </SelectItem>
@@ -179,8 +186,8 @@ export default function Shop() {
                         <SelectValue placeholder="Alle merken" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Alle merken</SelectItem>
-                        {vehicleMakes?.map((make: VehicleMake) => (
+                        <SelectItem value="all-makes">Alle merken</SelectItem>
+                        {vehicleMakes && Array.isArray(vehicleMakes) && vehicleMakes.map((make: VehicleMake) => (
                           <SelectItem key={make.id} value={make.id}>
                             {make.name}
                           </SelectItem>
@@ -197,8 +204,8 @@ export default function Shop() {
                         <SelectValue placeholder="Alle modellen" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Alle modellen</SelectItem>
-                        {vehicleModels?.map((model: any) => (
+                        <SelectItem value="all-models">Alle modellen</SelectItem>
+                        {vehicleModels && Array.isArray(vehicleModels) && vehicleModels.map((model: any) => (
                           <SelectItem key={model.id} value={model.id}>
                             {model.name}
                           </SelectItem>
@@ -217,7 +224,7 @@ export default function Shop() {
                         <SelectValue placeholder="Alle jaren" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Alle jaren</SelectItem>
+                        <SelectItem value="all-years">Alle jaren</SelectItem>
                         {years.map((year) => (
                           <SelectItem key={year} value={year.toString()}>
                             {year}

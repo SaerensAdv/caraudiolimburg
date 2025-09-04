@@ -87,11 +87,13 @@ export interface IStorage {
   createOrder(order: InsertOrder): Promise<Order>;
   createOrderItem(orderItem: InsertOrderItem): Promise<OrderItem>;
   getOrders(userId?: string): Promise<Order[]>;
+  getOrdersByUserId(userId: string): Promise<Order[]>;
   getOrder(id: string): Promise<Order | undefined>;
   updateOrderStatus(id: string, status: string): Promise<Order>;
 
   // Booking operations
   getBookings(userId?: string): Promise<Booking[]>;
+  getBookingsByUserId(userId: string): Promise<Booking[]>;
   getBooking(id: string): Promise<Booking | undefined>;
   createBooking(booking: InsertBooking): Promise<Booking>;
   updateBookingStatus(id: string, status: string): Promise<Booking>;
@@ -341,6 +343,12 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(orders).orderBy(desc(orders.createdAt));
   }
 
+  async getOrdersByUserId(userId: string): Promise<Order[]> {
+    return await db.select().from(orders)
+      .where(eq(orders.userId, userId))
+      .orderBy(desc(orders.createdAt));
+  }
+
   async getOrder(id: string): Promise<Order | undefined> {
     const [order] = await db.select().from(orders).where(eq(orders.id, id));
     return order;
@@ -361,6 +369,12 @@ export class DatabaseStorage implements IStorage {
       return await db.select().from(bookings).where(eq(bookings.userId, userId)).orderBy(desc(bookings.createdAt));
     }
     return await db.select().from(bookings).orderBy(desc(bookings.createdAt));
+  }
+
+  async getBookingsByUserId(userId: string): Promise<Booking[]> {
+    return await db.select().from(bookings)
+      .where(eq(bookings.userId, userId))
+      .orderBy(desc(bookings.createdAt));
   }
 
   async getBooking(id: string): Promise<Booking | undefined> {

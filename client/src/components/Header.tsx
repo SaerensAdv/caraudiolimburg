@@ -49,15 +49,15 @@ export function Header({ onCartOpen }: HeaderProps) {
           <Link href="/shop" className="text-muted-foreground hover:text-primary transition-colors font-medium" data-testid="nav-shop">
             Shop
           </Link>
-          <Link href="/booking" className="text-muted-foreground hover:text-primary transition-colors font-medium" data-testid="nav-installation">
-            Installatie
+          <Link href="/about" className="text-muted-foreground hover:text-primary transition-colors font-medium" data-testid="nav-about">
+            Over ons
           </Link>
-          <a href="#brands" className="text-muted-foreground hover:text-primary transition-colors font-medium" data-testid="nav-brands">
-            Merken
-          </a>
-          <a href="#contact" className="text-muted-foreground hover:text-primary transition-colors font-medium" data-testid="nav-contact">
+          <Link href="/faq" className="text-muted-foreground hover:text-primary transition-colors font-medium" data-testid="nav-faq">
+            FAQ
+          </Link>
+          <Link href="/contact" className="text-muted-foreground hover:text-primary transition-colors font-medium" data-testid="nav-contact">
             Contact
-          </a>
+          </Link>
         </nav>
 
         {/* Right side actions */}
@@ -83,6 +83,12 @@ export function Header({ onCartOpen }: HeaderProps) {
 
           {isAuthenticated ? (
             <div className="flex items-center space-x-2">
+              <Link href="/my-account">
+                <Button variant="ghost" size="sm" data-testid="button-my-account">
+                  <User className="w-4 h-4 mr-2" />
+                  Mijn Account
+                </Button>
+              </Link>
               {user?.role === 'admin' && (
                 <Link href="/admin">
                   <Button variant="ghost" size="sm" data-testid="button-admin">
@@ -90,9 +96,6 @@ export function Header({ onCartOpen }: HeaderProps) {
                   </Button>
                 </Link>
               )}
-              <Button variant="ghost" size="sm" className="p-2" data-testid="button-profile">
-                <User className="w-5 h-5" />
-              </Button>
               <Button 
                 variant="ghost" 
                 size="sm" 

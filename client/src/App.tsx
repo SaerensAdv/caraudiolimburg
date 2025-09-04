@@ -12,6 +12,10 @@ import Cart from "@/pages/cart";
 import Checkout from "@/pages/checkout";
 import Booking from "@/pages/booking";
 import Admin from "@/pages/admin";
+import About from "@/pages/about";
+import FAQ from "@/pages/faq";
+import Contact from "@/pages/contact";
+import CustomerPortal from "@/pages/customer-portal";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -24,6 +28,10 @@ function Router() {
       <Route path="/cart" component={Cart} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/booking" component={Booking} />
+      <Route path="/about" component={About} />
+      <Route path="/faq" component={FAQ} />
+      <Route path="/contact" component={Contact} />
+      {isAuthenticated && <Route path="/my-account" component={CustomerPortal} />}
       {isAuthenticated && <Route path="/admin" component={Admin} />}
       <Route component={NotFound} />
     </Switch>

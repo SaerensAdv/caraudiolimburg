@@ -125,6 +125,25 @@ export const cartItems = pgTable("cart_items", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Reviews
+export const reviews = pgTable("reviews", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id), // Optional - anonymous reviews allowed
+  customerName: varchar("customer_name").notNull(),
+  customerEmail: varchar("customer_email"),
+  rating: integer("rating").notNull(), // 1-5 stars
+  title: varchar("title").notNull(),
+  content: text("content").notNull(),
+  productId: varchar("product_id").references(() => products.id), // Optional - general reviews allowed
+  isVerified: boolean("is_verified").default(false), // If customer actually purchased
+  isApproved: boolean("is_approved").default(false), // For moderation
+  isPublished: boolean("is_published").default(false), // Admin control
+  isFeatured: boolean("is_featured").default(false), // Highlight on homepage
+  adminNotes: text("admin_notes"), // Internal notes for admins
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Order status enum
 export const orderStatusEnum = pgEnum("order_status", ["pending", "confirmed", "processing", "completed", "cancelled"]);
 
@@ -358,6 +377,12 @@ export const insertQuoteRequestSchema = createInsertSchema(quoteRequests).omit({
   updatedAt: true,
 });
 
+export const insertReviewSchema = createInsertSchema(reviews).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -392,3 +417,6 @@ export type InsertBooking = z.infer<typeof insertBookingSchema>;
 
 export type QuoteRequest = typeof quoteRequests.$inferSelect;
 export type InsertQuoteRequest = z.infer<typeof insertQuoteRequestSchema>;
+
+export type Review = typeof reviews.$inferSelect;
+export type InsertReview = z.infer<typeof insertReviewSchema>;

@@ -33,6 +33,9 @@ import {
   type InsertBooking,
   type QuoteRequest,
   type InsertQuoteRequest,
+  reviews,
+  type Review,
+  type InsertReview,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, or, desc, asc, like, inArray } from "drizzle-orm";
@@ -106,6 +109,22 @@ export interface IStorage {
   createQuoteRequest(quote: InsertQuoteRequest): Promise<QuoteRequest>;
   getQuoteRequests(): Promise<QuoteRequest[]>;
   updateQuoteRequest(id: string, updates: Partial<InsertQuoteRequest>): Promise<QuoteRequest>;
+
+  // Review operations
+  getReviews(options?: {
+    productId?: string;
+    isPublished?: boolean;
+    isFeatured?: boolean;
+    limit?: number;
+    offset?: number;
+  }): Promise<Review[]>;
+  getReview(id: string): Promise<Review | undefined>;
+  createReview(review: InsertReview): Promise<Review>;
+  updateReview(id: string, updates: Partial<InsertReview>): Promise<Review>;
+  deleteReview(id: string): Promise<void>;
+  approveReview(id: string): Promise<Review>;
+  publishReview(id: string): Promise<Review>;
+  featureReview(id: string, featured: boolean): Promise<Review>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -459,6 +478,94 @@ export class DatabaseStorage implements IStorage {
       .update(quoteRequests)
       .set({ ...updates, updatedAt: new Date() })
       .where(eq(quoteRequests.id, id))
+      .returning();
+    return updated;
+  }
+
+  // Review operations
+  async getReviews(options?: {
+    productId?: string;
+    isPublished?: boolean;
+    isFeatured?: boolean;
+    limit?: number;
+    offset?: number;
+  }): Promise<Review[]> {
+    const conditions = [];
+    
+    if (options?.productId) {
+      conditions.push(eq(reviews.productId, options.productId));
+    }
+    if (options?.isPublished !== undefined) {
+      conditions.push(eq(reviews.isPublished, options.isPublished));
+    }
+    if (options?.isFeatured !== undefined) {
+      conditions.push(eq(reviews.isFeatured, options.isFeatured));
+    }
+    
+    const baseQuery = db.select().from(reviews);
+    
+    let finalQuery = conditions.length > 0 
+      ? baseQuery.where(and(...conditions))
+      : baseQuery;
+    
+    finalQuery = finalQuery.orderBy(desc(reviews.createdAt));
+    
+    if (options?.limit) {
+      finalQuery = finalQuery.limit(options.limit);
+    }
+    if (options?.offset) {
+      finalQuery = finalQuery.offset(options.offset);
+    }
+    
+    return await finalQuery;
+  }
+
+  async getReview(id: string): Promise<Review | undefined> {
+    const [review] = await db.select().from(reviews).where(eq(reviews.id, id));
+    return review;
+  }
+
+  async createReview(review: InsertReview): Promise<Review> {
+    const [newReview] = await db.insert(reviews).values(review).returning();
+    return newReview;
+  }
+
+  async updateReview(id: string, updates: Partial<InsertReview>): Promise<Review> {
+    const [updated] = await db
+      .update(reviews)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(reviews.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteReview(id: string): Promise<void> {
+    await db.delete(reviews).where(eq(reviews.id, id));
+  }
+
+  async approveReview(id: string): Promise<Review> {
+    const [updated] = await db
+      .update(reviews)
+      .set({ isApproved: true, updatedAt: new Date() })
+      .where(eq(reviews.id, id))
+      .returning();
+    return updated;
+  }
+
+  async publishReview(id: string): Promise<Review> {
+    const [updated] = await db
+      .update(reviews)
+      .set({ isPublished: true, isApproved: true, updatedAt: new Date() })
+      .where(eq(reviews.id, id))
+      .returning();
+    return updated;
+  }
+
+  async featureReview(id: string, featured: boolean): Promise<Review> {
+    const [updated] = await db
+      .update(reviews)
+      .set({ isFeatured: featured, updatedAt: new Date() })
+      .where(eq(reviews.id, id))
       .returning();
     return updated;
   }

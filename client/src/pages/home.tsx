@@ -30,7 +30,7 @@ import {
   ChevronRight
 } from "lucide-react";
 import { useState } from "react";
-import type { Product, Category } from "@shared/schema";
+import type { Product, Category, Review } from "@shared/schema";
 import { ProductAudioSkeleton } from "@/components/AudioSkeletons";
 import heroImage from "@assets/Mercedes-Benz-GT-AMG-Carplay-4_1757022121886.jpg";
 
@@ -48,6 +48,10 @@ export default function Home() {
 
   const { data: categories } = useQuery({
     queryKey: ["/api/categories"],
+  });
+
+  const { data: reviews } = useQuery({
+    queryKey: ["/api/reviews", { isPublished: true, isFeatured: true, limit: 6 }],
   });
 
   return (
@@ -614,57 +618,62 @@ export default function Home() {
               <h2 className="text-3xl font-bold text-foreground mb-8">Wat Klanten Zeggen</h2>
               
               <div className="space-y-6">
-                <Card className="bg-card border-border" data-testid="testimonial-marco">
-                  <CardContent className="p-6">
-                    <div className="flex items-center mb-4">
-                      <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className="w-5 h-5 text-yellow-500 fill-current" />
-                        ))}
+                {reviews?.slice(0, 3).map((review: Review) => (
+                  <Card key={review.id} className="bg-card border-border" data-testid={`testimonial-${review.id}`}>
+                    <CardContent className="p-6">
+                      <div className="flex items-center mb-4">
+                        <div className="flex items-center">
+                          {[...Array(review.rating)].map((_, i) => (
+                            <Star key={i} className="w-5 h-5 text-yellow-500 fill-current" />
+                          ))}
+                        </div>
+                        <span className="ml-2 text-sm text-muted-foreground">{review.rating}/5</span>
+                        {review.isVerified && (
+                          <Badge variant="secondary" className="ml-2 text-xs px-2 py-1 bg-green-100 text-green-700 border-green-200">
+                            Geverifieerd
+                          </Badge>
+                        )}
                       </div>
-                      <span className="ml-2 text-sm text-muted-foreground">5/5</span>
-                    </div>
-                    <p className="text-card-foreground mb-4">
-                      "Fantastische service! Alpine systeem perfect geïnstalleerd in mijn BMW. 
-                      Je ziet echt niet dat het achteraf gemonteerd is."
-                    </p>
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
-                        <User className="w-5 h-5 text-muted-foreground" />
+                      <h3 className="font-semibold text-card-foreground mb-2">{review.title}</h3>
+                      <p className="text-card-foreground mb-4 leading-relaxed">
+                        "{review.content}"
+                      </p>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                          <User className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-card-foreground">{review.customerName}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {new Date(review.createdAt).toLocaleDateString('nl-NL', { 
+                              year: 'numeric', 
+                              month: 'long'
+                            })}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium text-card-foreground">Marco de Vries</p>
-                        <p className="text-sm text-muted-foreground">BMW 3-Serie 2023</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-card border-border" data-testid="testimonial-linda">
-                  <CardContent className="p-6">
-                    <div className="flex items-center mb-4">
-                      <div className="flex items-center">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className="w-5 h-5 text-yellow-500 fill-current" />
-                        ))}
-                      </div>
-                      <span className="ml-2 text-sm text-muted-foreground">5/5</span>
-                    </div>
-                    <p className="text-card-foreground mb-4">
-                      "Top advies en vakkundige installatie. Audison speakers klinken geweldig. 
-                      Zeker een aanrader voor echte audiofiele!"
-                    </p>
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
-                        <User className="w-5 h-5 text-muted-foreground" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-card-foreground">Linda Janssen</p>
-                        <p className="text-sm text-muted-foreground">Audi Q5 2022</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                )) || (
+                  // Fallback voor als reviews nog laden
+                  <div className="space-y-6">
+                    {[1, 2].map((i) => (
+                      <Card key={i} className="bg-card border-border animate-pulse">
+                        <CardContent className="p-6">
+                          <div className="h-4 bg-muted rounded mb-4"></div>
+                          <div className="h-16 bg-muted rounded mb-4"></div>
+                          <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-muted rounded-full"></div>
+                            <div>
+                              <div className="h-4 bg-muted rounded mb-2 w-24"></div>
+                              <div className="h-3 bg-muted rounded w-16"></div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 

@@ -13,6 +13,7 @@ import {
   insertOrderSchema,
   insertBookingSchema,
   insertQuoteRequestSchema,
+  insertReviewSchema,
 } from "@shared/schema";
 
 let stripe: Stripe | null = null;
@@ -441,6 +442,107 @@ ${message || 'Geen aanvullende informatie'}`
     } catch (error) {
       console.error("Error confirming order:", error);
       res.status(500).json({ message: "Failed to confirm order" });
+    }
+  });
+
+  // Review routes
+  app.get('/api/reviews', async (req, res) => {
+    try {
+      const { productId, isPublished, isFeatured, limit, offset } = req.query;
+      const reviews = await storage.getReviews({
+        productId: productId as string,
+        isPublished: isPublished === 'true',
+        isFeatured: isFeatured === 'true',
+        limit: limit ? parseInt(limit as string) : undefined,
+        offset: offset ? parseInt(offset as string) : undefined,
+      });
+      res.json(reviews);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+      res.status(500).json({ message: "Failed to fetch reviews" });
+    }
+  });
+
+  app.get('/api/reviews/:id', async (req, res) => {
+    try {
+      const review = await storage.getReview(req.params.id);
+      if (!review) {
+        return res.status(404).json({ message: "Review not found" });
+      }
+      res.json(review);
+    } catch (error) {
+      console.error("Error fetching review:", error);
+      res.status(500).json({ message: "Failed to fetch review" });
+    }
+  });
+
+  app.post('/api/reviews', async (req: any, res) => {
+    try {
+      const reviewData = insertReviewSchema.parse(req.body);
+      
+      // If user is authenticated, link the review to the user
+      if (req.isAuthenticated && req.user?.claims?.sub) {
+        reviewData.userId = req.user.claims.sub;
+      }
+      
+      const review = await storage.createReview(reviewData);
+      res.json(review);
+    } catch (error) {
+      console.error("Error creating review:", error);
+      res.status(500).json({ message: "Failed to create review" });
+    }
+  });
+
+  app.put('/api/reviews/:id', isAuthenticated, async (req, res) => {
+    try {
+      const updates = insertReviewSchema.partial().parse(req.body);
+      const review = await storage.updateReview(req.params.id, updates);
+      res.json(review);
+    } catch (error) {
+      console.error("Error updating review:", error);
+      res.status(500).json({ message: "Failed to update review" });
+    }
+  });
+
+  app.delete('/api/reviews/:id', isAuthenticated, async (req, res) => {
+    try {
+      await storage.deleteReview(req.params.id);
+      res.json({ message: "Review deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting review:", error);
+      res.status(500).json({ message: "Failed to delete review" });
+    }
+  });
+
+  // Admin review management routes
+  app.post('/api/admin/reviews/:id/approve', isAuthenticated, async (req, res) => {
+    try {
+      const review = await storage.approveReview(req.params.id);
+      res.json(review);
+    } catch (error) {
+      console.error("Error approving review:", error);
+      res.status(500).json({ message: "Failed to approve review" });
+    }
+  });
+
+  app.post('/api/admin/reviews/:id/publish', isAuthenticated, async (req, res) => {
+    try {
+      const review = await storage.publishReview(req.params.id);
+      res.json(review);
+    } catch (error) {
+      console.error("Error publishing review:", error);
+      res.status(500).json({ message: "Failed to publish review" });
+    }
+  });
+
+  app.post('/api/admin/reviews/:id/feature', isAuthenticated, async (req, res) => {
+    try {
+      const { featured } = req.body;
+      const review = await storage.featureReview(req.params.id, featured);
+      res.json(review);
+    } catch (error) {
+      console.error("Error featuring review:", error);
+      res.status(500).json({ message: "Failed to feature review" });
     }
   });
 

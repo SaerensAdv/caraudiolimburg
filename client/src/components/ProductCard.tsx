@@ -75,10 +75,13 @@ export function ProductCard({ product }: ProductCardProps) {
     <Card className="bg-card border-border hover:shadow-2xl transition-all duration-300 group" data-testid={`product-card-${product.id}`}>
       <div className="relative">
         {product.images?.[0] ? (
-          <div 
-            className="aspect-square bg-cover bg-center group-hover:scale-105 transition-transform duration-300 rounded-t-2xl" 
-            style={{ backgroundImage: `url(${getImageSrc(product.images[0])})` }}
-          />
+          <div className="aspect-square bg-white group-hover:scale-105 transition-transform duration-300 rounded-t-2xl flex items-center justify-center p-8">
+            <img 
+              src={getImageSrc(product.images[0])} 
+              alt={product.name}
+              className="max-w-full max-h-full object-contain"
+            />
+          </div>
         ) : (
           <div className="aspect-square bg-muted rounded-t-2xl flex items-center justify-center">
             <span className="text-muted-foreground">Geen afbeelding</span>

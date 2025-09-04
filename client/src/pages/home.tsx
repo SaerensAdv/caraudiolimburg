@@ -30,6 +30,7 @@ import {
 import { useState } from "react";
 import type { Product } from "@shared/schema";
 import { ProductAudioSkeleton } from "@/components/AudioSkeletons";
+import heroImage from "@assets/Mercedes-Benz-GT-AMG-Carplay-4_1757022121886.jpg";
 
 export default function Home() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -58,9 +59,9 @@ export default function Home() {
         
         <div className="absolute inset-0 bg-gradient-to-r from-background/98 via-background/95 to-background/98 z-10"></div>
         <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-15" 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20" 
           style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1619767886558-efdc259cde1a?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')"
+            backgroundImage: `url(${heroImage})`
           }}
         ></div>
         

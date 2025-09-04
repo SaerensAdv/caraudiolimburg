@@ -109,7 +109,7 @@ export default function Home() {
               <video
                 className="w-full h-full object-cover"
                 controls
-                poster="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=675&q=80"
+                poster="https://caraudiolimburg.shop/wp-content/uploads/2025/05/Android-Audi-A3.png"
                 data-testid="promotional-video"
               >
                 <source 
@@ -218,7 +218,7 @@ export default function Home() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {featuredProducts?.map((product: Product) => (
+              {(featuredProducts as Product[])?.map((product: Product) => (
                 <ProductCard key={product.id} product={product} data-testid={`product-card-${product.id}`} />
               ))}
             </div>
@@ -323,7 +323,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
-            {brands?.map((brand: any) => (
+            {(brands as any[])?.map((brand: any) => (
               <Card key={brand.id} className="bg-card border-border hover:shadow-lg transition-all duration-300 group cursor-pointer" data-testid={`brand-card-${brand.id}`}>
                 <CardContent className="p-6 text-center">
                   <div className="w-16 h-16 bg-muted rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:bg-primary/10 transition-colors">

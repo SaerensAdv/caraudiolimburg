@@ -16,8 +16,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Filter, X } from "lucide-react";
+import { Search, Filter, X, ChevronDown, Grid, Car, Volume2, Settings, ChevronRight } from "lucide-react";
 import type { Product, Category, Brand, VehicleMake } from "@shared/schema";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Shop() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -95,6 +103,152 @@ export default function Shop() {
           <p className="text-lg text-muted-foreground">
             Ontdek ons complete assortiment premium car audio producten
           </p>
+        </div>
+
+        {/* Fancy Navigation Dropdown */}
+        <div className="mb-8">
+          <div className="flex flex-wrap gap-4 mb-6">
+            {/* Categories Mega Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="h-12 px-6 border-border hover:bg-accent" data-testid="dropdown-categories">
+                  <Grid className="w-4 h-4 mr-2" />
+                  Categorieën
+                  <ChevronDown className="w-4 h-4 ml-2" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-80 p-4" align="start">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <DropdownMenuLabel>Audio Systemen</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {categories && (categories as Category[]).slice(0, 4).map((category: Category) => (
+                      <DropdownMenuItem 
+                        key={category.id}
+                        className="cursor-pointer"
+                        onClick={() => {
+                          setSelectedCategory(category.id);
+                          setShowFilters(false);
+                        }}
+                      >
+                        <Volume2 className="w-4 h-4 mr-2" />
+                        {category.name}
+                      </DropdownMenuItem>
+                    ))}
+                  </div>
+                  <div>
+                    <DropdownMenuLabel>Accessoires</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {categories && (categories as Category[]).slice(4, 8).map((category: Category) => (
+                      <DropdownMenuItem 
+                        key={category.id}
+                        className="cursor-pointer"
+                        onClick={() => {
+                          setSelectedCategory(category.id);
+                          setShowFilters(false);
+                        }}
+                      >
+                        <Settings className="w-4 h-4 mr-2" />
+                        {category.name}
+                      </DropdownMenuItem>
+                    ))}
+                  </div>
+                </div>
+                <DropdownMenuSeparator className="my-4" />
+                <DropdownMenuItem 
+                  className="cursor-pointer font-medium"
+                  onClick={() => setSelectedCategory("all-categories")}
+                >
+                  Alle categorieën bekijken
+                  <ChevronRight className="w-4 h-4 ml-auto" />
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Brands Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="h-12 px-6 border-border hover:bg-accent" data-testid="dropdown-brands">
+                  <Volume2 className="w-4 h-4 mr-2" />
+                  Merken
+                  <ChevronDown className="w-4 h-4 ml-2" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-64 p-4" align="start">
+                <DropdownMenuLabel>Premium Merken</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <div className="grid grid-cols-2 gap-2">
+                  {brands && (brands as Brand[]).slice(0, 8).map((brand: Brand) => (
+                    <DropdownMenuItem 
+                      key={brand.id}
+                      className="cursor-pointer"
+                      onClick={() => {
+                        setSelectedBrand(brand.id);
+                        setShowFilters(false);
+                      }}
+                    >
+                      {brand.name}
+                    </DropdownMenuItem>
+                  ))}
+                </div>
+                <DropdownMenuSeparator className="my-4" />
+                <DropdownMenuItem 
+                  className="cursor-pointer font-medium"
+                  onClick={() => setSelectedBrand("all-brands")}
+                >
+                  Alle merken
+                  <ChevronRight className="w-4 h-4 ml-auto" />
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Vehicle Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="h-12 px-6 border-border hover:bg-accent" data-testid="dropdown-vehicles">
+                  <Car className="w-4 h-4 mr-2" />
+                  Voor Mijn Auto
+                  <ChevronDown className="w-4 h-4 ml-2" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-80 p-4" align="start">
+                <DropdownMenuLabel>Populaire Merken</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <div className="grid grid-cols-3 gap-2">
+                  {vehicleMakes && (vehicleMakes as VehicleMake[]).slice(0, 12).map((make: VehicleMake) => (
+                    <DropdownMenuItem 
+                      key={make.id}
+                      className="cursor-pointer text-sm"
+                      onClick={() => {
+                        setSelectedMake(make.id);
+                        setShowFilters(false);
+                      }}
+                    >
+                      {make.name}
+                    </DropdownMenuItem>
+                  ))}
+                </div>
+                <DropdownMenuSeparator className="my-4" />
+                <DropdownMenuItem 
+                  className="cursor-pointer font-medium"
+                  onClick={() => setSelectedMake("all-makes")}
+                >
+                  Alle automerken
+                  <ChevronRight className="w-4 h-4 ml-auto" />
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Quick Actions */}
+            <div className="ml-auto flex gap-2">
+              <Button variant="ghost" size="sm" onClick={() => setSortBy("price-asc")} data-testid="button-sort-price">
+                Laagste Prijs
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => setSortBy("featured")} data-testid="button-sort-featured">
+                Uitgelicht
+              </Button>
+            </div>
+          </div>
         </div>
 
         {/* Search and Filters */}

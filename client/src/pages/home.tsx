@@ -684,7 +684,7 @@ export default function Home() {
               <div 
                 className="aspect-[16/10] bg-cover bg-center rounded-2xl" 
                 style={{
-                  backgroundImage: "url('/attached_assets/C5025.00_31_30_11.Still045-1-1-2048x1152_1757024535822.jpg')"
+                  backgroundImage: "url('/showroom-1.jpg')"
                 }}
               ></div>
               
@@ -692,13 +692,13 @@ export default function Home() {
                 <div 
                   className="aspect-square bg-cover bg-center rounded-xl" 
                   style={{
-                    backgroundImage: "url('/attached_assets/C5025.00_33_41_03.Still050-2048x1152_1757024504641.jpg')"
+                    backgroundImage: "url('/showroom-2.jpg')"
                   }}
                 ></div>
                 <div 
                   className="aspect-square bg-cover bg-center rounded-xl" 
                   style={{
-                    backgroundImage: "url('/attached_assets/C5025.00_06_16_04.Still024-1-2048x1152_1757024538840.jpg')"
+                    backgroundImage: "url('/showroom-3.jpg')"
                   }}
                 ></div>
               </div>

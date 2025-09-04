@@ -1,0 +1,318 @@
+✅ Super‑gedetailleerde Replit Prompt – Bouw een Car Audio Limburg webshop + installatieservice (combi e‑commerce & leads)
+
+Rol: Handel als senior full‑stack engineer. Lever een productierijpe monorepo op die in Replit draait. Bouw een e-commerce webshop en een installatieservice/leads funnel in één project. Hanteer clean code, type‑safe end-to-end, security best‑practices en een strak, modern UI-design gebaseerd op de nieuwe stijl van caraudiolimburg.shop (fallback-stijl hieronder als de site niet bereikbaar is).
+
+Doel:
+	1.	Productcatalogus (Alpine, Audison, OEM-upgrades, voertuig-specifieke kits) met check-out.
+	2.	Installatieservice (boekingsflow met tijdslots + optie “Offerte aanvragen” → leads pipeline/CRM).
+	3.	Admin & CRM dashboards (orders, producten, leads, agenda, content) + rechten (Owner, Staff, Installer).
+	4.	Betaalmethodes voor BE/NL (Stripe met Bancontact en iDEAL naast kaartbetaling).
+	5.	SEO‑klaar, snel, veilig en makkelijk uitbreidbaar.
+
+⸻
+
+1) Tech stack (monorepo)
+	•	Framework: Next.js 14 (App Router) + TypeScript
+	•	UI: Tailwind CSS + shadcn/ui componenten (Cards, Tables, Dialogs, Forms, Toaster) + lucide-react icons
+	•	State/Forms/Val: React Hook Form + Zod schema’s (validatie + types)
+	•	DB & ORM: PostgreSQL (Neon of Supabase) + Drizzle ORM + drizzle-kit (migraties)
+	•	Auth: Auth.js (Credentials/Email providers) + session via JWT; roles via RBAC (Owner, Staff, Installer, Customer)
+	•	API: Next.js Route Handlers (REST) met Zod-validated DTO’s
+	•	E-mail: Resend (transactionele e-mails)
+	•	Betaling: Stripe (Cards, Bancontact, iDEAL, Apple Pay/Google Pay) + Webhooks
+	•	Bestanden/afbeeldingen: public/ + optioneel UploadThing + S3/R2 (feature flag)
+	•	Zoek/filters: Postgres Full‑Text Search + faceted filters
+	•	Caching/Rate limiting: In‑app cache + simple rate limit (IP + token bucket). Optioneel Upstash Redis (feature flag)
+	•	Tests: Vitest (unit), Playwright (E2E basis), Drizzle migratie test
+	•	Lint/Format: ESLint + Prettier + strict TS config
+	•	i18n: NL als default, structuur klaar voor EN (next-intl)
+	•	Analytics: Plaats voor GA4 + server events (consent‑aware)
+	•	DevOps (Replit): NPM scripts + .replit/replit.nix + .env (Secrets in Replit)
+
+Fallback-stijl (als caraudiolimburg.shop niet te lezen is): Donker thema, accentkleur #00E0A4 (teal/mint), secundair #111827; Sans-serif (Inter/Plus Jakarta Sans), grote productfoto’s, cards met zachte shadow en afgeronde hoeken (rounded-2xl), focus op voertuigfilters en installatie CTA’s.
+
+⸻
+
+2) Features & deliverables
+
+2.1 Publieke site
+	•	Home: hero met “Koop + Laat installeren”, vehicle-filter (Merk/Model/Bouwjaar), USP’s (OEM-look, garantie, professionele installatie, snelle levering), uitgelichte categorieën en kits, CTA’s (Shoppen / Offerte / Installatie boeken).
+	•	Catalogus: categorieën (bv. Alpine, Audison, VW T6/T6.1, Fiat Ducato, Audi A4/A5/Q5, Camper), faceted filters (Prijs, Merk, Compatibiliteit, Voorraad, Met/zonder installatie), sortering.
+	•	Zoek: suggesties op merk/model/onderdeel + FTS.
+	•	Productpagina: varianten, compatibiliteit (lijst van voertuigen), foto’s/video, bundelopties (product + installatie), “In winkelwagen”, “Boek installatie”, “Offerte aanvragen”. Schema.org Product + AggregateRating.
+	•	Services: Installatiepagina met tijden, duur, locatie, kalender en prijsindicatie (met/zonder product), bundels.
+	•	Offerteformulier: wizard (auto/jaar, huidige setup, gewenste upgrade, foto upload optioneel). Slaat Lead op en triggert e-mail + CRM pipeline ‘Nieuw’.
+	•	Checkout: gast of ingelogd; adres/afhaling; verzending (flat/afhaal); betaalmethodes: kaart, Bancontact, iDEAL. Factuurgegevens optioneel. Order e-mail + PDF (basis) en ICS bij installatieslot.
+	•	Account: orders, afspraken, offertes, facturen, gegevens, GDPR-download & delete request.
+	•	Blog/Guides: eenvoudige CMS‑achtige sectie voor SEO (MDX of DB‑gebaseerd). Schema.org Article.
+
+2.2 Admin/CRM (_admin)
+	•	Dashboard: KPI’s (omzet, open leads, komende installaties, top producten).
+	•	Productbeheer: CRUD producten, varianten, voorraad, compatibiliteit (Fitment), bundels, media, categorietaxonomie, prijsregels/kortingscodes.
+	•	Orders: lijst, detail (betalingsstatus, fulfilment, factuur, retouren), refunds via Stripe.
+	•	Leads/CRM: Kanban (Nieuw → Gekwalificeerd → Offerte verzonden → Gewonnen/Verloren), lead detail, notities, bijlagen, taken, e-mail vanuit template. Genereer offerte PDF + e‑mail.
+	•	Installatieplanning: kalender (dag/week/maand), resources (installateurs/bruggen), duur per service, conflictdetectie, export ICS.
+	•	Content: blogposts, pagina’s, SEO meta, media library.
+	•	Users & Rollen: Owner/Staff/Installer/Customer beheer. Audit log (basis): wie deed wat/wanneer.
+	•	Instellingen: winkelinstellingen, BTW/regio, verzendmethodes (afhaal/flat-rate), betaalmethodes, e-mail templates, legal pages.
+
+2.3 Beveiliging & privacy
+	•	RBAC, input validatie (Zod), CSRF voor formulierpost, HTTPS-only cookies waar relevant, secure headers, webhook-signature verificatie, rate limiting op gevoelige endpoints, audit log basis. Cookie banner hook plaatsen (later vervangbaar door ConsentEase).
+
+2.4 Performance & SEO
+	•	SSR/SSG waar logisch, afbeeldingen geoptimaliseerd, sitemap.xml, robots.txt, breadcrumbs, canonical, Open Graph, schema.org (Product, Offer, Service, Article, Organization, LocalBusiness), nette URL’s.
+
+⸻
+
+3) Datamodel (Drizzle ORM)
+
+Users(id, name, email, role, phone, createdAt, updatedAt)
+
+Products(id, slug, title, brand, description, price, salePrice, currency, sku, barcode, status[draft/published], createdAt, updatedAt)
+
+ProductVariants(id, productId, title, sku, priceDelta, stock, attrs[JSON])
+
+Categories(id, slug, name, parentId, position)
+
+ProductCategories(productId, categoryId)
+
+Vehicles(id, make, model, generation, yearFrom, yearTo)
+
+Fitments(id, productId, vehicleId, notes)
+
+Bundles(id, slug, title, description, basePrice, includesInstall[bool])
+
+BundleItems(bundleId, productId, qty)
+
+Services(id, slug, title, durationMins, basePrice, requiresVehicle[bool])
+
+TimeSlots(id, start, end, resourceId, capacity)
+
+Bookings(id, userId, serviceId, bundleId?, orderId?, vehicleId?, slotId, status[pending/confirmed/cancelled], notes)
+
+Leads(id, name, email, phone, vehicleMake, vehicleModel, vehicleYear, message, stage[new/qualified/quoted/won/lost], source, utm[JSON], attachments[JSON], assignedTo?, createdAt)
+
+Quotes(id, leadId, number, items[JSON], subtotal, vat, total, status[draft/sent/accepted/declined], pdfUrl?)
+
+Carts(id, userId?, sessionId, createdAt)
+
+CartItems(id, cartId, productId?, variantId?, bundleId?, serviceId?, qty, priceAtAdd, meta[JSON])
+
+Orders(id, number, userId?, email, status[pending/paid/failed/refunded/fulfilled], subtotal, shipping, vat, total, currency, paymentIntentId?, paymentMethod, shippingMethod, billingAddress[JSON], shippingAddress[JSON], notes, createdAt)
+
+OrderItems(id, orderId, productId?, variantId?, bundleId?, serviceId?, title, qty, unitPrice, total)
+
+Coupons(id, code, type[percentage/fixed], value, startsAt?, endsAt?, usageLimit?, used)
+
+Content(id, slug, title, body(MDX of richtext JSON), type[page/post], status, seo[JSON], publishedAt)
+
+Media(id, url, alt, width, height, type)
+
+AuditLog(id, userId, action, targetType, targetId, meta[JSON], createdAt)
+
+⸻
+
+4) Pagina’s & routes (Next.js App Router)
+
+Publiek
+	•	/ (home)
+	•	/shop (catalogus + filters)
+	•	/c/[categorySlug] (categorie)
+	•	/p/[productSlug] (product)
+	•	/bundles/[slug]
+	•	/services en /services/[slug] (installaties)
+	•	/installatie/boeken (wizard: voertuig → service → slot → contact → bevestiging)
+	•	/offerte (lead wizard)
+	•	/checkout (cart/checkout/confirm)
+	•	/account (orders, afspraken, offertes)
+	•	/blog + /blog/[slug]
+	•	/legal/[slug] (privacy, voorwaarden)
+
+Admin
+	•	/_admin (dashboard)
+	•	/_admin/products, /products/[id]
+	•	/_admin/categories
+	•	/_admin/orders, /orders/[id]
+	•	/_admin/leads, /leads/[id] (Kanban + detail)
+	•	/_admin/quotes/[id] (editor + PDF)
+	•	/_admin/schedule (kalender)
+	•	/_admin/content (blog/pages)
+	•	/_admin/users
+	•	/_admin/settings
+
+⸻
+
+5) Belangrijke user flows (acceptatiecriteria)
+	1.	Product kopen zonder installatie → winkelwagen → Stripe kaart/Bancontact/iDEAL → bevestiging → e-mail met order.
+	2.	Product + installatie → productpagina: selecteer “met installatie” → kalender/slot → in checkout zichtbaar → bevestiging → e‑mail met order + ICS bijlage.
+	3.	Alleen installatie boeken (service) → kies voertuig → kies slot → betaal (aanbetaling of totaal) → e‑mail + ICS.
+	4.	Offerte aanvragen (lead) → wizard + uploads → CRM kaart “Nieuw” → e‑mail naar staff + bevestiging naar klant → admin kan offerte genereren + verzenden (pdf/email) → klant accepteert via link → lead → order.
+	5.	Admin kan: producten CRUD, voorraad updaten, fitments beheren; leads stages drag&drop; slots beheren; refunds doen; content publiceren; gebruikers en rollen beheren.
+	6.	SEO: product/categorie/service/blog met juiste meta, OG, schema, sitemap, breadcrumbs.
+
+⸻
+
+6) Integraties & implementatie-details
+
+6.1 Stripe
+	•	Activeer Bancontact en iDEAL.
+	•	Betaalflow:
+	•	server‑route POST /api/checkout → PaymentIntent met line items;
+	•	success/cancel pages;
+	•	webhook /api/stripe/webhook verwerkt payment_intent.succeeded/failed, maakt/actualiseert Order.
+	•	Refund endpoint in admin orderdetail.
+
+6.2 E-mail (Resend)
+	•	Templates: Orderbevestiging, Offerte verzonden, Offerte geaccepteerd/afgewezen, Installatiebevestiging (met ICS), Afspraakherinnering (24u vooraf).
+
+6.3 Kalender/ICS
+	•	Genereer .ics met titel “Installatie – {product/service} – {naam}”, locatie (werkplaatsadres), start/eindtijd, beschrijving en ordernummer. Voeg bij in e-mail + download in account.
+
+6.4 Vehicle fitment
+	•	Admin UI: voeg vehicles toe; koppel via Fitments aan producten; front-end filtert automatisch op gekozen voertuig.
+
+6.5 Leads/CRM
+	•	Kanban UI (shadcn DnD). Lead detail met notities, bijlagen, activiteitenlog.
+	•	Offerte: editor (items, arbeid, uren, korting, BTW) → render PDF → e‑mail link (publieke view met accept/decline + digitale handtekening naam + checkbox akkoord voorwaarden).
+	•	(Optioneel) Webhook/Export naar ClickUp via env-flag.
+
+⸻
+
+7) Beveiliging & compliance
+	•	RBAC guard op admin routes, server-side checks in handlers.
+	•	Validatie met Zod, sanitization bij rich text, upload restricties (mimes, size).
+	•	Secure headers, no-cache waar nodig, webhook signature verify.
+	•	Rate limiting op auth/leads/checkout.
+	•	GDPR: data export (account), delete request flow (mark for deletion + job).
+	•	Cookie‑banner hook (later te vervangen door ConsentEase).
+
+⸻
+
+8) SEO/UX richtlijnen
+	•	Core Web Vitals; lazy images; responsive images.
+	•	Breadcrumbs, canonical, schema.org (Product/Offer/Service/Article/Organization/LocalBusiness).
+	•	Interne links (merk → categorie → product), “Gerelateerde producten” en “Vaak samen met installatie geboekt”.
+	•	Structured data voor Reviews (basis mock, echte later).
+
+⸻
+
+9) Folderstructuur (suggestie)
+
+apps/web               # Next.js app (publiek + admin)
+  app/(site)/...
+  app/_admin/...
+  app/api/...
+  components/ui/...
+  lib/...
+  styles/...
+  public/...
+  drizzle/
+packages/db            # Drizzle schema + migrations
+packages/email         # E-mail templates
+packages/ui            # (optioneel) gedeelde ui
+
+
+⸻
+
+10) Env vars (voorbeeld)
+
+DATABASE_URL=
+NEXTAUTH_SECRET=
+RESEND_API_KEY=
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+STORE_NAME="Car Audio Limburg"
+STORE_ADDRESS="..."
+BOOKING_LOCATION="..."
+FEATURE_UPLOADTHING=false
+FEATURE_REDIS=false
+CLICKUP_WEBHOOK_URL=
+
+
+⸻
+
+11) NPM scripts
+	•	dev – next dev
+	•	build – drizzle-kit generate + migrate, next build
+	•	start – next start
+	•	db:generate – drizzle-kit generate
+	•	db:migrate – drizzle-kit migrate
+	•	seed – seed basisdata (categorieën, voorbeeldproducten, vehicles, slots)
+	•	test – vitest
+	•	e2e – playwright test
+
+.replit (indicatief)
+
+run = "npm run dev"
+
+replit.nix (indicatief)
+
+pkgs: with pkgs; [ nodejs_20 python3 ]
+
+
+⸻
+
+12) Seed data
+	•	Categorieën: Alpine, Audison, OEM-upgrades; Voertuig: VW T6/T6.1, Fiat Ducato, Audi A4/A5/Q5.
+	•	Producten: voorbeeldkits met prijs/voorraad + fitment.
+	•	Services: “Inbouw radio”, “OEM-speaker upgrade”, “Subwoofer installatie” (duur/prijzen).
+	•	TimeSlots: 3 weken aan werkdag-slots, 2 resources, capacity=1.
+	•	Leads: 3 demo leads, elk andere stage.
+
+⸻
+
+13) Te bouwen componenten (minimaal)
+	•	VehiclePicker (drie dropdowns + detectie via query)
+	•	ProductCard, Price, StockBadge, InstallBadge
+	•	BundleSelector (product + service)
+	•	CalendarSlotPicker (resource/duur aware)
+	•	LeadWizard (stap-forms + upload)
+	•	CheckoutSteps, PaymentButton (Stripe)
+	•	AdminTables (DataTable met kolomsortering/filters)
+	•	KanbanBoard (drag & drop)
+	•	QuoteEditor (items, bedragen, BTW) + PDF renderer
+
+⸻
+
+14) UI copy (NL, kort & duidelijk)
+	•	Knoppen: Kopen, Boek installatie, Offerte aanvragen, Toevoegen aan winkelwagen, Naar checkout.
+	•	USP’s: “OEM-look”, “Professionele installatie”, “2 jaar garantie”, “Snelle levering”.
+	•	Fouten/validatie: duidelijke NL meldingen via Zod.
+
+⸻
+
+15) Testscenario’s (E2E happy paths)
+	1.	Gast koopt product (kaart).
+	2.	Ingelogde klant boekt installatie + betaalt iDEAL.
+	3.	Lead → Offerte → Acceptatie → Order draft.
+	4.	Admin refundt €10 van betaalde order.
+	5.	Installer opent agenda en ziet eigen afspraken.
+
+⸻
+
+16) Oplevering – wat ik van je verwacht
+	1.	Code scaffolding genereren met bovenstaande structuur.
+	2.	Drizzle schema’s + migraties schrijven volgens datamodel; seed script.
+	3.	Publieke pages en admin met shadcn/ui en formulieren (React Hook Form + Zod).
+	4.	Stripe checkout + webhook werkend, incl. Bancontact/iDEAL.
+	5.	Leads/CRM met Kanban en quote PDF-flows.
+	6.	Installatieplanning met slots, boeking, ICS e-mail.
+	7.	E-mail templates (Resend) voor de belangrijkste events.
+	8.	SEO‑basics (sitemap, schema, og, breadcrumbs).
+	9.	Beveiliging (RBAC, validatie, webhook verify, rate limit).
+	10.	Docs: README met setup, env vars, dev/test instructies.
+
+Belangrijk: Als caraudiolimburg.shop bereikbaar is, kopieer palette/typografie/spacing van die site (zonder content te scrapen). Anders gebruik de fallback-stijl. Lever een strakke, snelle, toegankelijke UI met aandacht voor mobiel.
+
+⸻
+
+17) Bonus (optioneel, achter feature flags)
+	•	Mollie gateway naast Stripe.
+	•	Meilisearch/Typesense voor snellere zoek.
+	•	Pakketlabels/fulfilment export (PostNL/DPD CSV).
+	•	Recensies met foto’s en Q&A per product.
+	•	Bundel-aanbevelingen (regelgebaseerd) op productpagina.
+
+⸻
+
+Ga nu aan de slag en lever direct een werkende basis in Replit op met alle kernfunctionaliteit, zodat we daarna kunnen finetunen.

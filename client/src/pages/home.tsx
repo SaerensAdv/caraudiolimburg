@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import type { Product } from "@shared/schema";
+import { ProductAudioSkeleton } from "@/components/AudioSkeletons";
 
 export default function Home() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -213,11 +214,7 @@ export default function Home() {
           {isLoadingProducts ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="bg-card rounded-2xl p-6 animate-pulse" data-testid={`skeleton-product-${i}`}>
-                  <div className="aspect-square bg-muted rounded-xl mb-4"></div>
-                  <div className="h-4 bg-muted rounded mb-2"></div>
-                  <div className="h-4 bg-muted rounded w-2/3"></div>
-                </div>
+                <ProductAudioSkeleton key={i} data-testid={`skeleton-product-${i}`} />
               ))}
             </div>
           ) : (

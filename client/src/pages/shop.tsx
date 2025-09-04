@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Search, Filter, X, ChevronDown, Grid, Car, Volume2, Settings, ChevronRight } from "lucide-react";
 import type { Product, Category, Brand, VehicleMake } from "@shared/schema";
+import { ProductAudioSkeleton, AudioLoadingSpinner } from "@/components/AudioSkeletons";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -420,12 +421,7 @@ export default function Shop() {
         {isLoadingProducts ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="bg-card rounded-2xl p-6 animate-pulse" data-testid={`skeleton-product-${i}`}>
-                <div className="aspect-square bg-muted rounded-xl mb-4"></div>
-                <div className="h-4 bg-muted rounded mb-2"></div>
-                <div className="h-4 bg-muted rounded w-2/3 mb-4"></div>
-                <div className="h-10 bg-muted rounded"></div>
-              </div>
+              <ProductAudioSkeleton key={i} data-testid={`skeleton-product-${i}`} />
             ))}
           </div>
         ) : products && (products as Product[]).length > 0 ? (
@@ -436,6 +432,9 @@ export default function Shop() {
           </div>
         ) : (
           <Card className="bg-card border-border p-12 text-center" data-testid="no-products">
+            <div className="mb-6">
+              <AudioLoadingSpinner size="lg" />
+            </div>
             <h3 className="text-xl font-semibold text-card-foreground mb-2">Geen producten gevonden</h3>
             <p className="text-muted-foreground mb-4">
               Probeer je zoekopdracht aan te passen of verwijder enkele filters.

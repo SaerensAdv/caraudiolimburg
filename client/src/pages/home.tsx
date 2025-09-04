@@ -94,6 +94,74 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Promotional Video Section */}
+      <section className="py-20 bg-background">
+        <div className="container px-4 mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Ontdek Car Audio Limburg</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Bekijk onze showroom, werkplaats en het vakmanschap waarmee wij uw car audio systeem installeren.
+            </p>
+          </div>
+          
+          <div className="max-w-4xl mx-auto">
+            <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl bg-black">
+              <video
+                className="w-full h-full object-cover"
+                controls
+                poster="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=675&q=80"
+                data-testid="promotional-video"
+              >
+                <source 
+                  src="https://caraudiolimburg.studio/wp-content/uploads/2024/11/Verkorte-Video-Car-Audio-Limburg-Studio-1.mp4" 
+                  type="video/mp4" 
+                />
+                Je browser ondersteunt geen video.
+              </video>
+              
+              {/* Video Overlay Info */}
+              <div className="absolute bottom-4 left-4 right-4 bg-black/80 backdrop-blur-sm rounded-xl p-4 text-white">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold text-lg">Car Audio Limburg Studio</h3>
+                    <p className="text-sm text-gray-300">Een kijkje in onze showroom en werkplaats</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                    <span className="text-sm">LIVE</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Video Description */}
+            <div className="mt-8 text-center">
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                In deze video krijg je een unieke blik achter de schermen van Car Audio Limburg. 
+                Ontdek onze moderne showroom vol premium car audio systemen en zie hoe onze ervaren monteurs 
+                met precisie en vakmanschap elke installatie uitvoeren.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-6">
+                <Button size="lg" className="text-lg px-8 py-4" data-testid="button-visit-showroom">
+                  <MapPin className="w-5 h-5 mr-2" />
+                  Bezoek Onze Showroom
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="text-lg px-8 py-4 border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                  data-testid="button-contact-video"
+                >
+                  <Phone className="w-5 h-5 mr-2" />
+                  Contact Opnemen
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* USPs */}
       <section className="py-16 bg-secondary">
         <div className="container px-4 mx-auto">

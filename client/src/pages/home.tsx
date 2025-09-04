@@ -270,7 +270,7 @@ export default function Home() {
             {/* Alpine */}
             <div className="flex items-center justify-center p-4 bg-background/60 rounded-xl border border-border/50 hover:shadow-md transition-all duration-300 hover:scale-105 group">
               <img 
-                src="https://seeklogo.com/images/A/alpine-electronics-logo-967F7F6B4F-seeklogo.com.png"
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Alpine_Electronics_logo.svg/320px-Alpine_Electronics_logo.svg.png"
                 alt="Alpine Electronics Logo"
                 className="h-8 md:h-12 w-auto object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
                 data-testid="brand-logo-alpine"
@@ -279,18 +279,15 @@ export default function Home() {
 
             {/* Audison */}
             <div className="flex items-center justify-center p-4 bg-background/60 rounded-xl border border-border/50 hover:shadow-md transition-all duration-300 hover:scale-105 group">
-              <img 
-                src="https://seeklogo.com/images/A/audison-logo-7B8B5B5F4E-seeklogo.com.png"
-                alt="Audison Logo"
-                className="h-8 md:h-12 w-auto object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
-                data-testid="brand-logo-audison"
-              />
+              <div className="h-8 md:h-12 flex items-center justify-center filter grayscale group-hover:grayscale-0 transition-all duration-300">
+                <span className="text-lg md:text-2xl font-bold text-foreground tracking-wide">AUDISON</span>
+              </div>
             </div>
 
             {/* JBL */}
             <div className="flex items-center justify-center p-4 bg-background/60 rounded-xl border border-border/50 hover:shadow-md transition-all duration-300 hover:scale-105 group">
               <img 
-                src="https://seeklogo.com/images/J/jbl-logo-F46C7A6E92-seeklogo.com.png"
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/JBL_logo.svg/320px-JBL_logo.svg.png"
                 alt="JBL Logo"
                 className="h-8 md:h-12 w-auto object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
                 data-testid="brand-logo-jbl"
@@ -300,7 +297,7 @@ export default function Home() {
             {/* Pioneer */}
             <div className="flex items-center justify-center p-4 bg-background/60 rounded-xl border border-border/50 hover:shadow-md transition-all duration-300 hover:scale-105 group">
               <img 
-                src="https://seeklogo.com/images/P/pioneer-logo-0A1C1D0E2F-seeklogo.com.png"
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Pioneer_logo.svg/320px-Pioneer_logo.svg.png"
                 alt="Pioneer Logo"
                 className="h-8 md:h-12 w-auto object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
                 data-testid="brand-logo-pioneer"
@@ -310,7 +307,7 @@ export default function Home() {
             {/* Sony */}
             <div className="flex items-center justify-center p-4 bg-background/60 rounded-xl border border-border/50 hover:shadow-md transition-all duration-300 hover:scale-105 group">
               <img 
-                src="https://seeklogo.com/images/S/sony-logo-4A71C75211-seeklogo.com.png"
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Sony_logo.svg/320px-Sony_logo.svg.png"
                 alt="Sony Logo"
                 className="h-8 md:h-12 w-auto object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
                 data-testid="brand-logo-sony"
@@ -319,12 +316,9 @@ export default function Home() {
 
             {/* Focal */}
             <div className="flex items-center justify-center p-4 bg-background/60 rounded-xl border border-border/50 hover:shadow-md transition-all duration-300 hover:scale-105 group">
-              <img 
-                src="https://seeklogo.com/images/F/focal-logo-2F1E1F2F7C-seeklogo.com.png"
-                alt="Focal Logo"
-                className="h-8 md:h-12 w-auto object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
-                data-testid="brand-logo-focal"
-              />
+              <div className="h-8 md:h-12 flex items-center justify-center filter grayscale group-hover:grayscale-0 transition-all duration-300">
+                <span className="text-lg md:text-2xl font-bold text-foreground tracking-wide italic">Focal</span>
+              </div>
             </div>
           </div>
 

@@ -684,7 +684,7 @@ export default function Home() {
               <div 
                 className="aspect-[16/10] bg-cover bg-center rounded-2xl" 
                 style={{
-                  backgroundImage: "url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=500')"
+                  backgroundImage: "url('/attached_assets/C5025.00_31_30_11.Still045-1-1-2048x1152_1757024535822.jpg')"
                 }}
               ></div>
               
@@ -692,13 +692,13 @@ export default function Home() {
                 <div 
                   className="aspect-square bg-cover bg-center rounded-xl" 
                   style={{
-                    backgroundImage: "url('https://images.unsplash.com/photo-1487754180451-c456f719a1fc?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400')"
+                    backgroundImage: "url('/attached_assets/C5025.00_33_41_03.Still050-2048x1152_1757024504641.jpg')"
                   }}
                 ></div>
                 <div 
                   className="aspect-square bg-cover bg-center rounded-xl" 
                   style={{
-                    backgroundImage: "url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=400')"
+                    backgroundImage: "url('/attached_assets/C5025.00_06_16_04.Still024-1-2048x1152_1757024538840.jpg')"
                   }}
                 ></div>
               </div>

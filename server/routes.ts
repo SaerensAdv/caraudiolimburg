@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated, isAdmin } from "./auth";
+import { setupAuth, isAuthenticated, isAdmin } from "./replitAuth";
 import {
   insertProductSchema,
   insertCategorySchema,
@@ -162,10 +162,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Cart routes
-  app.get('/api/cart', isAuthenticated, async (req: any, res) => {
+  // Cart routes - Support both authenticated users and guest sessions
+  app.get('/api/cart', async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      // For authenticated users, use their user ID
+      const userId = req.isAuthenticated() && req.user?.claims?.sub ? req.user.claims.sub : null;
+      
+      if (!userId) {
+        // For guests, return empty cart (client handles localStorage cart)
+        return res.json([]);
+      }
+      
       const cartItems = await storage.getCartItems(userId);
       res.json(cartItems);
     } catch (error) {
@@ -174,8 +181,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/cart', isAuthenticated, async (req: any, res) => {
+  app.post('/api/cart', async (req: any, res) => {
     try {
+      // Only authenticated users can add items to persistent cart
+      if (!req.isAuthenticated() || !req.user?.claims?.sub) {
+        return res.status(200).json({ message: "Item will be stored in session cart" });
+      }
+      
       const userId = req.user.claims.sub;
       const cartItemData = insertCartItemSchema.parse({
         ...req.body,
@@ -189,8 +201,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch('/api/cart/:id', isAuthenticated, async (req, res) => {
+  app.patch('/api/cart/:id', async (req: any, res) => {
     try {
+      // Only authenticated users can update persistent cart
+      if (!req.isAuthenticated() || !req.user?.claims?.sub) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      
       const { quantity } = req.body;
       const cartItem = await storage.updateCartItem(req.params.id, quantity);
       res.json(cartItem);
@@ -200,8 +217,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/cart/:id', isAuthenticated, async (req, res) => {
+  app.delete('/api/cart/:id', async (req: any, res) => {
     try {
+      // Only authenticated users can remove from persistent cart
+      if (!req.isAuthenticated() || !req.user?.claims?.sub) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      
       await storage.removeFromCart(req.params.id);
       res.json({ success: true });
     } catch (error) {

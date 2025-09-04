@@ -155,3 +155,19 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
     return;
   }
 };
+
+// Middleware to check if user is admin
+export const isAdmin: RequestHandler = async (req, res, next) => {
+  // First check authentication
+  const user = req.user as any;
+  if (!req.isAuthenticated() || !user.expires_at) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  // Then check admin role (you can adjust this logic based on how admin role is stored)
+  if (user.claims?.role !== 'admin') {
+    return res.status(403).json({ message: "Forbidden" });
+  }
+
+  next();
+};

@@ -28,7 +28,7 @@ import {
   CheckCircle
 } from "lucide-react";
 import { useState } from "react";
-import type { Product } from "@shared/schema";
+import type { Product, Category } from "@shared/schema";
 import { ProductAudioSkeleton } from "@/components/AudioSkeletons";
 import heroImage from "@assets/Mercedes-Benz-GT-AMG-Carplay-4_1757022121886.jpg";
 
@@ -42,6 +42,10 @@ export default function Home() {
 
   const { data: brands } = useQuery({
     queryKey: ["/api/brands"],
+  });
+
+  const { data: categories } = useQuery({
+    queryKey: ["/api/categories"],
   });
 
   return (
@@ -171,6 +175,79 @@ export default function Home() {
                 <span>Snelle levering</span>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Categories Section */}
+      <section className="py-16 md:py-20 bg-secondary/30">
+        <div className="container px-4 mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Shop per Categorie
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Ontdek ons uitgebreide assortiment car audio producten, zorgvuldig geselecteerd voor elke behoefte en elk budget.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            {categories?.map((category: Category) => (
+              <Card 
+                key={category.id} 
+                className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-background/80 backdrop-blur-sm border-border/50"
+                data-testid={`category-card-${category.slug}`}
+              >
+                <CardContent className="p-4 md:p-6 text-center">
+                  <div className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-3 md:mb-4 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                    {/* Category Icons */}
+                    {category.slug === 'multimedia-navigatie' && <Volume2 className="w-6 h-6 md:w-8 md:h-8 text-primary" />}
+                    {category.slug === 'speakers-subwoofers' && <Volume2 className="w-6 h-6 md:w-8 md:h-8 text-primary" />}
+                    {category.slug === 'versterkers-dsp' && <Settings className="w-6 h-6 md:w-8 md:h-8 text-primary" />}
+                    {category.slug === 'installatie-accessoires' && <Wrench className="w-6 h-6 md:w-8 md:h-8 text-primary" />}
+                    {category.slug === 'cameras-veiligheid' && <ShieldCheck className="w-6 h-6 md:w-8 md:h-8 text-primary" />}
+                    {category.slug === 'oem-upgrades' && <Car className="w-6 h-6 md:w-8 md:h-8 text-primary" />}
+                    {category.slug === 'premium-audio' && <Star className="w-6 h-6 md:w-8 md:h-8 text-primary" />}
+                    {category.slug === 'offerte-aanvragen' && <Mail className="w-6 h-6 md:w-8 md:h-8 text-primary" />}
+                    {/* Default icon for unknown categories */}
+                    {!['multimedia-navigatie', 'speakers-subwoofers', 'versterkers-dsp', 'installatie-accessoires', 'cameras-veiligheid', 'oem-upgrades', 'premium-audio', 'offerte-aanvragen'].includes(category.slug) && 
+                      <Volume2 className="w-6 h-6 md:w-8 md:h-8 text-primary" />
+                    }
+                  </div>
+                  
+                  <h3 className="font-semibold text-sm md:text-base text-foreground mb-2 group-hover:text-primary transition-colors">
+                    {category.name}
+                  </h3>
+                  
+                  {category.description && (
+                    <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
+                      {category.description}
+                    </p>
+                  )}
+
+                  <div className="mt-3 md:mt-4">
+                    <Badge 
+                      variant="secondary" 
+                      className="text-xs px-2 py-1 bg-primary/10 text-primary border-primary/20 group-hover:bg-primary group-hover:text-primary-foreground transition-all"
+                    >
+                      Bekijk Producten
+                    </Badge>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* CTA to shop */}
+          <div className="text-center mt-10 md:mt-12">
+            <Button 
+              size="lg" 
+              className="text-base md:text-lg px-8 md:px-10 py-4 md:py-5 bg-primary hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all duration-300"
+              data-testid="button-browse-all-products"
+            >
+              <ChevronRight className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+              Bekijk Alle Producten
+            </Button>
           </div>
         </div>
       </section>

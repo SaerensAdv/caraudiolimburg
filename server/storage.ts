@@ -260,7 +260,24 @@ export class DatabaseStorage implements IStorage {
 
   // Cart operations
   async getCartItems(userId: string): Promise<CartItem[]> {
-    return await db.select().from(cartItems).where(eq(cartItems.userId, userId));
+    return await db
+      .select({
+        id: cartItems.id,
+        userId: cartItems.userId,
+        productId: cartItems.productId,
+        quantity: cartItems.quantity,
+        needsInstallation: cartItems.needsInstallation,
+        createdAt: cartItems.createdAt,
+        product: {
+          id: products.id,
+          name: products.name,
+          price: products.price,
+          images: products.images,
+        }
+      })
+      .from(cartItems)
+      .leftJoin(products, eq(cartItems.productId, products.id))
+      .where(eq(cartItems.userId, userId)) as any;
   }
 
   async addToCart(cartItem: InsertCartItem): Promise<CartItem> {

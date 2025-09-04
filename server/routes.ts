@@ -313,7 +313,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Calculate totals
-      const subtotal = cartItems.reduce((sum, item) => {
+      const subtotal = cartItems.reduce((sum, item: any) => {
         const price = parseFloat(item.product?.price || "0");
         return sum + (price * item.quantity);
       }, 0);
@@ -341,7 +341,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           orderId: order.id,
           productId: cartItem.productId,
           quantity: cartItem.quantity,
-          price: cartItem.product?.price || "0",
+          price: (cartItem as any).product?.price || "0",
           needsInstallation: cartItem.needsInstallation,
         });
 

@@ -223,12 +223,12 @@ export default function Checkout() {
     enabled: isAuthenticated,
   });
 
-  const subtotal = cartItems?.reduce((sum: number, item: any) => {
+  const subtotal = (cartItems || []).reduce((sum: number, item: any) => {
     const price = parseFloat(item.product?.price || "0");
     return sum + (price * item.quantity);
-  }, 0) || 0;
+  }, 0);
   
-  const installationFee = cartItems?.some((item: any) => item.needsInstallation) ? 89 : 0;
+  const installationFee = (cartItems || []).some((item: any) => item.needsInstallation) ? 89 : 0;
   const shipping = subtotal >= 50 ? 0 : 5.95;
   const total = subtotal + installationFee + shipping;
 
@@ -268,7 +268,7 @@ export default function Checkout() {
     );
   }
 
-  if (!cartItems || cartItems.length === 0) {
+  if (!cartItems || (cartItems || []).length === 0) {
     return (
       <div className="min-h-screen bg-background">
         <Header onCartOpen={() => setIsCartOpen(true)} />
@@ -340,7 +340,7 @@ export default function Checkout() {
                 <h3 className="text-lg font-semibold text-card-foreground mb-4">Bestelling overzicht</h3>
                 
                 <div className="space-y-4 mb-6">
-                  {cartItems.map((item: any) => (
+                  {(cartItems || []).map((item: any) => (
                     <div key={item.id} className="flex items-center space-x-3" data-testid={`summary-item-${item.id}`}>
                       <div className="w-12 h-12 bg-muted rounded-lg flex-shrink-0">
                         {item.product?.images?.[0] && (

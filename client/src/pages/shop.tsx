@@ -305,7 +305,7 @@ export default function Shop() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all-categories">Alle categorieën</SelectItem>
-                        {categories && Array.isArray(categories) && categories.map((category: Category) => (
+                        {categories && Array.isArray(categories) && (categories as Category[]).map((category: Category) => (
                           <SelectItem key={category.id} value={category.id}>
                             {category.name}
                           </SelectItem>
@@ -323,7 +323,7 @@ export default function Shop() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all-brands">Alle merken</SelectItem>
-                        {brands && Array.isArray(brands) && brands.map((brand: Brand) => (
+                        {brands && Array.isArray(brands) && (brands as Brand[]).map((brand: Brand) => (
                           <SelectItem key={brand.id} value={brand.id}>
                             {brand.name}
                           </SelectItem>
@@ -341,7 +341,7 @@ export default function Shop() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all-makes">Alle merken</SelectItem>
-                        {vehicleMakes && Array.isArray(vehicleMakes) && vehicleMakes.map((make: VehicleMake) => (
+                        {vehicleMakes && Array.isArray(vehicleMakes) && (vehicleMakes as VehicleMake[]).map((make: VehicleMake) => (
                           <SelectItem key={make.id} value={make.id}>
                             {make.name}
                           </SelectItem>
@@ -359,7 +359,7 @@ export default function Shop() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all-models">Alle modellen</SelectItem>
-                        {vehicleModels && Array.isArray(vehicleModels) && vehicleModels.map((model: any) => (
+                        {vehicleModels && Array.isArray(vehicleModels) && (vehicleModels as any[]).map((model: any) => (
                           <SelectItem key={model.id} value={model.id}>
                             {model.name}
                           </SelectItem>
@@ -412,7 +412,7 @@ export default function Shop() {
         {/* Results */}
         <div className="mb-4">
           <p className="text-muted-foreground" data-testid="results-count">
-            {products ? `${products.length} producten gevonden` : "Laden..."}
+            {products ? `${(products as Product[]).length} producten gevonden` : "Laden..."}
           </p>
         </div>
 
@@ -428,9 +428,9 @@ export default function Shop() {
               </div>
             ))}
           </div>
-        ) : products && products.length > 0 ? (
+        ) : products && (products as Product[]).length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product: Product) => (
+            {(products as Product[]).map((product: Product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>

@@ -16,6 +16,7 @@ import About from "@/pages/about";
 import FAQ from "@/pages/faq";
 import Contact from "@/pages/contact";
 import CustomerPortal from "@/pages/customer-portal";
+import Login from "@/pages/login";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -31,6 +32,7 @@ function Router() {
       <Route path="/about" component={About} />
       <Route path="/faq" component={FAQ} />
       <Route path="/contact" component={Contact} />
+      <Route path="/login" component={Login} />
       {isAuthenticated && <Route path="/my-account" component={CustomerPortal} />}
       {isAuthenticated && <Route path="/admin" component={Admin} />}
       <Route component={NotFound} />

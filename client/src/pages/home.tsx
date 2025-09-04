@@ -48,48 +48,49 @@ export default function Home() {
       <Header onCartOpen={() => setIsCartOpen(true)} />
       
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-background via-secondary/20 to-primary/5 py-16 md:py-20 lg:py-32">
+      <section className="relative overflow-hidden bg-gradient-to-br from-background via-secondary/10 to-primary/5 py-16 md:py-20 lg:py-32">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/3 rounded-full blur-3xl animate-pulse delay-500"></div>
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/15 rounded-full blur-3xl animate-pulse delay-500"></div>
         </div>
         
-        <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/85 to-background/90 z-10"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-background/98 via-background/95 to-background/98 z-10"></div>
         <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20" 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-15" 
           style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')"
+            backgroundImage: "url('https://images.unsplash.com/photo-1619767886558-efdc259cde1a?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')"
           }}
         ></div>
         
         {/* Floating Elements */}
-        <div className="absolute top-20 left-10 w-3 h-3 bg-primary/30 rounded-full animate-bounce delay-100"></div>
-        <div className="absolute top-32 right-16 w-2 h-2 bg-primary/40 rounded-full animate-bounce delay-300"></div>
-        <div className="absolute bottom-40 left-20 w-4 h-4 bg-primary/20 rounded-full animate-bounce delay-700"></div>
+        <div className="absolute top-20 left-10 w-4 h-4 bg-primary/60 rounded-full animate-bounce"></div>
+        <div className="absolute top-32 right-16 w-3 h-3 bg-primary/70 rounded-full animate-bounce delay-500"></div>
+        <div className="absolute bottom-40 left-20 w-5 h-5 bg-primary/50 rounded-full animate-bounce delay-1000"></div>
+        <div className="absolute top-40 right-32 w-2 h-2 bg-primary/80 rounded-full animate-ping"></div>
         
         <div className="relative z-20 container px-4 mx-auto">
           <div className="max-w-5xl mx-auto text-center">
             {/* Trust Badges */}
-            <div className="flex justify-center items-center gap-4 mb-6 opacity-80">
-              <Badge variant="secondary" className="text-xs px-3 py-1 bg-primary/10 text-primary border-primary/20">
+            <div className="flex justify-center items-center gap-4 mb-6 opacity-90 animate-fade-in">
+              <Badge variant="secondary" className="text-xs px-3 py-1 bg-primary/15 text-primary border-primary/30 animate-slide-up">
                 <Star className="w-3 h-3 mr-1 fill-current" />
                 #1 Car Audio Expert
               </Badge>
-              <Badge variant="secondary" className="text-xs px-3 py-1 bg-primary/10 text-primary border-primary/20">
+              <Badge variant="secondary" className="text-xs px-3 py-1 bg-primary/15 text-primary border-primary/30 animate-slide-up delay-100">
                 <ShieldCheck className="w-3 h-3 mr-1" />
                 25+ Jaar Ervaring
               </Badge>
-              <Badge variant="secondary" className="text-xs px-3 py-1 bg-primary/10 text-primary border-primary/20 hidden sm:inline-flex">
+              <Badge variant="secondary" className="text-xs px-3 py-1 bg-primary/15 text-primary border-primary/30 hidden sm:inline-flex animate-slide-up delay-200">
                 <Award className="w-3 h-3 mr-1" />
                 Officiële Dealer
               </Badge>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-foreground mb-4 md:mb-6 leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-foreground mb-4 md:mb-6 leading-tight animate-slide-up delay-300">
               Premium Car Audio &
-              <span className="text-primary bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent"> 
+              <span className="text-primary font-bold"> 
                 Professionele Installatie
               </span>
             </h1>

@@ -123,7 +123,6 @@ export default function FAQ() {
     <>
       <Header onCartClick={() => setIsCartOpen(true)} />
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
-
       <main className="flex-grow">
         {/* Hero Section */}
         <section className="bg-gradient-to-r from-gray-50 to-white py-16">
@@ -226,7 +225,7 @@ export default function FAQ() {
                 <Phone className="h-12 w-12 text-[#d0a760] mx-auto mb-4" />
                 <h3 className="font-semibold text-gray-900 mb-2">Bellen</h3>
                 <p className="text-gray-600 mb-4">Direct contact met onze experts</p>
-                <Badge variant="secondary">047 563 63 63</Badge>
+                <Badge variant="secondary">+31(0)85 - 27 33 625</Badge>
               </Card>
 
               <Card className="p-6">
@@ -246,7 +245,6 @@ export default function FAQ() {
           </div>
         </section>
       </main>
-
       <Footer />
     </>
   );

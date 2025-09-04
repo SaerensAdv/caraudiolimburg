@@ -160,23 +160,24 @@ export class DatabaseStorage implements IStorage {
       }
     }
 
-    let query = db.select().from(products);
+    // Build query step by step to avoid TypeScript issues
+    let queryBuilder = db.select().from(products);
     
     if (conditions.length > 0) {
-      query = query.where(and(...conditions));
+      queryBuilder = queryBuilder.where(and(...conditions)) as any;
     }
     
-    query = query.orderBy(desc(products.createdAt));
+    queryBuilder = queryBuilder.orderBy(desc(products.createdAt)) as any;
 
     if (options.limit) {
-      query = query.limit(options.limit);
+      queryBuilder = queryBuilder.limit(options.limit) as any;
     }
     
     if (options.offset) {
-      query = query.offset(options.offset);
+      queryBuilder = queryBuilder.offset(options.offset) as any;
     }
 
-    return await query;
+    return await queryBuilder;
   }
 
   async getProduct(id: string): Promise<Product | undefined> {

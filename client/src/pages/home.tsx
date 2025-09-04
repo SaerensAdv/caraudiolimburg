@@ -25,7 +25,9 @@ import {
   Star,
   User,
   Check,
-  CheckCircle
+  CheckCircle,
+  Settings,
+  ChevronRight
 } from "lucide-react";
 import { useState } from "react";
 import type { Product, Category } from "@shared/schema";

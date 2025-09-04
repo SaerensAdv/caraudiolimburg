@@ -350,15 +350,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           await storage.createBooking({
             userId,
             orderId: order.id,
-            customerName: shippingDetails.firstName + " " + shippingDetails.lastName,
-            customerEmail: shippingDetails.email,
-            customerPhone: shippingDetails.phone || "",
-            vehicleMake: "Te bepalen", // Will be filled later by customer
-            vehicleModel: "Te bepalen",
+            customerName: (shippingDetails.firstName || "") + " " + (shippingDetails.lastName || ""),
+            customerEmail: shippingDetails.email || "noreply@caraudiolimburg.shop",
+            customerPhone: shippingDetails.phone || "085 273 36 25",
+            vehicleMake: "Te bepalen",
+            vehicleModel: "Te bepalen", 
             vehicleYear: new Date().getFullYear(),
-            serviceType: "installation",
-            scheduledDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1 week from now as placeholder
-            duration: 2, // 2 hours default
+            serviceType: "installatie",
+            scheduledDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            duration: 2,
             status: "pending_scheduling",
             totalCost: installationFee.toString(),
           });

@@ -410,7 +410,7 @@ export default function Home() {
             <div 
               className="aspect-[4/3] bg-cover bg-center rounded-2xl" 
               style={{
-                backgroundImage: "url('https://images.unsplash.com/photo-1487754180451-c456f719a1fc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600')"
+                backgroundImage: "url('/installation-demo.jpg')"
               }}
             ></div>
             

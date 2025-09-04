@@ -7,6 +7,7 @@ import { QuoteForm } from "@/components/QuoteForm";
 import { CartSidebar } from "@/components/CartSidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { 
   Award, 
   Wrench, 
@@ -23,7 +24,8 @@ import {
   Coffee,
   Star,
   User,
-  Check
+  Check,
+  CheckCircle
 } from "lucide-react";
 import { useState } from "react";
 import type { Product } from "@shared/schema";

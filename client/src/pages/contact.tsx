@@ -83,8 +83,8 @@ export default function Contact() {
               Contact & Bezoekadres
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Vragen over car audio? Plan een installatie? Of kom gewoon langs voor advies. 
-              We helpen u graag verder met uw perfecte audio-ervaring.
+              Een vraag over een product, prijs of onze inbouwservice? We streven ernaar om binnen 48 uur te reageren. 
+              Voor het beste advies hebben we graag een foto van uw origineel scherm inclusief het dashboard.
             </p>
           </div>
         </section>
@@ -98,8 +98,8 @@ export default function Contact() {
                   <MapPin className="h-12 w-12 text-[#d0a760] mx-auto mb-4" />
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">Adres</h3>
                   <p className="text-gray-600">
-                    Industrieweg 12<br />
-                    6040 Roermond<br />
+                    Dr. Nolenslaan 157c<br />
+                    6136 GM Sittard<br />
                     Nederland
                   </p>
                 </CardContent>
@@ -111,11 +111,11 @@ export default function Contact() {
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">Telefoon</h3>
                   <p className="text-gray-600">
                     <a 
-                      href="tel:0475636363" 
+                      href="tel:0852733625" 
                       className="hover:text-[#d0a760] transition-colors"
                       data-testid="link-phone"
                     >
-                      047 563 63 63
+                      085 - 27 33 625
                     </a>
                   </p>
                   <p className="text-sm text-gray-500 mt-1">WhatsApp beschikbaar</p>
@@ -128,14 +128,14 @@ export default function Contact() {
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">E-mail</h3>
                   <p className="text-gray-600">
                     <a 
-                      href="mailto:info@caraudiolimburg.shop" 
+                      href="mailto:info@caraudiolimburg.nl" 
                       className="hover:text-[#d0a760] transition-colors"
                       data-testid="link-email"
                     >
-                      info@caraudiolimburg.shop
+                      info@caraudiolimburg.nl
                     </a>
                   </p>
-                  <p className="text-sm text-gray-500 mt-1">We reageren binnen 4 uur</p>
+                  <p className="text-sm text-gray-500 mt-1">We reageren binnen 48 uur</p>
                 </CardContent>
               </Card>
 
@@ -144,9 +144,13 @@ export default function Contact() {
                   <Clock className="h-12 w-12 text-[#d0a760] mx-auto mb-4" />
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">Openingstijden</h3>
                   <div className="text-gray-600 text-sm">
-                    <p>Ma-Vr: 09:00 - 17:30</p>
-                    <p>Zaterdag: 09:00 - 16:00</p>
-                    <p>Zondag: Gesloten</p>
+                    <p className="font-medium">Showroom:</p>
+                    <p>Ma-Do: 13:30 - 17:30</p>
+                    <p>Vr: 08:30 - 15:00</p>
+                    <p className="font-medium mt-2">Inbouwstudio:</p>
+                    <p>Ma-Do: 08:30 - 17:30</p>
+                    <p>Vr: 08:30 - 12:30</p>
+                    <p className="text-red-600 text-xs mt-1">Enkel op afspraak</p>
                   </div>
                 </CardContent>
               </Card>

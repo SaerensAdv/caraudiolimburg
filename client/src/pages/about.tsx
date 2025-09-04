@@ -32,11 +32,10 @@ export default function About() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h1 className="text-4xl font-bold text-gray-900 mb-4">
-                Over Car Audio Limburg
+                Car Audio Limburg, to enjoy a safe ride!
               </h1>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Specialist in car audio installaties en premium autosound systemen. 
-                Al meer dan 15 jaar uw partner voor de perfecte rijervaring.
+                Welkom bij Car Audio Limburg. Al 10 jaar dé specialist in Limburg op het gebied van mobiliteit beleving en audio in een voertuig. Wij zorgen voor gemak en plezier onderweg!
               </p>
             </div>
           </div>
@@ -48,22 +47,17 @@ export default function About() {
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div>
                 <h2 className="text-3xl font-bold text-gray-900 mb-6">
-                  Ons Verhaal
+                  Onze Visie
                 </h2>
                 <div className="space-y-4 text-gray-600">
                   <p>
-                    Car Audio Limburg werd opgericht vanuit een passie voor perfect geluid en 
-                    technische innovatie. Wat begon als een kleine werkplaats is uitgegroeid 
-                    tot dé specialist in Limburg voor car audio installaties.
+                    De afgelopen 30 jaar heeft de automobielindustrie enorme stappen gemaakt en ontwikkelen fabrikanten continu nieuwe innovaties. En dus is de kans groot dat uw voertuig niet is uitgerust met deze nieuwste snufjes.
                   </p>
                   <p>
-                    We werken uitsluitend met premium merken zoals Alpine, Audison, Focal en 
-                    JL Audio. Onze technici hebben jarenlange ervaring en blijven zich 
-                    continu ontwikkelen met de nieuwste technieken en producten.
+                    Innovatie speelt een grote rol in ieders leven en voedt onze passie en drang naar verbetering. Met deze combinatie in gedachten zoeken wij continu naar antwoorden op deze uitdagingen.
                   </p>
                   <p>
-                    Van een eenvoudige speaker upgrade tot complete high-end audiosystemen 
-                    met DSP tuning - wij realiseren uw perfecte audio-ervaring op maat.
+                    Wij zijn Dennis en Romy, de enthousiaste eigenaren van Car Audio Limburg. Car Audio Limburg zet zich in om producten en diensten aan te bieden die uw mobiliteit ervaringen slimmer, veiliger en comfortabeler maken.
                   </p>
                 </div>
               </div>
@@ -72,7 +66,7 @@ export default function About() {
                 <Card>
                   <CardContent className="p-6 text-center">
                     <Award className="h-12 w-12 text-[#d0a760] mx-auto mb-4" />
-                    <h3 className="font-semibold text-gray-900 mb-2">15+ Jaar</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2">10 Jaar</h3>
                     <p className="text-sm text-gray-600">Ervaring in car audio</p>
                   </CardContent>
                 </Card>
@@ -191,8 +185,8 @@ export default function About() {
                   <MapPin className="h-12 w-12 text-[#d0a760] mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-gray-900 mb-3">Adres</h3>
                   <p className="text-gray-600">
-                    Industrieweg 12<br />
-                    6040 Roermond<br />
+                    Dr. Nolenslaan 157c<br />
+                    6136 GM Sittard<br />
                     Nederland
                   </p>
                 </CardContent>
@@ -203,8 +197,8 @@ export default function About() {
                   <Phone className="h-12 w-12 text-[#d0a760] mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-gray-900 mb-3">Telefoon</h3>
                   <p className="text-gray-600">
-                    <a href="tel:0475636363" className="hover:text-[#d0a760] transition-colors">
-                      047 563 63 63
+                    <a href="tel:0852733625" className="hover:text-[#d0a760] transition-colors">
+                      085 - 27 33 625
                     </a>
                   </p>
                   <p className="text-sm text-gray-500 mt-2">
@@ -218,9 +212,13 @@ export default function About() {
                   <Clock className="h-12 w-12 text-[#d0a760] mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-gray-900 mb-3">Openingstijden</h3>
                   <div className="text-gray-600 space-y-1">
-                    <p>Ma-Vr: 09:00 - 17:30</p>
-                    <p>Zaterdag: 09:00 - 16:00</p>
-                    <p>Zondag: Gesloten</p>
+                    <p className="font-semibold mb-2">Showroom:</p>
+                    <p>Ma-Do: 13:30 - 17:30</p>
+                    <p>Vrijdag: 08:30 - 15:00</p>
+                    <p className="font-semibold mt-3 mb-2">Inbouwstudio:</p>
+                    <p>Ma-Do: 08:30 - 17:30</p>
+                    <p>Vrijdag: 08:30 - 12:30</p>
+                    <p className="text-sm mt-2 text-red-600">Enkel op afspraak</p>
                   </div>
                 </CardContent>
               </Card>

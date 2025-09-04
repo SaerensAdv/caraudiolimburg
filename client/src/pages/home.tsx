@@ -49,7 +49,7 @@ export default function Home() {
       <Header onCartOpen={() => setIsCartOpen(true)} />
       
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-background via-secondary/10 to-primary/5 py-16 md:py-20 lg:py-32">
+      <section className="relative overflow-hidden bg-gradient-to-br from-background via-secondary/10 to-primary/5 py-16 md:py-20 lg:h-screen lg:py-0 lg:flex lg:items-center">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/20 rounded-full blur-3xl animate-pulse"></div>

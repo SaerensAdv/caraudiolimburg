@@ -240,7 +240,7 @@ export default function FAQ() {
                 <HelpCircle className="h-12 w-12 text-[#d0a760] mx-auto mb-4" />
                 <h3 className="font-semibold text-gray-900 mb-2">Bezoek</h3>
                 <p className="text-gray-600 mb-4">Kom langs voor persoonlijk advies</p>
-                <Badge variant="secondary">Heerbaan 15, 6097 AX Heel</Badge>
+                <Badge variant="secondary">Dr. Nolenslaan 157c, 6136 GM Sittard</Badge>
               </Card>
             </div>
           </div>

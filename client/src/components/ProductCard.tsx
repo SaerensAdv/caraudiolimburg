@@ -10,8 +10,8 @@ import { isUnauthorizedError } from "@/lib/authUtils";
 import { Heart, Star } from "lucide-react";
 import type { Product } from "@shared/schema";
 import carAudioLogo from "@assets/Caraudiolimburg-logo_1757008375383_1757016657436.png";
-import fordFiestaImage from "@assets/ford-fiesta.png";
-import audisonImage from "@assets/audison-av30.png";
+import fordFiestaImage from "@assets/ford-fiesta-real.webp";
+import audisonImage from "@assets/audison-real.webp";
 import audiA3Image from "@assets/audi-a3.png";
 
 interface ProductCardProps {

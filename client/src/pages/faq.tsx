@@ -232,7 +232,9 @@ export default function FAQ() {
                 <MessageCircle className="h-12 w-12 text-[#d0a760] mx-auto mb-4" />
                 <h3 className="font-semibold text-gray-900 mb-2">WhatsApp</h3>
                 <p className="text-gray-600 mb-4">Snel en makkelijk communiceren</p>
-                <Badge variant="secondary">Online chat</Badge>
+                <a href="https://wa.me/31852733625" target="_blank" rel="noopener noreferrer">
+                  <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80 transition-colors">Online chat</Badge>
+                </a>
               </Card>
 
               <Card className="p-6">

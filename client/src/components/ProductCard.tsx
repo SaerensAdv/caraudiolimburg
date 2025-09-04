@@ -68,6 +68,7 @@ export function ProductCard({ product }: ProductCardProps) {
     if (imagePath.startsWith('@assets/Caraudiolimburg-logo_1757008375383_1757016657436.png')) {
       return carAudioLogo;
     }
+    // For actual URLs (like caraudiolimburg.shop), use them directly
     return imagePath;
   };
 

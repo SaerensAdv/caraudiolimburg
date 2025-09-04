@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { CartSidebar } from "@/components/CartSidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -44,6 +47,7 @@ export default function AppleCarPlayBMW() {
   });
 
   const [selectedImage, setSelectedImage] = useState(0);
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   const galleryImages = [
     { src: bmwCarPlay1, alt: "BMW CarPlay Installatie 1" },
@@ -117,6 +121,7 @@ export default function AppleCarPlayBMW() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-black to-gray-900">
+      <Header onCartOpen={() => setIsCartOpen(true)} />
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent z-10"></div>
@@ -615,6 +620,9 @@ export default function AppleCarPlayBMW() {
           </motion.div>
         </div>
       </section>
+
+      <Footer />
+      <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </div>
   );
 }

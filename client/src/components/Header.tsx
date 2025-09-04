@@ -55,6 +55,9 @@ export function Header({ onCartOpen }: HeaderProps) {
           <Link href="/faq" className="text-muted-foreground hover:text-primary transition-colors font-medium" data-testid="nav-faq">
             FAQ
           </Link>
+          <Link href="/apple-carplay-bmw" className="text-muted-foreground hover:text-primary transition-colors font-medium" data-testid="nav-carplay">
+            BMW/MINI CarPlay
+          </Link>
           <Link href="/contact" className="text-muted-foreground hover:text-primary transition-colors font-medium" data-testid="nav-contact">
             Contact
           </Link>

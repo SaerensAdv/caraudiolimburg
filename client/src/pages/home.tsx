@@ -315,6 +315,77 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Apple CarPlay for BMW/MINI CTA */}
+      <section className="py-20 bg-gradient-to-r from-gray-900 via-black to-gray-900 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5"></div>
+        <div className="container px-4 mx-auto relative z-10">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="mb-8">
+              <Badge className="mb-4 bg-primary/20 text-primary border-primary/30 px-6 py-2 text-sm font-semibold">
+                🚗 BMW & MINI EIGENAREN
+              </Badge>
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+                Apple CarPlay activatie voor jouw{" "}
+                <span className="text-primary">BMW</span> of{" "}
+                <span className="text-primary">MINI</span>
+              </h2>
+              <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
+                Snel, voordelig en zonder hardware. OEM software activatie binnen 30-60 minuten. 
+                Voor alle BMW en MINI modellen van 2015 tot heden.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6 mb-8">
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="text-white font-semibold mb-2">Geen Hardware</h3>
+                <p className="text-gray-400 text-sm">Alleen OEM software activatie</p>
+              </div>
+              
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <Clock className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="text-white font-semibold mb-2">30-60 Minuten</h3>
+                <p className="text-gray-400 text-sm">Snelle activatie service</p>
+              </div>
+              
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                  <MapPin className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="text-white font-semibold mb-2">Op Locatie</h3>
+                <p className="text-gray-400 text-sm">Bij ons of bij jou thuis</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button 
+                size="lg" 
+                className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-lg px-8 py-4"
+                onClick={() => window.location.href = '/apple-carplay-bmw'}
+                data-testid="button-bmw-carplay-main"
+              >
+                <Car className="w-5 h-5 mr-2" />
+                BMW/MINI CarPlay Info
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-primary text-primary hover:bg-primary hover:text-primary-foreground font-semibold text-lg px-8 py-4"
+                onClick={() => window.location.href = '/apple-carplay-bmw#offerte'}
+                data-testid="button-bmw-carplay-quote"
+              >
+                <Phone className="w-5 h-5 mr-2" />
+                Directe Offerte
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Brand Showcase */}
       <section className="py-20 bg-background">
         <div className="container px-4 mx-auto">

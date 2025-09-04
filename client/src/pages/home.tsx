@@ -48,7 +48,7 @@ export default function Home() {
       <Header onCartOpen={() => setIsCartOpen(true)} />
       
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-background to-secondary py-20 lg:py-32">
+      <section className="relative bg-gradient-to-br from-background to-secondary py-16 md:py-20 lg:py-32">
         <div className="absolute inset-0 bg-gradient-to-r from-background/90 to-background/70 z-10"></div>
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30" 
@@ -59,34 +59,40 @@ export default function Home() {
         
         <div className="relative z-20 container px-4 mx-auto">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold text-foreground mb-4 md:mb-6 leading-tight">
               Premium Car Audio &
               <span className="text-primary"> Professionele Installatie</span>
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl lg:text-2xl text-muted-foreground mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed">
               Van OEM-upgrades tot complete systemen. Alpine, Audison, en meer. 
               Inclusief vakkundige montage in onze showroom.
             </p>
 
-            <VehicleSelector />
+            <div className="mb-6 md:mb-8">
+              <VehicleSelector />
+            </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
-              <Button size="lg" className="text-lg px-8 py-4" data-testid="button-shop-now">
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center items-center">
+              <Button 
+                size="lg" 
+                className="text-base md:text-lg px-6 md:px-8 py-3 md:py-4 w-full sm:w-auto" 
+                data-testid="button-shop-now"
+              >
                 Shop Nu
               </Button>
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="text-lg px-8 py-4 border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+                className="text-base md:text-lg px-6 md:px-8 py-3 md:py-4 border-primary text-primary hover:bg-primary hover:text-primary-foreground w-full sm:w-auto"
                 data-testid="button-book-installation"
               >
-                <Calendar className="w-5 h-5 mr-2" />
+                <Calendar className="w-4 h-4 md:w-5 md:h-5 mr-2" />
                 Installatie Boeken
               </Button>
               <Button 
                 variant="secondary" 
                 size="lg" 
-                className="text-lg px-8 py-4"
+                className="text-base md:text-lg px-6 md:px-8 py-3 md:py-4 w-full sm:w-auto"
                 onClick={() => setShowQuoteForm(true)}
                 data-testid="button-request-quote"
               >

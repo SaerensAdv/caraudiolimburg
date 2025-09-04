@@ -99,16 +99,16 @@ export default function Shop() {
       
       <div className="container px-4 mx-auto py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">Car Audio Shop</h1>
-          <p className="text-lg text-muted-foreground">
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3 md:mb-4">Car Audio Shop</h1>
+          <p className="text-base md:text-lg text-muted-foreground">
             Ontdek ons complete assortiment premium car audio producten
           </p>
         </div>
 
         {/* Fancy Navigation Dropdown */}
-        <div className="mb-8">
-          <div className="flex flex-wrap gap-4 mb-6">
+        <div className="mb-6 md:mb-8">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 mb-4 md:mb-6">
             {/* Categories Mega Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -253,16 +253,16 @@ export default function Shop() {
         </div>
 
         {/* Search and Filters */}
-        <div className="mb-8 space-y-4">
+        <div className="mb-6 md:mb-8 space-y-3 md:space-y-4">
           {/* Search Bar */}
-          <div className="relative max-w-md">
+          <div className="relative max-w-md w-full">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input
               type="text"
               placeholder="Zoek producten..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-10 bg-input border-border"
+              className="pl-10 bg-input border-border h-11 md:h-10"
               data-testid="input-product-search"
             />
           </div>
@@ -419,13 +419,13 @@ export default function Shop() {
 
         {/* Products Grid */}
         {isLoadingProducts ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
             {[...Array(8)].map((_, i) => (
               <ProductAudioSkeleton key={i} data-testid={`skeleton-product-${i}`} />
             ))}
           </div>
         ) : products && (products as Product[]).length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
             {(products as Product[]).map((product: Product) => (
               <ProductCard key={product.id} product={product} />
             ))}

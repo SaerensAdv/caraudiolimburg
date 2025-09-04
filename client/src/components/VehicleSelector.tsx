@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
+import { Search } from "lucide-react";
 
 export function VehicleSelector() {
   const [selectedMake, setSelectedMake] = useState<string>("");
@@ -40,9 +41,9 @@ export function VehicleSelector() {
 
   return (
     <Card className="bg-card border-border max-w-3xl mx-auto" data-testid="vehicle-selector">
-      <CardContent className="p-6">
-        <h3 className="text-lg font-semibold mb-4 text-card-foreground">Vind producten voor jouw voertuig</h3>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <CardContent className="p-4 md:p-6">
+        <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4 text-card-foreground">Vind producten voor jouw voertuig</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           <Select value={selectedMake} onValueChange={setSelectedMake}>
             <SelectTrigger className="bg-input border-border" data-testid="select-vehicle-make">
               <SelectValue placeholder="Selecteer merk" />
@@ -85,8 +86,10 @@ export function VehicleSelector() {
           <Button 
             onClick={handleSearch}
             disabled={!selectedMake}
+            className="w-full sm:col-span-2 lg:col-span-1"
             data-testid="button-search-products"
           >
+            <Search className="w-4 h-4 mr-2" />
             Zoek producten
           </Button>
         </div>

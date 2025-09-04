@@ -134,23 +134,101 @@ export function Header({ onCartOpen }: HeaderProps) {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="md:hidden bg-card border-t border-border" data-testid="mobile-menu">
-          <nav className="container px-4 py-4 space-y-4">
-            <Link href="/" className="block text-card-foreground hover:text-primary transition-colors font-medium" data-testid="mobile-nav-home">
+        <div className="md:hidden bg-card border-t border-border shadow-lg" data-testid="mobile-menu">
+          <nav className="container px-4 py-6 space-y-3">
+            <Link 
+              href="/" 
+              className="flex items-center text-card-foreground hover:text-primary transition-colors font-medium py-2 px-3 rounded-lg hover:bg-primary/10" 
+              data-testid="mobile-nav-home"
+              onClick={() => setIsMenuOpen(false)}
+            >
               Home
             </Link>
-            <Link href="/shop" className="block text-card-foreground hover:text-primary transition-colors font-medium" data-testid="mobile-nav-shop">
+            <Link 
+              href="/shop" 
+              className="flex items-center text-card-foreground hover:text-primary transition-colors font-medium py-2 px-3 rounded-lg hover:bg-primary/10" 
+              data-testid="mobile-nav-shop"
+              onClick={() => setIsMenuOpen(false)}
+            >
               Shop
             </Link>
-            <Link href="/booking" className="block text-card-foreground hover:text-primary transition-colors font-medium" data-testid="mobile-nav-installation">
-              Installatie
+            <Link 
+              href="/about" 
+              className="flex items-center text-card-foreground hover:text-primary transition-colors font-medium py-2 px-3 rounded-lg hover:bg-primary/10" 
+              data-testid="mobile-nav-about"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Over ons
             </Link>
-            <a href="#brands" className="block text-card-foreground hover:text-primary transition-colors font-medium" data-testid="mobile-nav-brands">
-              Merken
-            </a>
-            <a href="#contact" className="block text-card-foreground hover:text-primary transition-colors font-medium" data-testid="mobile-nav-contact">
+            <Link 
+              href="/faq" 
+              className="flex items-center text-card-foreground hover:text-primary transition-colors font-medium py-2 px-3 rounded-lg hover:bg-primary/10" 
+              data-testid="mobile-nav-faq"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              FAQ
+            </Link>
+            <Link 
+              href="/apple-carplay-bmw" 
+              className="flex items-center text-primary hover:text-primary/80 transition-colors font-semibold py-2 px-3 rounded-lg bg-primary/10" 
+              data-testid="mobile-nav-carplay"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              🚗 BMW/MINI CarPlay
+            </Link>
+            <Link 
+              href="/contact" 
+              className="flex items-center text-card-foreground hover:text-primary transition-colors font-medium py-2 px-3 rounded-lg hover:bg-primary/10" 
+              data-testid="mobile-nav-contact"
+              onClick={() => setIsMenuOpen(false)}
+            >
               Contact
-            </a>
+            </Link>
+            
+            <div className="border-t border-border pt-4 mt-4">
+              {isAuthenticated ? (
+                <div className="space-y-2">
+                  <Link 
+                    href="/my-account" 
+                    className="flex items-center text-card-foreground hover:text-primary transition-colors font-medium py-2 px-3 rounded-lg hover:bg-primary/10"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <User className="w-4 h-4 mr-2" />
+                    Mijn Account
+                  </Link>
+                  {user?.role === 'admin' && (
+                    <Link 
+                      href="/admin" 
+                      className="flex items-center text-card-foreground hover:text-primary transition-colors font-medium py-2 px-3 rounded-lg hover:bg-primary/10"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Admin
+                    </Link>
+                  )}
+                  <button 
+                    className="flex items-center text-card-foreground hover:text-primary transition-colors font-medium py-2 px-3 rounded-lg hover:bg-primary/10 w-full text-left"
+                    onClick={() => {
+                      window.location.href = '/api/auth/logout';
+                      setIsMenuOpen(false);
+                    }}
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Uitloggen
+                  </button>
+                </div>
+              ) : (
+                <Button 
+                  variant="outline" 
+                  className="w-full" 
+                  onClick={() => {
+                    window.location.href = '/login';
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  Inloggen
+                </Button>
+              )}
+            </div>
           </nav>
         </div>
       )}

@@ -123,7 +123,7 @@ export default function AppleCarPlayBMW() {
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-black to-gray-900">
       <Header onCartOpen={() => setIsCartOpen(true)} />
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden min-h-screen">
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent z-10"></div>
         
         {/* Background Image */}
@@ -135,35 +135,35 @@ export default function AppleCarPlayBMW() {
           />
         </div>
 
-        <div className="relative z-20 container mx-auto px-4 py-20 lg:py-32">
-          <div className="max-w-4xl">
+        <div className="relative z-20 container mx-auto px-4 py-16 md:py-20 lg:py-32 flex items-center min-h-screen">
+          <div className="max-w-4xl w-full">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <Badge className="mb-6 bg-[#d0a760] text-black font-semibold text-sm px-4 py-2">
+              <Badge className="mb-4 md:mb-6 bg-[#d0a760] text-black font-semibold text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2">
                 ✨ PREMIUM BMW & MINI SERVICE
               </Badge>
               
-              <h1 className="text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-4 md:mb-6 leading-tight">
                 Apple CarPlay voor jouw{" "}
                 <span className="text-[#d0a760]">BMW</span> of{" "}
                 <span className="text-[#d0a760]">MINI</span>
               </h1>
               
-              <p className="text-xl lg:text-2xl text-gray-300 mb-4">
+              <p className="text-lg md:text-xl lg:text-2xl text-gray-300 mb-3 md:mb-4">
                 (2015 – heden)
               </p>
               
-              <p className="text-lg text-gray-400 mb-8 max-w-2xl">
+              <p className="text-base md:text-lg text-gray-400 mb-6 md:mb-8 max-w-2xl leading-relaxed">
                 Snel, voordelig en zonder hardware – check direct of jouw auto geschikt is via chassisnummer.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 mb-12">
+              <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mb-8 md:mb-12">
                 <Button 
                   size="lg" 
-                  className="bg-[#d0a760] hover:bg-[#b8954d] text-black font-semibold text-lg px-8 py-4"
+                  className="bg-[#d0a760] hover:bg-[#b8954d] text-black font-semibold text-base md:text-lg px-6 md:px-8 py-3 md:py-4"
                   onClick={() => document.getElementById('offerte')?.scrollIntoView({ behavior: 'smooth' })}
                   data-testid="button-request-quote"
                 >
@@ -172,16 +172,16 @@ export default function AppleCarPlayBMW() {
                 <Button 
                   size="lg" 
                   variant="outline" 
-                  className="border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760] hover:text-black font-semibold text-lg px-8 py-4"
+                  className="border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760] hover:text-black font-semibold text-base md:text-lg px-6 md:px-8 py-3 md:py-4"
                   data-testid="button-call-now"
                 >
-                  <Phone className="w-5 h-5 mr-2" />
+                  <Phone className="w-4 h-4 md:w-5 md:h-5 mr-2" />
                   085 - 27 33 625
                 </Button>
               </div>
 
               {/* Benefits Cards */}
-              <div className="grid md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                 {benefits.map((benefit, index) => (
                   <motion.div
                     key={index}
@@ -190,14 +190,16 @@ export default function AppleCarPlayBMW() {
                     transition={{ duration: 0.6, delay: index * 0.2 }}
                   >
                     <Card className="bg-gray-900/80 border-gray-800 hover:border-[#d0a760] transition-all duration-300">
-                      <CardContent className="p-6">
-                        <div className="flex items-start space-x-4">
-                          {benefit.icon}
-                          <div>
-                            <h3 className="text-white font-semibold mb-2">
+                      <CardContent className="p-4 md:p-6">
+                        <div className="flex items-start space-x-3 md:space-x-4">
+                          <div className="flex-shrink-0 mt-1">
+                            {benefit.icon}
+                          </div>
+                          <div className="min-w-0">
+                            <h3 className="text-white font-semibold mb-1 md:mb-2 text-sm md:text-base">
                               {benefit.title}
                             </h3>
-                            <p className="text-gray-400 text-sm">
+                            <p className="text-gray-400 text-xs md:text-sm leading-relaxed">
                               {benefit.description}
                             </p>
                           </div>
@@ -211,9 +213,9 @@ export default function AppleCarPlayBMW() {
           </div>
         </div>
 
-        {/* Scroll Indicator */}
+        {/* Scroll Indicator - Hidden on mobile */}
         <motion.div
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20"
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 hidden md:block"
           animate={{ y: [0, 10, 0] }}
           transition={{ repeat: Infinity, duration: 2 }}
         >

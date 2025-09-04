@@ -151,15 +151,22 @@ export class DatabaseStorage implements IStorage {
     }
     
     if (options.search) {
-      conditions.push(
-        or(
-          like(products.name, `%${options.search}%`),
-          like(products.description, `%${options.search}%`)
-        )
+      const searchCondition = or(
+        like(products.name, `%${options.search}%`),
+        like(products.description, `%${options.search}%`)
       );
+      if (searchCondition) {
+        conditions.push(searchCondition);
+      }
     }
 
-    let query = db.select().from(products).where(and(...conditions)).orderBy(desc(products.createdAt));
+    let query = db.select().from(products);
+    
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions));
+    }
+    
+    query = query.orderBy(desc(products.createdAt));
 
     if (options.limit) {
       query = query.limit(options.limit);
@@ -270,7 +277,7 @@ export class DatabaseStorage implements IStorage {
       // Update quantity
       const [updated] = await db
         .update(cartItems)
-        .set({ quantity: existing.quantity + cartItem.quantity })
+        .set({ quantity: existing.quantity + (cartItem.quantity || 1) })
         .where(eq(cartItems.id, existing.id))
         .returning();
       return updated;
@@ -304,11 +311,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getOrders(userId?: string): Promise<Order[]> {
-    let query = db.select().from(orders);
     if (userId) {
-      query = query.where(eq(orders.userId, userId));
+      return await db.select().from(orders).where(eq(orders.userId, userId)).orderBy(desc(orders.createdAt));
     }
-    return await query.orderBy(desc(orders.createdAt));
+    return await db.select().from(orders).orderBy(desc(orders.createdAt));
   }
 
   async getOrder(id: string): Promise<Order | undefined> {
@@ -327,11 +333,10 @@ export class DatabaseStorage implements IStorage {
 
   // Booking operations
   async getBookings(userId?: string): Promise<Booking[]> {
-    let query = db.select().from(bookings);
     if (userId) {
-      query = query.where(eq(bookings.userId, userId));
+      return await db.select().from(bookings).where(eq(bookings.userId, userId)).orderBy(desc(bookings.createdAt));
     }
-    return await query.orderBy(desc(bookings.createdAt));
+    return await db.select().from(bookings).orderBy(desc(bookings.createdAt));
   }
 
   async getBooking(id: string): Promise<Booking | undefined> {

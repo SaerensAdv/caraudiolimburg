@@ -9,6 +9,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { Heart, Star } from "lucide-react";
 import type { Product } from "@shared/schema";
+import carAudioLogo from "@assets/Caraudiolimburg-logo_1757008375383_1757016657436.png";
 
 interface ProductCardProps {
   product: Product;
@@ -62,13 +63,21 @@ export function ProductCard({ product }: ProductCardProps) {
   const currentPrice = parseFloat(product.price);
   const discount = originalPrice ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100) : null;
 
+  // Determine the image source - use imported logo for @assets paths, otherwise use direct path
+  const getImageSrc = (imagePath: string) => {
+    if (imagePath.startsWith('@assets/Caraudiolimburg-logo_1757008375383_1757016657436.png')) {
+      return carAudioLogo;
+    }
+    return imagePath;
+  };
+
   return (
     <Card className="bg-card border-border hover:shadow-2xl transition-all duration-300 group" data-testid={`product-card-${product.id}`}>
       <div className="relative">
         {product.images?.[0] ? (
           <div 
             className="aspect-square bg-cover bg-center group-hover:scale-105 transition-transform duration-300 rounded-t-2xl" 
-            style={{ backgroundImage: `url(${product.images[0]})` }}
+            style={{ backgroundImage: `url(${getImageSrc(product.images[0])})` }}
           />
         ) : (
           <div className="aspect-square bg-muted rounded-t-2xl flex items-center justify-center">

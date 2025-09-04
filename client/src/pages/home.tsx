@@ -48,56 +48,126 @@ export default function Home() {
       <Header onCartOpen={() => setIsCartOpen(true)} />
       
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-background to-secondary py-16 md:py-20 lg:py-32">
-        <div className="absolute inset-0 bg-gradient-to-r from-background/90 to-background/70 z-10"></div>
+      <section className="relative overflow-hidden bg-gradient-to-br from-background via-secondary/20 to-primary/5 py-16 md:py-20 lg:py-32">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/3 rounded-full blur-3xl animate-pulse delay-500"></div>
+        </div>
+        
+        <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/85 to-background/90 z-10"></div>
         <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30" 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20" 
           style={{
             backgroundImage: "url('https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')"
           }}
         ></div>
         
+        {/* Floating Elements */}
+        <div className="absolute top-20 left-10 w-3 h-3 bg-primary/30 rounded-full animate-bounce delay-100"></div>
+        <div className="absolute top-32 right-16 w-2 h-2 bg-primary/40 rounded-full animate-bounce delay-300"></div>
+        <div className="absolute bottom-40 left-20 w-4 h-4 bg-primary/20 rounded-full animate-bounce delay-700"></div>
+        
         <div className="relative z-20 container px-4 mx-auto">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold text-foreground mb-4 md:mb-6 leading-tight">
+          <div className="max-w-5xl mx-auto text-center">
+            {/* Trust Badges */}
+            <div className="flex justify-center items-center gap-4 mb-6 opacity-80">
+              <Badge variant="secondary" className="text-xs px-3 py-1 bg-primary/10 text-primary border-primary/20">
+                <Star className="w-3 h-3 mr-1 fill-current" />
+                #1 Car Audio Expert
+              </Badge>
+              <Badge variant="secondary" className="text-xs px-3 py-1 bg-primary/10 text-primary border-primary/20">
+                <ShieldCheck className="w-3 h-3 mr-1" />
+                25+ Jaar Ervaring
+              </Badge>
+              <Badge variant="secondary" className="text-xs px-3 py-1 bg-primary/10 text-primary border-primary/20 hidden sm:inline-flex">
+                <Award className="w-3 h-3 mr-1" />
+                Officiële Dealer
+              </Badge>
+            </div>
+
+            <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-foreground mb-4 md:mb-6 leading-tight">
               Premium Car Audio &
-              <span className="text-primary"> Professionele Installatie</span>
+              <span className="text-primary bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent"> 
+                Professionele Installatie
+              </span>
             </h1>
-            <p className="text-lg md:text-xl lg:text-2xl text-muted-foreground mb-6 md:mb-8 max-w-2xl mx-auto leading-relaxed">
+            
+            <p className="text-lg md:text-xl lg:text-2xl text-muted-foreground mb-8 md:mb-10 max-w-3xl mx-auto leading-relaxed">
               Van OEM-upgrades tot complete systemen. Alpine, Audison, en meer. 
-              Inclusief vakkundige montage in onze showroom.
+              Inclusief vakkundige montage in onze showroom in <span className="text-primary font-semibold">Sittard</span>.
             </p>
 
-            <div className="mb-6 md:mb-8">
+            {/* Key Features */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 md:mb-10 max-w-3xl mx-auto">
+              <div className="flex items-center justify-center gap-2 p-3 rounded-lg bg-background/60 backdrop-blur-sm border border-border/50">
+                <Volume2 className="w-5 h-5 text-primary" />
+                <span className="text-sm font-medium text-foreground">Premium Merken</span>
+              </div>
+              <div className="flex items-center justify-center gap-2 p-3 rounded-lg bg-background/60 backdrop-blur-sm border border-border/50">
+                <Wrench className="w-5 h-5 text-primary" />
+                <span className="text-sm font-medium text-foreground">Expert Installatie</span>
+              </div>
+              <div className="flex items-center justify-center gap-2 p-3 rounded-lg bg-background/60 backdrop-blur-sm border border-border/50">
+                <ShieldCheck className="w-5 h-5 text-primary" />
+                <span className="text-sm font-medium text-foreground">Garantie & Service</span>
+              </div>
+            </div>
+
+            <div className="mb-8 md:mb-10">
               <VehicleSelector />
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center items-center">
               <Button 
                 size="lg" 
-                className="text-base md:text-lg px-6 md:px-8 py-3 md:py-4 w-full sm:w-auto" 
+                className="text-base md:text-lg px-8 md:px-10 py-4 md:py-5 w-full sm:w-auto bg-primary hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1" 
                 data-testid="button-shop-now"
               >
+                <Volume2 className="w-4 h-4 md:w-5 md:h-5 mr-2" />
                 Shop Nu
               </Button>
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="text-base md:text-lg px-6 md:px-8 py-3 md:py-4 border-primary text-primary hover:bg-primary hover:text-primary-foreground w-full sm:w-auto"
+                className="text-base md:text-lg px-8 md:px-10 py-4 md:py-5 border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground w-full sm:w-auto shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                 data-testid="button-book-installation"
               >
                 <Calendar className="w-4 h-4 md:w-5 md:h-5 mr-2" />
                 Installatie Boeken
+                <Badge className="ml-2 bg-primary text-primary-foreground text-xs px-2 py-0.5">€89</Badge>
               </Button>
               <Button 
                 variant="secondary" 
                 size="lg" 
-                className="text-base md:text-lg px-6 md:px-8 py-3 md:py-4 w-full sm:w-auto"
+                className="text-base md:text-lg px-8 md:px-10 py-4 md:py-5 w-full sm:w-auto shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 bg-secondary/80 hover:bg-secondary"
                 onClick={() => setShowQuoteForm(true)}
                 data-testid="button-request-quote"
               >
-                Offerte Aanvragen
+                <Mail className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+                Gratis Offerte
               </Button>
+            </div>
+
+            {/* Social Proof */}
+            <div className="mt-10 md:mt-12 flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <div className="flex -space-x-2">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">5★</div>
+                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">5★</div>
+                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">5★</div>
+                </div>
+                <span>500+ Tevreden klanten</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-primary" />
+                <span>Gratis advies & offerte</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Truck className="w-4 h-4 text-primary" />
+                <span>Snelle levering</span>
+              </div>
             </div>
           </div>
         </div>

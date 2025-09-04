@@ -34,13 +34,14 @@ export default function ProductPage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: product, isLoading } = useQuery({
+  const { data: product, isLoading } = useQuery<Product>({
     queryKey: ["/api/products", slug],
     enabled: !!slug,
   });
 
   const addToCartMutation = useMutation({
     mutationFn: async ({ needsInstallation }: { needsInstallation: boolean }) => {
+      if (!product) return;
       await apiRequest("POST", "/api/cart", {
         productId: product.id,
         quantity,
@@ -51,7 +52,7 @@ export default function ProductPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
       toast({
         title: "Product toegevoegd",
-        description: `${product.name} is toegevoegd aan je winkelwagen.`,
+        description: `${product?.name} is toegevoegd aan je winkelwagen.`,
       });
     },
     onError: (error) => {
@@ -189,8 +190,16 @@ export default function ProductPage() {
                 )}
               </>
             ) : (
-              <div className="aspect-square bg-muted rounded-2xl flex items-center justify-center">
-                <span className="text-muted-foreground">Geen afbeelding beschikbaar</span>
+              <div className="aspect-square bg-muted rounded-2xl flex flex-col items-center justify-center space-y-4 border-2 border-dashed border-border">
+                <div className="w-16 h-16 bg-muted-foreground/20 rounded-lg flex items-center justify-center">
+                  <svg className="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div className="text-center">
+                  <p className="text-sm font-medium text-muted-foreground">Geen afbeelding beschikbaar</p>
+                  <p className="text-xs text-muted-foreground/70">Productafbeelding wordt binnenkort toegevoegd</p>
+                </div>
               </div>
             )}
           </div>
@@ -371,7 +380,7 @@ export default function ProductPage() {
                         {Object.entries(product.specifications as Record<string, any>).map(([key, value]) => (
                           <div key={key} className="flex justify-between py-2 border-b border-border">
                             <span className="font-medium text-card-foreground">{key}</span>
-                            <span className="text-muted-foreground">{value}</span>
+                            <span className="text-muted-foreground">{String(value)}</span>
                           </div>
                         ))}
                       </div>

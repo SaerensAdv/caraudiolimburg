@@ -28,13 +28,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
 
-  // Auth routes - handled by auth.ts now
+  // Auth routes for Replit Auth
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUserByGoogleId(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
 
   // Customer Portal routes
   app.get('/api/my-orders', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.id;
-      const orders = await storage.getOrdersByUserId(userId);
+      const replitUserId = req.user.claims.sub;
+      const user = await storage.getUserByGoogleId(replitUserId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      const orders = await storage.getOrdersByUserId(user.id);
       res.json(orders);
     } catch (error) {
       console.error("Error fetching user orders:", error);
@@ -44,8 +61,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/my-bookings', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.id;
-      const bookings = await storage.getBookingsByUserId(userId);
+      const replitUserId = req.user.claims.sub;
+      const user = await storage.getUserByGoogleId(replitUserId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      const bookings = await storage.getBookingsByUserId(user.id);
       res.json(bookings);
     } catch (error) {
       console.error("Error fetching user bookings:", error);

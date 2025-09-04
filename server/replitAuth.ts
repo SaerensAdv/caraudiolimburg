@@ -57,13 +57,27 @@ function updateUserSession(
 async function upsertUser(
   claims: any,
 ) {
-  await storage.upsertUser({
-    id: claims["sub"],
-    email: claims["email"],
-    firstName: claims["first_name"],
-    lastName: claims["last_name"],
-    profileImageUrl: claims["profile_image_url"],
-  });
+  // Check if user with google_id already exists
+  const existingUser = await storage.getUserByGoogleId(claims["sub"]);
+  
+  if (existingUser) {
+    // Update existing user
+    await storage.updateUser(existingUser.id, {
+      email: claims["email"],
+      firstName: claims["first_name"],
+      lastName: claims["last_name"],
+      profileImageUrl: claims["profile_image_url"],
+    });
+  } else {
+    // Create new user with google_id
+    await storage.createUser({
+      email: claims["email"],
+      firstName: claims["first_name"],
+      lastName: claims["last_name"],
+      profileImageUrl: claims["profile_image_url"],
+      googleId: claims["sub"],
+    });
+  }
 }
 
 export async function setupAuth(app: Express) {

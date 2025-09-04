@@ -277,6 +277,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // BMW CarPlay quote request
+  app.post("/api/bmw-carplay-quote", async (req, res) => {
+    try {
+      const { firstName, lastName, phone, email, message, model, year, license, vin } = req.body;
+      
+      // Validate required fields
+      if (!firstName || !lastName || !phone || !email || !model || !year || !vin) {
+        return res.status(400).json({ 
+          message: "Verplichte velden zijn niet ingevuld. Controleer voornaam, achternaam, telefoon, email, model, bouwjaar en VIN-nummer." 
+        });
+      }
+
+      // Validate VIN format (17 characters)
+      if (vin.length !== 17) {
+        return res.status(400).json({ 
+          message: "VIN-nummer moet exact 17 karakters bevatten." 
+        });
+      }
+
+      // Validate year range
+      const yearNum = parseInt(year);
+      if (yearNum < 2015 || yearNum > 2025) {
+        return res.status(400).json({ 
+          message: "Bouwjaar moet tussen 2015 en 2025 liggen voor CarPlay activatie." 
+        });
+      }
+
+      // Create the quote request with BMW CarPlay specific type
+      const quoteData = {
+        firstName,
+        lastName,
+        email,
+        phone,
+        vehicleMake: model.toLowerCase().includes('bmw') ? 'BMW' : 'MINI',
+        vehicleModel: model,
+        vehicleYear: yearNum,
+        description: `BMW/MINI CarPlay Activatie - ${model} (${year})
+        
+VIN: ${vin}
+${license ? `Kenteken: ${license}` : ''}
+
+${message || 'Geen aanvullende informatie'}`
+      };
+
+      const quote = await storage.createQuoteRequest(quoteData);
+      
+      res.status(201).json({
+        message: "Offerteverzoek succesvol verstuurd! We nemen binnen 24 uur contact met je op.",
+        quoteId: quote.id
+      });
+    } catch (error) {
+      console.error("Error creating BMW CarPlay quote request:", error);
+      res.status(500).json({ message: "Er is een fout opgetreden bij het versturen van je verzoek. Probeer het opnieuw of neem direct contact op." });
+    }
+  });
+
   // Payment routes
   app.post("/api/create-payment-intent", isAuthenticated, async (req, res) => {
     if (!stripe) {

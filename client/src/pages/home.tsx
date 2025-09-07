@@ -57,7 +57,6 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       <Header onCartOpen={() => setIsCartOpen(true)} />
-      
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-background via-secondary/10 to-primary/5 py-16 md:py-20 lg:h-screen lg:py-0 lg:flex lg:items-center">
         {/* Animated Background Elements */}
@@ -101,9 +100,7 @@ export default function Home() {
 
             <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-foreground mb-4 md:mb-6 leading-tight animate-slide-up delay-300">
               Premium Car Audio &
-              <span className="text-primary font-bold"> 
-                Professionele Installatie
-              </span>
+              <span className="text-primary font-bold"> Professionele Installatie</span>
             </h1>
             
             <p className="text-lg md:text-xl lg:text-2xl text-muted-foreground mb-8 md:mb-10 max-w-3xl mx-auto leading-relaxed">
@@ -184,7 +181,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* Categories Section */}
       <section className="py-16 md:py-20 bg-secondary/30">
         <div className="container px-4 mx-auto">
@@ -257,7 +253,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* Promotional Video Section */}
       <section className="py-20 bg-background">
         <div className="container px-4 mx-auto">
@@ -329,7 +324,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* USPs */}
       <section className="py-16 bg-secondary">
         <div className="container px-4 mx-auto">
@@ -365,7 +359,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* Featured Products */}
       <section className="py-20 bg-background">
         <div className="container px-4 mx-auto">
@@ -395,7 +388,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* Installation Services */}
       <section className="py-20 bg-secondary">
         <div className="container px-4 mx-auto">
@@ -477,7 +469,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* Apple CarPlay for BMW/MINI CTA */}
       <section className="py-20 bg-gradient-to-r from-gray-900 via-black to-gray-900 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5"></div>
@@ -548,7 +539,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* Brand Showcase */}
       <section className="py-20 bg-background">
         <div className="container px-4 mx-auto">
@@ -573,7 +563,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* Quote Request */}
       <section className="py-20 bg-background">
         <div className="container px-4 mx-auto">
@@ -608,7 +597,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* Testimonials & Showroom */}
       <section className="py-20 bg-secondary">
         <div className="container px-4 mx-auto">
@@ -656,7 +644,7 @@ export default function Home() {
                   </Card>
                 )) || (
                   // Fallback voor als reviews nog laden
-                  <div className="space-y-6">
+                  (<div className="space-y-6">
                     {[1, 2].map((i) => (
                       <Card key={i} className="bg-card border-border animate-pulse">
                         <CardContent className="p-6">
@@ -672,7 +660,7 @@ export default function Home() {
                         </CardContent>
                       </Card>
                     ))}
-                  </div>
+                  </div>)
                 )}
               </div>
             </div>
@@ -734,7 +722,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       <Footer />
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </div>

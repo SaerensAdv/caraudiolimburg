@@ -386,7 +386,7 @@ ${message || 'Geen aanvullende informatie'}`
   app.post("/api/orders/confirm", isAuthenticated, async (req, res) => {
     try {
       const { paymentIntentId, shippingDetails } = req.body;
-      const userId = (req as any).user.claims.sub;
+      const userId = (req as any).user.id;
       
       if (!stripe) {
         return res.status(500).json({ message: "Payment system not configured" });

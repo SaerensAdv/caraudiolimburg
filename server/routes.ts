@@ -184,7 +184,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/cart', async (req: any, res) => {
     try {
       // Only authenticated users can add items to persistent cart
-      if (!req.isAuthenticated() || !req.user?.claims?.sub) {
+      if (!req.isAuthenticated() || !req.user?.id) {
         return res.status(200).json({ message: "Item will be stored in session cart" });
       }
       
@@ -204,7 +204,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch('/api/cart/:id', async (req: any, res) => {
     try {
       // Only authenticated users can update persistent cart
-      if (!req.isAuthenticated() || !req.user?.claims?.sub) {
+      if (!req.isAuthenticated() || !req.user?.id) {
         return res.status(401).json({ message: "Authentication required" });
       }
       
@@ -220,7 +220,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete('/api/cart/:id', async (req: any, res) => {
     try {
       // Only authenticated users can remove from persistent cart
-      if (!req.isAuthenticated() || !req.user?.claims?.sub) {
+      if (!req.isAuthenticated() || !req.user?.id) {
         return res.status(401).json({ message: "Authentication required" });
       }
       

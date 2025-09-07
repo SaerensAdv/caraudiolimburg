@@ -358,14 +358,7 @@ ${message || 'Geen aanvullende informatie'}`
 
   // Payment routes
   app.post("/api/create-payment-intent", isAuthenticated, async (req, res) => {
-    console.log("=== PAYMENT INTENT DEBUG ===");
-    console.log("Route hit, user authenticated:", !!req.user);
-    console.log("User data:", req.user);
-    console.log("Request body:", req.body);
-    console.log("Stripe object exists:", !!stripe);
-    
     if (!stripe) {
-      console.log("Stripe not configured!");
       return res.status(500).json({ message: "Payment system not configured. Please set up Stripe API keys." });
     }
     

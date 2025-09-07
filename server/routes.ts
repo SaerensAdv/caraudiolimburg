@@ -371,7 +371,7 @@ ${message || 'Geen aanvullende informatie'}`
           enabled: true,
         },
         metadata: {
-          userId: (req as any).user.claims.sub,
+          userId: (req as any).user.id,
         },
       });
       res.json({ clientSecret: paymentIntent.client_secret });

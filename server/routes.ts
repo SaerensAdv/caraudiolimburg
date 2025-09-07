@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated, isAdmin } from "./replitAuth";
+import { setupAuth, isAuthenticated, isAdmin } from "./auth";
 import {
   insertProductSchema,
   insertCategorySchema,
@@ -26,32 +26,15 @@ if (process.env.STRIPE_SECRET_KEY) {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
-  await setupAuth(app);
+  setupAuth(app);
 
-  // Auth routes for Replit Auth
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUserByGoogleId(userId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      res.json(user);
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
-  });
+  // Auth routes - handled by auth.ts
 
   // Customer Portal routes
   app.get('/api/my-orders', isAuthenticated, async (req: any, res) => {
     try {
-      const replitUserId = req.user.claims.sub;
-      const user = await storage.getUserByGoogleId(replitUserId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      const orders = await storage.getOrdersByUserId(user.id);
+      const userId = req.user.id;
+      const orders = await storage.getOrdersByUserId(userId);
       res.json(orders);
     } catch (error) {
       console.error("Error fetching user orders:", error);
@@ -61,12 +44,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/my-bookings', isAuthenticated, async (req: any, res) => {
     try {
-      const replitUserId = req.user.claims.sub;
-      const user = await storage.getUserByGoogleId(replitUserId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      const bookings = await storage.getBookingsByUserId(user.id);
+      const userId = req.user.id;
+      const bookings = await storage.getBookingsByUserId(userId);
       res.json(bookings);
     } catch (error) {
       console.error("Error fetching user bookings:", error);
@@ -187,7 +166,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/cart', async (req: any, res) => {
     try {
       // For authenticated users, use their user ID
-      const userId = req.isAuthenticated() && req.user?.claims?.sub ? req.user.claims.sub : null;
+      const userId = req.isAuthenticated() && req.user?.id ? req.user.id : null;
       
       if (!userId) {
         // For guests, return empty cart (client handles localStorage cart)
@@ -209,7 +188,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(200).json({ message: "Item will be stored in session cart" });
       }
       
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const cartItemData = insertCartItemSchema.parse({
         ...req.body,
         userId,
@@ -256,7 +235,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Order routes
   app.get('/api/orders', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const orders = await storage.getOrders(userId);
       res.json(orders);
     } catch (error) {
@@ -268,7 +247,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Booking routes
   app.get('/api/bookings', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const bookings = await storage.getBookings(userId);
       res.json(bookings);
     } catch (error) {
@@ -524,8 +503,8 @@ ${message || 'Geen aanvullende informatie'}`
       const reviewData = insertReviewSchema.parse(req.body);
       
       // If user is authenticated, link the review to the user
-      if (req.isAuthenticated && req.user?.claims?.sub) {
-        reviewData.userId = req.user.claims.sub;
+      if (req.isAuthenticated() && req.user?.id) {
+        reviewData.userId = req.user.id;
       }
       
       const review = await storage.createReview(reviewData);

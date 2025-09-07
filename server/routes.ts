@@ -364,6 +364,15 @@ ${message || 'Geen aanvullende informatie'}`
     
     try {
       const { amount } = req.body;
+      
+      console.log("Creating payment intent with amount:", amount);
+      console.log("User ID:", (req as any).user.id);
+      console.log("Stripe configured:", !!stripe);
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ message: "Invalid amount provided" });
+      }
+      
       const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(amount * 100), // Convert to cents
         currency: "eur",
@@ -376,6 +385,7 @@ ${message || 'Geen aanvullende informatie'}`
       });
       res.json({ clientSecret: paymentIntent.client_secret });
     } catch (error: any) {
+      console.error("Stripe payment intent error:", error);
       res
         .status(500)
         .json({ message: "Error creating payment intent: " + error.message });

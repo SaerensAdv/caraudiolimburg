@@ -53,7 +53,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { nl } from "date-fns/locale";
-import type { Product, Order, Booking, QuoteRequest } from "@shared/schema";
+import type { Product, Order, Booking, QuoteRequest, User } from "@shared/schema";
 
 const productFormSchema = insertProductSchema.extend({
   price: z.string().min(1, "Prijs is verplicht"),
@@ -88,32 +88,32 @@ export default function Admin() {
   }, [isAuthenticated, user]);
 
   // Queries
-  const { data: products, isLoading: isLoadingProducts } = useQuery({
+  const { data: products = [], isLoading: isLoadingProducts } = useQuery<Product[]>({
     queryKey: ["/api/admin/products"],
     enabled: isAuthenticated && user?.role === 'admin',
   });
 
-  const { data: orders, isLoading: isLoadingOrders } = useQuery({
+  const { data: orders = [], isLoading: isLoadingOrders } = useQuery<Order[]>({
     queryKey: ["/api/admin/orders"],
     enabled: isAuthenticated && user?.role === 'admin',
   });
 
-  const { data: bookings, isLoading: isLoadingBookings } = useQuery({
+  const { data: bookings = [], isLoading: isLoadingBookings } = useQuery<Booking[]>({
     queryKey: ["/api/admin/bookings"],
     enabled: isAuthenticated && user?.role === 'admin',
   });
 
-  const { data: quoteRequests, isLoading: isLoadingQuotes } = useQuery({
+  const { data: quoteRequests = [], isLoading: isLoadingQuotes } = useQuery<QuoteRequest[]>({
     queryKey: ["/api/quote-requests"],
     enabled: isAuthenticated && user?.role === 'admin',
   });
 
-  const { data: categories } = useQuery({
+  const { data: categories = [] } = useQuery<any[]>({
     queryKey: ["/api/categories"],
     enabled: isAuthenticated,
   });
 
-  const { data: brands } = useQuery({
+  const { data: brands = [] } = useQuery<any[]>({
     queryKey: ["/api/brands"],
     enabled: isAuthenticated,
   });
@@ -603,7 +603,7 @@ export default function Admin() {
                           <TableCell>€{parseFloat(order.totalAmount).toFixed(2)}</TableCell>
                           <TableCell>
                             <Select 
-                              value={order.status} 
+                              value={order.status || 'pending'} 
                               onValueChange={(status) => updateOrderStatusMutation.mutate({ id: order.id, status })}
                             >
                               <SelectTrigger className="w-32">

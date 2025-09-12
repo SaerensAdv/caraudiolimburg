@@ -47,6 +47,7 @@
     "@types/bcrypt": "^6.0.0",
     "@types/memoizee": "^0.4.12",
     "@types/multer": "^2.0.0",
+    "@types/papaparse": "^5.3.16",
     "@types/passport-google-oauth20": "^2.0.16",
     "@uppy/core": "^4.5.3",
     "@uppy/file-input": "^4.2.2",

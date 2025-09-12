@@ -1,6 +1,8 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
+import multer from "multer";
+import Papa from "papaparse";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated, isAdmin } from "./auth";
 import {
@@ -23,6 +25,21 @@ if (process.env.STRIPE_SECRET_KEY) {
     apiVersion: "2025-08-27.basil",
   });
 }
+
+// Multer configuration for file uploads
+const upload = multer({ 
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'text/csv' || file.mimetype === 'application/vnd.ms-excel' || file.originalname.endsWith('.csv')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only CSV files are allowed'));
+    }
+  }
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -606,6 +623,118 @@ ${message || 'Geen aanvullende informatie'}`
     } catch (error) {
       console.error("Error fetching admin bookings:", error);
       res.status(500).json({ message: "Failed to fetch bookings" });
+    }
+  });
+
+  // Bulk import endpoints
+  app.post('/api/admin/products/bulk-upload', isAuthenticated, upload.single('csvFile'), async (req: any, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const csvContent = req.file.buffer.toString('utf8');
+      const results = Papa.parse(csvContent, {
+        header: true,
+        skipEmptyLines: true,
+        transformHeader: (header) => header.trim(),
+      });
+
+      if (results.errors.length > 0) {
+        return res.status(400).json({ 
+          message: "CSV parsing errors", 
+          errors: results.errors 
+        });
+      }
+
+      const products = results.data as any[];
+      let successCount = 0;
+      let errorCount = 0;
+      const errors: string[] = [];
+
+      for (let i = 0; i < products.length; i++) {
+        const productData = products[i];
+        try {
+          // Validate required fields
+          if (!productData.name || !productData.price || !productData.categoryId || !productData.brandId) {
+            errors.push(`Row ${i + 1}: Missing required fields (name, price, categoryId, brandId)`);
+            errorCount++;
+            continue;
+          }
+
+          // Transform data to match schema
+          const productToCreate = {
+            name: productData.name,
+            description: productData.description || '',
+            price: parseFloat(productData.price),
+            categoryId: productData.categoryId,
+            brandId: productData.brandId,
+            imageUrl: productData.imageUrl || '',
+            featured: productData.featured === 'true' || productData.featured === true,
+            specifications: productData.specifications ? JSON.parse(productData.specifications) : {},
+            installationPrice: productData.installationPrice ? parseFloat(productData.installationPrice) : null,
+          };
+
+          const product = await storage.createProduct(productToCreate);
+          successCount++;
+        } catch (error) {
+          errors.push(`Row ${i + 1}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+          errorCount++;
+        }
+      }
+
+      res.json({
+        message: `Bulk upload completed. ${successCount} products created, ${errorCount} errors.`,
+        successCount,
+        errorCount,
+        errors: errors.slice(0, 10), // Limit to first 10 errors for response
+      });
+    } catch (error) {
+      console.error("Error in bulk upload:", error);
+      res.status(500).json({ message: "Failed to process bulk upload" });
+    }
+  });
+
+  app.get('/api/admin/products/template', isAuthenticated, async (req, res) => {
+    try {
+      // Create CSV template with headers and sample data
+      const headers = [
+        'name',
+        'description', 
+        'price',
+        'categoryId',
+        'brandId',
+        'imageUrl',
+        'featured',
+        'specifications',
+        'installationPrice'
+      ];
+
+      const sampleData = [
+        {
+          name: 'Alpine X-A70F Amplifier',
+          description: 'High-performance 4-channel amplifier with advanced features',
+          price: '299.99',
+          categoryId: '', // User needs to fill in actual category ID
+          brandId: '', // User needs to fill in actual brand ID
+          imageUrl: 'https://example.com/alpine-xa70f.jpg',
+          featured: 'false',
+          specifications: '{"power": "70W x 4", "channels": 4, "frequency": "10Hz-50kHz"}',
+          installationPrice: '89.00'
+        }
+      ];
+
+      const csvContent = Papa.unparse({
+        fields: headers,
+        data: sampleData
+      });
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename="product-template.csv"');
+      res.send(csvContent);
+    } catch (error) {
+      console.error("Error generating template:", error);
+      res.status(500).json({ message: "Failed to generate template" });
     }
   });
 

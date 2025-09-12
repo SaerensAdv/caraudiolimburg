@@ -665,14 +665,15 @@ ${message || 'Geen aanvullende informatie'}`
           // Transform data to match schema
           const productToCreate = {
             name: productData.name,
+            slug: productData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
             description: productData.description || '',
-            price: parseFloat(productData.price),
+            price: productData.price.toString(),
             categoryId: productData.categoryId,
             brandId: productData.brandId,
             imageUrl: productData.imageUrl || '',
-            featured: productData.featured === 'true' || productData.featured === true,
+            isFeatured: productData.featured === 'true' || productData.featured === true,
             specifications: productData.specifications ? JSON.parse(productData.specifications) : {},
-            installationPrice: productData.installationPrice ? parseFloat(productData.installationPrice) : null,
+            installationPrice: productData.installationPrice ? productData.installationPrice.toString() : null,
           };
 
           const product = await storage.createProduct(productToCreate);

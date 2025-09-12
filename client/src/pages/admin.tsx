@@ -49,7 +49,9 @@ import {
   Calendar,
   Users,
   TrendingUp,
-  Eye
+  Eye,
+  Upload,
+  Download
 } from "lucide-react";
 import { format } from "date-fns";
 import { nl } from "date-fns/locale";
@@ -66,6 +68,8 @@ export default function Admin() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const { isAuthenticated, user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -152,6 +156,52 @@ export default function Admin() {
       });
     },
   });
+
+  // Bulk upload function
+  const handleBulkUpload = async () => {
+    if (!selectedFile) return;
+
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('csvFile', selectedFile);
+
+      const response = await fetch('/api/admin/products/bulk-upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        toast({
+          title: "Bulk upload voltooid",
+          description: `${result.successCount} producten toegevoegd, ${result.errorCount} fouten.`,
+        });
+        
+        if (result.errors && result.errors.length > 0) {
+          console.log("Upload errors:", result.errors);
+        }
+
+        queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
+        setSelectedFile(null);
+      } else {
+        toast({
+          title: "Upload mislukt",
+          description: result.message || "Er is een fout opgetreden tijdens de upload.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Upload fout",
+        description: "Er is een onbekende fout opgetreden.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const updateOrderStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
@@ -332,166 +382,211 @@ export default function Admin() {
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-semibold text-foreground">Producten</h2>
               
-              <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button data-testid="button-add-product">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Product toevoegen
+              <div className="flex gap-2">
+                {/* Bulk Import Section */}
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    const a = document.createElement('a');
+                    a.href = '/api/admin/products/template';
+                    a.download = 'product-template.csv';
+                    a.click();
+                  }}
+                  data-testid="button-download-template"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Download Template
+                </Button>
+
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept=".csv,.xlsx,.xls"
+                    onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    data-testid="input-bulk-upload"
+                  />
+                  <Button
+                    variant="outline"
+                    disabled={isUploading}
+                    data-testid="button-choose-file"
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    {selectedFile ? selectedFile.name : "Kies CSV bestand"}
                   </Button>
-                </DialogTrigger>
-                <DialogContent className="bg-card border-border max-w-2xl">
-                  <DialogHeader>
-                    <DialogTitle className="text-card-foreground">
-                      {selectedProduct ? "Product bewerken" : "Nieuw product"}
-                    </DialogTitle>
-                  </DialogHeader>
-                  
-                  <form onSubmit={handleSubmit(onSubmitProduct)} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="name">Naam</Label>
-                        <Input
-                          {...register("name")}
-                          className="bg-input border-border"
-                          data-testid="input-product-name"
-                        />
-                        {errors.name && (
-                          <p className="text-sm text-destructive mt-1">{errors.name.message}</p>
-                        )}
-                      </div>
-                      
-                      <div>
-                        <Label htmlFor="slug">Slug</Label>
-                        <Input
-                          {...register("slug")}
-                          className="bg-input border-border"
-                          data-testid="input-product-slug"
-                        />
-                        {errors.slug && (
-                          <p className="text-sm text-destructive mt-1">{errors.slug.message}</p>
-                        )}
-                      </div>
-                    </div>
+                </div>
 
-                    <div>
-                      <Label htmlFor="shortDescription">Korte beschrijving</Label>
-                      <Input
-                        {...register("shortDescription")}
-                        className="bg-input border-border"
-                        data-testid="input-product-short-description"
-                      />
-                    </div>
+                {selectedFile && (
+                  <Button
+                    onClick={handleBulkUpload}
+                    disabled={isUploading}
+                    data-testid="button-upload-csv"
+                  >
+                    {isUploading ? "Uploading..." : "Upload CSV"}
+                  </Button>
+                )}
 
-                    <div>
-                      <Label htmlFor="description">Beschrijving</Label>
-                      <Textarea
-                        {...register("description")}
-                        className="bg-input border-border"
-                        rows={3}
-                        data-testid="textarea-product-description"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div>
-                        <Label htmlFor="price">Prijs</Label>
-                        <Input
-                          {...register("price")}
-                          type="number"
-                          step="0.01"
-                          className="bg-input border-border"
-                          data-testid="input-product-price"
-                        />
-                        {errors.price && (
-                          <p className="text-sm text-destructive mt-1">{errors.price.message}</p>
-                        )}
+                <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button data-testid="button-add-product">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Product toevoegen
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="bg-card border-border max-w-2xl">
+                    <DialogHeader>
+                      <DialogTitle className="text-card-foreground">
+                        {selectedProduct ? "Product bewerken" : "Nieuw product"}
+                      </DialogTitle>
+                    </DialogHeader>
+                    
+                    <form onSubmit={handleSubmit(onSubmitProduct)} className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="name">Naam</Label>
+                          <Input
+                            {...register("name")}
+                            className="bg-input border-border"
+                            data-testid="input-product-name"
+                          />
+                          {errors.name && (
+                            <p className="text-sm text-destructive mt-1">{errors.name.message}</p>
+                          )}
+                        </div>
+                        
+                        <div>
+                          <Label htmlFor="slug">Slug</Label>
+                          <Input
+                            {...register("slug")}
+                            className="bg-input border-border"
+                            data-testid="input-product-slug"
+                          />
+                          {errors.slug && (
+                            <p className="text-sm text-destructive mt-1">{errors.slug.message}</p>
+                          )}
+                        </div>
                       </div>
-                      
+
                       <div>
-                        <Label htmlFor="originalPrice">Originele prijs</Label>
+                        <Label htmlFor="shortDescription">Korte beschrijving</Label>
                         <Input
-                          {...register("originalPrice")}
-                          type="number"
-                          step="0.01"
+                          {...register("shortDescription")}
                           className="bg-input border-border"
-                          data-testid="input-product-original-price"
+                          data-testid="input-product-short-description"
                         />
                       </div>
-                      
+
                       <div>
-                        <Label htmlFor="stock">Voorraad</Label>
-                        <Input
-                          {...register("stock", { valueAsNumber: true })}
-                          type="number"
+                        <Label htmlFor="description">Beschrijving</Label>
+                        <Textarea
+                          {...register("description")}
                           className="bg-input border-border"
-                          data-testid="input-product-stock"
+                          rows={3}
+                          data-testid="textarea-product-description"
                         />
                       </div>
-                    </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="categoryId">Categorie</Label>
-                        <Select onValueChange={(value) => setValue("categoryId", value)}>
-                          <SelectTrigger className="bg-input border-border" data-testid="select-product-category">
-                            <SelectValue placeholder="Selecteer categorie" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {categories?.map((category: any) => (
-                              <SelectItem key={category.id} value={category.id}>
-                                {category.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <Label htmlFor="price">Prijs</Label>
+                          <Input
+                            {...register("price")}
+                            type="number"
+                            step="0.01"
+                            className="bg-input border-border"
+                            data-testid="input-product-price"
+                          />
+                          {errors.price && (
+                            <p className="text-sm text-destructive mt-1">{errors.price.message}</p>
+                          )}
+                        </div>
+                        
+                        <div>
+                          <Label htmlFor="originalPrice">Originele prijs</Label>
+                          <Input
+                            {...register("originalPrice")}
+                            type="number"
+                            step="0.01"
+                            className="bg-input border-border"
+                            data-testid="input-product-original-price"
+                          />
+                        </div>
+                        
+                        <div>
+                          <Label htmlFor="stock">Voorraad</Label>
+                          <Input
+                            {...register("stock", { valueAsNumber: true })}
+                            type="number"
+                            className="bg-input border-border"
+                            data-testid="input-product-stock"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="categoryId">Categorie</Label>
+                          <Select onValueChange={(value) => setValue("categoryId", value)}>
+                            <SelectTrigger className="bg-input border-border" data-testid="select-product-category">
+                              <SelectValue placeholder="Selecteer categorie" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {categories?.map((category: any) => (
+                                <SelectItem key={category.id} value={category.id}>
+                                  {category.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div>
+                          <Label htmlFor="brandId">Merk</Label>
+                          <Select onValueChange={(value) => setValue("brandId", value)}>
+                            <SelectTrigger className="bg-input border-border" data-testid="select-product-brand">
+                              <SelectValue placeholder="Selecteer merk" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {brands?.map((brand: any) => (
+                                <SelectItem key={brand.id} value={brand.id}>
+                                  {brand.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
 
                       <div>
-                        <Label htmlFor="brandId">Merk</Label>
-                        <Select onValueChange={(value) => setValue("brandId", value)}>
-                          <SelectTrigger className="bg-input border-border" data-testid="select-product-brand">
-                            <SelectValue placeholder="Selecteer merk" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {brands?.map((brand: any) => (
-                              <SelectItem key={brand.id} value={brand.id}>
-                                {brand.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <Label htmlFor="sku">SKU</Label>
+                        <Input
+                          {...register("sku")}
+                          className="bg-input border-border"
+                          data-testid="input-product-sku"
+                        />
                       </div>
-                    </div>
 
-                    <div>
-                      <Label htmlFor="sku">SKU</Label>
-                      <Input
-                        {...register("sku")}
-                        className="bg-input border-border"
-                        data-testid="input-product-sku"
-                      />
-                    </div>
-
-                    <div className="flex justify-end space-x-2">
-                      <Button 
-                        type="button" 
-                        variant="outline" 
-                        onClick={() => setIsProductDialogOpen(false)}
-                        data-testid="button-cancel-product"
-                      >
-                        Annuleren
-                      </Button>
-                      <Button 
-                        type="submit" 
-                        disabled={createProductMutation.isPending}
-                        data-testid="button-save-product"
-                      >
-                        {createProductMutation.isPending ? "Opslaan..." : "Opslaan"}
-                      </Button>
-                    </div>
-                  </form>
-                </DialogContent>
-              </Dialog>
+                      <div className="flex justify-end space-x-2">
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          onClick={() => setIsProductDialogOpen(false)}
+                          data-testid="button-cancel-product"
+                        >
+                          Annuleren
+                        </Button>
+                        <Button 
+                          type="submit" 
+                          disabled={createProductMutation.isPending}
+                          data-testid="button-save-product"
+                        >
+                          {createProductMutation.isPending ? "Opslaan..." : "Opslaan"}
+                        </Button>
+                      </div>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
 
             <Card className="bg-card border-border">

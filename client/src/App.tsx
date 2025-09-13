@@ -22,6 +22,18 @@ import AppleCarPlayBMW from "@/pages/apple-carplay-bmw";
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
 
+  // Show loading state while auth is being checked
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Switch>
       <Route path="/" component={Home} />
@@ -35,8 +47,8 @@ function Router() {
       <Route path="/contact" component={Contact} />
       <Route path="/apple-carplay-bmw" component={AppleCarPlayBMW} />
       <Route path="/login" component={Login} />
-      {isAuthenticated && <Route path="/my-account" component={CustomerPortal} />}
-      {isAuthenticated && <Route path="/admin" component={Admin} />}
+      <Route path="/my-account" component={CustomerPortal} />
+      <Route path="/admin" component={Admin} />
       <Route component={NotFound} />
     </Switch>
   );

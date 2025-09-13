@@ -41,6 +41,21 @@ const upload = multer({
   }
 });
 
+// Image upload configuration
+const imageUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit for images
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+  }
+});
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   setupAuth(app);
@@ -125,9 +140,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/products', isAuthenticated, async (req, res) => {
+  app.post('/api/products', isAdmin, async (req, res) => {
     try {
       const productData = insertProductSchema.parse(req.body);
+      
+      // Handle "none" value for upsellCategoryId
+      if (productData.upsellCategoryId === 'none') {
+        productData.upsellCategoryId = null;
+      }
+      
       const product = await storage.createProduct(productData);
       res.json(product);
     } catch (error) {
@@ -564,7 +585,7 @@ ${message || 'Geen aanvullende informatie'}`
   });
 
   // Admin review management routes
-  app.post('/api/admin/reviews/:id/approve', isAuthenticated, async (req, res) => {
+  app.post('/api/admin/reviews/:id/approve', isAdmin, async (req, res) => {
     try {
       const review = await storage.approveReview(req.params.id);
       res.json(review);
@@ -574,7 +595,7 @@ ${message || 'Geen aanvullende informatie'}`
     }
   });
 
-  app.post('/api/admin/reviews/:id/publish', isAuthenticated, async (req, res) => {
+  app.post('/api/admin/reviews/:id/publish', isAdmin, async (req, res) => {
     try {
       const review = await storage.publishReview(req.params.id);
       res.json(review);
@@ -584,7 +605,7 @@ ${message || 'Geen aanvullende informatie'}`
     }
   });
 
-  app.post('/api/admin/reviews/:id/feature', isAuthenticated, async (req, res) => {
+  app.post('/api/admin/reviews/:id/feature', isAdmin, async (req, res) => {
     try {
       const { featured } = req.body;
       const review = await storage.featureReview(req.params.id, featured);
@@ -596,7 +617,7 @@ ${message || 'Geen aanvullende informatie'}`
   });
 
   // Admin routes
-  app.get('/api/admin/products', isAuthenticated, async (req, res) => {
+  app.get('/api/admin/products', isAdmin, async (req, res) => {
     try {
       const products = await storage.getProducts();
       res.json(products);
@@ -606,7 +627,7 @@ ${message || 'Geen aanvullende informatie'}`
     }
   });
 
-  app.get('/api/admin/orders', isAuthenticated, async (req, res) => {
+  app.get('/api/admin/orders', isAdmin, async (req, res) => {
     try {
       const orders = await storage.getOrders();
       res.json(orders);
@@ -616,7 +637,7 @@ ${message || 'Geen aanvullende informatie'}`
     }
   });
 
-  app.get('/api/admin/bookings', isAuthenticated, async (req, res) => {
+  app.get('/api/admin/bookings', isAdmin, async (req, res) => {
     try {
       const bookings = await storage.getBookings();
       res.json(bookings);
@@ -626,8 +647,47 @@ ${message || 'Geen aanvullende informatie'}`
     }
   });
 
+  // Image upload endpoint using Object Storage
+  app.post('/api/upload/image', isAdmin, imageUpload.single('file'), async (req: any, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const fs = require('fs').promises;
+      const path = require('path');
+
+      // Generate unique filename
+      const fileExtension = req.file.originalname.split('.').pop();
+      const fileName = `product-${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExtension}`;
+      
+      // Write to object storage public directory
+      const objectStoragePath = path.join(process.env.PUBLIC_OBJECT_SEARCH_PATHS?.split(',')[0] || '/tmp', 'products', fileName);
+      
+      // Ensure directory exists in object storage
+      const objectStorageDir = path.dirname(objectStoragePath);
+      await fs.mkdir(objectStorageDir, { recursive: true });
+      
+      // Save file to object storage
+      await fs.writeFile(objectStoragePath, req.file.buffer);
+      
+      // Return public URL accessible via object storage
+      const publicUrl = `/public/products/${fileName}`;
+      
+      res.json({
+        url: publicUrl,
+        fileName: fileName,
+        size: req.file.size,
+        mimeType: req.file.mimetype
+      });
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      res.status(500).json({ message: "Failed to upload image" });
+    }
+  });
+
   // Bulk import endpoints
-  app.post('/api/admin/products/bulk-upload', isAuthenticated, upload.single('csvFile'), async (req: any, res) => {
+  app.post('/api/admin/products/bulk-upload', isAdmin, upload.single('csvFile'), async (req: any, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ message: "No file uploaded" });
@@ -696,7 +756,7 @@ ${message || 'Geen aanvullende informatie'}`
     }
   });
 
-  app.get('/api/admin/products/template', isAuthenticated, async (req, res) => {
+  app.get('/api/admin/products/template', isAdmin, async (req, res) => {
     try {
       // Create CSV template with headers and sample data
       const headers = [

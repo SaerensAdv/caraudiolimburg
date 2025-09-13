@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
 import {
   Table,
   TableBody,
@@ -51,7 +53,11 @@ import {
   TrendingUp,
   Eye,
   Upload,
-  Download
+  Download,
+  X,
+  Star,
+  Image,
+  Settings
 } from "lucide-react";
 import { format } from "date-fns";
 import { nl } from "date-fns/locale";
@@ -60,6 +66,10 @@ import type { Product, Order, Booking, QuoteRequest, User } from "@shared/schema
 const productFormSchema = insertProductSchema.extend({
   price: z.string().min(1, "Prijs is verplicht"),
   originalPrice: z.string().optional(),
+  installationPrice: z.string().optional(),
+  features: z.array(z.string()).optional(),
+  specifications: z.record(z.string(), z.any()).optional(),
+  images: z.array(z.string()).optional(),
 });
 
 type ProductFormData = z.infer<typeof productFormSchema>;
@@ -70,6 +80,13 @@ export default function Admin() {
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [productImages, setProductImages] = useState<string[]>([]);
+  const [primaryImageIndex, setPrimaryImageIndex] = useState(0);
+  const [features, setFeatures] = useState<string[]>([]);
+  const [newFeature, setNewFeature] = useState('');
+  const [specifications, setSpecifications] = useState<Record<string, any>>({});
+  const [newSpecKey, setNewSpecKey] = useState('');
+  const [newSpecValue, setNewSpecValue] = useState('');
   const { isAuthenticated, user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -243,6 +260,50 @@ export default function Admin() {
     },
   });
 
+  // Image upload handler
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setIsUploading(true);
+    try {
+      const uploadPromises = Array.from(files).map(async (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch('/api/upload/image', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error('Upload failed');
+        }
+
+        const result = await response.json();
+        return result.url;
+      });
+
+      const uploadedUrls = await Promise.all(uploadPromises);
+      setProductImages([...productImages, ...uploadedUrls]);
+
+      toast({
+        title: "Afbeeldingen geüpload",
+        description: `${uploadedUrls.length} afbeelding(en) succesvol geüpload.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Upload mislukt",
+        description: "Er is een fout opgetreden bij het uploaden van de afbeeldingen.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+      // Reset the input
+      e.target.value = '';
+    }
+  };
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-background">
@@ -282,7 +343,17 @@ export default function Admin() {
   }
 
   const onSubmitProduct = (data: ProductFormData) => {
-    createProductMutation.mutate(data);
+    const submitData = {
+      ...data,
+      images: productImages,
+      primaryImageIndex,
+      features,
+      specifications,
+      price: data.price,
+      originalPrice: data.originalPrice || undefined,
+      installationPrice: data.installationPrice || undefined,
+    };
+    createProductMutation.mutate(submitData);
   };
 
   const handleEditProduct = (product: Product) => {
@@ -293,10 +364,21 @@ export default function Admin() {
     setValue("shortDescription", product.shortDescription || "");
     setValue("price", product.price.toString());
     setValue("originalPrice", product.originalPrice?.toString() || "");
+    setValue("installationPrice", product.installationPrice?.toString() || "");
     setValue("sku", product.sku || "");
     setValue("stock", product.stock || 0);
     setValue("brandId", product.brandId || "");
     setValue("categoryId", product.categoryId || "");
+    setValue("upsellCategoryId", product.upsellCategoryId || "");
+    setValue("isFeatured", product.isFeatured || false);
+    setValue("canHaveInstallation", product.canHaveInstallation || false);
+    
+    // Set additional fields
+    setProductImages(product.images || []);
+    setPrimaryImageIndex(product.primaryImageIndex || 0);
+    setFeatures(product.features || []);
+    setSpecifications(product.specifications || {});
+    
     setIsProductDialogOpen(true);
   };
 
@@ -426,7 +508,21 @@ export default function Admin() {
                   </Button>
                 )}
 
-                <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
+                <Dialog open={isProductDialogOpen} onOpenChange={(open) => {
+                  setIsProductDialogOpen(open);
+                  if (!open) {
+                    // Reset form and state when closing
+                    setSelectedProduct(null);
+                    reset();
+                    setProductImages([]);
+                    setPrimaryImageIndex(0);
+                    setFeatures([]);
+                    setSpecifications({});
+                    setNewFeature('');
+                    setNewSpecKey('');
+                    setNewSpecValue('');
+                  }
+                }}>
                   <DialogTrigger asChild>
                     <Button data-testid="button-add-product">
                       <Plus className="w-4 h-4 mr-2" />
@@ -565,6 +661,304 @@ export default function Admin() {
                           data-testid="input-product-sku"
                         />
                       </div>
+
+                      <Separator className="my-6" />
+
+                      {/* Image Upload Section */}
+                      <div className="space-y-4">
+                        <Label className="text-base font-semibold">Product Afbeeldingen</Label>
+                        
+                        <div className="border-2 border-dashed border-border rounded-lg p-6">
+                          <div className="text-center">
+                            <Image className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+                            <div className="flex text-sm text-muted-foreground">
+                              <label
+                                htmlFor="image-upload"
+                                className="relative cursor-pointer bg-background rounded-md font-medium text-primary hover:text-primary/80 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary"
+                              >
+                                <span>Upload afbeeldingen</span>
+                                <input
+                                  id="image-upload"
+                                  name="image-upload"
+                                  type="file"
+                                  multiple
+                                  accept="image/*"
+                                  className="sr-only"
+                                  onChange={handleImageUpload}
+                                  data-testid="input-image-upload"
+                                />
+                              </label>
+                              <p className="pl-1">of sleep ze hier</p>
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-2">
+                              PNG, JPG, GIF tot 10MB
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Uploaded Images */}
+                        {productImages.length > 0 && (
+                          <div className="grid grid-cols-3 gap-4">
+                            {productImages.map((image, index) => (
+                              <div
+                                key={index}
+                                className={`relative border-2 rounded-lg overflow-hidden ${
+                                  index === primaryImageIndex
+                                    ? 'border-primary'
+                                    : 'border-border'
+                                }`}
+                              >
+                                <img
+                                  src={image}
+                                  alt={`Product ${index + 1}`}
+                                  className="w-full h-24 object-cover"
+                                />
+                                <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all duration-200" />
+                                <div className="absolute top-2 right-2 flex space-x-1">
+                                  {index === primaryImageIndex && (
+                                    <Badge variant="default" className="text-xs">
+                                      Hoofdafbeelding
+                                    </Badge>
+                                  )}
+                                </div>
+                                <div className="absolute bottom-2 left-2 flex space-x-1">
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="secondary"
+                                    onClick={() => setPrimaryImageIndex(index)}
+                                    data-testid={`button-set-primary-${index}`}
+                                  >
+                                    <Star className="w-3 h-3" />
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="destructive"
+                                    onClick={() => {
+                                      const newImages = productImages.filter((_, i) => i !== index);
+                                      setProductImages(newImages);
+                                      if (index === primaryImageIndex && newImages.length > 0) {
+                                        setPrimaryImageIndex(0);
+                                      } else if (index < primaryImageIndex) {
+                                        setPrimaryImageIndex(primaryImageIndex - 1);
+                                      }
+                                    }}
+                                    data-testid={`button-remove-image-${index}`}
+                                  >
+                                    <X className="w-3 h-3" />
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      <Separator className="my-6" />
+
+                      {/* Features Management */}
+                      <div className="space-y-4">
+                        <Label className="text-base font-semibold">Product Features</Label>
+                        
+                        <div className="flex space-x-2">
+                          <Input
+                            placeholder="Voeg feature toe..."
+                            value={newFeature}
+                            onChange={(e) => setNewFeature(e.target.value)}
+                            className="bg-input border-border"
+                            data-testid="input-new-feature"
+                          />
+                          <Button
+                            type="button"
+                            onClick={() => {
+                              if (newFeature.trim()) {
+                                setFeatures([...features, newFeature.trim()]);
+                                setNewFeature('');
+                              }
+                            }}
+                            data-testid="button-add-feature"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </Button>
+                        </div>
+
+                        {features.length > 0 && (
+                          <div className="space-y-2">
+                            {features.map((feature, index) => (
+                              <div
+                                key={index}
+                                className="flex items-center justify-between bg-secondary rounded-lg px-3 py-2"
+                              >
+                                <span className="text-sm">{feature}</span>
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => {
+                                    setFeatures(features.filter((_, i) => i !== index));
+                                  }}
+                                  data-testid={`button-remove-feature-${index}`}
+                                >
+                                  <X className="w-3 h-3" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      <Separator className="my-6" />
+
+                      {/* Specifications Management */}
+                      <div className="space-y-4">
+                        <Label className="text-base font-semibold">Specificaties</Label>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                          <Input
+                            placeholder="Specificatie naam"
+                            value={newSpecKey}
+                            onChange={(e) => setNewSpecKey(e.target.value)}
+                            className="bg-input border-border"
+                            data-testid="input-spec-key"
+                          />
+                          <Input
+                            placeholder="Waarde"
+                            value={newSpecValue}
+                            onChange={(e) => setNewSpecValue(e.target.value)}
+                            className="bg-input border-border"
+                            data-testid="input-spec-value"
+                          />
+                          <Button
+                            type="button"
+                            onClick={() => {
+                              if (newSpecKey.trim() && newSpecValue.trim()) {
+                                setSpecifications({
+                                  ...specifications,
+                                  [newSpecKey.trim()]: newSpecValue.trim()
+                                });
+                                setNewSpecKey('');
+                                setNewSpecValue('');
+                              }
+                            }}
+                            data-testid="button-add-specification"
+                          >
+                            <Plus className="w-4 h-4" />
+                          </Button>
+                        </div>
+
+                        {Object.keys(specifications).length > 0 && (
+                          <div className="space-y-2">
+                            {Object.entries(specifications).map(([key, value], index) => (
+                              <div
+                                key={index}
+                                className="flex items-center justify-between bg-secondary rounded-lg px-3 py-2"
+                              >
+                                <span className="text-sm">
+                                  <strong>{key}:</strong> {String(value)}
+                                </span>
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => {
+                                    const newSpecs = { ...specifications };
+                                    delete newSpecs[key];
+                                    setSpecifications(newSpecs);
+                                  }}
+                                  data-testid={`button-remove-spec-${key}`}
+                                >
+                                  <X className="w-3 h-3" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      <Separator className="my-6" />
+
+                      {/* Product Settings */}
+                      <div className="space-y-6">
+                        <Label className="text-base font-semibold">Product Instellingen</Label>
+                        
+                        {/* Featured Product Toggle */}
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-0.5">
+                            <Label className="text-base">Uitgelicht product</Label>
+                            <div className="text-sm text-muted-foreground">
+                              Toon dit product op de homepage
+                            </div>
+                          </div>
+                          <Switch
+                            checked={selectedProduct?.isFeatured || false}
+                            onCheckedChange={(checked) => setValue("isFeatured", checked)}
+                            data-testid="switch-featured"
+                          />
+                        </div>
+
+                        {/* Installation Service Toggle */}
+                        <div className="flex items-center justify-between">
+                          <div className="space-y-0.5">
+                            <Label className="text-base">Installatie service</Label>
+                            <div className="text-sm text-muted-foreground">
+                              Bied installatieservice aan voor dit product
+                            </div>
+                          </div>
+                          <Switch
+                            checked={selectedProduct?.canHaveInstallation || false}
+                            onCheckedChange={(checked) => {
+                              setValue("canHaveInstallation", checked);
+                              // Reset installation price if disabled
+                              if (!checked) {
+                                setValue("installationPrice", "");
+                              }
+                            }}
+                            data-testid="switch-installation"
+                          />
+                        </div>
+
+                        {/* Installation Price (conditional) */}
+                        {(selectedProduct?.canHaveInstallation) && (
+                          <div>
+                            <Label htmlFor="installationPrice">Installatie prijs</Label>
+                            <Input
+                              {...register("installationPrice")}
+                              type="number"
+                              step="0.01"
+                              placeholder="0.00"
+                              className="bg-input border-border"
+                              data-testid="input-installation-price"
+                            />
+                            {errors.installationPrice && (
+                              <p className="text-sm text-destructive mt-1">{errors.installationPrice.message}</p>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Upsell Category */}
+                        <div>
+                          <Label className="text-base">Upsell Categorie</Label>
+                          <div className="text-sm text-muted-foreground mb-2">
+                            Categorie voor gerelateerde producten
+                          </div>
+                          <Select onValueChange={(value) => setValue("upsellCategoryId", value)}>
+                            <SelectTrigger className="bg-input border-border" data-testid="select-upsell-category">
+                              <SelectValue placeholder="Selecteer upsell categorie" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="none">Geen upsell categorie</SelectItem>
+                              {categories?.map((category: any) => (
+                                <SelectItem key={category.id} value={category.id}>
+                                  {category.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+
+                      <Separator className="my-6" />
 
                       <div className="flex justify-end space-x-2">
                         <Button 

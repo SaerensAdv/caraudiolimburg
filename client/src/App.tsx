@@ -18,6 +18,7 @@ import Contact from "@/pages/contact";
 import CustomerPortal from "@/pages/customer-portal";
 import Login from "@/pages/login";
 import AppleCarPlayBMW from "@/pages/apple-carplay-bmw";
+import ProductDemo from "@/pages/product-demo";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -46,6 +47,7 @@ function Router() {
       <Route path="/faq" component={FAQ} />
       <Route path="/contact" component={Contact} />
       <Route path="/apple-carplay-bmw" component={AppleCarPlayBMW} />
+      <Route path="/demo" component={ProductDemo} />
       <Route path="/login" component={Login} />
       <Route path="/my-account" component={CustomerPortal} />
       <Route path="/admin" component={Admin} />

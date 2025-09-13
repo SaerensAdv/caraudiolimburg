@@ -362,7 +362,7 @@ export default function ProductPage() {
                         {product.features.map((feature, index) => (
                           <div key={index} className="flex items-center space-x-2">
                             <Check className="w-4 h-4 text-primary" />
-                            <span className="text-muted-foreground">{feature}</span>
+                            <span className="text-muted-foreground">{String(feature)}</span>
                           </div>
                         ))}
                       </div>

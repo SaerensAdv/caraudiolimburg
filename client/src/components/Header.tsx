@@ -61,9 +61,6 @@ export function Header({ onCartOpen }: HeaderProps) {
           <Link href="/contact" className="text-muted-foreground hover:text-primary transition-colors font-medium" data-testid="nav-contact">
             Contact
           </Link>
-          <Link href="/demo" className="text-primary hover:text-primary/80 transition-colors font-semibold bg-primary/10 px-3 py-1 rounded-lg" data-testid="nav-demo">
-            🚀 Demo
-          </Link>
         </nav>
 
         {/* Right side actions */}
@@ -186,14 +183,6 @@ export function Header({ onCartOpen }: HeaderProps) {
               onClick={() => setIsMenuOpen(false)}
             >
               Contact
-            </Link>
-            <Link 
-              href="/demo" 
-              className="flex items-center text-primary hover:text-primary/80 transition-colors font-semibold py-2 px-3 rounded-lg bg-primary/10" 
-              data-testid="mobile-nav-demo"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              🚀 Product Demo
             </Link>
             
             <div className="border-t border-border pt-4 mt-4">

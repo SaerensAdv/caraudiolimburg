@@ -151,7 +151,6 @@ export default function Admin() {
         features,
         specifications,
       };
-      console.log("🚀 Sending product data:", payload);
       await apiRequest("POST", "/api/products", payload);
     },
     onSuccess: () => {

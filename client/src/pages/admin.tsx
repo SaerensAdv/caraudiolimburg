@@ -142,11 +142,17 @@ export default function Admin() {
   // Mutations
   const createProductMutation = useMutation({
     mutationFn: async (data: ProductFormData) => {
-      await apiRequest("POST", "/api/products", {
+      const payload = {
         ...data,
         price: data.price,
         originalPrice: data.originalPrice || null,
-      });
+        installationPrice: data.installationPrice || null,
+        images: productImages,
+        features,
+        specifications,
+      };
+      console.log("🚀 Sending product data:", payload);
+      await apiRequest("POST", "/api/products", payload);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });

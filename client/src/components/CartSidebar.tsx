@@ -21,6 +21,7 @@ import {
   Wrench
 } from "lucide-react";
 import type { CartItem } from "@shared/schema";
+import carAudioLogo from "@assets/Caraudiolimburg-logo_1757008375383_1757016657436.png";
 
 interface CartSidebarProps {
   isOpen: boolean;
@@ -226,16 +227,14 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                           <div className="flex items-center space-x-3">
                             {/* Product Image */}
                             <div className="w-16 h-16 bg-muted rounded-lg flex-shrink-0">
-                              {product?.images?.[product.primaryImageIndex || 0] ? (
-                                <div 
-                                  className="w-full h-full bg-cover bg-center rounded-lg"
-                                  style={{ backgroundImage: `url(${product.images[product.primaryImageIndex || 0]})` }}
-                                />
-                              ) : (
-                                <div className="w-full h-full bg-muted rounded-lg flex items-center justify-center">
-                                  <span className="text-xs text-muted-foreground">Geen foto</span>
-                                </div>
-                              )}
+                              <img 
+                                src={product?.images?.[product.primaryImageIndex || 0] || carAudioLogo}
+                                alt={product?.name || "Product"} 
+                                className="w-full h-full object-cover rounded-lg"
+                                onError={(e) => {
+                                  e.currentTarget.src = carAudioLogo;
+                                }}
+                              />
                             </div>
 
                             {/* Product Info */}

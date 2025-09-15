@@ -88,24 +88,16 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <Card className="bg-card border-border hover:shadow-2xl transition-all duration-300 group" data-testid={`product-card-${product.id}`}>
       <div className="relative overflow-hidden rounded-t-2xl">
-        {product.images?.[product.primaryImageIndex || 0] ? (
-          <div className="aspect-square bg-white flex items-center justify-center p-8">
-            <img 
-              src={getImageSrc(product.images[product.primaryImageIndex || 0])} 
-              alt={product.name}
-              className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300"
-            />
-          </div>
-        ) : (
-          <div className="aspect-square bg-muted rounded-t-2xl flex flex-col items-center justify-center space-y-2 border-2 border-dashed border-border/50">
-            <div className="w-12 h-12 bg-muted-foreground/20 rounded-lg flex items-center justify-center">
-              <svg className="w-6 h-6 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <p className="text-xs text-muted-foreground text-center">Geen foto</p>
-          </div>
-        )}
+        <div className="aspect-square bg-white flex items-center justify-center p-8">
+          <img 
+            src={product.images?.[product.primaryImageIndex || 0] ? getImageSrc(product.images[product.primaryImageIndex || 0]) : carAudioLogo} 
+            alt={product.name}
+            className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300"
+            onError={(e) => {
+              e.currentTarget.src = carAudioLogo;
+            }}
+          />
+        </div>
         
         {discount && (
           <Badge className="absolute top-2 left-2 bg-destructive text-destructive-foreground" data-testid={`discount-badge-${product.id}`}>

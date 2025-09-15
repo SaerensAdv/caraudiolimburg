@@ -18,6 +18,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Wrench, Lock, CreditCard } from 'lucide-react';
+import carAudioLogo from "@assets/Caraudiolimburg-logo_1757008375383_1757016657436.png";
 
 const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY
   ? loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
@@ -343,12 +344,14 @@ export default function Checkout() {
                   {(cartItems || []).map((item: any) => (
                     <div key={item.id} className="flex items-center space-x-3" data-testid={`summary-item-${item.id}`}>
                       <div className="w-12 h-12 bg-muted rounded-lg flex-shrink-0">
-                        {item.product?.images?.[item.product.primaryImageIndex || 0] && (
-                          <div 
-                            className="w-full h-full bg-cover bg-center rounded-lg"
-                            style={{ backgroundImage: `url(${item.product.images[item.product.primaryImageIndex || 0]})` }}
-                          />
-                        )}
+                        <img 
+                          src={item.product?.images?.[item.product.primaryImageIndex || 0] || carAudioLogo}
+                          alt={item.product?.name || "Product"}
+                          className="w-full h-full object-cover rounded-lg"
+                          onError={(e) => {
+                            e.currentTarget.src = carAudioLogo;
+                          }}
+                        />
                       </div>
                       <div className="flex-1">
                         <p className="text-sm font-medium text-card-foreground">

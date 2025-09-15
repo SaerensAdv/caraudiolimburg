@@ -144,14 +144,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const productData = insertProductSchema.parse(req.body);
       
-      // Handle "none" value for upsellCategoryId
-      if (productData.upsellCategoryId === 'none') {
+      // Handle "none" value or empty string for upsellCategoryId
+      if (productData.upsellCategoryId === 'none' || productData.upsellCategoryId === '') {
         productData.upsellCategoryId = null;
       }
       
       // Handle empty SKU - convert to null or generate unique SKU
       if (productData.sku === '' || productData.sku === undefined) {
         productData.sku = null;
+      }
+      
+      // Handle empty brandId and categoryId 
+      if (productData.brandId === '') {
+        productData.brandId = null;
+      }
+      if (productData.categoryId === '') {
+        productData.categoryId = null;
       }
       
       const product = await storage.createProduct(productData);
@@ -167,14 +175,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const productId = req.params.id;
       const productData = insertProductSchema.parse(req.body);
       
-      // Handle "none" value for upsellCategoryId
-      if (productData.upsellCategoryId === 'none') {
+      // Handle "none" value or empty string for upsellCategoryId
+      if (productData.upsellCategoryId === 'none' || productData.upsellCategoryId === '') {
         productData.upsellCategoryId = null;
       }
       
       // Handle empty SKU - convert to null or generate unique SKU
       if (productData.sku === '' || productData.sku === undefined) {
         productData.sku = null;
+      }
+      
+      // Handle empty brandId and categoryId 
+      if (productData.brandId === '') {
+        productData.brandId = null;
+      }
+      if (productData.categoryId === '') {
+        productData.categoryId = null;
       }
       
       const product = await storage.updateProduct(productId, productData);

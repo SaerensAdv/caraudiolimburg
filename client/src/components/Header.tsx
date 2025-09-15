@@ -22,12 +22,16 @@ export function Header({ onCartOpen }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isAuthenticated, user } = useAuth();
 
-  const { data: cartItems } = useQuery({
+  const { data: cartItems = [] } = useQuery({
     queryKey: ["/api/cart"],
     enabled: isAuthenticated,
+    refetchOnWindowFocus: false,
+    staleTime: 2 * 60 * 1000, // 2 minutes
   });
 
-  const cartItemCount = cartItems?.reduce((sum: number, item: any) => sum + item.quantity, 0) || 0;
+  const cartItemCount = Array.isArray(cartItems) 
+    ? cartItems.reduce((sum: number, item: any) => sum + item.quantity, 0) 
+    : 0;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">

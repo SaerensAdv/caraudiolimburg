@@ -246,6 +246,34 @@ export default function Admin() {
     },
   });
 
+  const deleteProductMutation = useMutation({
+    mutationFn: async (productId: string) => {
+      await apiRequest("DELETE", `/api/products/${productId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
+      toast({
+        title: "Product verwijderd",
+        description: "Het product is succesvol verwijderd.",
+      });
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Geen toegang",
+          description: "Je hebt geen toegang tot deze functie.",
+          variant: "destructive",
+        });
+        return;
+      }
+      toast({
+        title: "Fout",
+        description: "Kon product niet verwijderen.",
+        variant: "destructive",
+      });
+    },
+  });
+
   // Bulk upload function
   const handleBulkUpload = async () => {
     if (!selectedFile) return;

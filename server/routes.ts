@@ -755,17 +755,11 @@ ${message || 'Geen aanvullende informatie'}`
       const objectStorageDir = path.join('public', 'products');
       const objectStoragePath = path.join(objectStorageDir, fileName);
       
-      console.log("🔍 [UPLOAD DEBUG] Paths:");
-      console.log("   - objectStorageDir:", objectStorageDir);
-      console.log("   - objectStoragePath:", objectStoragePath);
       
       try {
-        console.log("🔍 [UPLOAD DEBUG] Creating Object Storage directory...");
         // Ensure Object Storage directory exists
         await fs.promises.mkdir(objectStorageDir, { recursive: true });
-        console.log("✅ [UPLOAD DEBUG] Directory created successfully");
         
-        console.log("🔍 [UPLOAD DEBUG] Writing file to Object Storage...");
         // Save to Object Storage
         await fs.promises.writeFile(objectStoragePath, req.file.buffer);
         console.log(`✅ [UPLOAD DEBUG] File written successfully: ${objectStoragePath}`);

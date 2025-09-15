@@ -764,13 +764,13 @@ ${message || 'Geen aanvullende informatie'}`
           size: req.file.size,
           mimeType: req.file.mimetype
         });
-      } catch (objectStorageError) {
+      } catch (objectStorageError: any) {
         console.error("❌ [UPLOAD DEBUG] Object Storage upload failed:", objectStorageError);
         console.error("❌ [UPLOAD DEBUG] Error details:", {
-          message: objectStorageError.message,
-          code: objectStorageError.code,
-          errno: objectStorageError.errno,
-          path: objectStorageError.path
+          message: objectStorageError?.message,
+          code: objectStorageError?.code,
+          errno: objectStorageError?.errno,
+          path: objectStorageError?.path
         });
         
         // Only fallback to local in development, fail in production
@@ -778,7 +778,7 @@ ${message || 'Geen aanvullende informatie'}`
           console.error("❌ [UPLOAD DEBUG] Production mode - failing without fallback");
           return res.status(500).json({ 
             message: "Image upload failed - Object Storage not available in production",
-            error: objectStorageError.message
+            error: objectStorageError?.message || "Unknown error"
           });
         }
         
@@ -812,12 +812,12 @@ ${message || 'Geen aanvullende informatie'}`
           throw localError;
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ [UPLOAD DEBUG] Outer catch - Final error:", error);
-      console.error("❌ [UPLOAD DEBUG] Error stack:", error.stack);
+      console.error("❌ [UPLOAD DEBUG] Error stack:", error?.stack);
       res.status(500).json({ 
         message: "Failed to upload image",
-        error: error.message
+        error: error?.message || "Unknown error"
       });
     }
   });

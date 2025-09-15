@@ -647,7 +647,7 @@ ${message || 'Geen aanvullende informatie'}`
     }
   });
 
-  // Image upload endpoint using Object Storage
+  // Image upload endpoint using local public directory
   app.post('/api/upload/image', isAdmin, imageUpload.single('file'), async (req: any, res) => {
     try {
       if (!req.file) {
@@ -661,18 +661,18 @@ ${message || 'Geen aanvullende informatie'}`
       const fileExtension = req.file.originalname.split('.').pop();
       const fileName = `product-${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExtension}`;
       
-      // Write to object storage public directory
-      const objectStoragePath = path.join(process.env.PUBLIC_OBJECT_SEARCH_PATHS?.split(',')[0] || '/tmp', 'products', fileName);
+      // Use local public directory for development
+      const publicDir = path.join(process.cwd(), 'public', 'products');
+      const filePath = path.join(publicDir, fileName);
       
-      // Ensure directory exists in object storage
-      const objectStorageDir = path.dirname(objectStoragePath);
-      await fs.promises.mkdir(objectStorageDir, { recursive: true });
+      // Ensure directory exists
+      await fs.promises.mkdir(publicDir, { recursive: true });
       
-      // Save file to object storage
-      await fs.promises.writeFile(objectStoragePath, req.file.buffer);
+      // Save file locally
+      await fs.promises.writeFile(filePath, req.file.buffer);
       
-      // Return public URL accessible via object storage
-      const publicUrl = `/public/products/${fileName}`;
+      // Return public URL
+      const publicUrl = `/products/${fileName}`;
       
       res.json({
         url: publicUrl,

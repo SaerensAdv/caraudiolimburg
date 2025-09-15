@@ -776,7 +776,7 @@ ${message || 'Geen aanvullende informatie'}`
         console.log(`✅ [UPLOAD DEBUG] File written successfully: ${objectStoragePath}`);
         
         // Always return consistent public URL format for production
-        const publicUrl = `/public/products/${fileName}`;
+        const publicUrl = `/products/${fileName}`;
         console.log("✅ [UPLOAD DEBUG] Returning success response with URL:", publicUrl);
         
         res.json({
@@ -819,7 +819,7 @@ ${message || 'Geen aanvullende informatie'}`
           console.log("✅ [UPLOAD DEBUG] File saved locally");
           
           // Return consistent public URL format even for local fallback
-          const publicUrl = `/public/products/${fileName}`;
+          const publicUrl = `/products/${fileName}`;
           console.log("✅ [UPLOAD DEBUG] Local fallback success, returning URL:", publicUrl);
           
           res.json({

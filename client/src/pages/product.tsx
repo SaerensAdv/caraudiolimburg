@@ -188,8 +188,8 @@ export default function ProductPage() {
                     {images.map((image, index) => (
                       <button
                         key={index}
-                        className={`aspect-square bg-cover bg-center rounded-lg border-2 transition-colors ${
-                          index === selectedImageIndex ? 'border-primary' : 'border-border'
+                        className={`aspect-square bg-cover bg-center rounded-lg border-2 transition-all duration-300 hover:scale-105 hover:shadow-lg ${
+                          index === selectedImageIndex ? 'border-primary shadow-md scale-105' : 'border-border hover:border-primary/50'
                         }`}
                         style={{ backgroundImage: `url(${image})` }}
                         onClick={() => setSelectedImageIndex(index)}
@@ -306,43 +306,66 @@ export default function ProductPage() {
               <div className="space-y-3">
                 <Button
                   size="lg"
-                  className="w-full"
+                  className="w-full transform transition-all duration-200 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]"
                   onClick={() => addToCartMutation.mutate({ needsInstallation: false })}
                   disabled={!product.stock || product.stock <= 0 || addToCartMutation.isPending}
                   data-testid="button-add-to-cart"
                 >
-                  <ShoppingCart className="w-5 h-5 mr-2" />
+                  <ShoppingCart className="w-5 h-5 mr-2 transition-transform duration-200 group-hover:scale-110" />
                   {addToCartMutation.isPending ? "Toevoegen..." : "In Winkelwagen"}
                 </Button>
                 
                 <Button
                   variant="secondary"
                   size="lg"
-                  className="w-full"
+                  className="w-full transform transition-all duration-200 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] group"
                   onClick={() => addToCartMutation.mutate({ needsInstallation: true })}
                   disabled={!product.stock || product.stock <= 0 || addToCartMutation.isPending}
                   data-testid="button-add-with-installation"
                 >
-                  <Wrench className="w-5 h-5 mr-2" />
+                  <Wrench className="w-5 h-5 mr-2 transition-transform duration-200 group-hover:scale-110" />
                   Toevoegen + Installatie
                 </Button>
               </div>
             </div>
 
-            {/* Features */}
-            <div className="space-y-3" data-testid="product-benefits">
-              <div className="flex items-center space-x-3">
-                <Truck className="w-5 h-5 text-primary" />
-                <span className="text-sm text-foreground">Gratis verzending vanaf €50</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Shield className="w-5 h-5 text-primary" />
-                <span className="text-sm text-foreground">2 jaar garantie</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Wrench className="w-5 h-5 text-primary" />
-                <span className="text-sm text-foreground">Professionele installatie beschikbaar</span>
-              </div>
+            {/* Trust Indicators - Enhanced */}
+            <div className="grid grid-cols-1 gap-3" data-testid="product-benefits">
+              <Card className="bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800 p-4 rounded-xl">
+                <div className="flex items-center space-x-3">
+                  <div className="bg-green-100 dark:bg-green-900 p-2 rounded-lg">
+                    <Truck className="w-5 h-5 text-green-600 dark:text-green-400" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-medium text-green-800 dark:text-green-200 text-sm">Gratis Verzending</div>
+                    <div className="text-green-600 dark:text-green-400 text-xs">Bij bestellingen vanaf €50</div>
+                  </div>
+                </div>
+              </Card>
+              
+              <Card className="bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800 p-4 rounded-xl">
+                <div className="flex items-center space-x-3">
+                  <div className="bg-blue-100 dark:bg-blue-900 p-2 rounded-lg">
+                    <Shield className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-medium text-blue-800 dark:text-blue-200 text-sm">2 Jaar Garantie</div>
+                    <div className="text-blue-600 dark:text-blue-400 text-xs">Volledige fabrieksgarantie</div>
+                  </div>
+                </div>
+              </Card>
+              
+              <Card className="bg-primary/10 border-primary/20 p-4 rounded-xl">
+                <div className="flex items-center space-x-3">
+                  <div className="bg-primary/20 p-2 rounded-lg">
+                    <Wrench className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-medium text-foreground text-sm">Professionele Installatie</div>
+                    <div className="text-primary text-xs">Gecertificeerde monteurs</div>
+                  </div>
+                </div>
+              </Card>
             </div>
           </div>
         </div>
@@ -363,7 +386,7 @@ export default function ProductPage() {
                 )}
 
                 {/* Features */}
-                {product.features && product.features.length > 0 && (
+                {product.features && Array.isArray(product.features) && product.features.length > 0 && (
                   <>
                     <Separator />
                     <div>
@@ -380,18 +403,24 @@ export default function ProductPage() {
                   </>
                 )}
 
-                {/* Specifications */}
+                {/* Specifications - Enhanced Cards */}
                 {product.specifications && (
                   <>
                     <Separator />
                     <div>
-                      <h3 className="text-xl font-semibold text-card-foreground mb-4">Specificaties</h3>
+                      <h3 className="text-xl font-semibold text-card-foreground mb-6">Specificaties</h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {Object.entries(product.specifications as Record<string, any>).map(([key, value]) => (
-                          <div key={key} className="flex justify-between py-2 border-b border-border">
-                            <span className="font-medium text-card-foreground">{key}</span>
-                            <span className="text-muted-foreground">{String(value)}</span>
-                          </div>
+                          <Card key={key} className="bg-muted/30 border-border/50 p-4 rounded-xl hover:bg-muted/50 transition-colors duration-200">
+                            <div className="space-y-2">
+                              <div className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                                {key}
+                              </div>
+                              <div className="text-lg font-semibold text-card-foreground">
+                                {String(value)}
+                              </div>
+                            </div>
+                          </Card>
                         ))}
                       </div>
                     </div>

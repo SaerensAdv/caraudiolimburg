@@ -127,7 +127,7 @@ export function ImageLightbox({ images, isOpen, initialIndex, onClose }: ImageLi
 
         {/* Thumbnail Strip */}
         {images.length > 1 && (
-          <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 flex space-x-2 max-w-full overflow-x-auto px-4">
+          <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 flex space-x-2 max-w-full px-4">
             {images.map((image, index) => (
               <button
                 key={index}

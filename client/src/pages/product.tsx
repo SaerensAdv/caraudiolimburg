@@ -357,7 +357,7 @@ export default function ProductPage() {
                   <div>
                     <h3 className="text-xl font-semibold text-card-foreground mb-4">Beschrijving</h3>
                     <div className="text-muted-foreground prose prose-invert max-w-none">
-                      <p>{product.description}</p>
+                      <p>{String(product.description)}</p>
                     </div>
                   </div>
                 )}

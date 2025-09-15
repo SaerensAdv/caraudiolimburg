@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CartSidebar } from "@/components/CartSidebar";
+import { ImageLightbox } from "@/components/ImageLightbox";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -21,7 +22,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Check,
-  X
+  X,
+  ZoomIn
 } from "lucide-react";
 import type { Product } from "@shared/schema";
 
@@ -31,6 +33,7 @@ export default function ProductPage() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -140,10 +143,17 @@ export default function ProductPage() {
             {images.length > 0 ? (
               <>
                 <div 
-                  className="aspect-square bg-cover bg-center rounded-2xl border border-border relative"
+                  className="aspect-square bg-cover bg-center rounded-2xl border border-border relative cursor-zoom-in group transition-transform hover:scale-[1.02]"
                   style={{ backgroundImage: `url(${images[selectedImageIndex]})` }}
+                  onClick={() => setIsLightboxOpen(true)}
                   data-testid="main-product-image"
                 >
+                  {/* Zoom indicator */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 rounded-2xl flex items-center justify-center">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 backdrop-blur-sm rounded-full p-3">
+                      <ZoomIn className="w-6 h-6 text-gray-800" />
+                    </div>
+                  </div>
                   {discount && (
                     <Badge className="absolute top-4 left-4 bg-destructive text-destructive-foreground">
                       -{discount}%
@@ -359,7 +369,7 @@ export default function ProductPage() {
                     <div>
                       <h3 className="text-xl font-semibold text-card-foreground mb-4">Kenmerken</h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {product.features.map((feature, index) => (
+                        {product.features.map((feature: string, index: number) => (
                           <div key={index} className="flex items-center space-x-2">
                             <Check className="w-4 h-4 text-primary" />
                             <span className="text-muted-foreground">{feature}</span>
@@ -395,6 +405,12 @@ export default function ProductPage() {
 
       <Footer />
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      <ImageLightbox 
+        images={images}
+        isOpen={isLightboxOpen}
+        initialIndex={selectedImageIndex}
+        onClose={() => setIsLightboxOpen(false)}
+      />
     </div>
   );
 }

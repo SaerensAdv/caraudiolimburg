@@ -112,3 +112,56 @@
     transform: translateY(0);
   }
 }
+
+/* Range slider styling */
+.range-slider {
+  background: transparent;
+  -webkit-appearance: none;
+}
+
+.range-slider::-webkit-slider-track {
+  width: 100%;
+  height: 8px;
+  cursor: pointer;
+  background: hsl(var(--muted));
+  border-radius: 4px;
+  border: none;
+}
+
+.range-slider::-webkit-slider-thumb {
+  border: 2px solid hsl(var(--primary));
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: hsl(var(--background));
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+}
+
+.range-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.range-slider::-moz-range-track {
+  width: 100%;
+  height: 8px;
+  cursor: pointer;
+  background: hsl(var(--muted));
+  border-radius: 4px;
+  border: none;
+}
+
+.range-slider::-moz-range-thumb {
+  border: 2px solid hsl(var(--primary));
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background: hsl(var(--background));
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+}

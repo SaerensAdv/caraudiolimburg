@@ -144,7 +144,16 @@ export default function Shop() {
 
           {/* Featured Categories Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-border hover:border-primary/50">
+            <Card 
+              className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-border hover:border-primary/50"
+              onClick={() => {
+                const speakerCategory = categories?.find((c: Category) => c.name.toLowerCase().includes('speaker'));
+                if (speakerCategory) {
+                  setSelectedCategory(speakerCategory.id);
+                }
+                setShowFilters(false);
+              }}
+            >
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-primary/20 transition-colors">
                   <Volume2 className="w-6 h-6 text-primary" />
@@ -154,7 +163,16 @@ export default function Shop() {
               </CardContent>
             </Card>
 
-            <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-border hover:border-primary/50">
+            <Card 
+              className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-border hover:border-primary/50"
+              onClick={() => {
+                const ampCategory = categories?.find((c: Category) => c.name.toLowerCase().includes('amplif'));
+                if (ampCategory) {
+                  setSelectedCategory(ampCategory.id);
+                }
+                setShowFilters(false);
+              }}
+            >
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-primary/20 transition-colors">
                   <Settings className="w-6 h-6 text-primary" />
@@ -164,7 +182,16 @@ export default function Shop() {
               </CardContent>
             </Card>
 
-            <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-border hover:border-primary/50">
+            <Card 
+              className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-border hover:border-primary/50"
+              onClick={() => {
+                const headUnitCategory = categories?.find((c: Category) => c.name.toLowerCase().includes('head'));
+                if (headUnitCategory) {
+                  setSelectedCategory(headUnitCategory.id);
+                }
+                setShowFilters(false);
+              }}
+            >
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-primary/20 transition-colors">
                   <Car className="w-6 h-6 text-primary" />
@@ -174,7 +201,16 @@ export default function Shop() {
               </CardContent>
             </Card>
 
-            <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-border hover:border-primary/50">
+            <Card 
+              className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-border hover:border-primary/50"
+              onClick={() => {
+                const accessCategory = categories?.find((c: Category) => c.name.toLowerCase().includes('access'));
+                if (accessCategory) {
+                  setSelectedCategory(accessCategory.id);
+                }
+                setShowFilters(false);
+              }}
+            >
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-primary/20 transition-colors">
                   <Grid className="w-6 h-6 text-primary" />
@@ -489,39 +525,63 @@ export default function Shop() {
 
                   {/* Price Range Filter */}
                   <div className="lg:col-span-2">
-                    <label className="text-sm font-medium text-foreground mb-3 block flex items-center">
-                      <Euro className="w-4 h-4 mr-1" />
-                      Prijsbereik: €{priceRange[0]} - €{priceRange[1]}
-                    </label>
-                    <div className="px-2">
-                      <div className="relative">
+                    <div className="flex items-center justify-between mb-4">
+                      <label className="text-sm font-medium text-foreground flex items-center">
+                        <Euro className="w-4 h-4 mr-1" />
+                        Prijsbereik
+                      </label>
+                      <span className="text-sm font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full">
+                        €{priceRange[0]} - €{priceRange[1]}
+                      </span>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      {/* Min Price Slider */}
+                      <div>
+                        <label className="text-xs text-muted-foreground mb-1 block">Minimum: €{priceRange[0]}</label>
                         <input
                           type="range"
                           min="0"
                           max="2000"
                           step="50"
                           value={priceRange[0]}
-                          onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
-                          className="absolute w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
-                          style={{ zIndex: 1 }}
+                          onChange={(e) => {
+                            const newMin = parseInt(e.target.value);
+                            if (newMin <= priceRange[1]) {
+                              setPriceRange([newMin, priceRange[1]]);
+                            }
+                          }}
+                          className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer range-slider"
+                          data-testid="slider-min-price"
                         />
+                      </div>
+                      
+                      {/* Max Price Slider */}
+                      <div>
+                        <label className="text-xs text-muted-foreground mb-1 block">Maximum: €{priceRange[1]}</label>
                         <input
                           type="range"
                           min="0"
                           max="2000"
                           step="50"
                           value={priceRange[1]}
-                          onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-                          className="absolute w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
-                          style={{ zIndex: 2 }}
+                          onChange={(e) => {
+                            const newMax = parseInt(e.target.value);
+                            if (newMax >= priceRange[0]) {
+                              setPriceRange([priceRange[0], newMax]);
+                            }
+                          }}
+                          className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer range-slider"
+                          data-testid="slider-max-price"
                         />
-                        <div className="flex justify-between text-xs text-muted-foreground mt-6">
-                          <span>€0</span>
-                          <span>€500</span>
-                          <span>€1000</span>
-                          <span>€1500</span>
-                          <span>€2000+</span>
-                        </div>
+                      </div>
+                      
+                      <div className="flex justify-between text-xs text-muted-foreground pt-1">
+                        <span>€0</span>
+                        <span>€500</span>
+                        <span>€1000</span>
+                        <span>€1500</span>
+                        <span>€2000+</span>
                       </div>
                     </div>
                   </div>

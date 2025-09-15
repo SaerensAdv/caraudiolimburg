@@ -493,6 +493,12 @@ export default function Admin() {
     }
   };
 
+  const handleDeleteProduct = (product: Product) => {
+    if (window.confirm(`Weet je zeker dat je "${product.name}" wilt verwijderen? Deze actie kan niet ongedaan gemaakt worden.`)) {
+      deleteProductMutation.mutate(product.id);
+    }
+  };
+
   const handleEditProduct = (product: Product) => {
     setSelectedProduct(product);
     setValue("name", product.name);
@@ -1179,6 +1185,8 @@ export default function Admin() {
                                 size="sm" 
                                 variant="outline"
                                 className="text-destructive"
+                                onClick={() => handleDeleteProduct(product)}
+                                disabled={deleteProductMutation.isPending}
                                 data-testid={`button-delete-product-${product.id}`}
                               >
                                 <Trash2 className="w-4 h-4" />

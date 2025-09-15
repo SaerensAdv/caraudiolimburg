@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Filter, X, ChevronDown, Grid, Car, Volume2, Settings, ChevronRight, List, LayoutGrid } from "lucide-react";
+import { Search, Filter, X, ChevronDown, Grid, Car, Volume2, Settings, ChevronRight, List, LayoutGrid, Euro } from "lucide-react";
 import type { Product, Category, Brand, VehicleMake } from "@shared/schema";
 import { ProductAudioSkeleton, AudioLoadingSpinner } from "@/components/AudioSkeletons";
 import {
@@ -81,6 +81,8 @@ export default function Shop() {
     setSelectedMake("all-makes");
     setSelectedModel("all-models");
     setSelectedYear("all-years");
+    setPriceRange([0, 2000]);
+    setSortBy("name");
   };
 
   const activeFiltersCount = [
@@ -89,11 +91,42 @@ export default function Shop() {
     selectedBrand && !selectedBrand.startsWith('all-') ? selectedBrand : '',
     selectedMake && !selectedMake.startsWith('all-') ? selectedMake : '',
     selectedModel && !selectedModel.startsWith('all-') ? selectedModel : '',
-    selectedYear && !selectedYear.startsWith('all-') ? selectedYear : ''
+    selectedYear && !selectedYear.startsWith('all-') ? selectedYear : '',
+    (priceRange[0] > 0 || priceRange[1] < 2000) ? 'price' : '',
+    sortBy !== 'name' ? 'sort' : ''
   ].filter(Boolean).length;
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 30 }, (_, i) => currentYear - i);
+
+  // Client-side sorting function
+  const sortProducts = (products: Product[]) => {
+    if (!products) return [];
+    
+    const filtered = products.filter((product) => {
+      const price = parseFloat(product.price);
+      return price >= priceRange[0] && price <= priceRange[1];
+    });
+
+    return [...filtered].sort((a, b) => {
+      switch (sortBy) {
+        case 'price-low':
+          return parseFloat(a.price) - parseFloat(b.price);
+        case 'price-high':
+          return parseFloat(b.price) - parseFloat(a.price);
+        case 'newest':
+          return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+        case 'featured':
+          return (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
+        case 'name':
+        default:
+          return a.name.localeCompare(b.name);
+      }
+    });
+  };
+
+  // Apply sorting and filtering to products
+  const sortedProducts = sortProducts(products as Product[] || []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -454,6 +487,45 @@ export default function Shop() {
                     </Select>
                   </div>
 
+                  {/* Price Range Filter */}
+                  <div className="lg:col-span-2">
+                    <label className="text-sm font-medium text-foreground mb-3 block flex items-center">
+                      <Euro className="w-4 h-4 mr-1" />
+                      Prijsbereik: €{priceRange[0]} - €{priceRange[1]}
+                    </label>
+                    <div className="px-2">
+                      <div className="relative">
+                        <input
+                          type="range"
+                          min="0"
+                          max="2000"
+                          step="50"
+                          value={priceRange[0]}
+                          onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
+                          className="absolute w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
+                          style={{ zIndex: 1 }}
+                        />
+                        <input
+                          type="range"
+                          min="0"
+                          max="2000"
+                          step="50"
+                          value={priceRange[1]}
+                          onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
+                          className="absolute w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
+                          style={{ zIndex: 2 }}
+                        />
+                        <div className="flex justify-between text-xs text-muted-foreground mt-6">
+                          <span>€0</span>
+                          <span>€500</span>
+                          <span>€1000</span>
+                          <span>€1500</span>
+                          <span>€2000+</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Sort Filter */}
                   <div>
                     <label className="text-sm font-medium text-foreground mb-2 block">Sorteren</label>
@@ -466,6 +538,7 @@ export default function Shop() {
                         <SelectItem value="price-low">Prijs laag-hoog</SelectItem>
                         <SelectItem value="price-high">Prijs hoog-laag</SelectItem>
                         <SelectItem value="newest">Nieuwste eerst</SelectItem>
+                        <SelectItem value="featured">Uitgelicht eerst</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -478,7 +551,7 @@ export default function Shop() {
         {/* Results Header with View Toggle */}
         <div className="mb-6 flex items-center justify-between">
           <p className="text-muted-foreground" data-testid="results-count">
-            {products ? `${(products as Product[]).length} producten gevonden` : "Laden..."}
+            {products ? `${sortedProducts.length} producten gevonden` : "Laden..."}
           </p>
 
           {/* View Mode Toggle */}
@@ -519,18 +592,18 @@ export default function Shop() {
               <ProductAudioSkeleton key={i} data-testid={`skeleton-product-${i}`} />
             ))}
           </div>
-        ) : products && (products as Product[]).length > 0 ? (
+        ) : sortedProducts && sortedProducts.length > 0 ? (
           viewMode === 'grid' ? (
             // Grid View
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-              {(products as Product[]).map((product: Product) => (
+              {sortedProducts.map((product: Product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
           ) : (
             // List View
             <div className="space-y-4">
-              {(products as Product[]).map((product: Product) => (
+              {sortedProducts.map((product: Product) => (
                 <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300 border-border">
                   <div className="flex flex-col sm:flex-row">
                     {/* Product Image */}

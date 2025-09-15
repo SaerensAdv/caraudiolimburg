@@ -57,6 +57,30 @@ const imageUpload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Helper function to normalize image URLs to relative paths
+  function normalizeImageUrls(product: any) {
+    if (product && product.images && Array.isArray(product.images)) {
+      product.images = product.images.map((url: string) => {
+        // Convert absolute URLs to relative paths
+        if (url && typeof url === 'string' && url.includes('://')) {
+          // Extract just the path from absolute URLs (everything after the domain)
+          const urlParts = url.split('/');
+          const pathIndex = urlParts.findIndex(part => part === 'public');
+          if (pathIndex >= 0) {
+            return '/' + urlParts.slice(pathIndex).join('/');
+          }
+        }
+        // Return as-is if already relative or no normalization needed
+        return url;
+      });
+    }
+    return product;
+  }
+
+  function normalizeProductArrayUrls(products: any[]) {
+    return products.map(normalizeImageUrls);
+  }
+
   // Auth middleware
   setupAuth(app);
 
@@ -112,7 +136,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         featured: featured === 'true',
       });
 
-      res.json(products);
+      res.json(normalizeProductArrayUrls(products));
     } catch (error) {
       console.error("Error fetching products:", error);
       res.status(500).json({ message: "Failed to fetch products" });
@@ -133,7 +157,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!product) {
         return res.status(404).json({ message: "Product not found" });
       }
-      res.json(product);
+      res.json(normalizeImageUrls(product));
     } catch (error) {
       console.error("Error fetching product:", error);
       res.status(500).json({ message: "Failed to fetch product" });
@@ -678,7 +702,7 @@ ${message || 'Geen aanvullende informatie'}`
   app.get('/api/admin/products', isAdmin, async (req, res) => {
     try {
       const products = await storage.getProducts();
-      res.json(products);
+      res.json(normalizeProductArrayUrls(products));
     } catch (error) {
       console.error("Error fetching admin products:", error);
       res.status(500).json({ message: "Failed to fetch products" });

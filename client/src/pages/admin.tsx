@@ -530,7 +530,7 @@ export default function Admin() {
                       Product toevoegen
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="bg-card border-border max-w-2xl">
+                  <DialogContent className="bg-card border-border w-[95vw] h-[95vh] max-w-none max-h-none overflow-y-auto">
                     <DialogHeader>
                       <DialogTitle className="text-card-foreground">
                         {selectedProduct ? "Product bewerken" : "Nieuw product"}

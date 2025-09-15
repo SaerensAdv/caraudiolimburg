@@ -343,10 +343,10 @@ export default function Checkout() {
                   {(cartItems || []).map((item: any) => (
                     <div key={item.id} className="flex items-center space-x-3" data-testid={`summary-item-${item.id}`}>
                       <div className="w-12 h-12 bg-muted rounded-lg flex-shrink-0">
-                        {item.product?.images?.[0] && (
+                        {item.product?.images?.[item.product.primaryImageIndex || 0] && (
                           <div 
                             className="w-full h-full bg-cover bg-center rounded-lg"
-                            style={{ backgroundImage: `url(${item.product.images[0]})` }}
+                            style={{ backgroundImage: `url(${item.product.images[item.product.primaryImageIndex || 0]})` }}
                           />
                         )}
                       </div>

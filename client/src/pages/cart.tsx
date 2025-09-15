@@ -200,10 +200,10 @@ export default function Cart() {
                     <div className="flex items-center space-x-4">
                       {/* Product Image */}
                       <div className="w-24 h-24 bg-muted rounded-lg flex-shrink-0">
-                        {product?.images?.[0] ? (
+                        {product?.images?.[product.primaryImageIndex || 0] ? (
                           <div 
                             className="w-full h-full bg-cover bg-center rounded-lg"
-                            style={{ backgroundImage: `url(${product.images[0]})` }}
+                            style={{ backgroundImage: `url(${product.images[product.primaryImageIndex || 0]})` }}
                           />
                         ) : (
                           <div className="w-full h-full bg-muted rounded-lg flex items-center justify-center">

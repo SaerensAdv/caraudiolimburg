@@ -226,10 +226,10 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                           <div className="flex items-center space-x-3">
                             {/* Product Image */}
                             <div className="w-16 h-16 bg-muted rounded-lg flex-shrink-0">
-                              {product?.images?.[0] ? (
+                              {product?.images?.[product.primaryImageIndex || 0] ? (
                                 <div 
                                   className="w-full h-full bg-cover bg-center rounded-lg"
-                                  style={{ backgroundImage: `url(${product.images[0]})` }}
+                                  style={{ backgroundImage: `url(${product.images[product.primaryImageIndex || 0]})` }}
                                 />
                               ) : (
                                 <div className="w-full h-full bg-muted rounded-lg flex items-center justify-center">

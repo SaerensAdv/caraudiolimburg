@@ -11,7 +11,28 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/products', express.static(path.join(process.cwd(), 'public', 'products')));
 app.use('/public/products', express.static(path.join(process.cwd(), 'public', 'products')));
 
-// Object Storage files are automatically served at /public/* paths when PUBLIC_OBJECT_SEARCH_PATHS is configured
+// Object Storage middleware - explicitly serve files from the bucket
+if (process.env.PUBLIC_OBJECT_SEARCH_PATHS) {
+  try {
+    let bucketPath = process.env.PUBLIC_OBJECT_SEARCH_PATHS;
+    // Handle array format if it comes as JSON
+    try {
+      const parsed = JSON.parse(bucketPath);
+      bucketPath = Array.isArray(parsed) ? parsed[0] : parsed;
+    } catch (e) {
+      // It's already a string, use as-is
+    }
+    
+    console.log("🔍 [STATIC] Setting up object storage serving from:", bucketPath);
+    
+    // Serve object storage files at /public/* paths
+    app.use('/public', express.static(bucketPath));
+    
+    console.log("✅ [STATIC] Object storage middleware configured");
+  } catch (error) {
+    console.error("❌ [STATIC] Failed to configure object storage middleware:", error);
+  }
+}
 // Log Object Storage configuration on startup
 console.log("🗂️  Object Storage Configuration:");
 console.log("   Bucket ID:", process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID || "❌ NOT SET");

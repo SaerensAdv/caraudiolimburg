@@ -193,12 +193,22 @@ export default function Admin() {
   const updateProductMutation = useMutation({
     mutationFn: async (data: ProductFormData) => {
       if (!selectedProduct) return;
+      
+      // CRITICAL SAFEGUARD: Always preserve existing images if productImages is empty
+      const imagesToUse = productImages.length > 0 ? productImages : (selectedProduct.images || []);
+      console.log("🔍 [UPDATE PRODUCT] Using images:", imagesToUse);
+      
+      // Ensure primaryImageIndex is within bounds
+      const validPrimaryImageIndex = imagesToUse.length > 0 ? 
+        Math.min(Math.max(0, primaryImageIndex), imagesToUse.length - 1) : 0;
+      
       const payload = {
         ...data,
         price: data.price,
         originalPrice: data.originalPrice || null,
         installationPrice: data.installationPrice || null,
-        images: productImages,
+        images: imagesToUse, // Use safeguarded images
+        primaryImageIndex: validPrimaryImageIndex, // Ensure valid index
         features,
         specifications,
       };
@@ -472,11 +482,13 @@ export default function Admin() {
     setValue("isFeatured", product.isFeatured || false);
     setValue("canHaveInstallation", product.canHaveInstallation || false);
     
-    // Set additional fields
-    setProductImages(product.images || []);
+    // CRITICAL FIX: Properly set existing images to preserve them during updates
+    const existingImages = product.images || [];
+    console.log("🔍 [EDIT PRODUCT] Preserving existing images:", existingImages);
+    setProductImages([...existingImages]); // Create a copy to avoid reference issues
     setPrimaryImageIndex(product.primaryImageIndex || 0);
-    setFeatures(product.features || []);
-    setSpecifications(product.specifications || {});
+    setFeatures(Array.isArray(product.features) ? [...product.features] : []);
+    setSpecifications(product.specifications ? {...product.specifications} : {});
     
     setIsProductDialogOpen(true);
   };

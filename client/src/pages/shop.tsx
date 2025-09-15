@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Filter, X, ChevronDown, Grid, Car, Volume2, Settings, ChevronRight } from "lucide-react";
+import { Search, Filter, X, ChevronDown, Grid, Car, Volume2, Settings, ChevronRight, List, LayoutGrid } from "lucide-react";
 import type { Product, Category, Brand, VehicleMake } from "@shared/schema";
 import { ProductAudioSkeleton, AudioLoadingSpinner } from "@/components/AudioSkeletons";
 import {
@@ -38,6 +38,7 @@ export default function Shop() {
   const [selectedYear, setSelectedYear] = useState("all-years");
   const [sortBy, setSortBy] = useState("name");
   const [showFilters, setShowFilters] = useState(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   // Get URL search params
   const [location] = useLocation();
@@ -98,12 +99,57 @@ export default function Shop() {
       <Header onCartOpen={() => setIsCartOpen(true)} />
       
       <div className="container px-4 mx-auto py-8">
-        {/* Header */}
-        <div className="mb-6 md:mb-8">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3 md:mb-4">Car Audio Shop</h1>
-          <p className="text-base md:text-lg text-muted-foreground">
-            Ontdek ons complete assortiment premium car audio producten
-          </p>
+        {/* Hero Section */}
+        <div className="mb-8 md:mb-12">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4">Car Audio Shop</h1>
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+              Ontdek ons complete assortiment premium car audio producten voor de ultieme rijervaring
+            </p>
+          </div>
+
+          {/* Featured Categories Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-border hover:border-primary/50">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-primary/20 transition-colors">
+                  <Volume2 className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">Speakers</h3>
+                <p className="text-sm text-muted-foreground">Premium sound</p>
+              </CardContent>
+            </Card>
+
+            <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-border hover:border-primary/50">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-primary/20 transition-colors">
+                  <Settings className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">Amplifiers</h3>
+                <p className="text-sm text-muted-foreground">Pure power</p>
+              </CardContent>
+            </Card>
+
+            <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-border hover:border-primary/50">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-primary/20 transition-colors">
+                  <Car className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">Head Units</h3>
+                <p className="text-sm text-muted-foreground">Smart control</p>
+              </CardContent>
+            </Card>
+
+            <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-border hover:border-primary/50">
+              <CardContent className="p-6 text-center">
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-primary/20 transition-colors">
+                  <Grid className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">Accessoires</h3>
+                <p className="text-sm text-muted-foreground">Complete setup</p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         {/* Fancy Navigation Dropdown */}
@@ -410,26 +456,116 @@ export default function Shop() {
           )}
         </div>
 
-        {/* Results */}
-        <div className="mb-4">
+        {/* Results Header with View Toggle */}
+        <div className="mb-6 flex items-center justify-between">
           <p className="text-muted-foreground" data-testid="results-count">
             {products ? `${(products as Product[]).length} producten gevonden` : "Laden..."}
           </p>
+
+          {/* View Mode Toggle */}
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-muted-foreground hidden sm:block">Weergave:</span>
+            <div className="flex bg-muted rounded-lg p-1">
+              <Button
+                variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                size="sm"
+                className="h-8 px-3 rounded-md"
+                onClick={() => setViewMode('grid')}
+                data-testid="button-view-grid"
+              >
+                <LayoutGrid className="w-4 h-4" />
+                <span className="ml-1 hidden sm:inline">Grid</span>
+              </Button>
+              <Button
+                variant={viewMode === 'list' ? 'default' : 'ghost'}
+                size="sm"
+                className="h-8 px-3 rounded-md"
+                onClick={() => setViewMode('list')}
+                data-testid="button-view-list"
+              >
+                <List className="w-4 h-4" />
+                <span className="ml-1 hidden sm:inline">List</span>
+              </Button>
+            </div>
+          </div>
         </div>
 
-        {/* Products Grid */}
+        {/* Products Display */}
         {isLoadingProducts ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+          <div className={viewMode === 'grid' 
+            ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6"
+            : "space-y-4"
+          }>
             {[...Array(8)].map((_, i) => (
               <ProductAudioSkeleton key={i} data-testid={`skeleton-product-${i}`} />
             ))}
           </div>
         ) : products && (products as Product[]).length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-            {(products as Product[]).map((product: Product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          viewMode === 'grid' ? (
+            // Grid View
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+              {(products as Product[]).map((product: Product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          ) : (
+            // List View
+            <div className="space-y-4">
+              {(products as Product[]).map((product: Product) => (
+                <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300 border-border">
+                  <div className="flex flex-col sm:flex-row">
+                    {/* Product Image */}
+                    <div className="w-full sm:w-48 h-48 sm:h-auto bg-cover bg-center flex-shrink-0"
+                         style={{ backgroundImage: `url(${product.images?.[0] || '/api/placeholder/300/200'})` }}>
+                    </div>
+                    
+                    {/* Product Info */}
+                    <div className="flex-1 p-6">
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <h3 className="text-xl font-semibold text-foreground mb-2 hover:text-primary transition-colors">
+                            <a href={`/product/${product.slug}`}>{product.name}</a>
+                          </h3>
+                          {product.shortDescription && (
+                            <p className="text-muted-foreground mb-3 line-clamp-2">
+                              {product.shortDescription}
+                            </p>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          <div className="text-2xl font-bold text-foreground mb-1">
+                            €{parseFloat(product.price).toFixed(0)}
+                          </div>
+                          {product.originalPrice && (
+                            <div className="text-sm text-muted-foreground line-through">
+                              €{parseFloat(product.originalPrice).toFixed(0)}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                          <span className={product.stock && product.stock > 0 ? "text-green-600" : "text-red-600"}>
+                            {product.stock && product.stock > 0 ? "Op voorraad" : "Uitverkocht"}
+                          </span>
+                          {product.isFeatured && (
+                            <Badge variant="secondary">Uitgelicht</Badge>
+                          )}
+                        </div>
+                        <Button asChild className="bg-primary hover:bg-primary/90">
+                          <a href={`/product/${product.slug}`}>
+                            Bekijk Product
+                            <ChevronRight className="w-4 h-4 ml-1" />
+                          </a>
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          )
         ) : (
           <Card className="bg-card border-border p-12 text-center" data-testid="no-products">
             <div className="mb-6">

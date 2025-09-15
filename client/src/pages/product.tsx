@@ -379,7 +379,7 @@ export default function ProductPage() {
                 {product.description && (
                   <div>
                     <h3 className="text-xl font-semibold text-card-foreground mb-4">Beschrijving</h3>
-                    <div className="text-muted-foreground prose prose-invert max-w-none">
+                    <div className="text-muted-foreground max-w-none">
                       <p>{String(product.description)}</p>
                     </div>
                   </div>

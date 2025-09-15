@@ -160,7 +160,13 @@ export default function Admin() {
         description: "Het product is succesvol toegevoegd.",
       });
       setIsProductDialogOpen(false);
+      // Reset form and all related state
       reset();
+      setProductImages([]);
+      setFeatures([]);
+      setSpecifications({});
+      setPrimaryImageIndex(0);
+      setSelectedProduct(null);
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
@@ -517,13 +523,13 @@ export default function Admin() {
                 <Dialog open={isProductDialogOpen} onOpenChange={(open) => {
                   setIsProductDialogOpen(open);
                   if (!open) {
-                    // Reset form and state when closing
+                    // Reset form and all state when closing
                     setSelectedProduct(null);
                     reset();
                     setProductImages([]);
-                    setPrimaryImageIndex(0);
                     setFeatures([]);
                     setSpecifications({});
+                    setPrimaryImageIndex(0);
                     setNewFeature('');
                     setNewSpecKey('');
                     setNewSpecValue('');

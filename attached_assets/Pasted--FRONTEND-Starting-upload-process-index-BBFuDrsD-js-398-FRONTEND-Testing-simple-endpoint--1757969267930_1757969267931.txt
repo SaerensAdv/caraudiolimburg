@@ -1,0 +1,138 @@
+[FRONTEND] Starting upload process...
+index-BBFuDrsD.js:398 🔍 [FRONTEND] Testing simple endpoint...
+index-BBFuDrsD.js:398 🔍 [FRONTEND] Simple endpoint response: 200
+index-BBFuDrsD.js:398 🔍 [FRONTEND] Simple endpoint result: {message: 'Simple upload works!', user: 'info@caraudiolimburg.nl'}
+index-BBFuDrsD.js:398 🔍 [FRONTEND] Uploading file 1: Hertz_Dieci_DBX_25.3_subwoofer_box-653x445.jpg
+index-BBFuDrsD.js:398 🔍 [FRONTEND] Uploading file 2: DBX_25.3_2400x.webp
+index-BBFuDrsD.js:398 🔍 [FRONTEND] Uploading file 3: Hertz_Dieci_DBX_25.3_subwoofer_box_emo.jpg
+index-BBFuDrsD.js:398 🔍 [FRONTEND] Uploading file 4: Hertz_Dieci_DBX_25.3_subwoofer_box_b.jpg
+index-BBFuDrsD.js:398  POST https://caraudiolimburg.replit.app/api/upload/image 500 (Internal Server Error)
+(anonymous) @ index-BBFuDrsD.js:398
+ps @ index-BBFuDrsD.js:398
+await in ps
+YD @ index-BBFuDrsD.js:37
+JD @ index-BBFuDrsD.js:37
+e3 @ index-BBFuDrsD.js:37
+$0 @ index-BBFuDrsD.js:37
+bP @ index-BBFuDrsD.js:37
+(anonymous) @ index-BBFuDrsD.js:37
+nv @ index-BBFuDrsD.js:40
+Uk @ index-BBFuDrsD.js:37
+yh @ index-BBFuDrsD.js:37
+Ax @ index-BBFuDrsD.js:37
+g3 @ index-BBFuDrsD.js:37Understand this error
+index-BBFuDrsD.js:398 🔍 [FRONTEND] Upload response for Hertz_Dieci_DBX_25.3_subwoofer_box-653x445.jpg: 500
+index-BBFuDrsD.js:398 🔍 [FRONTEND] Upload failed for Hertz_Dieci_DBX_25.3_subwoofer_box-653x445.jpg: {"message":"Image upload failed - Object Storage not available in production","error":"EACCES: permission denied, mkdir '/replit-objstore-4f8266cc-3e05-45e9-ab4a-5b04528ce9fb'"}
+(anonymous) @ index-BBFuDrsD.js:398
+await in (anonymous)
+ps @ index-BBFuDrsD.js:398
+await in ps
+YD @ index-BBFuDrsD.js:37
+JD @ index-BBFuDrsD.js:37
+e3 @ index-BBFuDrsD.js:37
+$0 @ index-BBFuDrsD.js:37
+bP @ index-BBFuDrsD.js:37
+(anonymous) @ index-BBFuDrsD.js:37
+nv @ index-BBFuDrsD.js:40
+Uk @ index-BBFuDrsD.js:37
+yh @ index-BBFuDrsD.js:37
+Ax @ index-BBFuDrsD.js:37
+g3 @ index-BBFuDrsD.js:37Understand this error
+index-BBFuDrsD.js:398 🔍 [FRONTEND] Upload error: Error: Upload failed for Hertz_Dieci_DBX_25.3_subwoofer_box-653x445.jpg: 500
+    at index-BBFuDrsD.js:398:81215
+    at async Promise.all (index 0)
+    at async ps (index-BBFuDrsD.js:398:81374)
+ps @ index-BBFuDrsD.js:398
+await in ps
+YD @ index-BBFuDrsD.js:37
+JD @ index-BBFuDrsD.js:37
+e3 @ index-BBFuDrsD.js:37
+$0 @ index-BBFuDrsD.js:37
+bP @ index-BBFuDrsD.js:37
+(anonymous) @ index-BBFuDrsD.js:37
+nv @ index-BBFuDrsD.js:40
+Uk @ index-BBFuDrsD.js:37
+yh @ index-BBFuDrsD.js:37
+Ax @ index-BBFuDrsD.js:37
+g3 @ index-BBFuDrsD.js:37Understand this error
+index-BBFuDrsD.js:398  POST https://caraudiolimburg.replit.app/api/upload/image 500 (Internal Server Error)
+(anonymous) @ index-BBFuDrsD.js:398
+ps @ index-BBFuDrsD.js:398
+await in ps
+YD @ index-BBFuDrsD.js:37
+JD @ index-BBFuDrsD.js:37
+e3 @ index-BBFuDrsD.js:37
+$0 @ index-BBFuDrsD.js:37
+bP @ index-BBFuDrsD.js:37
+(anonymous) @ index-BBFuDrsD.js:37
+nv @ index-BBFuDrsD.js:40
+Uk @ index-BBFuDrsD.js:37
+yh @ index-BBFuDrsD.js:37
+Ax @ index-BBFuDrsD.js:37
+g3 @ index-BBFuDrsD.js:37Understand this error
+index-BBFuDrsD.js:398 🔍 [FRONTEND] Upload response for DBX_25.3_2400x.webp: 500
+index-BBFuDrsD.js:398 🔍 [FRONTEND] Upload failed for DBX_25.3_2400x.webp: {"message":"Image upload failed - Object Storage not available in production","error":"EACCES: permission denied, mkdir '/replit-objstore-4f8266cc-3e05-45e9-ab4a-5b04528ce9fb'"}
+(anonymous) @ index-BBFuDrsD.js:398
+await in (anonymous)
+ps @ index-BBFuDrsD.js:398
+await in ps
+YD @ index-BBFuDrsD.js:37
+JD @ index-BBFuDrsD.js:37
+e3 @ index-BBFuDrsD.js:37
+$0 @ index-BBFuDrsD.js:37
+bP @ index-BBFuDrsD.js:37
+(anonymous) @ index-BBFuDrsD.js:37
+nv @ index-BBFuDrsD.js:40
+Uk @ index-BBFuDrsD.js:37
+yh @ index-BBFuDrsD.js:37
+Ax @ index-BBFuDrsD.js:37
+g3 @ index-BBFuDrsD.js:37Understand this error
+index-BBFuDrsD.js:398  POST https://caraudiolimburg.replit.app/api/upload/image 500 (Internal Server Error)
+(anonymous) @ index-BBFuDrsD.js:398
+ps @ index-BBFuDrsD.js:398
+await in ps
+YD @ index-BBFuDrsD.js:37
+JD @ index-BBFuDrsD.js:37
+e3 @ index-BBFuDrsD.js:37
+$0 @ index-BBFuDrsD.js:37
+bP @ index-BBFuDrsD.js:37
+(anonymous) @ index-BBFuDrsD.js:37
+nv @ index-BBFuDrsD.js:40
+Uk @ index-BBFuDrsD.js:37
+yh @ index-BBFuDrsD.js:37
+Ax @ index-BBFuDrsD.js:37
+g3 @ index-BBFuDrsD.js:37Understand this error
+index-BBFuDrsD.js:398 🔍 [FRONTEND] Upload response for Hertz_Dieci_DBX_25.3_subwoofer_box_emo.jpg: 500
+index-BBFuDrsD.js:398 🔍 [FRONTEND] Upload failed for Hertz_Dieci_DBX_25.3_subwoofer_box_emo.jpg: {"message":"Image upload failed - Object Storage not available in production","error":"EACCES: permission denied, mkdir '/replit-objstore-4f8266cc-3e05-45e9-ab4a-5b04528ce9fb'"}
+(anonymous) @ index-BBFuDrsD.js:398
+await in (anonymous)
+ps @ index-BBFuDrsD.js:398
+await in ps
+YD @ index-BBFuDrsD.js:37
+JD @ index-BBFuDrsD.js:37
+e3 @ index-BBFuDrsD.js:37
+$0 @ index-BBFuDrsD.js:37
+bP @ index-BBFuDrsD.js:37
+(anonymous) @ index-BBFuDrsD.js:37
+nv @ index-BBFuDrsD.js:40
+Uk @ index-BBFuDrsD.js:37
+yh @ index-BBFuDrsD.js:37
+Ax @ index-BBFuDrsD.js:37
+g3 @ index-BBFuDrsD.js:37Understand this error
+index-BBFuDrsD.js:398  POST https://caraudiolimburg.replit.app/api/upload/image 500 (Internal Server Error)
+(anonymous) @ index-BBFuDrsD.js:398
+ps @ index-BBFuDrsD.js:398
+await in ps
+YD @ index-BBFuDrsD.js:37
+JD @ index-BBFuDrsD.js:37
+e3 @ index-BBFuDrsD.js:37
+$0 @ index-BBFuDrsD.js:37
+bP @ index-BBFuDrsD.js:37
+(anonymous) @ index-BBFuDrsD.js:37
+nv @ index-BBFuDrsD.js:40
+Uk @ index-BBFuDrsD.js:37
+yh @ index-BBFuDrsD.js:37
+Ax @ index-BBFuDrsD.js:37
+g3 @ index-BBFuDrsD.js:37Understand this error
+index-BBFuDrsD.js:398 🔍 [FRONTEND] Upload response for Hertz_Dieci_DBX_25.3_subwoofer_box_b.jpg: 500
+index-BBFuDrsD.js:398 🔍 [FRONTEND] Upload failed for Hertz_Dieci_DBX_25.3_subwoofer_box_b.jpg: {"message":"Image upload failed - Object Storage not available in production","error":"EACCES: permission denied, mkdir '/replit-objstore-4f8266cc-3e05-45e9-ab4a-5b04528ce9fb'"}

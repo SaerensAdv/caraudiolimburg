@@ -750,8 +750,9 @@ ${message || 'Geen aanvullende informatie'}`
         throw new Error("Object Storage not configured");
       }
       
-      // Use the mounted bucket path directly
-      const objectStorageDir = path.join(publicSearchPaths.split(':')[0], 'products');
+      // Object Storage fix: use proper working directory approach
+      // The issue is that Object Storage is mounted differently in prod vs dev
+      const objectStorageDir = path.join('public', 'products');
       const objectStoragePath = path.join(objectStorageDir, fileName);
       
       console.log("🔍 [UPLOAD DEBUG] Paths:");

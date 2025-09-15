@@ -328,8 +328,32 @@ export default function Admin() {
     if (!files || files.length === 0) return;
 
     setIsUploading(true);
+    console.log("🔍 [FRONTEND] Starting upload process...");
+    
     try {
-      const uploadPromises = Array.from(files).map(async (file) => {
+      // First test: Try simple endpoint without multer
+      console.log("🔍 [FRONTEND] Testing simple endpoint...");
+      const testResponse = await fetch('/api/upload/simple', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ test: 'data' }),
+      });
+      
+      console.log("🔍 [FRONTEND] Simple endpoint response:", testResponse.status);
+      if (testResponse.ok) {
+        const testResult = await testResponse.json();
+        console.log("🔍 [FRONTEND] Simple endpoint result:", testResult);
+        toast({
+          title: "Test succesvol",
+          description: "Basis endpoint werkt! Nu proberen we de echte upload...",
+        });
+      }
+
+      const uploadPromises = Array.from(files).map(async (file, index) => {
+        console.log(`🔍 [FRONTEND] Uploading file ${index + 1}: ${file.name}`);
         const formData = new FormData();
         formData.append('file', file);
 
@@ -339,11 +363,16 @@ export default function Admin() {
           credentials: 'include', // Voor authenticatie
         });
 
+        console.log(`🔍 [FRONTEND] Upload response for ${file.name}:`, response.status);
+        
         if (!response.ok) {
-          throw new Error('Upload failed');
+          const errorText = await response.text();
+          console.error(`🔍 [FRONTEND] Upload failed for ${file.name}:`, errorText);
+          throw new Error(`Upload failed for ${file.name}: ${response.status}`);
         }
 
         const result = await response.json();
+        console.log(`🔍 [FRONTEND] Upload result for ${file.name}:`, result);
         return result.url;
       });
 
@@ -355,9 +384,10 @@ export default function Admin() {
         description: `${uploadedUrls.length} afbeelding(en) succesvol geüpload.`,
       });
     } catch (error) {
+      console.error("🔍 [FRONTEND] Upload error:", error);
       toast({
         title: "Upload mislukt",
-        description: "Er is een fout opgetreden bij het uploaden van de afbeeldingen.",
+        description: `Er is een fout opgetreden: ${error.message}`,
         variant: "destructive",
       });
     } finally {

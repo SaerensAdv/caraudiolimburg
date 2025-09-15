@@ -694,7 +694,22 @@ ${message || 'Geen aanvullende informatie'}`
     }
   });
 
-  // Image upload endpoint using Object Storage for production persistence
+  // Test endpoint to verify auth and routing works
+  app.post('/api/test-upload', isAdmin, async (req: any, res) => {
+    console.log("🔍 [TEST] Test upload endpoint reached!");
+    console.log("🔍 [TEST] User:", req.user?.email);
+    res.json({ message: "Test endpoint works!", user: req.user?.email });
+  });
+
+  // Simple upload test without multer to isolate the issue
+  app.post('/api/upload/simple', isAdmin, async (req: any, res) => {
+    console.log("🔍 [SIMPLE] Simple upload endpoint reached!");
+    console.log("🔍 [SIMPLE] User:", req.user?.email);
+    console.log("🔍 [SIMPLE] Request received");
+    res.json({ message: "Simple upload works!", user: req.user?.email });
+  });
+
+  // Image upload endpoint using Object Storage for production persistence  
   app.post('/api/upload/image', isAdmin, imageUpload.single('file'), async (req: any, res) => {
     console.log("🔍 [UPLOAD DEBUG] Starting image upload...");
     console.log("🔍 [UPLOAD DEBUG] NODE_ENV:", process.env.NODE_ENV);

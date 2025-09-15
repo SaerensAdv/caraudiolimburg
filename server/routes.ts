@@ -654,8 +654,8 @@ ${message || 'Geen aanvullende informatie'}`
         return res.status(400).json({ message: "No file uploaded" });
       }
 
-      const fs = require('fs').promises;
-      const path = require('path');
+      const fs = await import('fs');
+      const path = await import('path');
 
       // Generate unique filename
       const fileExtension = req.file.originalname.split('.').pop();
@@ -666,10 +666,10 @@ ${message || 'Geen aanvullende informatie'}`
       
       // Ensure directory exists in object storage
       const objectStorageDir = path.dirname(objectStoragePath);
-      await fs.mkdir(objectStorageDir, { recursive: true });
+      await fs.promises.mkdir(objectStorageDir, { recursive: true });
       
       // Save file to object storage
-      await fs.writeFile(objectStoragePath, req.file.buffer);
+      await fs.promises.writeFile(objectStoragePath, req.file.buffer);
       
       // Return public URL accessible via object storage
       const publicUrl = `/public/products/${fileName}`;

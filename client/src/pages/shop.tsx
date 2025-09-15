@@ -39,6 +39,7 @@ export default function Shop() {
   const [sortBy, setSortBy] = useState("name");
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 2000]);
 
   // Get URL search params
   const [location] = useLocation();
@@ -169,7 +170,7 @@ export default function Shop() {
                   <div>
                     <DropdownMenuLabel>Audio Systemen</DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    {categories && (categories as Category[]).slice(0, 4).map((category: Category) => (
+                    {categories && Array.isArray(categories) && (categories as Category[]).slice(0, 4).map((category: Category) => (
                       <DropdownMenuItem 
                         key={category.id}
                         className="cursor-pointer"
@@ -186,7 +187,7 @@ export default function Shop() {
                   <div>
                     <DropdownMenuLabel>Accessoires</DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    {categories && (categories as Category[]).slice(4, 8).map((category: Category) => (
+                    {categories && Array.isArray(categories) && (categories as Category[]).slice(4, 8).map((category: Category) => (
                       <DropdownMenuItem 
                         key={category.id}
                         className="cursor-pointer"
@@ -225,7 +226,7 @@ export default function Shop() {
                 <DropdownMenuLabel>Premium Merken</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <div className="grid grid-cols-2 gap-2">
-                  {brands && (brands as Brand[]).slice(0, 8).map((brand: Brand) => (
+                  {brands && Array.isArray(brands) && (brands as Brand[]).slice(0, 8).map((brand: Brand) => (
                     <DropdownMenuItem 
                       key={brand.id}
                       className="cursor-pointer"
@@ -262,7 +263,7 @@ export default function Shop() {
                 <DropdownMenuLabel>Populaire Merken</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <div className="grid grid-cols-3 gap-2">
-                  {vehicleMakes && (vehicleMakes as VehicleMake[]).slice(0, 12).map((make: VehicleMake) => (
+                  {vehicleMakes && Array.isArray(vehicleMakes) && (vehicleMakes as VehicleMake[]).slice(0, 12).map((make: VehicleMake) => (
                     <DropdownMenuItem 
                       key={make.id}
                       className="cursor-pointer text-sm"
@@ -286,14 +287,32 @@ export default function Shop() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Quick Actions */}
-            <div className="ml-auto flex gap-2">
-              <Button variant="ghost" size="sm" onClick={() => setSortBy("price-asc")} data-testid="button-sort-price">
-                Laagste Prijs
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => setSortBy("featured")} data-testid="button-sort-featured">
+            {/* Quick Action Filters */}
+            <div className="ml-auto flex flex-wrap gap-2">
+              <Badge 
+                variant={sortBy === "newest" ? "default" : "outline"} 
+                className="cursor-pointer hover:bg-primary/10 transition-colors px-3 py-1"
+                onClick={() => setSortBy("newest")}
+                data-testid="badge-filter-newest"
+              >
+                Nieuwste
+              </Badge>
+              <Badge 
+                variant={sortBy === "featured" ? "default" : "outline"} 
+                className="cursor-pointer hover:bg-primary/10 transition-colors px-3 py-1"
+                onClick={() => setSortBy("featured")}
+                data-testid="badge-filter-featured"
+              >
                 Uitgelicht
-              </Button>
+              </Badge>
+              <Badge 
+                variant={sortBy === "price-low" ? "default" : "outline"} 
+                className="cursor-pointer hover:bg-primary/10 transition-colors px-3 py-1"
+                onClick={() => setSortBy("price-low")}
+                data-testid="badge-filter-sale"
+              >
+                Beste Prijs
+              </Badge>
             </div>
           </div>
         </div>

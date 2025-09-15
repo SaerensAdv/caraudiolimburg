@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import multer from "multer";
+import { ObjectStorageService } from "./objectStorage";
 import Papa from "papaparse";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated, isAdmin } from "./auth";
@@ -744,135 +745,64 @@ ${message || 'Geen aanvullende informatie'}`
     res.json({ message: "Simple upload works!", user: req.user?.email });
   });
 
-  // Image upload endpoint using Object Storage for production persistence  
-  app.post('/api/upload/image', isAdmin, imageUpload.single('file'), async (req: any, res) => {
-    console.log("🔍 [UPLOAD DEBUG] Starting image upload...");
-    console.log("🔍 [UPLOAD DEBUG] NODE_ENV:", process.env.NODE_ENV);
-    console.log("🔍 [UPLOAD DEBUG] User authenticated:", !!req.user);
+  // Get presigned URL for product image upload using Object Storage
+  app.post('/api/upload/image/url', isAdmin, async (req: any, res) => {
+    console.log("🔍 [UPLOAD] Getting presigned URL for product image...");
     
     try {
-      console.log("🔍 [UPLOAD DEBUG] Checking file...");
-      if (!req.file) {
-        console.log("❌ [UPLOAD DEBUG] No file provided");
-        return res.status(400).json({ message: "No file uploaded" });
-      }
-      console.log("✅ [UPLOAD DEBUG] File received:", req.file.originalname, req.file.size, "bytes");
-
-      const fs = await import('fs');
-      const path = await import('path');
-
-      // Generate unique filename
-      const fileExtension = req.file.originalname.split('.').pop();
-      const fileName = `product-${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExtension}`;
-      console.log("🔍 [UPLOAD DEBUG] Generated filename:", fileName);
+      const objectStorageService = new ObjectStorageService();
+      const { uploadURL, fileName } = await objectStorageService.getProductImageUploadURL();
       
-      // Object Storage configuration - use the mounted bucket path
-      // Get the mounted Object Storage path from environment
-      const publicSearchPaths = process.env.PUBLIC_OBJECT_SEARCH_PATHS;
-      const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
+      console.log("✅ [UPLOAD] Presigned URL generated:", fileName);
       
-      console.log("🔍 [UPLOAD DEBUG] Environment vars:");
-      console.log("   - PUBLIC_OBJECT_SEARCH_PATHS:", publicSearchPaths);
-      console.log("   - DEFAULT_OBJECT_STORAGE_BUCKET_ID:", bucketId);
-      
-      if (!publicSearchPaths) {
-        console.error("❌ [UPLOAD DEBUG] PUBLIC_OBJECT_SEARCH_PATHS not found");
-        throw new Error("Object Storage not configured properly");
-      }
-      
-      if (!bucketId) {
-        console.error("❌ [UPLOAD DEBUG] DEFAULT_OBJECT_STORAGE_BUCKET_ID not found");
-        throw new Error("Object Storage not configured");
-      }
-      
-      // Object Storage fix: use the actual mounted bucket path
-      // Handle both array and string formats for PUBLIC_OBJECT_SEARCH_PATHS
-      let bucketPublicPath;
-      try {
-        // Try to parse as JSON array first
-        const searchPathsArray = JSON.parse(publicSearchPaths);
-        bucketPublicPath = Array.isArray(searchPathsArray) ? searchPathsArray[0] : searchPathsArray;
-      } catch (e) {
-        // If it's not JSON, treat it as a direct path string
-        bucketPublicPath = publicSearchPaths;
-      }
-      console.log("🔍 [UPLOAD DEBUG] Using bucket path:", bucketPublicPath);
-      
-      const objectStorageDir = path.join(bucketPublicPath, 'products');
-      const objectStoragePath = path.join(objectStorageDir, fileName);
-      
-      
-      try {
-        // Ensure Object Storage directory exists
-        await fs.promises.mkdir(objectStorageDir, { recursive: true });
-        
-        // Save to Object Storage
-        await fs.promises.writeFile(objectStoragePath, req.file.buffer);
-        console.log(`✅ [UPLOAD DEBUG] File written successfully: ${objectStoragePath}`);
-        
-        // Always return consistent public URL format for production
-        const publicUrl = `/public/products/${fileName}`;
-        console.log("✅ [UPLOAD DEBUG] Returning success response with URL:", publicUrl);
-        
-        res.json({
-          url: publicUrl,
-          fileName: fileName,
-          size: req.file.size,
-          mimeType: req.file.mimetype
-        });
-      } catch (objectStorageError: any) {
-        console.error("❌ [UPLOAD DEBUG] Object Storage upload failed:", objectStorageError);
-        console.error("❌ [UPLOAD DEBUG] Error details:", {
-          message: objectStorageError?.message,
-          code: objectStorageError?.code,
-          errno: objectStorageError?.errno,
-          path: objectStorageError?.path
-        });
-        
-        // Only fallback to local in development, fail in production
-        if (process.env.NODE_ENV === 'production') {
-          console.error("❌ [UPLOAD DEBUG] Production mode - failing without fallback");
-          return res.status(500).json({ 
-            message: "Image upload failed - Object Storage not available in production",
-            error: objectStorageError?.message || "Unknown error"
-          });
-        }
-        
-        // Development fallback to local directory
-        console.log("🔄 [UPLOAD DEBUG] Falling back to local storage (development only)");
-        try {
-          const localDir = path.join(process.cwd(), 'public', 'products');
-          const localPath = path.join(localDir, fileName);
-          console.log("🔍 [UPLOAD DEBUG] Local fallback paths:", { localDir, localPath });
-          
-          // Ensure local directory exists
-          await fs.promises.mkdir(localDir, { recursive: true });
-          console.log("✅ [UPLOAD DEBUG] Local directory created");
-          
-          // Save file locally
-          await fs.promises.writeFile(localPath, req.file.buffer);
-          console.log("✅ [UPLOAD DEBUG] File saved locally");
-          
-          // Return consistent public URL format even for local fallback
-          const publicUrl = `/public/products/${fileName}`;
-          console.log("✅ [UPLOAD DEBUG] Local fallback success, returning URL:", publicUrl);
-          
-          res.json({
-            url: publicUrl,
-            fileName: fileName,
-            size: req.file.size,
-            mimeType: req.file.mimetype
-          });
-        } catch (localError) {
-          console.error("❌ [UPLOAD DEBUG] Local fallback also failed:", localError);
-          throw localError;
-        }
-      }
+      res.json({
+        uploadURL,
+        fileName
+      });
     } catch (error: any) {
-      console.error("❌ [UPLOAD DEBUG] Outer catch - Final error:", error);
-      console.error("❌ [UPLOAD DEBUG] Error stack:", error?.stack);
+      console.error("❌ [UPLOAD] Failed to get presigned URL:", error);
       res.status(500).json({ 
-        message: "Failed to upload image",
+        message: "Failed to get upload URL",
+        error: error?.message || "Unknown error"
+      });
+    }
+  });
+
+  // Update product with uploaded image URL
+  app.put('/api/upload/image/complete', isAdmin, async (req: any, res) => {
+    console.log("🔍 [UPLOAD] Completing image upload...");
+    
+    try {
+      const { uploadURL, fileName } = req.body;
+      
+      if (!uploadURL || !fileName) {
+        return res.status(400).json({ error: "uploadURL and fileName are required" });
+      }
+
+      // Extract file extension from fileName or uploadURL
+      let fileExtension = '';
+      if (fileName.includes('.')) {
+        fileExtension = fileName.split('.').pop() || '';
+      } else {
+        // Try to extract from original name in request
+        fileExtension = req.body.originalName?.split('.').pop() || 'jpg';
+      }
+      
+      // Return the public URL for the uploaded image
+      const publicUrl = `/public/products/${fileName}.${fileExtension}`;
+      
+      console.log("✅ [UPLOAD] Image upload completed:", publicUrl);
+      
+      res.json({
+        url: publicUrl,
+        fileName: `${fileName}.${fileExtension}`,
+        size: req.body.size || 0,
+        mimeType: `image/${fileExtension}`
+      });
+    } catch (error: any) {
+      console.error("❌ [UPLOAD] Failed to complete upload:", error);
+      res.status(500).json({ 
+        message: "Failed to complete upload",
         error: error?.message || "Unknown error"
       });
     }

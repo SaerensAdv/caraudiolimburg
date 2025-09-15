@@ -360,57 +360,78 @@ export default function Admin() {
     },
   });
 
-  // Image upload handler
+  // Image upload handler using presigned URLs
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
     setIsUploading(true);
-    console.log("🔍 [FRONTEND] Starting upload process...");
+    console.log("🔍 [FRONTEND] Starting presigned URL upload process...");
     
     try {
-      // First test: Try simple endpoint without multer
-      console.log("🔍 [FRONTEND] Testing simple endpoint...");
-      const testResponse = await fetch('/api/upload/simple', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ test: 'data' }),
-      });
-      
-      console.log("🔍 [FRONTEND] Simple endpoint response:", testResponse.status);
-      if (testResponse.ok) {
-        const testResult = await testResponse.json();
-        console.log("🔍 [FRONTEND] Simple endpoint result:", testResult);
-        toast({
-          title: "Test succesvol",
-          description: "Basis endpoint werkt! Nu proberen we de echte upload...",
-        });
-      }
-
       const uploadPromises = Array.from(files).map(async (file, index) => {
         console.log(`🔍 [FRONTEND] Uploading file ${index + 1}: ${file.name}`);
-        const formData = new FormData();
-        formData.append('file', file);
-
-        const response = await fetch('/api/upload/image', {
+        
+        // Step 1: Get presigned URL from backend
+        console.log("🔍 [FRONTEND] Getting presigned URL...");
+        const urlResponse = await fetch('/api/upload/image/url', {
           method: 'POST',
-          body: formData,
-          credentials: 'include', // Voor authenticatie
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
         });
 
-        console.log(`🔍 [FRONTEND] Upload response for ${file.name}:`, response.status);
-        
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error(`🔍 [FRONTEND] Upload failed for ${file.name}:`, errorText);
-          throw new Error(`Upload failed for ${file.name}: ${response.status}`);
+        if (!urlResponse.ok) {
+          const errorText = await urlResponse.text();
+          console.error(`🔍 [FRONTEND] Failed to get presigned URL for ${file.name}:`, errorText);
+          throw new Error(`Failed to get upload URL for ${file.name}: ${urlResponse.status}`);
         }
 
-        const result = await response.json();
-        console.log(`🔍 [FRONTEND] Upload result for ${file.name}:`, result);
+        const { uploadURL, fileName } = await urlResponse.json();
+        console.log(`🔍 [FRONTEND] Got presigned URL for ${file.name}:`, fileName);
+
+        // Step 2: Upload directly to Object Storage using presigned URL
+        console.log("🔍 [FRONTEND] Uploading to object storage...");
+        const uploadResponse = await fetch(uploadURL, {
+          method: 'PUT',
+          body: file,
+          headers: {
+            'Content-Type': file.type,
+          },
+        });
+
+        if (!uploadResponse.ok) {
+          console.error(`🔍 [FRONTEND] Direct upload failed for ${file.name}:`, uploadResponse.status);
+          throw new Error(`Direct upload failed for ${file.name}: ${uploadResponse.status}`);
+        }
+
+        console.log(`🔍 [FRONTEND] Direct upload successful for ${file.name}`);
+
+        // Step 3: Complete the upload on backend to get public URL
+        console.log("🔍 [FRONTEND] Completing upload...");
+        const completeResponse = await fetch('/api/upload/image/complete', {
+          method: 'PUT',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            uploadURL,
+            fileName,
+            originalName: file.name,
+            size: file.size,
+          }),
+        });
+
+        if (!completeResponse.ok) {
+          const errorText = await completeResponse.text();
+          console.error(`🔍 [FRONTEND] Failed to complete upload for ${file.name}:`, errorText);
+          throw new Error(`Failed to complete upload for ${file.name}: ${completeResponse.status}`);
+        }
+
+        const result = await completeResponse.json();
+        console.log(`🔍 [FRONTEND] Upload completed for ${file.name}:`, result);
         return result.url;
       });
 

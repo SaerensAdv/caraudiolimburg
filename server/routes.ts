@@ -162,6 +162,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.put('/api/products/:id', isAdmin, async (req, res) => {
+    try {
+      const productId = req.params.id;
+      const productData = insertProductSchema.parse(req.body);
+      
+      // Handle "none" value for upsellCategoryId
+      if (productData.upsellCategoryId === 'none') {
+        productData.upsellCategoryId = null;
+      }
+      
+      // Handle empty SKU - convert to null or generate unique SKU
+      if (productData.sku === '' || productData.sku === undefined) {
+        productData.sku = null;
+      }
+      
+      const product = await storage.updateProduct(productId, productData);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      res.json(product);
+    } catch (error) {
+      console.error("Error updating product:", error);
+      res.status(500).json({ message: "Failed to update product" });
+    }
+  });
+
   // Category routes
   app.get('/api/categories', async (req, res) => {
     try {

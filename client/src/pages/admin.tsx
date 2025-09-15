@@ -96,10 +96,15 @@ export default function Admin() {
     handleSubmit,
     reset,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<ProductFormData>({
     resolver: zodResolver(productFormSchema),
   });
+
+  // Watch form values for toggle switches
+  const isFeatured = watch("isFeatured");
+  const canHaveInstallation = watch("canHaveInstallation");
 
   // Redirect if not admin
   useEffect(() => {
@@ -180,6 +185,52 @@ export default function Admin() {
       toast({
         title: "Fout",
         description: "Kon product niet aanmaken.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateProductMutation = useMutation({
+    mutationFn: async (data: ProductFormData) => {
+      if (!selectedProduct) return;
+      const payload = {
+        ...data,
+        price: data.price,
+        originalPrice: data.originalPrice || null,
+        installationPrice: data.installationPrice || null,
+        images: productImages,
+        features,
+        specifications,
+      };
+      await apiRequest("PUT", `/api/products/${selectedProduct.id}`, payload);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
+      toast({
+        title: "Product bijgewerkt",
+        description: "Het product is succesvol gewijzigd.",
+      });
+      setIsProductDialogOpen(false);
+      // Reset form and all related state
+      reset();
+      setProductImages([]);
+      setFeatures([]);
+      setSpecifications({});
+      setPrimaryImageIndex(0);
+      setSelectedProduct(null);
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Geen toegang",
+          description: "Je hebt geen toegang tot deze functie.",
+          variant: "destructive",
+        });
+        return;
+      }
+      toast({
+        title: "Fout",
+        description: "Kon product niet bijwerken.",
         variant: "destructive",
       });
     },
@@ -365,7 +416,13 @@ export default function Admin() {
       originalPrice: data.originalPrice || undefined,
       installationPrice: data.installationPrice || undefined,
     };
-    createProductMutation.mutate(submitData);
+    
+    // Use update mutation if editing, create mutation if adding new
+    if (selectedProduct) {
+      updateProductMutation.mutate(submitData);
+    } else {
+      createProductMutation.mutate(submitData);
+    }
   };
 
   const handleEditProduct = (product: Product) => {
@@ -903,7 +960,7 @@ export default function Admin() {
                             </div>
                           </div>
                           <Switch
-                            checked={selectedProduct?.isFeatured || false}
+                            checked={isFeatured || false}
                             onCheckedChange={(checked) => setValue("isFeatured", checked)}
                             data-testid="switch-featured"
                           />
@@ -918,7 +975,7 @@ export default function Admin() {
                             </div>
                           </div>
                           <Switch
-                            checked={selectedProduct?.canHaveInstallation || false}
+                            checked={canHaveInstallation || false}
                             onCheckedChange={(checked) => {
                               setValue("canHaveInstallation", checked);
                               // Reset installation price if disabled
@@ -931,7 +988,7 @@ export default function Admin() {
                         </div>
 
                         {/* Installation Price (conditional) */}
-                        {(selectedProduct?.canHaveInstallation) && (
+                        {canHaveInstallation && (
                           <div>
                             <Label htmlFor="installationPrice">Installatie prijs</Label>
                             <Input
@@ -983,10 +1040,13 @@ export default function Admin() {
                         </Button>
                         <Button 
                           type="submit" 
-                          disabled={createProductMutation.isPending}
+                          disabled={createProductMutation.isPending || updateProductMutation.isPending}
                           data-testid="button-save-product"
                         >
-                          {createProductMutation.isPending ? "Opslaan..." : "Opslaan"}
+                          {(createProductMutation.isPending || updateProductMutation.isPending) 
+                            ? (selectedProduct ? "Bijwerken..." : "Opslaan...")
+                            : (selectedProduct ? "Bijwerken" : "Opslaan")
+                          }
                         </Button>
                       </div>
                     </form>

@@ -274,6 +274,7 @@ export default function Admin() {
         const response = await fetch('/api/upload/image', {
           method: 'POST',
           body: formData,
+          credentials: 'include', // Voor authenticatie
         });
 
         if (!response.ok) {

@@ -708,16 +708,24 @@ ${message || 'Geen aanvullende informatie'}`
       const fileExtension = req.file.originalname.split('.').pop();
       const fileName = `product-${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExtension}`;
       
-      // Get Object Storage bucket ID with validation
+      // Object Storage configuration - use the mounted bucket path
+      // Get the mounted Object Storage path from environment
+      const publicSearchPaths = process.env.PUBLIC_OBJECT_SEARCH_PATHS;
+      if (!publicSearchPaths) {
+        console.error("❌ PUBLIC_OBJECT_SEARCH_PATHS not found");
+        throw new Error("Object Storage not configured properly");
+      }
+      
+      // Use the mounted bucket path directly
+      const objectStorageDir = path.join(publicSearchPaths.split(':')[0], 'products');
+      const objectStoragePath = path.join(objectStorageDir, fileName);
+      
+      // Validate Object Storage is available
       const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
       if (!bucketId) {
         console.error("❌ DEFAULT_OBJECT_STORAGE_BUCKET_ID not found, falling back to local storage");
         throw new Error("Object Storage not configured");
       }
-      
-      // Construct Object Storage path using posix paths
-      const objectStorageDir = path.posix.join('/', bucketId, 'public', 'products');
-      const objectStoragePath = path.posix.join(objectStorageDir, fileName);
       
       try {
         // Ensure Object Storage directory exists

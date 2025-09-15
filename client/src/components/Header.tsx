@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import logoUrl from "@assets/Caraudiolimburg-logo_1757008375383.png";
 import { 
   Search,
@@ -23,7 +21,6 @@ interface HeaderProps {
 export function Header({ onCartOpen }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isAuthenticated, user } = useAuth();
-  const { t } = useTranslation();
 
   const { data: cartItems = [] } = useQuery({
     queryKey: ["/api/cart"],
@@ -54,7 +51,7 @@ export function Header({ onCartOpen }: HeaderProps) {
             Home
           </Link>
           <Link href="/shop" className="text-muted-foreground hover:text-primary transition-colors font-medium" data-testid="nav-shop">
-            {t('nav.shop')}
+            Shop
           </Link>
           <Link href="/about" className="text-muted-foreground hover:text-primary transition-colors font-medium" data-testid="nav-about">
             Over ons
@@ -90,8 +87,6 @@ export function Header({ onCartOpen }: HeaderProps) {
               </Badge>
             )}
           </Button>
-
-          <LanguageSwitcher />
 
           {isAuthenticated ? (
             <div className="flex items-center space-x-2">

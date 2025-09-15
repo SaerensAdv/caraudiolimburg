@@ -383,11 +383,11 @@ export default function Admin() {
         title: "Afbeeldingen geüpload",
         description: `${uploadedUrls.length} afbeelding(en) succesvol geüpload.`,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("🔍 [FRONTEND] Upload error:", error);
       toast({
         title: "Upload mislukt",
-        description: `Er is een fout opgetreden: ${error.message}`,
+        description: `Er is een fout opgetreden: ${error?.message || "Onbekende fout"}`,
         variant: "destructive",
       });
     } finally {

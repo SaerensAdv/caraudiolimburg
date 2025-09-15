@@ -149,6 +149,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         productData.upsellCategoryId = null;
       }
       
+      // Handle empty SKU - convert to null or generate unique SKU
+      if (productData.sku === '' || productData.sku === undefined) {
+        productData.sku = null;
+      }
+      
       const product = await storage.createProduct(productData);
       res.json(product);
     } catch (error) {

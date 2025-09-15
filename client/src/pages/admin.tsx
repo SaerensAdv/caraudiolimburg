@@ -151,9 +151,7 @@ export default function Admin() {
         features,
         specifications,
       };
-      console.log("🚀 Sending product data:", payload);
-      const response = await apiRequest("POST", "/api/products", payload);
-      console.log("✅ Product created successfully:", response);
+      await apiRequest("POST", "/api/products", payload);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });

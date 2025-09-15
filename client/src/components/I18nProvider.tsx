@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
@@ -15,7 +16,8 @@ const resources = {
         cart: "Cart",
         login: "Login",
         logout: "Logout",
-        admin: "Admin"
+        admin: "Admin",
+        categories: "Categories"
       },
       
       // Shop Page
@@ -138,7 +140,8 @@ const resources = {
         cart: "Winkelwagen",
         login: "Inloggen",
         logout: "Uitloggen",
-        admin: "Beheer"
+        admin: "Beheer",
+        categories: "Categorieën"
       },
       
       // Shop Page
@@ -252,22 +255,51 @@ const resources = {
   }
 };
 
-i18n
-  .use(LanguageDetector)
-  .use(initReactI18next)
-  .init({
-    resources,
-    fallbackLng: 'nl', // Default to Dutch for Car Audio Limburg
-    debug: false,
-    
-    detection: {
-      order: ['localStorage', 'navigator'],
-      caches: ['localStorage']
-    },
-    
-    interpolation: {
-      escapeValue: false
-    }
-  });
+interface I18nProviderProps {
+  children: React.ReactNode;
+}
 
-export default i18n;
+export function I18nProvider({ children }: I18nProviderProps) {
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  useEffect(() => {
+    // Initialize i18n only after React is ready
+    i18n
+      .use(LanguageDetector)
+      .use(initReactI18next)
+      .init({
+        resources,
+        fallbackLng: 'nl', // Default to Dutch for Car Audio Limburg
+        debug: false,
+        
+        detection: {
+          order: ['localStorage', 'navigator'],
+          caches: ['localStorage']
+        },
+        
+        interpolation: {
+          escapeValue: false
+        }
+      })
+      .then(() => {
+        setIsInitialized(true);
+      })
+      .catch((error) => {
+        console.error('i18n initialization failed:', error);
+        setIsInitialized(true); // Still render the app even if i18n fails
+      });
+  }, []);
+
+  if (!isInitialized) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return <>{children}</>;
+}

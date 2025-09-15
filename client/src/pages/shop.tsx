@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { useLocation } from "wouter";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -29,6 +30,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export default function Shop() {
+  const { t } = useTranslation();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all-categories");
@@ -136,9 +138,9 @@ export default function Shop() {
         {/* Hero Section */}
         <div className="mb-8 md:mb-12">
           <div className="text-center mb-8">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4">Car Audio Shop</h1>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4">{t('shop.title')}</h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-              Ontdek ons complete assortiment premium car audio producten voor de ultieme rijervaring
+              {t('shop.subtitle')}
             </p>
           </div>
 
@@ -158,8 +160,8 @@ export default function Shop() {
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-primary/20 transition-colors">
                   <Volume2 className="w-6 h-6 text-primary" />
                 </div>
-                <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">Speakers</h3>
-                <p className="text-sm text-muted-foreground">Premium sound</p>
+                <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">{t('shop.categories.speakers')}</h3>
+                <p className="text-sm text-muted-foreground">{t('shop.categoryDescriptions.speakers')}</p>
               </CardContent>
             </Card>
 
@@ -177,8 +179,8 @@ export default function Shop() {
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-primary/20 transition-colors">
                   <Settings className="w-6 h-6 text-primary" />
                 </div>
-                <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">Amplifiers</h3>
-                <p className="text-sm text-muted-foreground">Pure power</p>
+                <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">{t('shop.categories.amplifiers')}</h3>
+                <p className="text-sm text-muted-foreground">{t('shop.categoryDescriptions.amplifiers')}</p>
               </CardContent>
             </Card>
 
@@ -196,8 +198,8 @@ export default function Shop() {
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-primary/20 transition-colors">
                   <Car className="w-6 h-6 text-primary" />
                 </div>
-                <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">Head Units</h3>
-                <p className="text-sm text-muted-foreground">Smart control</p>
+                <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">{t('shop.categories.headUnits')}</h3>
+                <p className="text-sm text-muted-foreground">{t('shop.categoryDescriptions.headUnits')}</p>
               </CardContent>
             </Card>
 
@@ -215,8 +217,8 @@ export default function Shop() {
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-primary/20 transition-colors">
                   <Grid className="w-6 h-6 text-primary" />
                 </div>
-                <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">Accessoires</h3>
-                <p className="text-sm text-muted-foreground">Complete setup</p>
+                <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">{t('shop.categories.accessories')}</h3>
+                <p className="text-sm text-muted-foreground">{t('shop.categoryDescriptions.accessories')}</p>
               </CardContent>
             </Card>
           </div>
@@ -230,7 +232,7 @@ export default function Shop() {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="h-12 px-6 border-border hover:bg-accent" data-testid="dropdown-categories">
                   <Grid className="w-4 h-4 mr-2" />
-                  Categorieën
+                  {t('nav.categories')}
                   <ChevronDown className="w-4 h-4 ml-2" />
                 </Button>
               </DropdownMenuTrigger>
@@ -433,13 +435,13 @@ export default function Shop() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   {/* Category Filter */}
                   <div>
-                    <label className="text-sm font-medium text-foreground mb-2 block">Categorie</label>
+                    <label className="text-sm font-medium text-foreground mb-2 block">{t('shop.filters.category')}</label>
                     <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                       <SelectTrigger className="bg-input border-border" data-testid="select-category">
                         <SelectValue placeholder="Alle categorieën" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all-categories">Alle categorieën</SelectItem>
+                        <SelectItem value="all-categories">{t('shop.placeholders.allCategories')}</SelectItem>
                         {categories && Array.isArray(categories) && (categories as Category[]).map((category: Category) => (
                           <SelectItem key={category.id} value={category.id}>
                             {category.name}
@@ -451,13 +453,13 @@ export default function Shop() {
 
                   {/* Brand Filter */}
                   <div>
-                    <label className="text-sm font-medium text-foreground mb-2 block">Merk</label>
+                    <label className="text-sm font-medium text-foreground mb-2 block">{t('shop.filters.brand')}</label>
                     <Select value={selectedBrand} onValueChange={setSelectedBrand}>
                       <SelectTrigger className="bg-input border-border" data-testid="select-brand">
                         <SelectValue placeholder="Alle merken" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all-brands">Alle merken</SelectItem>
+                        <SelectItem value="all-brands">{t('shop.placeholders.allBrands')}</SelectItem>
                         {brands && Array.isArray(brands) && (brands as Brand[]).map((brand: Brand) => (
                           <SelectItem key={brand.id} value={brand.id}>
                             {brand.name}
@@ -469,13 +471,13 @@ export default function Shop() {
 
                   {/* Vehicle Make Filter */}
                   <div>
-                    <label className="text-sm font-medium text-foreground mb-2 block">Voertuigmerk</label>
+                    <label className="text-sm font-medium text-foreground mb-2 block">{t('shop.filters.vehicleMake')}</label>
                     <Select value={selectedMake} onValueChange={setSelectedMake}>
                       <SelectTrigger className="bg-input border-border" data-testid="select-vehicle-make">
                         <SelectValue placeholder="Alle merken" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all-makes">Alle merken</SelectItem>
+                        <SelectItem value="all-makes">{t('shop.placeholders.allMakes')}</SelectItem>
                         {vehicleMakes && Array.isArray(vehicleMakes) && (vehicleMakes as VehicleMake[]).map((make: VehicleMake) => (
                           <SelectItem key={make.id} value={make.id}>
                             {make.name}
@@ -487,13 +489,13 @@ export default function Shop() {
 
                   {/* Vehicle Model Filter */}
                   <div>
-                    <label className="text-sm font-medium text-foreground mb-2 block">Model</label>
+                    <label className="text-sm font-medium text-foreground mb-2 block">{t('shop.filters.model')}</label>
                     <Select value={selectedModel} onValueChange={setSelectedModel} disabled={!selectedMake}>
                       <SelectTrigger className="bg-input border-border" data-testid="select-vehicle-model">
                         <SelectValue placeholder="Alle modellen" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all-models">Alle modellen</SelectItem>
+                        <SelectItem value="all-models">{t('shop.placeholders.allModels')}</SelectItem>
                         {vehicleModels && Array.isArray(vehicleModels) && (vehicleModels as any[]).map((model: any) => (
                           <SelectItem key={model.id} value={model.id}>
                             {model.name}
@@ -507,13 +509,13 @@ export default function Shop() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                   {/* Year Filter */}
                   <div>
-                    <label className="text-sm font-medium text-foreground mb-2 block">Bouwjaar</label>
+                    <label className="text-sm font-medium text-foreground mb-2 block">{t('shop.filters.year')}</label>
                     <Select value={selectedYear} onValueChange={setSelectedYear}>
                       <SelectTrigger className="bg-input border-border" data-testid="select-year">
                         <SelectValue placeholder="Alle jaren" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="all-years">Alle jaren</SelectItem>
+                        <SelectItem value="all-years">{t('shop.placeholders.allYears')}</SelectItem>
                         {years.map((year) => (
                           <SelectItem key={year} value={year.toString()}>
                             {year}
@@ -528,7 +530,7 @@ export default function Shop() {
                     <div className="flex items-center justify-between mb-4">
                       <label className="text-sm font-medium text-foreground flex items-center">
                         <Euro className="w-4 h-4 mr-1" />
-                        Prijsbereik
+                        {t('shop.filters.priceRange')}
                       </label>
                       <span className="text-sm font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full">
                         €{priceRange[0]} - €{priceRange[1]}
@@ -588,17 +590,17 @@ export default function Shop() {
 
                   {/* Sort Filter */}
                   <div>
-                    <label className="text-sm font-medium text-foreground mb-2 block">Sorteren</label>
+                    <label className="text-sm font-medium text-foreground mb-2 block">{t('shop.filters.sort')}</label>
                     <Select value={sortBy} onValueChange={setSortBy}>
                       <SelectTrigger className="bg-input border-border" data-testid="select-sort">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="name">Naam A-Z</SelectItem>
-                        <SelectItem value="price-low">Prijs laag-hoog</SelectItem>
-                        <SelectItem value="price-high">Prijs hoog-laag</SelectItem>
-                        <SelectItem value="newest">Nieuwste eerst</SelectItem>
-                        <SelectItem value="featured">Uitgelicht eerst</SelectItem>
+                        <SelectItem value="name">{t('shop.sorting.name')}</SelectItem>
+                        <SelectItem value="price-low">{t('shop.sorting.priceLow')}</SelectItem>
+                        <SelectItem value="price-high">{t('shop.sorting.priceHigh')}</SelectItem>
+                        <SelectItem value="newest">{t('shop.sorting.newest')}</SelectItem>
+                        <SelectItem value="featured">{t('shop.sorting.featured')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

@@ -3,6 +3,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { I18nProvider } from "@/components/I18nProvider";
 import { useAuth } from "@/hooks/useAuth";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
@@ -56,14 +57,16 @@ function Router() {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <div className="min-h-screen bg-background text-foreground">
-          <Toaster />
-          <Router />
-        </div>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <I18nProvider>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <div className="min-h-screen bg-background text-foreground">
+            <Toaster />
+            <Router />
+          </div>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </I18nProvider>
   );
 }
 

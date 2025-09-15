@@ -204,6 +204,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete('/api/products/:id', isAdmin, async (req, res) => {
+    try {
+      const productId = req.params.id;
+      await storage.deleteProduct(productId);
+      res.json({ message: "Product deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      res.status(500).json({ message: "Failed to delete product" });
+    }
+  });
+
   // Category routes
   app.get('/api/categories', async (req, res) => {
     try {

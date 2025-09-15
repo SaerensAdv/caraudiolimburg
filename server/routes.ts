@@ -694,7 +694,7 @@ ${message || 'Geen aanvullende informatie'}`
     }
   });
 
-  // Image upload endpoint using local public directory
+  // Image upload endpoint using Object Storage for production persistence
   app.post('/api/upload/image', isAdmin, imageUpload.single('file'), async (req: any, res) => {
     try {
       if (!req.file) {
@@ -708,27 +708,67 @@ ${message || 'Geen aanvullende informatie'}`
       const fileExtension = req.file.originalname.split('.').pop();
       const fileName = `product-${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExtension}`;
       
-      // Use local public directory for development
-      const publicDir = path.join(process.cwd(), 'public', 'products');
-      const filePath = path.join(publicDir, fileName);
+      // Get Object Storage bucket ID with validation
+      const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
+      if (!bucketId) {
+        console.error("❌ DEFAULT_OBJECT_STORAGE_BUCKET_ID not found, falling back to local storage");
+        throw new Error("Object Storage not configured");
+      }
       
-      // Ensure directory exists
-      await fs.promises.mkdir(publicDir, { recursive: true });
+      // Construct Object Storage path using posix paths
+      const objectStorageDir = path.posix.join('/', bucketId, 'public', 'products');
+      const objectStoragePath = path.posix.join(objectStorageDir, fileName);
       
-      // Save file locally
-      await fs.promises.writeFile(filePath, req.file.buffer);
-      
-      // Return public URL
-      const publicUrl = `/products/${fileName}`;
-      
-      res.json({
-        url: publicUrl,
-        fileName: fileName,
-        size: req.file.size,
-        mimeType: req.file.mimetype
-      });
+      try {
+        // Ensure Object Storage directory exists
+        await fs.promises.mkdir(objectStorageDir, { recursive: true });
+        
+        // Save to Object Storage
+        await fs.promises.writeFile(objectStoragePath, req.file.buffer);
+        console.log(`✅ Image saved to Object Storage: ${objectStoragePath}`);
+        
+        // Always return consistent public URL format for production
+        const publicUrl = `/public/products/${fileName}`;
+        
+        res.json({
+          url: publicUrl,
+          fileName: fileName,
+          size: req.file.size,
+          mimeType: req.file.mimetype
+        });
+      } catch (objectStorageError) {
+        console.error("❌ Object Storage upload failed:", objectStorageError);
+        
+        // Only fallback to local in development, fail in production
+        if (process.env.NODE_ENV === 'production') {
+          return res.status(500).json({ 
+            message: "Image upload failed - Object Storage not available in production" 
+          });
+        }
+        
+        // Development fallback to local directory
+        console.log("🔄 Falling back to local storage (development only)");
+        const localDir = path.join(process.cwd(), 'public', 'products');
+        const localPath = path.join(localDir, fileName);
+        
+        // Ensure local directory exists
+        await fs.promises.mkdir(localDir, { recursive: true });
+        
+        // Save file locally
+        await fs.promises.writeFile(localPath, req.file.buffer);
+        
+        // Return consistent public URL format even for local fallback
+        const publicUrl = `/public/products/${fileName}`;
+        
+        res.json({
+          url: publicUrl,
+          fileName: fileName,
+          size: req.file.size,
+          mimeType: req.file.mimetype
+        });
+      }
     } catch (error) {
-      console.error("Error uploading image:", error);
+      console.error("❌ Error uploading image:", error);
       res.status(500).json({ message: "Failed to upload image" });
     }
   });

@@ -7,8 +7,15 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Serve static files from public directory
+// Serve static files from local public directory (development fallback)
 app.use('/products', express.static(path.join(process.cwd(), 'public', 'products')));
+app.use('/public/products', express.static(path.join(process.cwd(), 'public', 'products')));
+
+// Object Storage files are automatically served at /public/* paths when PUBLIC_OBJECT_SEARCH_PATHS is configured
+// Log Object Storage configuration on startup
+console.log("🗂️  Object Storage Configuration:");
+console.log("   Bucket ID:", process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID || "❌ NOT SET");
+console.log("   Public Paths:", process.env.PUBLIC_OBJECT_SEARCH_PATHS || "❌ NOT SET");
 
 app.use((req, res, next) => {
   const start = Date.now();

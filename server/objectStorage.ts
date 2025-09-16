@@ -263,6 +263,30 @@ export class ObjectStorageService {
 
     return { uploadURL, fileName };
   }
+
+  // Set ACL policy for public objects (for product images)
+  async setPublicObjectAclPolicy(
+    objectKey: string,
+    aclPolicy: ObjectAclPolicy
+  ): Promise<void> {
+    const publicSearchPaths = this.getPublicObjectSearchPaths();
+    
+    for (const searchPath of publicSearchPaths) {
+      const fullPath = `${searchPath}/${objectKey}`;
+      const { bucketName, objectName } = parseObjectPath(fullPath);
+      const bucket = objectStorageClient.bucket(bucketName);
+      const file = bucket.file(objectName);
+
+      // Check if file exists in this path
+      const [exists] = await file.exists();
+      if (exists) {
+        await setObjectAclPolicy(file, aclPolicy);
+        return;
+      }
+    }
+    
+    throw new Error(`Public object not found: ${objectKey}`);
+  }
 }
 
 function parseObjectPath(path: string): {

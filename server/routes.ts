@@ -85,6 +85,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   setupAuth(app);
 
+  // Object Storage streaming route - serves files directly from bucket
+  app.get('/public/*', async (req, res) => {
+    try {
+      const filePath = req.path; // e.g., "/public/products/image.jpg"
+      console.log(`🔍 [OBJECT_STORAGE] Serving file: ${filePath}`);
+      
+      // Initialize Object Storage service
+      const objectStorage = new ObjectStorageService();
+      
+      // Extract object key by removing "/public/" prefix
+      const objectKey = req.path.replace(/^\/public\//, ""); // e.g., "products/image.jpg"
+      console.log(`🔍 [OBJECT_STORAGE] Object key: ${objectKey}`);
+      
+      // Search for the file in the public area of the bucket
+      const file = await objectStorage.searchPublicObject(objectKey);
+      
+      if (!file) {
+        console.log(`❌ [OBJECT_STORAGE] File not found: ${filePath}`);
+        return res.status(404).json({ error: "File not found" });
+      }
+      console.log(`✅ [OBJECT_STORAGE] Found file: ${file.name}`);
+      
+      // Stream the file directly to the response
+      await objectStorage.downloadObject(file, res);
+      
+    } catch (error) {
+      console.error("❌ [OBJECT_STORAGE] Error serving file:", error);
+      res.status(500).json({ error: "Failed to serve file" });
+    }
+  });
+
   // Auth routes - handled by auth.ts
 
   // Customer Portal routes
@@ -768,35 +799,60 @@ ${message || 'Geen aanvullende informatie'}`
     }
   });
 
-  // Update product with uploaded image URL
+  // Complete image upload and set public ACL
   app.put('/api/upload/image/complete', isAdmin, async (req: any, res) => {
     console.log("🔍 [UPLOAD] Completing image upload...");
     
     try {
-      const { uploadURL, fileName } = req.body;
+      const { uploadURL, fileName, originalName, size } = req.body;
       
       if (!uploadURL || !fileName) {
         return res.status(400).json({ error: "uploadURL and fileName are required" });
       }
 
-      // Extract file extension from fileName or uploadURL
+      const objectStorageService = new ObjectStorageService();
+      
+      // Extract file extension from originalName
       let fileExtension = '';
-      if (fileName.includes('.')) {
-        fileExtension = fileName.split('.').pop() || '';
+      if (originalName && originalName.includes('.')) {
+        fileExtension = originalName.split('.').pop() || 'jpg';
+      } else if (fileName.includes('.')) {
+        fileExtension = fileName.split('.').pop() || 'jpg';
       } else {
-        // Try to extract from original name in request
-        fileExtension = req.body.originalName?.split('.').pop() || 'jpg';
+        fileExtension = 'jpg';
       }
       
-      // Return the public URL for the uploaded image
-      const publicUrl = `/public/products/${fileName}.${fileExtension}`;
+      // Create the full filename with extension
+      const fullFileName = fileName.includes('.') ? fileName : `${fileName}.${fileExtension}`;
+      
+      // Set public ACL for the uploaded file
+      try {
+        const publicSearchPaths = objectStorageService.getPublicObjectSearchPaths();
+        const objectPath = `${publicSearchPaths[0]}/products/${fullFileName}`;
+        
+        console.log("🔍 [UPLOAD] Setting public ACL for:", objectPath);
+        
+        // Set the ACL to make the file publicly readable
+        await objectStorageService.setPublicObjectAclPolicy(`products/${fullFileName}`, {
+          readers: ['allUsers'],
+          writers: []
+        });
+        
+        console.log("✅ [UPLOAD] Public ACL set successfully");
+      } catch (aclError) {
+        console.error("⚠️ [UPLOAD] Failed to set public ACL:", aclError);
+        // Continue anyway - the file might still be accessible
+      }
+      
+      // Return the relative public URL
+      const publicUrl = `/public/products/${fullFileName}`;
       
       console.log("✅ [UPLOAD] Image upload completed:", publicUrl);
       
       res.json({
         url: publicUrl,
-        fileName: `${fileName}.${fileExtension}`,
-        size: req.body.size || 0,
+        fileName: fullFileName,
+        size: size || 0,
         mimeType: `image/${fileExtension}`
       });
     } catch (error: any) {

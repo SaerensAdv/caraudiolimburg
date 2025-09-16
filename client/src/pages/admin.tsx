@@ -1451,66 +1451,63 @@ export default function Admin() {
                   Dit proces behoudt productie-specifieke data zoals voorraad en prijzen.
                 </p>
               </CardHeader>
-              <CardContent className="space-y-4">
-                {process.env.NODE_ENV === 'development' ? (
-                  <>
-                    <div className="space-y-4">
-                      <Button
-                        onClick={async () => {
-                          setIsSyncing(true);
-                          try {
-                            const response = await fetch('/api/sync/export?full=true', {
-                              method: 'GET',
-                              headers: {
-                                'Content-Type': 'application/json',
-                              },
-                              credentials: 'include',
-                            });
-                            const data = await response.json();
-                            setSyncResults({
-                              type: 'export',
-                              data: data,
-                              message: `Export succesvol! ${Object.values(data.data as Record<string, any[]>).reduce((acc: number, arr: any[]) => acc + arr.length, 0)} items geëxporteerd.`
-                            });
-                            toast({
-                              title: "Export Succesvol",
-                              description: "Data is klaar voor import in productie",
-                            });
-                          } catch (error) {
-                            toast({
-                              title: "Export Mislukt",
-                              description: "Er is een fout opgetreden bij het exporteren",
-                              variant: "destructive",
-                            });
-                          } finally {
-                            setIsSyncing(false);
-                          }
-                        }}
-                        disabled={isSyncing}
-                        data-testid="button-export-data"
-                      >
-                        {isSyncing ? (
-                          <>
-                            <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                            Exporteren...
-                          </>
-                        ) : (
-                          <>
-                            <Download className="w-4 h-4 mr-2" />
-                            Export Data voor Productie
-                          </>
-                        )}
-                      </Button>
-                      
-                      <div className="text-sm text-muted-foreground">
-                        <p>In development environment: Export data voor handmatige import in productie.</p>
-                        <p>Na export: Kopieer de data en importeer in productie admin panel.</p>
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="space-y-4">
+              <CardContent className="space-y-6">
+                {/* Export Section */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold">Export Data</h3>
+                  <Button
+                    onClick={async () => {
+                      setIsSyncing(true);
+                      try {
+                        const response = await fetch('/api/sync/export?full=true', {
+                          method: 'GET',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          credentials: 'include',
+                        });
+                        const data = await response.json();
+                        setSyncResults({
+                          type: 'export',
+                          data: data,
+                          message: `Export succesvol! ${Object.values(data.data as Record<string, any[]>).reduce((acc: number, arr: any[]) => acc + arr.length, 0)} items geëxporteerd.`
+                        });
+                        toast({
+                          title: "Export Succesvol",
+                          description: "Data is klaar voor import",
+                        });
+                      } catch (error) {
+                        toast({
+                          title: "Export Mislukt",
+                          description: "Er is een fout opgetreden bij het exporteren",
+                          variant: "destructive",
+                        });
+                      } finally {
+                        setIsSyncing(false);
+                      }
+                    }}
+                    disabled={isSyncing}
+                    data-testid="button-export-data"
+                  >
+                    {isSyncing ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                        Exporteren...
+                      </>
+                    ) : (
+                      <>
+                        <Download className="w-4 h-4 mr-2" />
+                        Export Data
+                      </>
+                    )}
+                  </Button>
+                </div>
+                
+                <Separator />
+                
+                {/* Import Section */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold">Import Data</h3>
                       <div className="flex gap-2">
                         <Button
                           variant="outline"
@@ -1662,9 +1659,7 @@ export default function Admin() {
                           data-testid="input-sync-data"
                         />
                       </div>
-                    </div>
-                  </>
-                )}
+                </div>
                 
                 {/* Sync Results */}
                 {syncResults && (

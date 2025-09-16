@@ -794,11 +794,9 @@ ${message || 'Geen aanvullende informatie'}`
 
   app.post('/api/sync/import', isAdmin, async (req, res) => {
     try {
-      // Only allow import in production
-      if (process.env.NODE_ENV === 'development') {
-        return res.status(403).json({ message: "Import only available in production" });
-      }
-
+      // Allow import in both development and production for testing
+      // In real production setup, you might want to restrict this
+      
       const { data, dryRun, force } = req.body;
       
       if (!data) {

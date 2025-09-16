@@ -58,8 +58,9 @@ app.use((req, res, next) => {
   next();
 });
 
-  // Register object storage route BEFORE all other routes to ensure priority
-  // This prevents the catch-all route in production from intercepting /public/* requests
+// Register object storage route BEFORE all other routes to ensure priority
+// This prevents the catch-all route in production from intercepting /public/* requests
+async function setupObjectStorageRoute() {
   const { ObjectStorageService } = await import("./objectStorage");
   
   app.get('/public/*', async (req, res) => {
@@ -92,6 +93,10 @@ app.use((req, res, next) => {
       res.status(500).json({ error: "Failed to serve file" });
     }
   });
+}
+
+// Setup object storage route immediately
+setupObjectStorageRoute();
 
 (async () => {
   const server = await registerRoutes(app);

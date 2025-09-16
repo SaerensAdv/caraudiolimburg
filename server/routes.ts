@@ -803,6 +803,23 @@ ${message || 'Geen aanvullende informatie'}`
         return res.status(400).json({ message: "No data provided for import" });
       }
 
+      // Helper function to convert string timestamps back to Date objects
+      const convertTimestamps = (obj: any) => {
+        if (!obj) return obj;
+        const result = { ...obj };
+        // Convert common timestamp fields
+        if (result.createdAt && typeof result.createdAt === 'string') {
+          result.createdAt = new Date(result.createdAt);
+        }
+        if (result.updatedAt && typeof result.updatedAt === 'string') {
+          result.updatedAt = new Date(result.updatedAt);
+        }
+        if (result.lastSyncedAt && typeof result.lastSyncedAt === 'string') {
+          result.lastSyncedAt = new Date(result.lastSyncedAt);
+        }
+        return result;
+      };
+
       const results = {
         created: { brands: 0, categories: 0, vehicleMakes: 0, vehicleModels: 0, products: 0, compatibility: 0 },
         updated: { brands: 0, categories: 0, vehicleMakes: 0, vehicleModels: 0, products: 0, compatibility: 0 },
@@ -813,15 +830,16 @@ ${message || 'Geen aanvullende informatie'}`
       // Import in order to maintain foreign key relationships
       // 1. Brands
       for (const brand of data.brands || []) {
-        const existing = await storage.getBrandBySlug(brand.slug);
+        const convertedBrand = convertTimestamps(brand);
+        const existing = await storage.getBrandBySlug(convertedBrand.slug);
         if (existing) {
-          if (existing.contentHash !== brand.contentHash || force) {
+          if (existing.contentHash !== convertedBrand.contentHash || force) {
             if (!dryRun) {
               await storage.updateBrand(existing.id, {
-                ...brand,
+                ...convertedBrand,
                 originEnv: 'dev',
                 lastSyncedAt: new Date(),
-                contentHash: brand.contentHash
+                contentHash: convertedBrand.contentHash
               });
             }
             results.updated.brands++;
@@ -831,7 +849,7 @@ ${message || 'Geen aanvullende informatie'}`
         } else {
           if (!dryRun) {
             await storage.createBrandWithId({
-              ...brand,
+              ...convertedBrand,
               originEnv: 'dev',
               lastSyncedAt: new Date()
             });
@@ -842,15 +860,16 @@ ${message || 'Geen aanvullende informatie'}`
 
       // 2. Categories  
       for (const category of data.categories || []) {
-        const existing = await storage.getCategoryBySlug(category.slug);
+        const convertedCategory = convertTimestamps(category);
+        const existing = await storage.getCategoryBySlug(convertedCategory.slug);
         if (existing) {
           if (existing.contentHash !== category.contentHash || force) {
             if (!dryRun) {
               await storage.updateCategory(existing.id, {
-                ...category,
+                ...convertedCategory,
                 originEnv: 'dev',
                 lastSyncedAt: new Date(),
-                contentHash: category.contentHash
+                contentHash: convertedCategory.contentHash
               });
             }
             results.updated.categories++;
@@ -860,7 +879,7 @@ ${message || 'Geen aanvullende informatie'}`
         } else {
           if (!dryRun) {
             await storage.createCategoryWithId({
-              ...category,
+              ...convertedCategory,
               originEnv: 'dev',
               lastSyncedAt: new Date()
             });
@@ -871,15 +890,16 @@ ${message || 'Geen aanvullende informatie'}`
 
       // 3. Vehicle Makes
       for (const make of data.vehicleMakes || []) {
-        const existing = await storage.getVehicleMakeBySlug(make.slug);
+        const convertedMake = convertTimestamps(make);
+        const existing = await storage.getVehicleMakeBySlug(convertedMake.slug);
         if (existing) {
-          if (existing.contentHash !== make.contentHash || force) {
+          if (existing.contentHash !== convertedMake.contentHash || force) {
             if (!dryRun) {
               await storage.updateVehicleMake(existing.id, {
-                ...make,
+                ...convertedMake,
                 originEnv: 'dev',
                 lastSyncedAt: new Date(),
-                contentHash: make.contentHash
+                contentHash: convertedMake.contentHash
               });
             }
             results.updated.vehicleMakes++;
@@ -889,7 +909,7 @@ ${message || 'Geen aanvullende informatie'}`
         } else {
           if (!dryRun) {
             await storage.createVehicleMakeWithId({
-              ...make,
+              ...convertedMake,
               originEnv: 'dev',
               lastSyncedAt: new Date()
             });
@@ -900,15 +920,16 @@ ${message || 'Geen aanvullende informatie'}`
 
       // 4. Vehicle Models
       for (const model of data.vehicleModels || []) {
-        const existing = await storage.getVehicleModelBySlug(model.slug, model.makeId);
+        const convertedModel = convertTimestamps(model);
+        const existing = await storage.getVehicleModelBySlug(convertedModel.slug, convertedModel.makeId);
         if (existing) {
-          if (existing.contentHash !== model.contentHash || force) {
+          if (existing.contentHash !== convertedModel.contentHash || force) {
             if (!dryRun) {
               await storage.updateVehicleModel(existing.id, {
-                ...model,
+                ...convertedModel,
                 originEnv: 'dev',
                 lastSyncedAt: new Date(),
-                contentHash: model.contentHash
+                contentHash: convertedModel.contentHash
               });
             }
             results.updated.vehicleModels++;
@@ -918,7 +939,7 @@ ${message || 'Geen aanvullende informatie'}`
         } else {
           if (!dryRun) {
             await storage.createVehicleModelWithId({
-              ...model,
+              ...convertedModel,
               originEnv: 'dev',
               lastSyncedAt: new Date()
             });
@@ -929,38 +950,39 @@ ${message || 'Geen aanvullende informatie'}`
 
       // 5. Products - merge dev-owned fields, preserve prod-owned fields
       for (const product of data.products || []) {
-        const existing = await storage.getProductBySlug(product.slug);
+        const convertedProduct = convertTimestamps(product);
+        const existing = await storage.getProductBySlug(convertedProduct.slug);
         if (existing) {
           if (existing.originEnv === 'prod' && !force) {
             // Skip prod-created products unless force is true
             results.conflicts.push({
               type: 'product',
-              slug: product.slug,
+              slug: convertedProduct.slug,
               message: 'Product created in production, skipping'
             });
             results.skipped.products++;
-          } else if (existing.contentHash !== product.contentHash || force) {
+          } else if (existing.contentHash !== convertedProduct.contentHash || force) {
             if (!dryRun) {
               // Preserve prod-owned fields: price, originalPrice, stock, isActive
               await storage.updateProduct(existing.id, {
                 // Dev-owned fields
-                name: product.name,
-                slug: product.slug,
-                description: product.description,
-                shortDescription: product.shortDescription,
-                images: product.images,
-                primaryImageIndex: product.primaryImageIndex,
-                brandId: product.brandId,
-                categoryId: product.categoryId,
-                features: product.features,
-                specifications: product.specifications,
-                canHaveInstallation: product.canHaveInstallation,
-                upsellCategoryId: product.upsellCategoryId,
-                isFeatured: product.isFeatured,
+                name: convertedProduct.name,
+                slug: convertedProduct.slug,
+                description: convertedProduct.description,
+                shortDescription: convertedProduct.shortDescription,
+                images: convertedProduct.images,
+                primaryImageIndex: convertedProduct.primaryImageIndex,
+                brandId: convertedProduct.brandId,
+                categoryId: convertedProduct.categoryId,
+                features: convertedProduct.features,
+                specifications: convertedProduct.specifications,
+                canHaveInstallation: convertedProduct.canHaveInstallation,
+                upsellCategoryId: convertedProduct.upsellCategoryId,
+                isFeatured: convertedProduct.isFeatured,
                 // Tracking fields
                 originEnv: 'dev',
                 lastSyncedAt: new Date(),
-                contentHash: product.contentHash,
+                contentHash: convertedProduct.contentHash,
                 // Preserve prod-owned fields
                 price: existing.price,
                 originalPrice: existing.originalPrice,
@@ -975,7 +997,7 @@ ${message || 'Geen aanvullende informatie'}`
         } else {
           if (!dryRun) {
             await storage.createProductWithId({
-              ...product,
+              ...convertedProduct,
               originEnv: 'dev',
               lastSyncedAt: new Date()
             });
@@ -986,21 +1008,22 @@ ${message || 'Geen aanvullende informatie'}`
 
       // 6. Product Vehicle Compatibility
       for (const compat of data.productVehicleCompatibility || []) {
+        const convertedCompat = convertTimestamps(compat);
         const existing = await storage.getCompatibilityByKey(
-          compat.productId,
-          compat.makeId,
-          compat.modelId,
-          compat.yearFrom,
-          compat.yearTo
+          convertedCompat.productId,
+          convertedCompat.makeId,
+          convertedCompat.modelId,
+          convertedCompat.yearFrom,
+          convertedCompat.yearTo
         );
         if (existing) {
-          if (existing.contentHash !== compat.contentHash || force) {
+          if (existing.contentHash !== convertedCompat.contentHash || force) {
             if (!dryRun) {
               await storage.updateCompatibility(existing.id, {
-                ...compat,
+                ...convertedCompat,
                 originEnv: 'dev',
                 lastSyncedAt: new Date(),
-                contentHash: compat.contentHash
+                contentHash: convertedCompat.contentHash
               });
             }
             results.updated.compatibility++;
@@ -1010,7 +1033,7 @@ ${message || 'Geen aanvullende informatie'}`
         } else {
           if (!dryRun) {
             await storage.createCompatibilityWithId({
-              ...compat,
+              ...convertedCompat,
               originEnv: 'dev',
               lastSyncedAt: new Date()
             });

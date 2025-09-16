@@ -380,6 +380,10 @@ export default function Admin() {
           headers: {
             'Content-Type': 'application/json',
           },
+          body: JSON.stringify({
+            originalName: file.name,
+            mimeType: file.type
+          }),
         });
 
         if (!urlResponse.ok) {
@@ -388,7 +392,7 @@ export default function Admin() {
           throw new Error(`Failed to get upload URL for ${file.name}: ${urlResponse.status}`);
         }
 
-        const { uploadURL, fileName } = await urlResponse.json();
+        const { uploadURL, fileName, objectKey, publicUrl } = await urlResponse.json();
         console.log(`🔍 [FRONTEND] Got presigned URL for ${file.name}:`, fileName);
 
         // Step 2: Upload directly to Object Storage using presigned URL
@@ -417,10 +421,10 @@ export default function Admin() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            uploadURL,
             fileName,
-            originalName: file.name,
+            objectKey,
             size: file.size,
+            originalName: file.name,
           }),
         });
 

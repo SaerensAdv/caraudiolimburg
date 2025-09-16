@@ -753,14 +753,33 @@ ${message || 'Geen aanvullende informatie'}`
     console.log("🔍 [UPLOAD] Getting presigned URL for product image...");
     
     try {
+      const { originalName, mimeType } = req.body;
+      
+      // Extract file extension from originalName or mimeType
+      let fileExtension = 'jpg'; // default
+      if (originalName && originalName.includes('.')) {
+        fileExtension = originalName.split('.').pop() || 'jpg';
+      } else if (mimeType) {
+        const mimeToExt = {
+          'image/jpeg': 'jpg',
+          'image/jpg': 'jpg', 
+          'image/png': 'png',
+          'image/webp': 'webp',
+          'image/gif': 'gif'
+        };
+        fileExtension = mimeToExt[mimeType as keyof typeof mimeToExt] || 'jpg';
+      }
+      
       const objectStorageService = new ObjectStorageService();
-      const { uploadURL, fileName } = await objectStorageService.getProductImageUploadURL();
+      const { uploadURL, fileName, objectKey, publicUrl } = await objectStorageService.getProductImageUploadURL(fileExtension);
       
       console.log("✅ [UPLOAD] Presigned URL generated:", fileName);
       
       res.json({
         uploadURL,
-        fileName
+        fileName,
+        objectKey,
+        publicUrl
       });
     } catch (error: any) {
       console.error("❌ [UPLOAD] Failed to get presigned URL:", error);
@@ -776,38 +795,28 @@ ${message || 'Geen aanvullende informatie'}`
     console.log("🔍 [UPLOAD] Completing image upload...");
     
     try {
-      const { uploadURL, fileName, originalName, size } = req.body;
+      const { fileName, objectKey, size, originalName } = req.body;
       
-      if (!uploadURL || !fileName) {
-        return res.status(400).json({ error: "uploadURL and fileName are required" });
+      if (!fileName || !objectKey) {
+        return res.status(400).json({ error: "fileName and objectKey are required" });
       }
+
+      // Compute publicUrl server-side for consistency
+      const publicUrl = `/public/products/${fileName}`;
 
       const objectStorageService = new ObjectStorageService();
       
-      // Extract file extension from originalName
-      let fileExtension = '';
-      if (originalName && originalName.includes('.')) {
-        fileExtension = originalName.split('.').pop() || 'jpg';
-      } else if (fileName.includes('.')) {
-        fileExtension = fileName.split('.').pop() || 'jpg';
-      } else {
-        fileExtension = 'jpg';
-      }
+      // Extract file extension from filename for mimeType
+      const fileExtension = fileName.includes('.') ? fileName.split('.').pop() || 'jpg' : 'jpg';
       
-      // Create the full filename with extension
-      const fullFileName = fileName.includes('.') ? fileName : `${fileName}.${fileExtension}`;
-      
-      // Set public ACL for the uploaded file
+      // Set public ACL for the uploaded file using the exact objectKey
       try {
-        const publicSearchPaths = objectStorageService.getPublicObjectSearchPaths();
-        const objectPath = `${publicSearchPaths[0]}/products/${fullFileName}`;
-        
-        console.log("🔍 [UPLOAD] Setting public ACL for:", objectPath);
+        console.log("🔍 [UPLOAD] Setting public ACL for:", objectKey);
         
         // Set the ACL to make the file publicly readable
-        await objectStorageService.setPublicObjectAclPolicy(`products/${fullFileName}`, {
-          readers: ['allUsers'],
-          writers: []
+        await objectStorageService.setPublicObjectAclPolicy(objectKey, {
+          visibility: 'public',
+          owner: 'system'
         });
         
         console.log("✅ [UPLOAD] Public ACL set successfully");
@@ -816,14 +825,11 @@ ${message || 'Geen aanvullende informatie'}`
         // Continue anyway - the file might still be accessible
       }
       
-      // Return the relative public URL
-      const publicUrl = `/public/products/${fullFileName}`;
-      
       console.log("✅ [UPLOAD] Image upload completed:", publicUrl);
       
       res.json({
         url: publicUrl,
-        fileName: fullFileName,
+        fileName: fileName,
         size: size || 0,
         mimeType: `image/${fileExtension}`
       });

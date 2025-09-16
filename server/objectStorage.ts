@@ -239,16 +239,19 @@ export class ObjectStorageService {
   }
 
   // Custom method for product images - stores in public folder for easy access
-  async getProductImageUploadURL(): Promise<{ uploadURL: string; fileName: string }> {
+  async getProductImageUploadURL(fileExtension: string): Promise<{ uploadURL: string; fileName: string; objectKey: string; publicUrl: string }> {
     const publicSearchPaths = this.getPublicObjectSearchPaths();
     if (!publicSearchPaths || publicSearchPaths.length === 0) {
       throw new Error("Public object search paths not configured");
     }
 
-    // Generate unique filename
+    // Ensure extension starts with dot
+    const ext = fileExtension.startsWith('.') ? fileExtension : `.${fileExtension}`;
+    
+    // Generate unique filename WITH extension
     const timestamp = Date.now();
     const randomId = Math.random().toString(36).substring(7);
-    const fileName = `product-${timestamp}-${randomId}`;
+    const fileName = `product-${timestamp}-${randomId}${ext}`;
     
     // Use first public search path and add products subdirectory
     const fullPath = `${publicSearchPaths[0]}/products/${fileName}`;
@@ -261,7 +264,11 @@ export class ObjectStorageService {
       ttlSec: 900,
     });
 
-    return { uploadURL, fileName };
+    // Return both the object key (for ACL) and public URL (for display)
+    const objectKey = `products/${fileName}`;
+    const publicUrl = `/public/products/${fileName}`;
+
+    return { uploadURL, fileName, objectKey, publicUrl };
   }
 
   // Set ACL policy for public objects (for product images)

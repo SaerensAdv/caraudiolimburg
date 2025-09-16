@@ -1633,7 +1633,7 @@ export default function Admin() {
                           ) : (
                             <>
                               <Upload className="w-4 h-4 mr-2" />
-                              Import naar Productie
+                              Import Data
                             </>
                           )}
                         </Button>

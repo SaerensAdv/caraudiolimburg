@@ -1530,7 +1530,7 @@ export default function Admin() {
                                 },
                                 credentials: 'include',
                                 body: JSON.stringify({
-                                  data: syncResults.data.data,
+                                  data: syncResults.data.data ? syncResults.data.data : syncResults.data,
                                   dryRun: true,
                                   force: false
                                 }),
@@ -1595,7 +1595,7 @@ export default function Admin() {
                                 },
                                 credentials: 'include',
                                 body: JSON.stringify({
-                                  data: syncResults.data.data || syncResults.data,
+                                  data: syncResults.data.data ? syncResults.data.data : syncResults.data,
                                   dryRun: false,
                                   force: false
                                 }),

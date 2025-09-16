@@ -770,6 +770,8 @@ ${message || 'Geen aanvullende informatie'}`
         fileExtension = mimeToExt[mimeType as keyof typeof mimeToExt] || 'jpg';
       }
       
+      console.log("🔍 [UPLOAD] Extracted extension:", fileExtension, "from originalName:", originalName, "mimeType:", mimeType);
+      
       const objectStorageService = new ObjectStorageService();
       const { uploadURL, fileName, objectKey, publicUrl } = await objectStorageService.getProductImageUploadURL(fileExtension);
       

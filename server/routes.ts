@@ -702,6 +702,353 @@ ${message || 'Geen aanvullende informatie'}`
     }
   });
 
+  // Sync routes for database synchronization between dev and prod
+  app.get('/api/sync/export', isAdmin, async (req, res) => {
+    try {
+      // Only allow export in development
+      if (process.env.NODE_ENV !== 'development') {
+        return res.status(403).json({ message: "Export only available in development" });
+      }
+
+      const { since, full } = req.query;
+      const fullExport = full === 'true';
+      
+      // Get all catalog data for export
+      const [brands, categories, vehicleMakes, vehicleModels, products] = await Promise.all([
+        storage.getBrands(),
+        storage.getCategories(),
+        storage.getVehicleMakes(),
+        storage.getVehicleModels(),
+        storage.getProducts({}),  // Pass empty options object
+      ]);
+
+      // Get product vehicle compatibility
+      const compatibility = await storage.getProductVehicleCompatibility();
+
+      // Filter by updatedAt if incremental
+      const filterBySince = (items: any[], dateField = 'updatedAt') => {
+        if (fullExport || !since) return items;
+        const sinceDate = new Date(since as string);
+        return items.filter(item => new Date(item[dateField]) > sinceDate);
+      };
+
+      // Create content hashes for each item
+      const createContentHash = (item: any, fields: string[]) => {
+        const content = fields.map(f => item[f]).join('|');
+        return Buffer.from(content).toString('base64').substring(0, 16);
+      };
+
+      // Add content hashes to items
+      const brandsWithHash = filterBySince(brands).map(b => ({
+        ...b,
+        contentHash: createContentHash(b, ['name', 'slug', 'description', 'logoUrl'])
+      }));
+
+      const categoriesWithHash = filterBySince(categories).map(c => ({
+        ...c,
+        contentHash: createContentHash(c, ['name', 'slug', 'description', 'imageUrl', 'parentId'])
+      }));
+
+      const makesWithHash = filterBySince(vehicleMakes).map(m => ({
+        ...m,
+        contentHash: createContentHash(m, ['name', 'slug'])
+      }));
+
+      const modelsWithHash = filterBySince(vehicleModels).map(m => ({
+        ...m,
+        contentHash: createContentHash(m, ['name', 'slug', 'makeId', 'startYear', 'endYear'])
+      }));
+
+      const productsWithHash = filterBySince(products).map(p => ({
+        ...p,
+        contentHash: createContentHash(p, [
+          'name', 'slug', 'description', 'shortDescription', 'images', 
+          'primaryImageIndex', 'brandId', 'categoryId', 'features', 
+          'specifications', 'canHaveInstallation', 'upsellCategoryId', 'isFeatured'
+        ])
+      }));
+
+      const compatibilityWithHash = filterBySince(compatibility).map(c => ({
+        ...c,
+        contentHash: createContentHash(c, ['productId', 'makeId', 'modelId', 'yearFrom', 'yearTo', 'notes'])
+      }));
+
+      res.json({
+        exportedAt: new Date().toISOString(),
+        environment: 'development',
+        full: fullExport,
+        data: {
+          brands: brandsWithHash,
+          categories: categoriesWithHash,
+          vehicleMakes: makesWithHash,
+          vehicleModels: modelsWithHash,
+          products: productsWithHash,
+          productVehicleCompatibility: compatibilityWithHash
+        }
+      });
+    } catch (error) {
+      console.error("Error exporting catalog:", error);
+      res.status(500).json({ message: "Failed to export catalog" });
+    }
+  });
+
+  app.post('/api/sync/import', isAdmin, async (req, res) => {
+    try {
+      // Only allow import in production
+      if (process.env.NODE_ENV === 'development') {
+        return res.status(403).json({ message: "Import only available in production" });
+      }
+
+      const { data, dryRun, force } = req.body;
+      
+      if (!data) {
+        return res.status(400).json({ message: "No data provided for import" });
+      }
+
+      const results = {
+        created: { brands: 0, categories: 0, vehicleMakes: 0, vehicleModels: 0, products: 0, compatibility: 0 },
+        updated: { brands: 0, categories: 0, vehicleMakes: 0, vehicleModels: 0, products: 0, compatibility: 0 },
+        skipped: { brands: 0, categories: 0, vehicleMakes: 0, vehicleModels: 0, products: 0, compatibility: 0 },
+        conflicts: [] as any[]
+      };
+
+      // Import in order to maintain foreign key relationships
+      // 1. Brands
+      for (const brand of data.brands || []) {
+        const existing = await storage.getBrandBySlug(brand.slug);
+        if (existing) {
+          if (existing.contentHash !== brand.contentHash || force) {
+            if (!dryRun) {
+              await storage.updateBrand(existing.id, {
+                ...brand,
+                originEnv: 'dev',
+                lastSyncedAt: new Date(),
+                contentHash: brand.contentHash
+              });
+            }
+            results.updated.brands++;
+          } else {
+            results.skipped.brands++;
+          }
+        } else {
+          if (!dryRun) {
+            await storage.createBrandWithId({
+              ...brand,
+              originEnv: 'dev',
+              lastSyncedAt: new Date()
+            });
+          }
+          results.created.brands++;
+        }
+      }
+
+      // 2. Categories  
+      for (const category of data.categories || []) {
+        const existing = await storage.getCategoryBySlug(category.slug);
+        if (existing) {
+          if (existing.contentHash !== category.contentHash || force) {
+            if (!dryRun) {
+              await storage.updateCategory(existing.id, {
+                ...category,
+                originEnv: 'dev',
+                lastSyncedAt: new Date(),
+                contentHash: category.contentHash
+              });
+            }
+            results.updated.categories++;
+          } else {
+            results.skipped.categories++;
+          }
+        } else {
+          if (!dryRun) {
+            await storage.createCategoryWithId({
+              ...category,
+              originEnv: 'dev',
+              lastSyncedAt: new Date()
+            });
+          }
+          results.created.categories++;
+        }
+      }
+
+      // 3. Vehicle Makes
+      for (const make of data.vehicleMakes || []) {
+        const existing = await storage.getVehicleMakeBySlug(make.slug);
+        if (existing) {
+          if (existing.contentHash !== make.contentHash || force) {
+            if (!dryRun) {
+              await storage.updateVehicleMake(existing.id, {
+                ...make,
+                originEnv: 'dev',
+                lastSyncedAt: new Date(),
+                contentHash: make.contentHash
+              });
+            }
+            results.updated.vehicleMakes++;
+          } else {
+            results.skipped.vehicleMakes++;
+          }
+        } else {
+          if (!dryRun) {
+            await storage.createVehicleMakeWithId({
+              ...make,
+              originEnv: 'dev',
+              lastSyncedAt: new Date()
+            });
+          }
+          results.created.vehicleMakes++;
+        }
+      }
+
+      // 4. Vehicle Models
+      for (const model of data.vehicleModels || []) {
+        const existing = await storage.getVehicleModelBySlug(model.slug, model.makeId);
+        if (existing) {
+          if (existing.contentHash !== model.contentHash || force) {
+            if (!dryRun) {
+              await storage.updateVehicleModel(existing.id, {
+                ...model,
+                originEnv: 'dev',
+                lastSyncedAt: new Date(),
+                contentHash: model.contentHash
+              });
+            }
+            results.updated.vehicleModels++;
+          } else {
+            results.skipped.vehicleModels++;
+          }
+        } else {
+          if (!dryRun) {
+            await storage.createVehicleModelWithId({
+              ...model,
+              originEnv: 'dev',
+              lastSyncedAt: new Date()
+            });
+          }
+          results.created.vehicleModels++;
+        }
+      }
+
+      // 5. Products - merge dev-owned fields, preserve prod-owned fields
+      for (const product of data.products || []) {
+        const existing = await storage.getProductBySlug(product.slug);
+        if (existing) {
+          if (existing.originEnv === 'prod' && !force) {
+            // Skip prod-created products unless force is true
+            results.conflicts.push({
+              type: 'product',
+              slug: product.slug,
+              message: 'Product created in production, skipping'
+            });
+            results.skipped.products++;
+          } else if (existing.contentHash !== product.contentHash || force) {
+            if (!dryRun) {
+              // Preserve prod-owned fields: price, originalPrice, stock, isActive
+              await storage.updateProduct(existing.id, {
+                // Dev-owned fields
+                name: product.name,
+                slug: product.slug,
+                description: product.description,
+                shortDescription: product.shortDescription,
+                images: product.images,
+                primaryImageIndex: product.primaryImageIndex,
+                brandId: product.brandId,
+                categoryId: product.categoryId,
+                features: product.features,
+                specifications: product.specifications,
+                canHaveInstallation: product.canHaveInstallation,
+                upsellCategoryId: product.upsellCategoryId,
+                isFeatured: product.isFeatured,
+                // Tracking fields
+                originEnv: 'dev',
+                lastSyncedAt: new Date(),
+                contentHash: product.contentHash,
+                // Preserve prod-owned fields
+                price: existing.price,
+                originalPrice: existing.originalPrice,
+                stock: existing.stock,
+                isActive: existing.isActive
+              });
+            }
+            results.updated.products++;
+          } else {
+            results.skipped.products++;
+          }
+        } else {
+          if (!dryRun) {
+            await storage.createProductWithId({
+              ...product,
+              originEnv: 'dev',
+              lastSyncedAt: new Date()
+            });
+          }
+          results.created.products++;
+        }
+      }
+
+      // 6. Product Vehicle Compatibility
+      for (const compat of data.productVehicleCompatibility || []) {
+        const existing = await storage.getCompatibilityByKey(
+          compat.productId,
+          compat.makeId,
+          compat.modelId,
+          compat.yearFrom,
+          compat.yearTo
+        );
+        if (existing) {
+          if (existing.contentHash !== compat.contentHash || force) {
+            if (!dryRun) {
+              await storage.updateCompatibility(existing.id, {
+                ...compat,
+                originEnv: 'dev',
+                lastSyncedAt: new Date(),
+                contentHash: compat.contentHash
+              });
+            }
+            results.updated.compatibility++;
+          } else {
+            results.skipped.compatibility++;
+          }
+        } else {
+          if (!dryRun) {
+            await storage.createCompatibilityWithId({
+              ...compat,
+              originEnv: 'dev',
+              lastSyncedAt: new Date()
+            });
+          }
+          results.created.compatibility++;
+        }
+      }
+
+      // Record sync run
+      if (!dryRun) {
+        await storage.createSyncRun({
+          environment: 'production',
+          runType: data.full ? 'full' : 'incremental',
+          status: 'completed',
+          completedAt: new Date(),
+          recordsProcessed: Object.values(results.created).reduce((a, b) => a + b, 0) +
+                          Object.values(results.updated).reduce((a, b) => a + b, 0) +
+                          Object.values(results.skipped).reduce((a, b) => a + b, 0),
+          recordsCreated: Object.values(results.created).reduce((a, b) => a + b, 0),
+          recordsUpdated: Object.values(results.updated).reduce((a, b) => a + b, 0),
+          recordsSkipped: Object.values(results.skipped).reduce((a, b) => a + b, 0),
+          conflicts: results.conflicts.length > 0 ? results.conflicts : null
+        });
+      }
+
+      res.json({
+        dryRun,
+        results,
+        message: dryRun ? "Dry run completed - no changes made" : "Import completed successfully"
+      });
+    } catch (error) {
+      console.error("Error importing catalog:", error);
+      res.status(500).json({ message: "Failed to import catalog" });
+    }
+  });
+
   // Admin routes
   app.get('/api/admin/products', isAdmin, async (req, res) => {
     try {

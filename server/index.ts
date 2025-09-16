@@ -16,6 +16,18 @@ console.log("🗂️  Object Storage Configuration:");
 console.log("   Bucket ID:", process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID || "❌ NOT SET");
 console.log("   Public Paths:", process.env.PUBLIC_OBJECT_SEARCH_PATHS || "❌ NOT SET");
 
+// Critical environment check for production
+if (app.get("env") !== "development") {
+  if (!process.env.PUBLIC_OBJECT_SEARCH_PATHS) {
+    console.error("❌ CRITICAL: PUBLIC_OBJECT_SEARCH_PATHS not set in production!");
+    console.error("   This will cause all /public/* image requests to fail with 404");
+    console.error("   Please set PUBLIC_OBJECT_SEARCH_PATHS to your bucket public path");
+  }
+  if (!process.env.PRIVATE_OBJECT_DIR) {
+    console.error("❌ CRITICAL: PRIVATE_OBJECT_DIR not set in production!");
+  }
+}
+
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -45,6 +57,41 @@ app.use((req, res, next) => {
 
   next();
 });
+
+  // Register object storage route BEFORE all other routes to ensure priority
+  // This prevents the catch-all route in production from intercepting /public/* requests
+  const { ObjectStorageService } = await import("./objectStorage");
+  
+  app.get('/public/*', async (req, res) => {
+    try {
+      const filePath = req.path; // e.g., "/public/products/image.jpg"
+      console.log(`🔍 [OBJECT_STORAGE] Serving file: ${filePath}`);
+      
+      // Extract object key by removing "/public/" prefix
+      const objectKey = req.path.replace(/^\/public\//, "");
+      console.log(`🔍 [OBJECT_STORAGE] Object key: ${objectKey}`);
+      
+      // Initialize Object Storage service
+      const objectStorage = new ObjectStorageService();
+      
+      // Search for the file in the public area of the bucket
+      const file = await objectStorage.searchPublicObject(objectKey);
+      
+      if (!file) {
+        console.log(`❌ [OBJECT_STORAGE] File not found: ${filePath}`);
+        return res.status(404).json({ error: "File not found" });
+      }
+      
+      console.log(`✅ [OBJECT_STORAGE] Found file: ${file.name}`);
+      
+      // Stream the file directly to the response
+      await objectStorage.downloadObject(file, res);
+      
+    } catch (error) {
+      console.error("❌ [OBJECT_STORAGE] Error serving file:", error);
+      res.status(500).json({ error: "Failed to serve file" });
+    }
+  });
 
 (async () => {
   const server = await registerRoutes(app);

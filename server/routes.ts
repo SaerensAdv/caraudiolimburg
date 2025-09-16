@@ -85,36 +85,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   setupAuth(app);
 
-  // Object Storage streaming route - serves files directly from bucket
-  app.get('/public/*', async (req, res) => {
-    try {
-      const filePath = req.path; // e.g., "/public/products/image.jpg"
-      console.log(`🔍 [OBJECT_STORAGE] Serving file: ${filePath}`);
-      
-      // Initialize Object Storage service
-      const objectStorage = new ObjectStorageService();
-      
-      // Extract object key by removing "/public/" prefix
-      const objectKey = req.path.replace(/^\/public\//, ""); // e.g., "products/image.jpg"
-      console.log(`🔍 [OBJECT_STORAGE] Object key: ${objectKey}`);
-      
-      // Search for the file in the public area of the bucket
-      const file = await objectStorage.searchPublicObject(objectKey);
-      
-      if (!file) {
-        console.log(`❌ [OBJECT_STORAGE] File not found: ${filePath}`);
-        return res.status(404).json({ error: "File not found" });
-      }
-      console.log(`✅ [OBJECT_STORAGE] Found file: ${file.name}`);
-      
-      // Stream the file directly to the response
-      await objectStorage.downloadObject(file, res);
-      
-    } catch (error) {
-      console.error("❌ [OBJECT_STORAGE] Error serving file:", error);
-      res.status(500).json({ error: "Failed to serve file" });
-    }
-  });
+  // Object Storage streaming route is now registered in server/index.ts
+  // This ensures proper priority over catch-all routes in production
 
   // Auth routes - handled by auth.ts
 

@@ -1646,14 +1646,23 @@ export default function Admin() {
                           className="min-h-[100px] font-mono text-xs"
                           onChange={(e) => {
                             try {
-                              const data = JSON.parse(e.target.value);
-                              setSyncResults({ data });
+                              const exportData = JSON.parse(e.target.value);
+                              // Store the full export response structure
+                              setSyncResults({ 
+                                type: 'pasted',
+                                data: exportData,
+                                message: `Data geplakt: ${Object.values(exportData.data as Record<string, any[]>).reduce((acc: number, arr: any[]) => acc + arr.length, 0)} items klaar voor import`
+                              });
                               toast({
                                 title: "Data Geladen",
-                                description: `${Object.values(data.data as Record<string, any[]>).reduce((acc: number, arr: any[]) => acc + arr.length, 0)} items klaar voor import`,
+                                description: `${Object.values(exportData.data as Record<string, any[]>).reduce((acc: number, arr: any[]) => acc + arr.length, 0)} items klaar voor import`,
                               });
                             } catch (error) {
-                              // Invalid JSON, ignore
+                              toast({
+                                title: "Ongeldige Data",
+                                description: "Controleer of de JSON geldig is",
+                                variant: "destructive",
+                              });
                             }
                           }}
                           data-testid="input-sync-data"
@@ -1668,10 +1677,12 @@ export default function Admin() {
                       {syncResults.type === 'export' && <CheckCircle className="w-5 h-5 text-green-500" />}
                       {syncResults.type === 'dry-run' && <AlertTriangle className="w-5 h-5 text-yellow-500" />}
                       {syncResults.type === 'import' && <CheckCircle className="w-5 h-5 text-green-500" />}
+                      {syncResults.type === 'pasted' && <CheckCircle className="w-5 h-5 text-blue-500" />}
                       <h3 className="font-semibold">
                         {syncResults.type === 'export' && 'Export Resultaten'}
                         {syncResults.type === 'dry-run' && 'Dry Run Resultaten'}
                         {syncResults.type === 'import' && 'Import Resultaten'}
+                        {syncResults.type === 'pasted' && 'Data Geplakt'}
                       </h3>
                     </div>
                     <p className="text-sm text-muted-foreground mb-2">{syncResults.message}</p>

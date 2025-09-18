@@ -264,46 +264,69 @@ export default function Home() {
           </div>
           
           <div className="max-w-4xl mx-auto">
-            <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl bg-black">
-              <video
-                className="w-full h-full object-cover"
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="auto"
-                data-testid="promotional-video"
-              >
-                <source 
-                  src="https://caraudiolimburg.studio/wp-content/uploads/2024/11/Verkorte-Video-Car-Audio-Limburg-Studio-1.mp4" 
-                  type="video/mp4" 
-                />
-                <source 
-                  src="https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4" 
-                  type="video/mp4" 
-                />
-                {/* Fallback voor als video niet laadt */}
-                <div className="flex items-center justify-center h-full bg-gradient-to-br from-gray-900 to-gray-700 text-white">
-                  <div className="text-center">
-                    <div className="w-16 h-16 mx-auto mb-4 bg-primary/20 rounded-full flex items-center justify-center">
-                      <div className="w-0 h-0 border-l-[20px] border-l-white border-t-[12px] border-t-transparent border-b-[12px] border-b-transparent ml-1"></div>
+            <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+              {/* Animated Background */}
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-transparent to-primary/20 animate-pulse"></div>
+              
+              {/* Floating Audio Elements Animation */}
+              <div className="absolute inset-0 overflow-hidden">
+                <div className="absolute top-1/4 left-1/4 w-3 h-3 bg-primary/60 rounded-full animate-bounce" style={{animationDelay: '0s'}}></div>
+                <div className="absolute top-1/3 right-1/3 w-2 h-2 bg-primary/70 rounded-full animate-bounce" style={{animationDelay: '0.5s'}}></div>
+                <div className="absolute bottom-1/3 left-1/3 w-4 h-4 bg-primary/50 rounded-full animate-bounce" style={{animationDelay: '1s'}}></div>
+                <div className="absolute top-1/2 right-1/4 w-2 h-2 bg-primary/80 rounded-full animate-ping" style={{animationDelay: '1.5s'}}></div>
+                <div className="absolute bottom-1/4 right-1/2 w-3 h-3 bg-primary/60 rounded-full animate-bounce" style={{animationDelay: '2s'}}></div>
+              </div>
+              
+              {/* Central Content */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center text-white animate-fade-in">
+                  {/* Main Logo/Icon */}
+                  <div className="relative mb-6">
+                    <div className="w-24 h-24 mx-auto bg-primary/20 rounded-full flex items-center justify-center animate-pulse">
+                      <div className="w-12 h-12 bg-primary/30 rounded-full flex items-center justify-center animate-spin-slow">
+                        <Volume2 className="w-6 h-6 text-primary animate-pulse" />
+                      </div>
                     </div>
-                    <p className="text-lg font-semibold">Car Audio Limburg</p>
-                    <p className="text-sm text-gray-300">Professionele Installatie</p>
+                    {/* Sound Waves */}
+                    <div className="absolute -inset-8 flex items-center justify-center">
+                      <div className="w-16 h-16 border-2 border-primary/30 rounded-full animate-ping"></div>
+                    </div>
+                    <div className="absolute -inset-12 flex items-center justify-center">
+                      <div className="w-24 h-24 border-2 border-primary/20 rounded-full animate-ping" style={{animationDelay: '0.5s'}}></div>
+                    </div>
+                  </div>
+                  
+                  <h3 className="text-2xl md:text-3xl font-bold mb-3 text-white">Car Audio Limburg</h3>
+                  <p className="text-lg text-gray-300 mb-4">Premium Installaties & Service</p>
+                  <div className="flex items-center justify-center space-x-4 text-sm text-gray-400">
+                    <div className="flex items-center space-x-2">
+                      <Award className="w-4 h-4" />
+                      <span>25+ Jaar Ervaring</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <ShieldCheck className="w-4 h-4" />
+                      <span>Garantie</span>
+                    </div>
                   </div>
                 </div>
-              </video>
+              </div>
               
-              {/* Video Overlay Info */}
-              <div className="absolute bottom-4 left-4 right-4 bg-black/80 backdrop-blur-sm rounded-xl p-4 text-white">
-                <div className="flex items-center justify-between">
+              {/* Live Indicator */}
+              <div className="absolute top-4 right-4 flex items-center space-x-2 bg-black/50 rounded-full px-3 py-1">
+                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                <span className="text-white text-sm font-medium">SHOWROOM</span>
+              </div>
+              
+              {/* Bottom Info Bar */}
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                <div className="flex items-center justify-between text-white">
                   <div>
-                    <h3 className="font-semibold text-lg">Car Audio Limburg Studio</h3>
-                    <p className="text-sm text-gray-300">Een kijkje in onze showroom en werkplaats</p>
+                    <h4 className="font-semibold">Professionele Werkplaats</h4>
+                    <p className="text-sm text-gray-300">Sittard • Nederland</p>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                    <span className="text-sm">LIVE</span>
+                  <div className="text-right">
+                    <p className="text-sm">Open</p>
+                    <p className="text-xs text-gray-400">Ma-Vr 9:00-17:30</p>
                   </div>
                 </div>
               </div>

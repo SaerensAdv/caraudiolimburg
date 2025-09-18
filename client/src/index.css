@@ -91,6 +91,10 @@
   .delay-1000 {
     animation-delay: 1s;
   }
+  
+  .animate-spin-slow {
+    animation: spin 3s linear infinite;
+  }
 }
 
 @keyframes fadeIn {

@@ -18,6 +18,7 @@ import Contact from "@/pages/contact";
 import CustomerPortal from "@/pages/customer-portal";
 import Login from "@/pages/login";
 import AppleCarPlayBMW from "@/pages/apple-carplay-bmw";
+import OrderConfirmation from "@/pages/order-confirmation";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -41,6 +42,7 @@ function Router() {
       <Route path="/product/:slug" component={Product} />
       <Route path="/cart" component={Cart} />
       <Route path="/checkout" component={Checkout} />
+      <Route path="/order-confirmation" component={OrderConfirmation} />
       <Route path="/booking" component={Booking} />
       <Route path="/about" component={About} />
       <Route path="/faq" component={FAQ} />

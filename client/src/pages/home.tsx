@@ -286,9 +286,11 @@ export default function Home() {
                     <h3 className="font-semibold text-lg">Car Audio Limburg Studio</h3>
                     <p className="text-sm text-gray-300">Een kijkje in onze showroom en werkplaats</p>
                   </div>
-                  <div className="audio" style={{fontSize: '0.5rem'}}>
-                    <i></i>
-                    <i></i>
+                  <div className="relative flex items-center justify-center w-8 h-8">
+                    <div className="audio" style={{fontSize: '0.3rem'}}>
+                      <i></i>
+                      <i></i>
+                    </div>
                   </div>
                 </div>
               </div>

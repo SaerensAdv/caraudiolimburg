@@ -65,43 +65,24 @@ export interface IStorage {
   getProduct(id: string): Promise<Product | undefined>;
   getProductBySlug(slug: string): Promise<Product | undefined>;
   createProduct(product: InsertProduct): Promise<Product>;
-  createProductWithId(product: InsertProduct & { id: string }): Promise<Product>;
   updateProduct(id: string, product: Partial<InsertProduct>): Promise<Product>;
   deleteProduct(id: string): Promise<void>;
 
   // Category operations
   getCategories(): Promise<Category[]>;
   getCategory(id: string): Promise<Category | undefined>;
-  getCategoryBySlug(slug: string): Promise<Category | undefined>;
   createCategory(category: InsertCategory): Promise<Category>;
-  createCategoryWithId(category: InsertCategory & { id: string }): Promise<Category>;
-  updateCategory(id: string, category: Partial<InsertCategory>): Promise<Category>;
 
   // Brand operations
   getBrands(): Promise<Brand[]>;
   getBrand(id: string): Promise<Brand | undefined>;
-  getBrandBySlug(slug: string): Promise<Brand | undefined>;
   createBrand(brand: InsertBrand): Promise<Brand>;
-  createBrandWithId(brand: InsertBrand & { id: string }): Promise<Brand>;
-  updateBrand(id: string, brand: Partial<InsertBrand>): Promise<Brand>;
 
   // Vehicle operations
   getVehicleMakes(): Promise<VehicleMake[]>;
-  getVehicleMakeBySlug(slug: string): Promise<VehicleMake | undefined>;
   getVehicleModels(makeId: string): Promise<VehicleModel[]>;
-  getVehicleModelBySlug(slug: string, makeId: string): Promise<VehicleModel | undefined>;
   createVehicleMake(make: InsertVehicleMake): Promise<VehicleMake>;
-  createVehicleMakeWithId(make: InsertVehicleMake & { id: string }): Promise<VehicleMake>;
-  updateVehicleMake(id: string, make: Partial<InsertVehicleMake>): Promise<VehicleMake>;
   createVehicleModel(model: InsertVehicleModel): Promise<VehicleModel>;
-  createVehicleModelWithId(model: InsertVehicleModel & { id: string }): Promise<VehicleModel>;
-  updateVehicleModel(id: string, model: Partial<InsertVehicleModel>): Promise<VehicleModel>;
-  
-  // Product Vehicle Compatibility operations
-  getProductVehicleCompatibility(): Promise<any[]>;
-  getCompatibilityByKey(productId: string, makeId: string | null, modelId: string | null, yearFrom: number | null, yearTo: number | null): Promise<any | undefined>;
-  createCompatibilityWithId(compat: any): Promise<any>;
-  updateCompatibility(id: string, compat: any): Promise<any>;
 
   // Cart operations
   getCartItems(userId: string): Promise<CartItem[]>;
@@ -142,9 +123,6 @@ export interface IStorage {
   getReview(id: string): Promise<Review | undefined>;
   createReview(review: InsertReview): Promise<Review>;
   updateReview(id: string, updates: Partial<InsertReview>): Promise<Review>;
-  
-  // Sync operations
-  createSyncRun(run: any): Promise<any>;
   deleteReview(id: string): Promise<void>;
   approveReview(id: string): Promise<Review>;
   publishReview(id: string): Promise<Review>;
@@ -615,179 +593,6 @@ export class DatabaseStorage implements IStorage {
       .where(eq(reviews.id, id))
       .returning();
     return updated;
-  }
-
-  // Sync operations for database synchronization
-  async createProductWithId(product: InsertProduct & { id: string }): Promise<Product> {
-    const [created] = await db
-      .insert(products)
-      .values({ ...product, updatedAt: new Date() })
-      .returning();
-    return created;
-  }
-
-  async getCategoryBySlug(slug: string): Promise<Category | undefined> {
-    const [category] = await db
-      .select()
-      .from(categories)
-      .where(eq(categories.slug, slug));
-    return category;
-  }
-
-  async createCategoryWithId(category: InsertCategory & { id: string }): Promise<Category> {
-    const [created] = await db
-      .insert(categories)
-      .values({ ...category, updatedAt: new Date() })
-      .returning();
-    return created;
-  }
-
-  async updateCategory(id: string, category: Partial<InsertCategory>): Promise<Category> {
-    const [updated] = await db
-      .update(categories)
-      .set({ ...category, updatedAt: new Date() })
-      .where(eq(categories.id, id))
-      .returning();
-    return updated;
-  }
-
-  async getBrandBySlug(slug: string): Promise<Brand | undefined> {
-    const [brand] = await db
-      .select()
-      .from(brands)
-      .where(eq(brands.slug, slug));
-    return brand;
-  }
-
-  async createBrandWithId(brand: InsertBrand & { id: string }): Promise<Brand> {
-    const [created] = await db
-      .insert(brands)
-      .values({ ...brand, updatedAt: new Date() })
-      .returning();
-    return created;
-  }
-
-  async updateBrand(id: string, brand: Partial<InsertBrand>): Promise<Brand> {
-    const [updated] = await db
-      .update(brands)
-      .set({ ...brand, updatedAt: new Date() })
-      .where(eq(brands.id, id))
-      .returning();
-    return updated;
-  }
-
-  async getVehicleMakeBySlug(slug: string): Promise<VehicleMake | undefined> {
-    const [make] = await db
-      .select()
-      .from(vehicleMakes)
-      .where(eq(vehicleMakes.slug, slug));
-    return make;
-  }
-
-  async createVehicleMakeWithId(make: InsertVehicleMake & { id: string }): Promise<VehicleMake> {
-    const [created] = await db
-      .insert(vehicleMakes)
-      .values({ ...make, updatedAt: new Date() })
-      .returning();
-    return created;
-  }
-
-  async updateVehicleMake(id: string, make: Partial<InsertVehicleMake>): Promise<VehicleMake> {
-    const [updated] = await db
-      .update(vehicleMakes)
-      .set({ ...make, updatedAt: new Date() })
-      .where(eq(vehicleMakes.id, id))
-      .returning();
-    return updated;
-  }
-
-  async getVehicleModelBySlug(slug: string, makeId: string): Promise<VehicleModel | undefined> {
-    const [model] = await db
-      .select()
-      .from(vehicleModels)
-      .where(
-        and(
-          eq(vehicleModels.slug, slug),
-          eq(vehicleModels.makeId, makeId)
-        )
-      );
-    return model;
-  }
-
-  async createVehicleModelWithId(model: InsertVehicleModel & { id: string }): Promise<VehicleModel> {
-    const [created] = await db
-      .insert(vehicleModels)
-      .values({ ...model, updatedAt: new Date() })
-      .returning();
-    return created;
-  }
-
-  async updateVehicleModel(id: string, model: Partial<InsertVehicleModel>): Promise<VehicleModel> {
-    const [updated] = await db
-      .update(vehicleModels)
-      .set({ ...model, updatedAt: new Date() })
-      .where(eq(vehicleModels.id, id))
-      .returning();
-    return updated;
-  }
-
-  async getProductVehicleCompatibility(): Promise<any[]> {
-    return await db.select().from(productVehicleCompatibility);
-  }
-
-  async getCompatibilityByKey(
-    productId: string,
-    makeId: string | null,
-    modelId: string | null,
-    yearFrom: number | null,
-    yearTo: number | null
-  ): Promise<any | undefined> {
-    const conditions = [eq(productVehicleCompatibility.productId, productId)];
-    
-    if (makeId !== null) {
-      conditions.push(eq(productVehicleCompatibility.makeId, makeId));
-    }
-    if (modelId !== null) {
-      conditions.push(eq(productVehicleCompatibility.modelId, modelId));
-    }
-    if (yearFrom !== null) {
-      conditions.push(eq(productVehicleCompatibility.yearFrom, yearFrom));
-    }
-    if (yearTo !== null) {
-      conditions.push(eq(productVehicleCompatibility.yearTo, yearTo));
-    }
-
-    const [compat] = await db
-      .select()
-      .from(productVehicleCompatibility)
-      .where(and(...conditions));
-    return compat;
-  }
-
-  async createCompatibilityWithId(compat: any): Promise<any> {
-    const [created] = await db
-      .insert(productVehicleCompatibility)
-      .values({ ...compat, updatedAt: new Date() })
-      .returning();
-    return created;
-  }
-
-  async updateCompatibility(id: string, compat: any): Promise<any> {
-    const [updated] = await db
-      .update(productVehicleCompatibility)
-      .set({ ...compat, updatedAt: new Date() })
-      .where(eq(productVehicleCompatibility.id, id))
-      .returning();
-    return updated;
-  }
-
-  async createSyncRun(run: any): Promise<any> {
-    const { syncRuns } = await import("@shared/schema");
-    const [created] = await db
-      .insert(syncRuns)
-      .values(run)
-      .returning();
-    return created;
   }
 }
 

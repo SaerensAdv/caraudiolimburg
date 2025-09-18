@@ -49,11 +49,7 @@ export const categories = pgTable("categories", {
   description: text("description"),
   imageUrl: varchar("image_url"),
   parentId: varchar("parent_id"),
-  originEnv: varchar("origin_env").default("dev"),
-  lastSyncedAt: timestamp("last_synced_at"),
-  contentHash: varchar("content_hash"),
   createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Product brands
@@ -63,11 +59,7 @@ export const brands = pgTable("brands", {
   slug: varchar("slug").notNull().unique(),
   description: text("description"),
   logoUrl: varchar("logo_url"),
-  originEnv: varchar("origin_env").default("dev"),
-  lastSyncedAt: timestamp("last_synced_at"),
-  contentHash: varchar("content_hash"),
   createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Vehicle makes
@@ -75,11 +67,7 @@ export const vehicleMakes = pgTable("vehicle_makes", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: varchar("name").notNull(),
   slug: varchar("slug").notNull().unique(),
-  originEnv: varchar("origin_env").default("dev"),
-  lastSyncedAt: timestamp("last_synced_at"),
-  contentHash: varchar("content_hash"),
   createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Vehicle models
@@ -90,11 +78,7 @@ export const vehicleModels = pgTable("vehicle_models", {
   makeId: varchar("make_id").notNull().references(() => vehicleMakes.id),
   startYear: integer("start_year"),
   endYear: integer("end_year"),
-  originEnv: varchar("origin_env").default("dev"),
-  lastSyncedAt: timestamp("last_synced_at"),
-  contentHash: varchar("content_hash"),
   createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Products
@@ -119,9 +103,6 @@ export const products = pgTable("products", {
   isFeatured: boolean("is_featured").default(false),
   canHaveInstallation: boolean("can_have_installation").default(false),
   upsellCategoryId: varchar("upsell_category_id").references(() => categories.id),
-  originEnv: varchar("origin_env").default("dev"),
-  lastSyncedAt: timestamp("last_synced_at"),
-  contentHash: varchar("content_hash"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -135,11 +116,7 @@ export const productVehicleCompatibility = pgTable("product_vehicle_compatibilit
   yearFrom: integer("year_from"),
   yearTo: integer("year_to"),
   notes: text("notes"),
-  originEnv: varchar("origin_env").default("dev"),
-  lastSyncedAt: timestamp("last_synced_at"),
-  contentHash: varchar("content_hash"),
   createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Shopping cart items
@@ -217,33 +194,6 @@ export const bookings = pgTable("bookings", {
   status: varchar("status").default("pending"),
   notes: text("notes"),
   totalCost: decimal("total_cost", { precision: 10, scale: 2 }),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-// Sync tracking tables for database synchronization
-export const syncRuns = pgTable("sync_runs", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  environment: varchar("environment").notNull(), // 'dev' or 'prod'
-  runType: varchar("run_type").notNull(), // 'full' or 'incremental'
-  status: varchar("status").notNull(), // 'started', 'completed', 'failed'
-  startedAt: timestamp("started_at").notNull().defaultNow(),
-  completedAt: timestamp("completed_at"),
-  recordsProcessed: integer("records_processed").default(0),
-  recordsCreated: integer("records_created").default(0),
-  recordsUpdated: integer("records_updated").default(0),
-  recordsSkipped: integer("records_skipped").default(0),
-  conflicts: jsonb("conflicts"),
-  errorMessage: text("error_message"),
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
-export const syncCheckpoints = pgTable("sync_checkpoints", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  tableName: varchar("table_name").notNull().unique(),
-  lastSyncedAt: timestamp("last_synced_at"),
-  lastFullSyncAt: timestamp("last_full_sync_at"),
-  recordCount: integer("record_count").default(0),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

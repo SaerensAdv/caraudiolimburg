@@ -57,10 +57,7 @@ import {
   X,
   Star,
   Image,
-  Settings,
-  RefreshCw,
-  AlertTriangle,
-  CheckCircle
+  Settings
 } from "lucide-react";
 import { format } from "date-fns";
 import { nl } from "date-fns/locale";
@@ -90,8 +87,6 @@ export default function Admin() {
   const [specifications, setSpecifications] = useState<Record<string, any>>({});
   const [newSpecKey, setNewSpecKey] = useState('');
   const [newSpecValue, setNewSpecValue] = useState('');
-  const [syncResults, setSyncResults] = useState<any>(null);
-  const [isSyncing, setIsSyncing] = useState(false);
   const { isAuthenticated, user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -365,82 +360,57 @@ export default function Admin() {
     },
   });
 
-  // Image upload handler using presigned URLs
+  // Image upload handler
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
     setIsUploading(true);
-    console.log("🔍 [FRONTEND] Starting presigned URL upload process...");
+    console.log("🔍 [FRONTEND] Starting upload process...");
     
     try {
+      // First test: Try simple endpoint without multer
+      console.log("🔍 [FRONTEND] Testing simple endpoint...");
+      const testResponse = await fetch('/api/upload/simple', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ test: 'data' }),
+      });
+      
+      console.log("🔍 [FRONTEND] Simple endpoint response:", testResponse.status);
+      if (testResponse.ok) {
+        const testResult = await testResponse.json();
+        console.log("🔍 [FRONTEND] Simple endpoint result:", testResult);
+        toast({
+          title: "Test succesvol",
+          description: "Basis endpoint werkt! Nu proberen we de echte upload...",
+        });
+      }
+
       const uploadPromises = Array.from(files).map(async (file, index) => {
         console.log(`🔍 [FRONTEND] Uploading file ${index + 1}: ${file.name}`);
-        
-        // Step 1: Get presigned URL from backend
-        console.log("🔍 [FRONTEND] Getting presigned URL...");
-        const urlResponse = await fetch('/api/upload/image/url', {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch('/api/upload/image', {
           method: 'POST',
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            originalName: file.name,
-            mimeType: file.type
-          }),
+          body: formData,
+          credentials: 'include', // Voor authenticatie
         });
 
-        if (!urlResponse.ok) {
-          const errorText = await urlResponse.text();
-          console.error(`🔍 [FRONTEND] Failed to get presigned URL for ${file.name}:`, errorText);
-          throw new Error(`Failed to get upload URL for ${file.name}: ${urlResponse.status}`);
+        console.log(`🔍 [FRONTEND] Upload response for ${file.name}:`, response.status);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`🔍 [FRONTEND] Upload failed for ${file.name}:`, errorText);
+          throw new Error(`Upload failed for ${file.name}: ${response.status}`);
         }
 
-        const { uploadURL, fileName, objectKey, publicUrl } = await urlResponse.json();
-        console.log(`🔍 [FRONTEND] Got presigned URL for ${file.name}:`, fileName);
-
-        // Step 2: Upload directly to Object Storage using presigned URL
-        console.log("🔍 [FRONTEND] Uploading to object storage...");
-        const uploadResponse = await fetch(uploadURL, {
-          method: 'PUT',
-          body: file,
-          headers: {
-            'Content-Type': file.type,
-          },
-        });
-
-        if (!uploadResponse.ok) {
-          console.error(`🔍 [FRONTEND] Direct upload failed for ${file.name}:`, uploadResponse.status);
-          throw new Error(`Direct upload failed for ${file.name}: ${uploadResponse.status}`);
-        }
-
-        console.log(`🔍 [FRONTEND] Direct upload successful for ${file.name}`);
-
-        // Step 3: Complete the upload on backend to get public URL
-        console.log("🔍 [FRONTEND] Completing upload...");
-        const completeResponse = await fetch('/api/upload/image/complete', {
-          method: 'PUT',
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            fileName,
-            objectKey,
-            size: file.size,
-            originalName: file.name,
-          }),
-        });
-
-        if (!completeResponse.ok) {
-          const errorText = await completeResponse.text();
-          console.error(`🔍 [FRONTEND] Failed to complete upload for ${file.name}:`, errorText);
-          throw new Error(`Failed to complete upload for ${file.name}: ${completeResponse.status}`);
-        }
-
-        const result = await completeResponse.json();
-        console.log(`🔍 [FRONTEND] Upload completed for ${file.name}:`, result);
+        const result = await response.json();
+        console.log(`🔍 [FRONTEND] Upload result for ${file.name}:`, result);
         return result.url;
       });
 
@@ -627,12 +597,11 @@ export default function Admin() {
 
         {/* Main Content */}
         <Tabs defaultValue="products" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="products" data-testid="tab-products">Producten</TabsTrigger>
             <TabsTrigger value="orders" data-testid="tab-orders">Bestellingen</TabsTrigger>
             <TabsTrigger value="bookings" data-testid="tab-bookings">Afspraken</TabsTrigger>
             <TabsTrigger value="quotes" data-testid="tab-quotes">Offertes</TabsTrigger>
-            <TabsTrigger value="sync" data-testid="tab-sync">Synchronisatie</TabsTrigger>
           </TabsList>
 
           {/* Products Tab */}
@@ -1435,306 +1404,6 @@ export default function Admin() {
                     )}
                   </TableBody>
                 </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Sync Tab */}
-          <TabsContent value="sync" className="space-y-6">
-            <h2 className="text-2xl font-semibold text-foreground">Database Synchronisatie</h2>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle>Development → Production Sync</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Synchroniseer producten, categorieën en andere catalogus data van development naar productie.
-                  Dit proces behoudt productie-specifieke data zoals voorraad en prijzen.
-                </p>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Export Section */}
-                <div className="space-y-4">
-                  <h3 className="font-semibold">Export Data</h3>
-                  <Button
-                    onClick={async () => {
-                      setIsSyncing(true);
-                      try {
-                        const response = await fetch('/api/sync/export?full=true', {
-                          method: 'GET',
-                          headers: {
-                            'Content-Type': 'application/json',
-                          },
-                          credentials: 'include',
-                        });
-                        const data = await response.json();
-                        setSyncResults({
-                          type: 'export',
-                          data: data,
-                          message: `Export succesvol! ${Object.values(data.data as Record<string, any[]>).reduce((acc: number, arr: any[]) => acc + arr.length, 0)} items geëxporteerd.`
-                        });
-                        toast({
-                          title: "Export Succesvol",
-                          description: "Data is klaar voor import",
-                        });
-                      } catch (error) {
-                        toast({
-                          title: "Export Mislukt",
-                          description: "Er is een fout opgetreden bij het exporteren",
-                          variant: "destructive",
-                        });
-                      } finally {
-                        setIsSyncing(false);
-                      }
-                    }}
-                    disabled={isSyncing}
-                    data-testid="button-export-data"
-                  >
-                    {isSyncing ? (
-                      <>
-                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                        Exporteren...
-                      </>
-                    ) : (
-                      <>
-                        <Download className="w-4 h-4 mr-2" />
-                        Export Data
-                      </>
-                    )}
-                  </Button>
-                </div>
-                
-                <Separator />
-                
-                {/* Import Section */}
-                <div className="space-y-4">
-                  <h3 className="font-semibold">Import Data</h3>
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          onClick={async () => {
-                            if (!syncResults?.data) {
-                              toast({
-                                title: "Geen data",
-                                description: "Plak eerst de export data van development",
-                                variant: "destructive",
-                              });
-                              return;
-                            }
-                            
-                            setIsSyncing(true);
-                            try {
-                              const response = await fetch('/api/sync/import', {
-                                method: 'POST',
-                                headers: {
-                                  'Content-Type': 'application/json',
-                                },
-                                credentials: 'include',
-                                body: JSON.stringify({
-                                  data: syncResults.data.data ? syncResults.data.data : syncResults.data,
-                                  dryRun: true,
-                                  force: false
-                                }),
-                              });
-                              const result = await response.json();
-                              setSyncResults({
-                                type: 'dry-run',
-                                results: result.results,
-                                message: `Dry run compleet: ${result.results.created.products} nieuwe producten, ${result.results.updated.products} updates, ${result.results.skipped.products} overgeslagen`
-                              });
-                              toast({
-                                title: "Dry Run Compleet",
-                                description: "Bekijk de resultaten hieronder",
-                              });
-                            } catch (error) {
-                              toast({
-                                title: "Dry Run Mislukt",
-                                description: "Er is een fout opgetreden",
-                                variant: "destructive",
-                              });
-                            } finally {
-                              setIsSyncing(false);
-                            }
-                          }}
-                          disabled={isSyncing}
-                          data-testid="button-dry-run"
-                        >
-                          {isSyncing ? (
-                            <>
-                              <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                              Testen...
-                            </>
-                          ) : (
-                            <>
-                              <Eye className="w-4 h-4 mr-2" />
-                              Dry Run (Test)
-                            </>
-                          )}
-                        </Button>
-                        
-                        <Button
-                          onClick={async () => {
-                            if (!syncResults?.data) {
-                              toast({
-                                title: "Geen data",
-                                description: "Plak eerst de export data van development",
-                                variant: "destructive",
-                              });
-                              return;
-                            }
-                            
-                            if (!confirm("Weet je zeker dat je de data wilt importeren? Dit zal de productie database updaten.")) {
-                              return;
-                            }
-                            
-                            setIsSyncing(true);
-                            try {
-                              const response = await fetch('/api/sync/import', {
-                                method: 'POST',
-                                headers: {
-                                  'Content-Type': 'application/json',
-                                },
-                                credentials: 'include',
-                                body: JSON.stringify({
-                                  data: syncResults.data.data ? syncResults.data.data : syncResults.data,
-                                  dryRun: false,
-                                  force: false
-                                }),
-                              });
-                              const result = await response.json();
-                              setSyncResults({
-                                type: 'import',
-                                results: result.results,
-                                message: `Import succesvol: ${result.results.created.products} nieuwe producten, ${result.results.updated.products} updates`
-                              });
-                              toast({
-                                title: "Import Succesvol",
-                                description: "Database is gesynchroniseerd",
-                              });
-                              // Refresh products
-                              queryClient.invalidateQueries({ queryKey: ['/api/admin/products'] });
-                            } catch (error) {
-                              toast({
-                                title: "Import Mislukt",
-                                description: "Er is een fout opgetreden bij het importeren",
-                                variant: "destructive",
-                              });
-                            } finally {
-                              setIsSyncing(false);
-                            }
-                          }}
-                          disabled={isSyncing}
-                          data-testid="button-import-data"
-                        >
-                          {isSyncing ? (
-                            <>
-                              <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                              Importeren...
-                            </>
-                          ) : (
-                            <>
-                              <Upload className="w-4 h-4 mr-2" />
-                              Import Data
-                            </>
-                          )}
-                        </Button>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label>Plak Export Data van Development:</Label>
-                        <Textarea
-                          placeholder="Plak hier de JSON export data van development..."
-                          className="min-h-[100px] font-mono text-xs"
-                          onChange={(e) => {
-                            try {
-                              const exportData = JSON.parse(e.target.value);
-                              // Store the full export response structure
-                              setSyncResults({ 
-                                type: 'pasted',
-                                data: exportData,
-                                message: `Data geplakt: ${Object.values(exportData.data as Record<string, any[]>).reduce((acc: number, arr: any[]) => acc + arr.length, 0)} items klaar voor import`
-                              });
-                              toast({
-                                title: "Data Geladen",
-                                description: `${Object.values(exportData.data as Record<string, any[]>).reduce((acc: number, arr: any[]) => acc + arr.length, 0)} items klaar voor import`,
-                              });
-                            } catch (error) {
-                              toast({
-                                title: "Ongeldige Data",
-                                description: "Controleer of de JSON geldig is",
-                                variant: "destructive",
-                              });
-                            }
-                          }}
-                          data-testid="input-sync-data"
-                        />
-                      </div>
-                </div>
-                
-                {/* Sync Results */}
-                {syncResults && (
-                  <div className="mt-6 p-4 bg-muted rounded-lg">
-                    <div className="flex items-center gap-2 mb-2">
-                      {syncResults.type === 'export' && <CheckCircle className="w-5 h-5 text-green-500" />}
-                      {syncResults.type === 'dry-run' && <AlertTriangle className="w-5 h-5 text-yellow-500" />}
-                      {syncResults.type === 'import' && <CheckCircle className="w-5 h-5 text-green-500" />}
-                      {syncResults.type === 'pasted' && <CheckCircle className="w-5 h-5 text-blue-500" />}
-                      <h3 className="font-semibold">
-                        {syncResults.type === 'export' && 'Export Resultaten'}
-                        {syncResults.type === 'dry-run' && 'Dry Run Resultaten'}
-                        {syncResults.type === 'import' && 'Import Resultaten'}
-                        {syncResults.type === 'pasted' && 'Data Geplakt'}
-                      </h3>
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-2">{syncResults.message}</p>
-                    
-                    {syncResults.results && (
-                      <div className="grid grid-cols-3 gap-4 mt-4">
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-green-600">
-                            {Object.values(syncResults.results.created as Record<string, number>).reduce((a: number, b: number) => a + b, 0)}
-                          </div>
-                          <div className="text-sm text-muted-foreground">Nieuw</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-blue-600">
-                            {Object.values(syncResults.results.updated as Record<string, number>).reduce((a: number, b: number) => a + b, 0)}
-                          </div>
-                          <div className="text-sm text-muted-foreground">Bijgewerkt</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-gray-600">
-                            {Object.values(syncResults.results.skipped as Record<string, number>).reduce((a: number, b: number) => a + b, 0)}
-                          </div>
-                          <div className="text-sm text-muted-foreground">Overgeslagen</div>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {syncResults.results?.conflicts?.length > 0 && (
-                      <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded">
-                        <h4 className="font-medium text-yellow-800 dark:text-yellow-200 mb-2">Conflicten:</h4>
-                        <ul className="text-sm space-y-1">
-                          {syncResults.results.conflicts.map((conflict: any, i: number) => (
-                            <li key={i} className="text-yellow-700 dark:text-yellow-300">
-                              {conflict.type}: {conflict.slug} - {conflict.message}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    
-                    {syncResults.data && syncResults.type === 'export' && (
-                      <details className="mt-4">
-                        <summary className="cursor-pointer text-sm text-muted-foreground hover:text-foreground">
-                          Toon Export Data (kopieer voor import)
-                        </summary>
-                        <pre className="mt-2 p-2 bg-background rounded text-xs overflow-auto max-h-[200px]">
-                          {JSON.stringify(syncResults.data, null, 2)}
-                        </pre>
-                      </details>
-                    )}
-                  </div>
-                )}
               </CardContent>
             </Card>
           </TabsContent>

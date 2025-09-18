@@ -2,7 +2,6 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import multer from "multer";
-import { ObjectStorageService } from "./objectStorage";
 import Papa from "papaparse";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated, isAdmin } from "./auth";
@@ -58,35 +57,8 @@ const imageUpload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Helper function to normalize image URLs to relative paths
-  function normalizeImageUrls(product: any) {
-    if (product && product.images && Array.isArray(product.images)) {
-      product.images = product.images.map((url: string) => {
-        // Convert absolute URLs to relative paths
-        if (url && typeof url === 'string' && url.includes('://')) {
-          // Extract just the path from absolute URLs (everything after the domain)
-          const urlParts = url.split('/');
-          const pathIndex = urlParts.findIndex(part => part === 'public');
-          if (pathIndex >= 0) {
-            return '/' + urlParts.slice(pathIndex).join('/');
-          }
-        }
-        // Return as-is if already relative or no normalization needed
-        return url;
-      });
-    }
-    return product;
-  }
-
-  function normalizeProductArrayUrls(products: any[]) {
-    return products.map(normalizeImageUrls);
-  }
-
   // Auth middleware
   setupAuth(app);
-
-  // Object Storage streaming route is now registered in server/index.ts
-  // This ensures proper priority over catch-all routes in production
 
   // Auth routes - handled by auth.ts
 
@@ -140,7 +112,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         featured: featured === 'true',
       });
 
-      res.json(normalizeProductArrayUrls(products));
+      res.json(products);
     } catch (error) {
       console.error("Error fetching products:", error);
       res.status(500).json({ message: "Failed to fetch products" });
@@ -161,7 +133,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!product) {
         return res.status(404).json({ message: "Product not found" });
       }
-      res.json(normalizeImageUrls(product));
+      res.json(product);
     } catch (error) {
       console.error("Error fetching product:", error);
       res.status(500).json({ message: "Failed to fetch product" });
@@ -702,379 +674,11 @@ ${message || 'Geen aanvullende informatie'}`
     }
   });
 
-  // Sync routes for database synchronization between dev and prod
-  app.get('/api/sync/export', isAdmin, async (req, res) => {
-    try {
-      // Only allow export in development
-      if (process.env.NODE_ENV !== 'development') {
-        return res.status(403).json({ message: "Export only available in development" });
-      }
-
-      const { since, full } = req.query;
-      const fullExport = full === 'true';
-      
-      // Get all catalog data for export
-      const [brands, categories, vehicleMakes, vehicleModels, products] = await Promise.all([
-        storage.getBrands(),
-        storage.getCategories(),
-        storage.getVehicleMakes(),
-        storage.getVehicleModels(),
-        storage.getProducts({}),  // Pass empty options object
-      ]);
-
-      // Get product vehicle compatibility
-      const compatibility = await storage.getProductVehicleCompatibility();
-
-      // Filter by updatedAt if incremental
-      const filterBySince = (items: any[], dateField = 'updatedAt') => {
-        if (fullExport || !since) return items;
-        const sinceDate = new Date(since as string);
-        return items.filter(item => new Date(item[dateField]) > sinceDate);
-      };
-
-      // Create content hashes for each item
-      const createContentHash = (item: any, fields: string[]) => {
-        const content = fields.map(f => item[f]).join('|');
-        return Buffer.from(content).toString('base64').substring(0, 16);
-      };
-
-      // Add content hashes to items
-      const brandsWithHash = filterBySince(brands).map(b => ({
-        ...b,
-        contentHash: createContentHash(b, ['name', 'slug', 'description', 'logoUrl'])
-      }));
-
-      const categoriesWithHash = filterBySince(categories).map(c => ({
-        ...c,
-        contentHash: createContentHash(c, ['name', 'slug', 'description', 'imageUrl', 'parentId'])
-      }));
-
-      const makesWithHash = filterBySince(vehicleMakes).map(m => ({
-        ...m,
-        contentHash: createContentHash(m, ['name', 'slug'])
-      }));
-
-      const modelsWithHash = filterBySince(vehicleModels).map(m => ({
-        ...m,
-        contentHash: createContentHash(m, ['name', 'slug', 'makeId', 'startYear', 'endYear'])
-      }));
-
-      const productsWithHash = filterBySince(products).map(p => ({
-        ...p,
-        contentHash: createContentHash(p, [
-          'name', 'slug', 'description', 'shortDescription', 'images', 
-          'primaryImageIndex', 'brandId', 'categoryId', 'features', 
-          'specifications', 'canHaveInstallation', 'upsellCategoryId', 'isFeatured'
-        ])
-      }));
-
-      const compatibilityWithHash = filterBySince(compatibility).map(c => ({
-        ...c,
-        contentHash: createContentHash(c, ['productId', 'makeId', 'modelId', 'yearFrom', 'yearTo', 'notes'])
-      }));
-
-      res.json({
-        exportedAt: new Date().toISOString(),
-        environment: 'development',
-        full: fullExport,
-        data: {
-          brands: brandsWithHash,
-          categories: categoriesWithHash,
-          vehicleMakes: makesWithHash,
-          vehicleModels: modelsWithHash,
-          products: productsWithHash,
-          productVehicleCompatibility: compatibilityWithHash
-        }
-      });
-    } catch (error) {
-      console.error("Error exporting catalog:", error);
-      res.status(500).json({ message: "Failed to export catalog" });
-    }
-  });
-
-  app.post('/api/sync/import', isAdmin, async (req, res) => {
-    try {
-      // Allow import in both development and production for testing
-      // In real production setup, you might want to restrict this
-      
-      const { data, dryRun, force } = req.body;
-      
-      if (!data) {
-        return res.status(400).json({ message: "No data provided for import" });
-      }
-
-      // Helper function to convert string timestamps back to Date objects
-      const convertTimestamps = (obj: any) => {
-        if (!obj) return obj;
-        const result = { ...obj };
-        // Convert common timestamp fields
-        if (result.createdAt && typeof result.createdAt === 'string') {
-          result.createdAt = new Date(result.createdAt);
-        }
-        if (result.updatedAt && typeof result.updatedAt === 'string') {
-          result.updatedAt = new Date(result.updatedAt);
-        }
-        if (result.lastSyncedAt && typeof result.lastSyncedAt === 'string') {
-          result.lastSyncedAt = new Date(result.lastSyncedAt);
-        }
-        return result;
-      };
-
-      const results = {
-        created: { brands: 0, categories: 0, vehicleMakes: 0, vehicleModels: 0, products: 0, compatibility: 0 },
-        updated: { brands: 0, categories: 0, vehicleMakes: 0, vehicleModels: 0, products: 0, compatibility: 0 },
-        skipped: { brands: 0, categories: 0, vehicleMakes: 0, vehicleModels: 0, products: 0, compatibility: 0 },
-        conflicts: [] as any[]
-      };
-
-      // Import in order to maintain foreign key relationships
-      // 1. Brands
-      for (const brand of data.brands || []) {
-        const convertedBrand = convertTimestamps(brand);
-        const existing = await storage.getBrandBySlug(convertedBrand.slug);
-        if (existing) {
-          if (existing.contentHash !== convertedBrand.contentHash || force) {
-            if (!dryRun) {
-              await storage.updateBrand(existing.id, {
-                ...convertedBrand,
-                originEnv: 'dev',
-                lastSyncedAt: new Date(),
-                contentHash: convertedBrand.contentHash
-              });
-            }
-            results.updated.brands++;
-          } else {
-            results.skipped.brands++;
-          }
-        } else {
-          if (!dryRun) {
-            await storage.createBrandWithId({
-              ...convertedBrand,
-              originEnv: 'dev',
-              lastSyncedAt: new Date()
-            });
-          }
-          results.created.brands++;
-        }
-      }
-
-      // 2. Categories  
-      for (const category of data.categories || []) {
-        const convertedCategory = convertTimestamps(category);
-        const existing = await storage.getCategoryBySlug(convertedCategory.slug);
-        if (existing) {
-          if (existing.contentHash !== category.contentHash || force) {
-            if (!dryRun) {
-              await storage.updateCategory(existing.id, {
-                ...convertedCategory,
-                originEnv: 'dev',
-                lastSyncedAt: new Date(),
-                contentHash: convertedCategory.contentHash
-              });
-            }
-            results.updated.categories++;
-          } else {
-            results.skipped.categories++;
-          }
-        } else {
-          if (!dryRun) {
-            await storage.createCategoryWithId({
-              ...convertedCategory,
-              originEnv: 'dev',
-              lastSyncedAt: new Date()
-            });
-          }
-          results.created.categories++;
-        }
-      }
-
-      // 3. Vehicle Makes
-      for (const make of data.vehicleMakes || []) {
-        const convertedMake = convertTimestamps(make);
-        const existing = await storage.getVehicleMakeBySlug(convertedMake.slug);
-        if (existing) {
-          if (existing.contentHash !== convertedMake.contentHash || force) {
-            if (!dryRun) {
-              await storage.updateVehicleMake(existing.id, {
-                ...convertedMake,
-                originEnv: 'dev',
-                lastSyncedAt: new Date(),
-                contentHash: convertedMake.contentHash
-              });
-            }
-            results.updated.vehicleMakes++;
-          } else {
-            results.skipped.vehicleMakes++;
-          }
-        } else {
-          if (!dryRun) {
-            await storage.createVehicleMakeWithId({
-              ...convertedMake,
-              originEnv: 'dev',
-              lastSyncedAt: new Date()
-            });
-          }
-          results.created.vehicleMakes++;
-        }
-      }
-
-      // 4. Vehicle Models
-      for (const model of data.vehicleModels || []) {
-        const convertedModel = convertTimestamps(model);
-        const existing = await storage.getVehicleModelBySlug(convertedModel.slug, convertedModel.makeId);
-        if (existing) {
-          if (existing.contentHash !== convertedModel.contentHash || force) {
-            if (!dryRun) {
-              await storage.updateVehicleModel(existing.id, {
-                ...convertedModel,
-                originEnv: 'dev',
-                lastSyncedAt: new Date(),
-                contentHash: convertedModel.contentHash
-              });
-            }
-            results.updated.vehicleModels++;
-          } else {
-            results.skipped.vehicleModels++;
-          }
-        } else {
-          if (!dryRun) {
-            await storage.createVehicleModelWithId({
-              ...convertedModel,
-              originEnv: 'dev',
-              lastSyncedAt: new Date()
-            });
-          }
-          results.created.vehicleModels++;
-        }
-      }
-
-      // 5. Products - merge dev-owned fields, preserve prod-owned fields
-      for (const product of data.products || []) {
-        const convertedProduct = convertTimestamps(product);
-        const existing = await storage.getProductBySlug(convertedProduct.slug);
-        if (existing) {
-          if (existing.originEnv === 'prod' && !force) {
-            // Skip prod-created products unless force is true
-            results.conflicts.push({
-              type: 'product',
-              slug: convertedProduct.slug,
-              message: 'Product created in production, skipping'
-            });
-            results.skipped.products++;
-          } else if (existing.contentHash !== convertedProduct.contentHash || force) {
-            if (!dryRun) {
-              // Preserve prod-owned fields: price, originalPrice, stock, isActive
-              await storage.updateProduct(existing.id, {
-                // Dev-owned fields
-                name: convertedProduct.name,
-                slug: convertedProduct.slug,
-                description: convertedProduct.description,
-                shortDescription: convertedProduct.shortDescription,
-                images: convertedProduct.images,
-                primaryImageIndex: convertedProduct.primaryImageIndex,
-                brandId: convertedProduct.brandId,
-                categoryId: convertedProduct.categoryId,
-                features: convertedProduct.features,
-                specifications: convertedProduct.specifications,
-                canHaveInstallation: convertedProduct.canHaveInstallation,
-                upsellCategoryId: convertedProduct.upsellCategoryId,
-                isFeatured: convertedProduct.isFeatured,
-                // Tracking fields
-                originEnv: 'dev',
-                lastSyncedAt: new Date(),
-                contentHash: convertedProduct.contentHash,
-                // Preserve prod-owned fields
-                price: existing.price,
-                originalPrice: existing.originalPrice,
-                stock: existing.stock,
-                isActive: existing.isActive
-              });
-            }
-            results.updated.products++;
-          } else {
-            results.skipped.products++;
-          }
-        } else {
-          if (!dryRun) {
-            await storage.createProductWithId({
-              ...convertedProduct,
-              originEnv: 'dev',
-              lastSyncedAt: new Date()
-            });
-          }
-          results.created.products++;
-        }
-      }
-
-      // 6. Product Vehicle Compatibility
-      for (const compat of data.productVehicleCompatibility || []) {
-        const convertedCompat = convertTimestamps(compat);
-        const existing = await storage.getCompatibilityByKey(
-          convertedCompat.productId,
-          convertedCompat.makeId,
-          convertedCompat.modelId,
-          convertedCompat.yearFrom,
-          convertedCompat.yearTo
-        );
-        if (existing) {
-          if (existing.contentHash !== convertedCompat.contentHash || force) {
-            if (!dryRun) {
-              await storage.updateCompatibility(existing.id, {
-                ...convertedCompat,
-                originEnv: 'dev',
-                lastSyncedAt: new Date(),
-                contentHash: convertedCompat.contentHash
-              });
-            }
-            results.updated.compatibility++;
-          } else {
-            results.skipped.compatibility++;
-          }
-        } else {
-          if (!dryRun) {
-            await storage.createCompatibilityWithId({
-              ...convertedCompat,
-              originEnv: 'dev',
-              lastSyncedAt: new Date()
-            });
-          }
-          results.created.compatibility++;
-        }
-      }
-
-      // Record sync run
-      if (!dryRun) {
-        await storage.createSyncRun({
-          environment: 'production',
-          runType: data.full ? 'full' : 'incremental',
-          status: 'completed',
-          completedAt: new Date(),
-          recordsProcessed: Object.values(results.created).reduce((a, b) => a + b, 0) +
-                          Object.values(results.updated).reduce((a, b) => a + b, 0) +
-                          Object.values(results.skipped).reduce((a, b) => a + b, 0),
-          recordsCreated: Object.values(results.created).reduce((a, b) => a + b, 0),
-          recordsUpdated: Object.values(results.updated).reduce((a, b) => a + b, 0),
-          recordsSkipped: Object.values(results.skipped).reduce((a, b) => a + b, 0),
-          conflicts: results.conflicts.length > 0 ? results.conflicts : null
-        });
-      }
-
-      res.json({
-        dryRun,
-        results,
-        message: dryRun ? "Dry run completed - no changes made" : "Import completed successfully"
-      });
-    } catch (error) {
-      console.error("Error importing catalog:", error);
-      res.status(500).json({ message: "Failed to import catalog" });
-    }
-  });
-
   // Admin routes
   app.get('/api/admin/products', isAdmin, async (req, res) => {
     try {
       const products = await storage.getProducts();
-      res.json(normalizeProductArrayUrls(products));
+      res.json(products);
     } catch (error) {
       console.error("Error fetching admin products:", error);
       res.status(500).json({ message: "Failed to fetch products" });
@@ -1116,97 +720,124 @@ ${message || 'Geen aanvullende informatie'}`
     res.json({ message: "Simple upload works!", user: req.user?.email });
   });
 
-  // Get presigned URL for product image upload using Object Storage
-  app.post('/api/upload/image/url', isAdmin, async (req: any, res) => {
-    console.log("🔍 [UPLOAD] Getting presigned URL for product image...");
+  // Image upload endpoint using Object Storage for production persistence  
+  app.post('/api/upload/image', isAdmin, imageUpload.single('file'), async (req: any, res) => {
+    console.log("🔍 [UPLOAD DEBUG] Starting image upload...");
+    console.log("🔍 [UPLOAD DEBUG] NODE_ENV:", process.env.NODE_ENV);
+    console.log("🔍 [UPLOAD DEBUG] User authenticated:", !!req.user);
     
     try {
-      const { originalName, mimeType } = req.body;
+      console.log("🔍 [UPLOAD DEBUG] Checking file...");
+      if (!req.file) {
+        console.log("❌ [UPLOAD DEBUG] No file provided");
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+      console.log("✅ [UPLOAD DEBUG] File received:", req.file.originalname, req.file.size, "bytes");
+
+      const fs = await import('fs');
+      const path = await import('path');
+
+      // Generate unique filename
+      const fileExtension = req.file.originalname.split('.').pop();
+      const fileName = `product-${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExtension}`;
+      console.log("🔍 [UPLOAD DEBUG] Generated filename:", fileName);
       
-      // Extract file extension from originalName or mimeType
-      let fileExtension = 'jpg'; // default
-      if (originalName && originalName.includes('.')) {
-        fileExtension = originalName.split('.').pop() || 'jpg';
-      } else if (mimeType) {
-        const mimeToExt = {
-          'image/jpeg': 'jpg',
-          'image/jpg': 'jpg', 
-          'image/png': 'png',
-          'image/webp': 'webp',
-          'image/gif': 'gif'
-        };
-        fileExtension = mimeToExt[mimeType as keyof typeof mimeToExt] || 'jpg';
+      // Object Storage configuration - use the mounted bucket path
+      // Get the mounted Object Storage path from environment
+      const publicSearchPaths = process.env.PUBLIC_OBJECT_SEARCH_PATHS;
+      const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
+      
+      console.log("🔍 [UPLOAD DEBUG] Environment vars:");
+      console.log("   - PUBLIC_OBJECT_SEARCH_PATHS:", publicSearchPaths);
+      console.log("   - DEFAULT_OBJECT_STORAGE_BUCKET_ID:", bucketId);
+      
+      if (!publicSearchPaths) {
+        console.error("❌ [UPLOAD DEBUG] PUBLIC_OBJECT_SEARCH_PATHS not found");
+        throw new Error("Object Storage not configured properly");
       }
       
-      console.log("🔍 [UPLOAD] Extracted extension:", fileExtension, "from originalName:", originalName, "mimeType:", mimeType);
-      
-      const objectStorageService = new ObjectStorageService();
-      const { uploadURL, fileName, objectKey, publicUrl } = await objectStorageService.getProductImageUploadURL(fileExtension);
-      
-      console.log("✅ [UPLOAD] Presigned URL generated:", fileName);
-      
-      res.json({
-        uploadURL,
-        fileName,
-        objectKey,
-        publicUrl
-      });
-    } catch (error: any) {
-      console.error("❌ [UPLOAD] Failed to get presigned URL:", error);
-      res.status(500).json({ 
-        message: "Failed to get upload URL",
-        error: error?.message || "Unknown error"
-      });
-    }
-  });
-
-  // Complete image upload and set public ACL
-  app.put('/api/upload/image/complete', isAdmin, async (req: any, res) => {
-    console.log("🔍 [UPLOAD] Completing image upload...");
-    
-    try {
-      const { fileName, objectKey, size, originalName } = req.body;
-      
-      if (!fileName || !objectKey) {
-        return res.status(400).json({ error: "fileName and objectKey are required" });
+      if (!bucketId) {
+        console.error("❌ [UPLOAD DEBUG] DEFAULT_OBJECT_STORAGE_BUCKET_ID not found");
+        throw new Error("Object Storage not configured");
       }
-
-      // Compute publicUrl server-side for consistency
-      const publicUrl = `/public/products/${fileName}`;
-
-      const objectStorageService = new ObjectStorageService();
       
-      // Extract file extension from filename for mimeType
-      const fileExtension = fileName.includes('.') ? fileName.split('.').pop() || 'jpg' : 'jpg';
+      // Object Storage fix: use proper working directory approach
+      // The issue is that Object Storage is mounted differently in prod vs dev
+      const objectStorageDir = path.join('public', 'products');
+      const objectStoragePath = path.join(objectStorageDir, fileName);
       
-      // Set public ACL for the uploaded file using the exact objectKey
+      
       try {
-        console.log("🔍 [UPLOAD] Setting public ACL for:", objectKey);
+        // Ensure Object Storage directory exists
+        await fs.promises.mkdir(objectStorageDir, { recursive: true });
         
-        // Set the ACL to make the file publicly readable
-        await objectStorageService.setPublicObjectAclPolicy(objectKey, {
-          visibility: 'public',
-          owner: 'system'
+        // Save to Object Storage
+        await fs.promises.writeFile(objectStoragePath, req.file.buffer);
+        console.log(`✅ [UPLOAD DEBUG] File written successfully: ${objectStoragePath}`);
+        
+        // Always return consistent public URL format for production
+        const publicUrl = `/products/${fileName}`;
+        console.log("✅ [UPLOAD DEBUG] Returning success response with URL:", publicUrl);
+        
+        res.json({
+          url: publicUrl,
+          fileName: fileName,
+          size: req.file.size,
+          mimeType: req.file.mimetype
+        });
+      } catch (objectStorageError: any) {
+        console.error("❌ [UPLOAD DEBUG] Object Storage upload failed:", objectStorageError);
+        console.error("❌ [UPLOAD DEBUG] Error details:", {
+          message: objectStorageError?.message,
+          code: objectStorageError?.code,
+          errno: objectStorageError?.errno,
+          path: objectStorageError?.path
         });
         
-        console.log("✅ [UPLOAD] Public ACL set successfully");
-      } catch (aclError) {
-        console.error("⚠️ [UPLOAD] Failed to set public ACL:", aclError);
-        // Continue anyway - the file might still be accessible
+        // Only fallback to local in development, fail in production
+        if (process.env.NODE_ENV === 'production') {
+          console.error("❌ [UPLOAD DEBUG] Production mode - failing without fallback");
+          return res.status(500).json({ 
+            message: "Image upload failed - Object Storage not available in production",
+            error: objectStorageError?.message || "Unknown error"
+          });
+        }
+        
+        // Development fallback to local directory
+        console.log("🔄 [UPLOAD DEBUG] Falling back to local storage (development only)");
+        try {
+          const localDir = path.join(process.cwd(), 'public', 'products');
+          const localPath = path.join(localDir, fileName);
+          console.log("🔍 [UPLOAD DEBUG] Local fallback paths:", { localDir, localPath });
+          
+          // Ensure local directory exists
+          await fs.promises.mkdir(localDir, { recursive: true });
+          console.log("✅ [UPLOAD DEBUG] Local directory created");
+          
+          // Save file locally
+          await fs.promises.writeFile(localPath, req.file.buffer);
+          console.log("✅ [UPLOAD DEBUG] File saved locally");
+          
+          // Return consistent public URL format even for local fallback
+          const publicUrl = `/products/${fileName}`;
+          console.log("✅ [UPLOAD DEBUG] Local fallback success, returning URL:", publicUrl);
+          
+          res.json({
+            url: publicUrl,
+            fileName: fileName,
+            size: req.file.size,
+            mimeType: req.file.mimetype
+          });
+        } catch (localError) {
+          console.error("❌ [UPLOAD DEBUG] Local fallback also failed:", localError);
+          throw localError;
+        }
       }
-      
-      console.log("✅ [UPLOAD] Image upload completed:", publicUrl);
-      
-      res.json({
-        url: publicUrl,
-        fileName: fileName,
-        size: size || 0,
-        mimeType: `image/${fileExtension}`
-      });
     } catch (error: any) {
-      console.error("❌ [UPLOAD] Failed to complete upload:", error);
+      console.error("❌ [UPLOAD DEBUG] Outer catch - Final error:", error);
+      console.error("❌ [UPLOAD DEBUG] Error stack:", error?.stack);
       res.status(500).json({ 
-        message: "Failed to complete upload",
+        message: "Failed to upload image",
         error: error?.message || "Unknown error"
       });
     }

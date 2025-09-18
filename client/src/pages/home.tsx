@@ -194,7 +194,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-            {categories?.map((category: Category) => (
+            {(categories as Category[])?.map((category: Category) => (
               <Card 
                 key={category.id} 
                 className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-background/80 backdrop-blur-sm border-border/50"
@@ -268,12 +268,20 @@ export default function Home() {
               <video
                 className="w-full h-full object-cover"
                 controls
-                autoPlay
                 muted
                 loop
                 playsInline
-                poster="https://caraudiolimburg.shop/wp-content/uploads/2025/05/Android-Audi-A3.png"
+                preload="metadata"
                 data-testid="promotional-video"
+                onError={(e) => {
+                  console.error('Video laad fout:', e);
+                }}
+                onLoadStart={() => {
+                  console.log('Video start met laden...');
+                }}
+                onCanPlay={() => {
+                  console.log('Video is klaar om af te spelen');
+                }}
               >
                 <source 
                   src="https://caraudiolimburg.studio/wp-content/uploads/2024/11/Verkorte-Video-Car-Audio-Limburg-Studio-1.mp4" 
@@ -606,7 +614,7 @@ export default function Home() {
               <h2 className="text-3xl font-bold text-foreground mb-8">Wat Klanten Zeggen</h2>
               
               <div className="space-y-6">
-                {reviews?.slice(0, 3).map((review: Review) => (
+                {(reviews as Review[])?.slice(0, 3).map((review: Review) => (
                   <Card key={review.id} className="bg-card border-border" data-testid={`testimonial-${review.id}`}>
                     <CardContent className="p-6">
                       <div className="flex items-center mb-4">
@@ -633,10 +641,10 @@ export default function Home() {
                         <div>
                           <p className="font-medium text-card-foreground">{review.customerName}</p>
                           <p className="text-sm text-muted-foreground">
-                            {new Date(review.createdAt).toLocaleDateString('nl-NL', { 
+                            {review.createdAt ? new Date(review.createdAt).toLocaleDateString('nl-NL', { 
                               year: 'numeric', 
                               month: 'long'
-                            })}
+                            }) : 'Datum onbekend'}
                           </p>
                         </div>
                       </div>

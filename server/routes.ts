@@ -22,7 +22,7 @@ let stripe: Stripe | null = null;
 
 if (process.env.STRIPE_SECRET_KEY) {
   stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: "2025-08-27.basil",
+    apiVersion: "2024-06-20", // Pinned version for stability
   });
 }
 
@@ -486,7 +486,7 @@ ${message || 'Geen aanvullende informatie'}`
     }
   });
 
-  // Get order by payment intent ID
+  // Get order by payment intent ID (idempotent - creates order if missing for successful payments)
   app.get("/api/orders/by-payment-intent/:paymentIntentId", isAuthenticated, async (req, res) => {
     try {
       const { paymentIntentId } = req.params;
@@ -496,9 +496,61 @@ ${message || 'Geen aanvullende informatie'}`
         return res.status(500).json({ message: "Payment system not configured" });
       }
 
+      // First, verify the payment intent belongs to this user via Stripe
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      if (paymentIntent.metadata?.userId !== userId) {
+        return res.status(403).json({ message: "Unauthorized - payment doesn't belong to user" });
+      }
+
       // Get order from database by payment intent ID
       const orders = await storage.getOrdersByUserId(userId);
-      const order = orders.find(o => o.stripePaymentIntentId === paymentIntentId);
+      let order = orders.find(o => o.stripePaymentIntentId === paymentIntentId);
+      
+      // If order doesn't exist but payment succeeded, create it idempotently (handles 3DS return flow)
+      if (!order && paymentIntent.status === 'succeeded') {
+        // Get cart items (they may be cleared already, but try)
+        const cartItems = await storage.getCartItems(userId);
+        
+        if (cartItems.length > 0) {
+          // Calculate totals for verification
+          const subtotal = await Promise.all(
+            cartItems.map(async (item) => {
+              const product = await storage.getProduct(item.productId);
+              const price = parseFloat(product?.price || "0");
+              return price * item.quantity;
+            })
+          ).then(prices => prices.reduce((sum, price) => sum + price, 0));
+          
+          const installationFee = cartItems.some(item => item.needsInstallation) ? 89 : 0;
+          const shipping = subtotal >= 50 ? 0 : 5.95;
+          const expectedTotal = subtotal + installationFee + shipping;
+          
+          // Create order idempotently
+          const orderNumber = `CAL-${Date.now()}`;
+          order = await storage.createOrder({
+            userId,
+            orderNumber,
+            status: "confirmed",
+            totalAmount: expectedTotal.toString(),
+            stripePaymentIntentId: paymentIntentId,
+            shippingAddress: {}, // Default empty shipping for 3DS return
+          });
+
+          // Create order items
+          for (const cartItem of cartItems) {
+            await storage.createOrderItem({
+              orderId: order.id,
+              productId: cartItem.productId,
+              quantity: cartItem.quantity,
+              price: (await storage.getProduct(cartItem.productId))?.price || "0",
+              needsInstallation: cartItem.needsInstallation,
+            });
+          }
+
+          // Clear cart
+          await storage.clearCart(userId);
+        }
+      }
       
       if (!order) {
         return res.status(404).json({ message: "Order not found" });
@@ -511,7 +563,7 @@ ${message || 'Geen aanvullende informatie'}`
     }
   });
 
-  // Order confirmation after successful payment
+  // Order confirmation after successful payment (idempotent)
   app.post("/api/orders/confirm", isAuthenticated, async (req, res) => {
     try {
       const { paymentIntentId, shippingDetails } = req.body;
@@ -521,27 +573,55 @@ ${message || 'Geen aanvullende informatie'}`
         return res.status(500).json({ message: "Payment system not configured" });
       }
 
-      // Verify payment was successful
+      // Check if order already exists (idempotency)
+      const existingOrders = await storage.getOrdersByUserId(userId);
+      const existingOrder = existingOrders.find(o => o.stripePaymentIntentId === paymentIntentId);
+      if (existingOrder) {
+        return res.json({ orderId: existingOrder.id, orderNumber: existingOrder.orderNumber });
+      }
+
+      // Verify payment was successful and belongs to user
       const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
       if (paymentIntent.status !== 'succeeded') {
         return res.status(400).json({ message: "Payment not successful" });
       }
+      
+      // Verify the payment intent belongs to this user
+      if (paymentIntent.metadata?.userId !== userId) {
+        return res.status(403).json({ message: "Unauthorized - payment doesn't belong to user" });
+      }
 
-      // Get cart items to create order
+      // Get cart items to verify amount matches payment
       const cartItems = await storage.getCartItems(userId);
       if (cartItems.length === 0) {
         return res.status(400).json({ message: "Cart is empty" });
       }
 
-      // Calculate totals
-      const subtotal = cartItems.reduce((sum, item: any) => {
-        const price = parseFloat(item.product?.price || "0");
-        return sum + (price * item.quantity);
-      }, 0);
+      // Calculate totals and verify they match payment intent (need to fetch product details)
+      const subtotal = await Promise.all(
+        cartItems.map(async (item) => {
+          const product = await storage.getProduct(item.productId);
+          const price = parseFloat(product?.price || "0");
+          return price * item.quantity;
+        })
+      ).then(prices => prices.reduce((sum, price) => sum + price, 0));
       
       const installationFee = cartItems.some(item => item.needsInstallation) ? 89 : 0;
       const shipping = subtotal >= 50 ? 0 : 5.95;
-      const total = subtotal + installationFee + shipping;
+      const expectedTotal = subtotal + installationFee + shipping;
+      
+      // Verify amount matches (convert to cents for comparison)
+      const expectedAmountInCents = Math.round(expectedTotal * 100);
+      if (paymentIntent.amount !== expectedAmountInCents) {
+        return res.status(400).json({ 
+          message: "Payment amount doesn't match cart total",
+          expected: expectedAmountInCents,
+          received: paymentIntent.amount
+        });
+      }
+
+      // Create order with verified payment
+      const total = expectedTotal;
 
       // Generate unique order number
       const orderNumber = `CAL-${Date.now()}`;

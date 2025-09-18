@@ -60,11 +60,12 @@ const CheckoutForm = ({ clientSecret, orderTotal }: { clientSecret: string; orde
 
     setIsProcessing(true);
 
-    // Confirm payment without redirect
+    // Confirm payment with return_url for 3DS/SCA redirects
     const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       redirect: 'if_required',
       confirmParams: {
+        return_url: `${window.location.origin}/order-confirmation`,
         payment_method_data: {
           billing_details: {
             name: `${data.firstName} ${data.lastName}`,

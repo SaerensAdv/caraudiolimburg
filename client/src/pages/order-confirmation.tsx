@@ -14,8 +14,8 @@ export default function OrderConfirmationPage() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [location] = useLocation();
 
-  // Extract payment intent from URL
-  const urlParams = new URLSearchParams(location.split('?')[1] || '');
+  // Extract payment intent from URL - use window.location.search since Wouter doesn't include query params
+  const urlParams = new URLSearchParams(window.location.search);
   const paymentIntentId = urlParams.get('payment_intent');
   const redirectStatus = urlParams.get('redirect_status');
 

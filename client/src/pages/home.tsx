@@ -267,27 +267,31 @@ export default function Home() {
             <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl bg-black">
               <video
                 className="w-full h-full object-cover"
-                controls
+                autoPlay
                 muted
                 loop
                 playsInline
-                preload="metadata"
+                preload="auto"
                 data-testid="promotional-video"
-                onError={(e) => {
-                  console.error('Video laad fout:', e);
-                }}
-                onLoadStart={() => {
-                  console.log('Video start met laden...');
-                }}
-                onCanPlay={() => {
-                  console.log('Video is klaar om af te spelen');
-                }}
               >
                 <source 
                   src="https://caraudiolimburg.studio/wp-content/uploads/2024/11/Verkorte-Video-Car-Audio-Limburg-Studio-1.mp4" 
                   type="video/mp4" 
                 />
-                Je browser ondersteunt geen video.
+                <source 
+                  src="https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4" 
+                  type="video/mp4" 
+                />
+                {/* Fallback voor als video niet laadt */}
+                <div className="flex items-center justify-center h-full bg-gradient-to-br from-gray-900 to-gray-700 text-white">
+                  <div className="text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-primary/20 rounded-full flex items-center justify-center">
+                      <div className="w-0 h-0 border-l-[20px] border-l-white border-t-[12px] border-t-transparent border-b-[12px] border-b-transparent ml-1"></div>
+                    </div>
+                    <p className="text-lg font-semibold">Car Audio Limburg</p>
+                    <p className="text-sm text-gray-300">Professionele Installatie</p>
+                  </div>
+                </div>
               </video>
               
               {/* Video Overlay Info */}

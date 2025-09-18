@@ -286,9 +286,9 @@ export default function Home() {
                     <h3 className="font-semibold text-lg">Car Audio Limburg Studio</h3>
                     <p className="text-sm text-gray-300">Een kijkje in onze showroom en werkplaats</p>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                    <span className="text-sm">LIVE</span>
+                  <div className="audio" style={{fontSize: '0.5rem'}}>
+                    <i></i>
+                    <i></i>
                   </div>
                 </div>
               </div>

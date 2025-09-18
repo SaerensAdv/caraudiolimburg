@@ -273,6 +273,7 @@ export default function Home() {
                 loop
                 playsInline
                 controls
+                preload="metadata"
                 data-testid="promotional-video"
               >
                 <source src={promoVideo} type="video/mp4" />

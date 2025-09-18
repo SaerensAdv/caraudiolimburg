@@ -164,8 +164,11 @@ export default function ProductPage() {
                       <Button
                         variant="secondary"
                         size="sm"
-                        className="absolute left-4 top-1/2 transform -translate-y-1/2"
-                        onClick={() => setSelectedImageIndex((prev) => (prev - 1 + images.length) % images.length)}
+                        className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedImageIndex((prev) => (prev - 1 + images.length) % images.length);
+                        }}
                         data-testid="button-previous-image"
                       >
                         <ChevronLeft className="w-4 h-4" />
@@ -173,8 +176,11 @@ export default function ProductPage() {
                       <Button
                         variant="secondary"
                         size="sm"
-                        className="absolute right-4 top-1/2 transform -translate-y-1/2"
-                        onClick={() => setSelectedImageIndex((prev) => (prev + 1) % images.length)}
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedImageIndex((prev) => (prev + 1) % images.length);
+                        }}
                         data-testid="button-next-image"
                       >
                         <ChevronRight className="w-4 h-4" />

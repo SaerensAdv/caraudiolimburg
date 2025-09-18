@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { useLocation, useRoute } from "wouter";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useState } from "react";
+import { useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -13,37 +13,24 @@ import { apiRequest } from "@/lib/queryClient";
 export default function OrderConfirmationPage() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [location] = useLocation();
-  const [order, setOrder] = useState<any>(null);
-  const [confirmationSent, setConfirmationSent] = useState(false);
 
   // Extract payment intent from URL
   const urlParams = new URLSearchParams(location.split('?')[1] || '');
   const paymentIntentId = urlParams.get('payment_intent');
   const redirectStatus = urlParams.get('redirect_status');
 
-  const confirmOrderMutation = useMutation({
-    mutationFn: async () => {
+  // Fetch existing order by payment intent ID instead of confirming again
+  const { data: orderData, isLoading, isError } = useQuery({
+    queryKey: ["/api/orders/by-payment-intent", paymentIntentId],
+    queryFn: async () => {
       if (!paymentIntentId) throw new Error("No payment intent found");
-      return await apiRequest("POST", "/api/orders/confirm", {
-        paymentIntentId
-      });
+      const response = await apiRequest("GET", `/api/orders/by-payment-intent/${paymentIntentId}`);
+      return response.json();
     },
-    onSuccess: (data: any) => {
-      setOrder(data.order);
-      setConfirmationSent(true);
-    },
-    onError: (error) => {
-      console.error("Error confirming order:", error);
-    }
+    enabled: !!paymentIntentId && redirectStatus === 'succeeded',
   });
 
-  useEffect(() => {
-    if (paymentIntentId && redirectStatus === 'succeeded' && !confirmationSent) {
-      confirmOrderMutation.mutate();
-    }
-  }, [paymentIntentId, redirectStatus, confirmationSent]);
-
-  if (confirmOrderMutation.isPending) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
         <Header onCartOpen={() => setIsCartOpen(true)} />
@@ -54,14 +41,14 @@ export default function OrderConfirmationPage() {
               <div className="h-8 bg-muted rounded w-3/4 mx-auto mb-2"></div>
               <div className="h-4 bg-muted rounded w-1/2 mx-auto"></div>
             </div>
-            <p className="mt-4 text-muted-foreground">Je bestelling wordt verwerkt...</p>
+            <p className="mt-4 text-muted-foreground">Je bestelling wordt geladen...</p>
           </div>
         </div>
       </div>
     );
   }
 
-  if (confirmOrderMutation.isError || !paymentIntentId) {
+  if (isError || !paymentIntentId) {
     return (
       <div className="min-h-screen bg-background">
         <Header onCartOpen={() => setIsCartOpen(true)} />
@@ -108,13 +95,13 @@ export default function OrderConfirmationPage() {
             </p>
           </div>
 
-          {order && (
+          {orderData && (
             <>
               {/* Order Details */}
               <Card className="bg-card border-border mb-6">
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
-                    <span>Bestelling #{order.orderNumber}</span>
+                    <span>Bestelling #{orderData.orderNumber}</span>
                     <Badge variant="default" className="bg-green-600 text-white">
                       Bevestigd
                     </Badge>
@@ -125,26 +112,26 @@ export default function OrderConfirmationPage() {
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="text-muted-foreground">Totaal bedrag:</span>
-                        <p className="font-semibold">€{parseFloat(order.totalAmount).toFixed(2)}</p>
+                        <p className="font-semibold">€{parseFloat(orderData.totalAmount).toFixed(2)}</p>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Besteldatum:</span>
                         <p className="font-semibold">
-                          {new Date(order.createdAt || Date.now()).toLocaleDateString('nl-NL')}
+                          {new Date(orderData.createdAt || Date.now()).toLocaleDateString('nl-NL')}
                         </p>
                       </div>
                     </div>
 
-                    {order.shippingAddress && (
+                    {orderData.shippingAddress && (
                       <>
                         <Separator />
                         <div>
                           <h3 className="font-semibold mb-2">Leveradres</h3>
                           <div className="text-sm text-muted-foreground">
-                            <p>{order.shippingAddress.firstName} {order.shippingAddress.lastName}</p>
-                            <p>{order.shippingAddress.address}</p>
-                            <p>{order.shippingAddress.postalCode} {order.shippingAddress.city}</p>
-                            {order.shippingAddress.phone && <p>{order.shippingAddress.phone}</p>}
+                            <p>{orderData.shippingAddress.firstName} {orderData.shippingAddress.lastName}</p>
+                            <p>{orderData.shippingAddress.address}</p>
+                            <p>{orderData.shippingAddress.postalCode} {orderData.shippingAddress.city}</p>
+                            {orderData.shippingAddress.phone && <p>{orderData.shippingAddress.phone}</p>}
                           </div>
                         </div>
                       </>

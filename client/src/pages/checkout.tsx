@@ -60,10 +60,11 @@ const CheckoutForm = ({ clientSecret, orderTotal }: { clientSecret: string; orde
 
     setIsProcessing(true);
 
-    const { error } = await stripe.confirmPayment({
+    // Confirm payment without redirect
+    const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
+      redirect: 'if_required',
       confirmParams: {
-        return_url: `${window.location.origin}/order-confirmation`,
         payment_method_data: {
           billing_details: {
             name: `${data.firstName} ${data.lastName}`,
@@ -79,20 +80,42 @@ const CheckoutForm = ({ clientSecret, orderTotal }: { clientSecret: string; orde
       },
     });
 
-    setIsProcessing(false);
-
     if (error) {
+      setIsProcessing(false);
       toast({
         title: "Betaling mislukt",
         description: error.message,
         variant: "destructive",
       });
-    } else {
-      toast({
-        title: "Betaling succesvol",
-        description: "Je bestelling wordt verwerkt!",
-      });
+      return;
     }
+
+    // If payment succeeded, confirm the order and redirect manually
+    if (paymentIntent && paymentIntent.status === 'succeeded') {
+      try {
+        await apiRequest("POST", "/api/orders/confirm", {
+          paymentIntentId: paymentIntent.id,
+          shippingDetails: data,
+        });
+
+        toast({
+          title: "Betaling succesvol",
+          description: "Je bestelling wordt verwerkt!",
+        });
+
+        // Manual redirect to order confirmation with payment intent ID
+        window.location.href = `/order-confirmation?payment_intent=${paymentIntent.id}&redirect_status=succeeded`;
+      } catch (confirmError) {
+        console.error("Order confirmation error:", confirmError);
+        toast({
+          title: "Bestelling fout",
+          description: "Betaling gelukt, maar er was een probleem met de bestelling. Neem contact op.",
+          variant: "destructive",
+        });
+      }
+    }
+    
+    setIsProcessing(false);
   };
 
   return (
@@ -224,12 +247,15 @@ export default function Checkout() {
     enabled: isAuthenticated,
   });
 
-  const subtotal = (cartItems || []).reduce((sum: number, item: any) => {
+  // Ensure cartItems is always an array
+  const cartItemsArray = Array.isArray(cartItems) ? cartItems : [];
+
+  const subtotal = cartItemsArray.reduce((sum: number, item: any) => {
     const price = parseFloat(item.product?.price || "0");
     return sum + (price * item.quantity);
   }, 0);
   
-  const installationFee = (cartItems || []).some((item: any) => item.needsInstallation) ? 89 : 0;
+  const installationFee = cartItemsArray.some((item: any) => item.needsInstallation) ? 89 : 0;
   const shipping = subtotal >= 50 ? 0 : 5.95;
   const total = subtotal + installationFee + shipping;
 
@@ -269,7 +295,7 @@ export default function Checkout() {
     );
   }
 
-  if (!cartItems || (cartItems || []).length === 0) {
+  if (!cartItems || cartItemsArray.length === 0) {
     return (
       <div className="min-h-screen bg-background">
         <Header onCartOpen={() => setIsCartOpen(true)} />
@@ -341,7 +367,7 @@ export default function Checkout() {
                 <h3 className="text-lg font-semibold text-card-foreground mb-4">Bestelling overzicht</h3>
                 
                 <div className="space-y-4 mb-6">
-                  {(cartItems || []).map((item: any) => (
+                  {cartItemsArray.map((item: any) => (
                     <div key={item.id} className="flex items-center space-x-3" data-testid={`summary-item-${item.id}`}>
                       <div className="w-12 h-12 bg-muted rounded-lg flex-shrink-0">
                         <img 

@@ -472,9 +472,7 @@ ${message || 'Geen aanvullende informatie'}`
       const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(amount * 100), // Convert to cents
         currency: "eur",
-        automatic_payment_methods: {
-          enabled: true,
-        },
+        payment_method_types: ['card'], // Restrict to card-only to avoid redirect issues
         metadata: {
           userId: (req as any).user.id,
         },
@@ -485,6 +483,31 @@ ${message || 'Geen aanvullende informatie'}`
       res
         .status(500)
         .json({ message: "Error creating payment intent: " + error.message });
+    }
+  });
+
+  // Get order by payment intent ID
+  app.get("/api/orders/by-payment-intent/:paymentIntentId", isAuthenticated, async (req, res) => {
+    try {
+      const { paymentIntentId } = req.params;
+      const userId = (req as any).user.id;
+      
+      if (!stripe) {
+        return res.status(500).json({ message: "Payment system not configured" });
+      }
+
+      // Get order from database by payment intent ID
+      const orders = await storage.getOrdersByUserId(userId);
+      const order = orders.find(o => o.stripePaymentIntentId === paymentIntentId);
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      res.json(order);
+    } catch (error) {
+      console.error("Error fetching order:", error);
+      res.status(500).json({ message: "Failed to fetch order" });
     }
   });
 

@@ -16,9 +16,10 @@ import {
 
 interface HeaderProps {
   onCartOpen: () => void;
+  logoSrc?: string;
 }
 
-export function Header({ onCartOpen }: HeaderProps) {
+export function Header({ onCartOpen, logoSrc }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { isAuthenticated, user } = useAuth();
 
@@ -39,7 +40,7 @@ export function Header({ onCartOpen }: HeaderProps) {
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-3" data-testid="link-home">
           <img 
-            src={logoUrl} 
+            src={logoSrc || logoUrl} 
             alt="Car Audio Limburg" 
             className="h-12 w-auto"
           />

@@ -32,6 +32,7 @@ import bmwCarPlay2 from "@assets/bmw-carplay-2.jpg";
 import bmwCarPlay3 from "@assets/bmw-carplay-3.jpg";
 import bmwCarPlay4 from "@assets/bmw-carplay-4.jpg";
 import bmwCarPlayVideo from "@assets/bmw-carplay-video.jpg";
+import calWhiteLogo from "@assets/cal-white-logo.png";
 
 export default function AppleCarPlayBMW() {
   const [formData, setFormData] = useState({
@@ -121,7 +122,7 @@ export default function AppleCarPlayBMW() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-black to-gray-900">
-      <Header onCartOpen={() => setIsCartOpen(true)} />
+      <Header onCartOpen={() => setIsCartOpen(true)} logoSrc={calWhiteLogo} />
       {/* Hero Section */}
       <section className="relative overflow-hidden min-h-screen">
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent z-10"></div>

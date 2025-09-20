@@ -144,6 +144,11 @@ export default function Admin() {
     enabled: isAuthenticated,
   });
 
+  const { data: users = [], isLoading: isLoadingUsers } = useQuery<User[]>({
+    queryKey: ["/api/admin/users"],
+    enabled: isAuthenticated && user?.role === 'admin',
+  });
+
   // Mutations
   const createProductMutation = useMutation({
     mutationFn: async (data: ProductFormData) => {
@@ -597,11 +602,12 @@ export default function Admin() {
 
         {/* Main Content */}
         <Tabs defaultValue="products" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="products" data-testid="tab-products">Producten</TabsTrigger>
             <TabsTrigger value="orders" data-testid="tab-orders">Bestellingen</TabsTrigger>
             <TabsTrigger value="bookings" data-testid="tab-bookings">Afspraken</TabsTrigger>
             <TabsTrigger value="quotes" data-testid="tab-quotes">Offertes</TabsTrigger>
+            <TabsTrigger value="users" data-testid="tab-users">Users</TabsTrigger>
           </TabsList>
 
           {/* Products Tab */}
@@ -1396,6 +1402,73 @@ export default function Admin() {
                           </TableCell>
                           <TableCell>
                             <Button size="sm" variant="outline" data-testid={`button-view-quote-${quote.id}`}>
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Users Tab */}
+          <TabsContent value="users" className="space-y-6">
+            <h2 className="text-2xl font-semibold text-foreground">Gebruikers</h2>
+            
+            <Card className="bg-card border-border">
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Naam</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Rol</TableHead>
+                      <TableHead>Registratie</TableHead>
+                      <TableHead>Laatste Update</TableHead>
+                      <TableHead>Acties</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {isLoadingUsers ? (
+                      [...Array(5)].map((_, i) => (
+                        <TableRow key={i}>
+                          {[...Array(6)].map((_, j) => (
+                            <TableCell key={j}><div className="h-4 bg-muted rounded animate-pulse"></div></TableCell>
+                          ))}
+                        </TableRow>
+                      ))
+                    ) : users?.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                          Nog geen gebruikers
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      users?.map((user: User) => (
+                        <TableRow key={user.id} data-testid={`user-row-${user.id}`}>
+                          <TableCell className="font-medium">
+                            {user.firstName && user.lastName 
+                              ? `${user.firstName} ${user.lastName}` 
+                              : user.email?.split('@')[0] || 'Onbekend'
+                            }
+                          </TableCell>
+                          <TableCell>{user.email || '-'}</TableCell>
+                          <TableCell>
+                            <Badge variant={user.role === 'admin' ? "default" : user.role === 'staff' ? "secondary" : "outline"}>
+                              {user.role === 'admin' ? 'Admin' : user.role === 'staff' ? 'Medewerker' : 'Klant'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            {user.createdAt ? format(new Date(user.createdAt), "dd MMM yyyy", { locale: nl }) : "-"}
+                          </TableCell>
+                          <TableCell>
+                            {user.updatedAt ? format(new Date(user.updatedAt), "dd MMM yyyy", { locale: nl }) : "-"}
+                          </TableCell>
+                          <TableCell>
+                            <Button size="sm" variant="outline" data-testid={`button-view-user-${user.id}`}>
                               <Eye className="w-4 h-4" />
                             </Button>
                           </TableCell>

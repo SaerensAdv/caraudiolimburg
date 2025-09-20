@@ -527,22 +527,30 @@ export class DatabaseStorage implements IStorage {
       conditions.push(eq(reviews.isFeatured, options.isFeatured));
     }
     
-    const baseQuery = db.select().from(reviews);
+    // Build query step by step to avoid TypeScript issues
+    const baseQuery = db.select().from(reviews).orderBy(desc(reviews.createdAt));
     
-    let finalQuery = conditions.length > 0 
-      ? baseQuery.where(and(...conditions))
-      : baseQuery;
-    
-    finalQuery = finalQuery.orderBy(desc(reviews.createdAt));
-    
-    if (options?.limit) {
-      finalQuery = finalQuery.limit(options.limit);
+    if (conditions.length > 0) {
+      if (options?.limit && options?.offset) {
+        return await baseQuery.where(and(...conditions)).limit(options.limit).offset(options.offset);
+      } else if (options?.limit) {
+        return await baseQuery.where(and(...conditions)).limit(options.limit);
+      } else if (options?.offset) {
+        return await baseQuery.where(and(...conditions)).offset(options.offset);
+      } else {
+        return await baseQuery.where(and(...conditions));
+      }
+    } else {
+      if (options?.limit && options?.offset) {
+        return await baseQuery.limit(options.limit).offset(options.offset);
+      } else if (options?.limit) {
+        return await baseQuery.limit(options.limit);
+      } else if (options?.offset) {
+        return await baseQuery.offset(options.offset);
+      } else {
+        return await baseQuery;
+      }
     }
-    if (options?.offset) {
-      finalQuery = finalQuery.offset(options.offset);
-    }
-    
-    return await finalQuery;
   }
 
   async getReview(id: string): Promise<Review | undefined> {

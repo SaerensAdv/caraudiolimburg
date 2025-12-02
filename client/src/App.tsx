@@ -4,6 +4,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
+import { VerticalScrollProgress } from "@/components/ScrollProgress";
+import { PageLoader } from "@/components/PageTransition";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Shop from "@/pages/shop";
@@ -19,6 +21,7 @@ import CustomerPortal from "@/pages/customer-portal";
 import Login from "@/pages/login";
 import AppleCarPlayBMW from "@/pages/apple-carplay-bmw";
 import OrderConfirmation from "@/pages/order-confirmation";
+import { useState, useEffect } from "react";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -26,10 +29,22 @@ function Router() {
   // Show loading state while auth is being checked
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-black">
         <div className="text-center">
-          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading...</p>
+          {/* Audio wave loader */}
+          <div className="flex items-end justify-center gap-1 h-12 mb-6">
+            {[...Array(5)].map((_, i) => (
+              <div
+                key={i}
+                className="w-1.5 bg-gradient-to-t from-[#d0a760]/50 to-[#d0a760] rounded-full animate-audio-loader"
+                style={{
+                  animationDelay: `${i * 0.1}s`,
+                  height: '100%',
+                }}
+              />
+            ))}
+          </div>
+          <p className="text-white/40 text-sm tracking-widest uppercase">Car Audio Limburg</p>
         </div>
       </div>
     );
@@ -38,6 +53,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/products" component={Shop} />
       <Route path="/shop" component={Shop} />
       <Route path="/product/:slug" component={Product} />
       <Route path="/cart" component={Cart} />
@@ -57,11 +73,24 @@ function Router() {
 }
 
 function App() {
+  const [showInitialLoader, setShowInitialLoader] = useState(true);
+
+  useEffect(() => {
+    // Show initial branded loader on first page load
+    const timer = setTimeout(() => {
+      setShowInitialLoader(false);
+    }, 1200);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
+        {showInitialLoader && <PageLoader />}
         <div className="min-h-screen bg-background text-foreground">
           <Toaster />
+          <VerticalScrollProgress />
           <Router />
         </div>
       </TooltipProvider>

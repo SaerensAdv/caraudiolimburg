@@ -7,7 +7,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
-import { ShoppingCart, Wrench } from "lucide-react";
+import { ShoppingCart, Wrench, Eye } from "lucide-react";
+import { ProductQuickView } from "@/components/ProductQuickView";
 import type { Product } from "@shared/schema";
 import carAudioLogo from "@assets/Caraudiolimburg-logo_1757008375383_1757016657436.png";
 import fordFiestaImage from "@assets/ford-fiesta-real.webp";
@@ -21,6 +22,7 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
 
   const addToCartMutation = useMutation({
     mutationFn: async ({ productId, needsInstallation }: { productId: string; needsInstallation: boolean }) => {
@@ -82,85 +84,104 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <Card className="bg-zinc-900 border-zinc-800 hover:border-[#d0a760]/30 transition-all duration-300 group overflow-hidden rounded-none" data-testid={`product-card-${product.id}`}>
-      <Link href={`/product/${product.slug}`}>
-        <div className="relative overflow-hidden">
-          <div className="aspect-square bg-zinc-800 flex items-center justify-center p-8">
-            <img 
-              src={product.images?.[product.primaryImageIndex || 0] ? getImageSrc(product.images[product.primaryImageIndex || 0]) : carAudioLogo} 
-              alt={product.name}
-              className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500 group-hover:animate-speaker-vibrate"
-              onError={(e) => {
-                e.currentTarget.src = carAudioLogo;
-              }}
-            />
-          </div>
-          
-          {discount && (
-            <Badge className="absolute top-3 left-3 bg-[#d0a760] text-black font-medium rounded-none" data-testid={`discount-badge-${product.id}`}>
-              -{discount}%
-            </Badge>
-          )}
-        </div>
-      </Link>
-
-      <CardContent className="p-5">
+    <>
+      <Card className="bg-zinc-900 border-zinc-800 hover:border-[#d0a760]/30 transition-all duration-300 group overflow-hidden rounded-none" data-testid={`product-card-${product.id}`}>
         <Link href={`/product/${product.slug}`}>
-          <h3 className="text-white font-medium mb-2 group-hover:text-[#d0a760] transition-colors cursor-pointer line-clamp-2" data-testid={`product-title-${product.id}`}>
-            {product.name}
-          </h3>
-        </Link>
-
-        {product.shortDescription && (
-          <p className="text-white/50 text-sm mb-4 line-clamp-2" data-testid={`product-description-${product.id}`}>
-            {product.shortDescription}
-          </p>
-        )}
-
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-baseline gap-2">
-            <span className="text-xl font-semibold text-white" data-testid={`product-price-${product.id}`}>
-              €{currentPrice.toFixed(0)}
-            </span>
-            {originalPrice && (
-              <span className="text-sm text-white/40 line-through" data-testid={`product-original-price-${product.id}`}>
-                €{originalPrice.toFixed(0)}
-              </span>
-            )}
-          </div>
-        </div>
-
-        <div className="flex gap-2">
-          <Button
-            className="flex-1 bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"
-            size="sm"
-            onClick={(e) => {
-              e.preventDefault();
-              handleAddToCart(false);
-            }}
-            disabled={!product.stock || product.stock <= 0 || addToCartMutation.isPending}
-            data-testid={`button-add-to-cart-${product.id}`}
-          >
-            <ShoppingCart className="w-4 h-4 mr-1.5" />
-            {addToCartMutation.isPending ? "..." : "Toevoegen"}
-          </Button>
-          {product.canHaveInstallation && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-zinc-700 text-white/70 hover:text-white hover:bg-zinc-800 hover:border-zinc-600 rounded-none"
+          <div className="relative overflow-hidden">
+            <div className="aspect-square bg-zinc-800 flex items-center justify-center p-8">
+              <img 
+                src={product.images?.[product.primaryImageIndex || 0] ? getImageSrc(product.images[product.primaryImageIndex || 0]) : carAudioLogo} 
+                alt={product.name}
+                className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500 group-hover:animate-speaker-vibrate"
+                onError={(e) => {
+                  e.currentTarget.src = carAudioLogo;
+                }}
+              />
+            </div>
+            
+            {/* Quick View Button */}
+            <button
               onClick={(e) => {
                 e.preventDefault();
-                handleAddToCart(true);
+                e.stopPropagation();
+                setIsQuickViewOpen(true);
               }}
-              disabled={!product.stock || product.stock <= 0 || addToCartMutation.isPending}
-              data-testid={`button-add-with-installation-${product.id}`}
+              className="absolute top-3 right-3 p-2.5 bg-black/70 hover:bg-[#d0a760] text-white hover:text-black transition-all duration-200 opacity-0 group-hover:opacity-100 backdrop-blur-sm"
+              title="Quick View"
+              data-testid={`quick-view-${product.id}`}
             >
-              <Wrench className="w-4 h-4" />
-            </Button>
+              <Eye className="w-4 h-4" />
+            </button>
+            
+            {discount && (
+              <Badge className="absolute top-3 left-3 bg-[#d0a760] text-black font-medium rounded-none" data-testid={`discount-badge-${product.id}`}>
+                -{discount}%
+              </Badge>
+            )}
+          </div>
+        </Link>
+
+        <CardContent className="p-5">
+          <Link href={`/product/${product.slug}`}>
+            <h3 className="text-white font-medium mb-2 group-hover:text-[#d0a760] transition-colors cursor-pointer line-clamp-2" data-testid={`product-title-${product.id}`}>
+              {product.name}
+            </h3>
+          </Link>
+
+          {product.shortDescription && (
+            <p className="text-white/50 text-sm mb-4 line-clamp-2" data-testid={`product-description-${product.id}`}>
+              {product.shortDescription}
+            </p>
           )}
-        </div>
-      </CardContent>
-    </Card>
+
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-baseline gap-2">
+              <span className="text-xl font-semibold text-white" data-testid={`product-price-${product.id}`}>
+                €{currentPrice.toFixed(0)}
+              </span>
+              {originalPrice && (
+                <span className="text-sm text-white/40 line-through">
+                  €{originalPrice.toFixed(0)}
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="flex gap-2">
+            <Button 
+              onClick={() => handleAddToCart(false)}
+              disabled={addToCartMutation.isPending}
+              size="sm"
+              className="flex-1 bg-white text-black hover:bg-[#d0a760] rounded-none text-xs"
+              data-testid={`add-to-cart-${product.id}`}
+            >
+              <ShoppingCart className="w-3 h-3 mr-1" />
+              Toevoegen
+            </Button>
+            
+            {product.installationPrice && (
+              <Button 
+                onClick={() => handleAddToCart(true)}
+                disabled={addToCartMutation.isPending}
+                size="sm"
+                variant="outline"
+                className="border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760] hover:text-black rounded-none"
+                title="Inclusief installatie"
+                data-testid={`add-with-install-${product.id}`}
+              >
+                <Wrench className="w-3 h-3" />
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Quick View Modal */}
+      <ProductQuickView 
+        product={product}
+        isOpen={isQuickViewOpen}
+        onClose={() => setIsQuickViewOpen(false)}
+      />
+    </>
   );
 }

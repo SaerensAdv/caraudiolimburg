@@ -388,9 +388,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Transition: White to Black */}
-      <SectionDivider variant="angle" fromColor="white" toColor="black" flip />
-
       {/* BMW CarPlay CTA - BLACK with Pulse */}
       <section className="py-24 md:py-32 bg-black relative overflow-hidden">
         <Parallax speed={0.2} className="absolute inset-0 opacity-20">

@@ -82,7 +82,7 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <Card className="bg-zinc-900 border-zinc-800 hover:border-[#d0a760]/30 transition-all duration-300 group overflow-hidden" data-testid={`product-card-${product.id}`}>
+    <Card className="bg-zinc-900 border-zinc-800 hover:border-[#d0a760]/30 transition-all duration-300 group overflow-hidden rounded-none" data-testid={`product-card-${product.id}`}>
       <Link href={`/product/${product.slug}`}>
         <div className="relative overflow-hidden">
           <div className="aspect-square bg-zinc-800 flex items-center justify-center p-8">
@@ -97,7 +97,7 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
           
           {discount && (
-            <Badge className="absolute top-3 left-3 bg-[#d0a760] text-black font-medium" data-testid={`discount-badge-${product.id}`}>
+            <Badge className="absolute top-3 left-3 bg-[#d0a760] text-black font-medium rounded-none" data-testid={`discount-badge-${product.id}`}>
               -{discount}%
             </Badge>
           )}
@@ -132,7 +132,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
         <div className="flex gap-2">
           <Button
-            className="flex-1 bg-[#d0a760] text-black hover:bg-[#d0a760]/90"
+            className="flex-1 bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"
             size="sm"
             onClick={(e) => {
               e.preventDefault();
@@ -148,7 +148,7 @@ export function ProductCard({ product }: ProductCardProps) {
             <Button
               variant="outline"
               size="sm"
-              className="border-zinc-700 text-white/70 hover:text-white hover:bg-zinc-800 hover:border-zinc-600"
+              className="border-zinc-700 text-white/70 hover:text-white hover:bg-zinc-800 hover:border-zinc-600 rounded-none"
               onClick={(e) => {
                 e.preventDefault();
                 handleAddToCart(true);

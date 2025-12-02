@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
-import { VehicleSelector } from "@/components/VehicleSelector";
 import { QuoteForm } from "@/components/QuoteForm";
 import { CartSidebar } from "@/components/CartSidebar";
 import { Button } from "@/components/ui/button";
@@ -11,25 +10,17 @@ import { Badge } from "@/components/ui/badge";
 import { 
   Award, 
   Wrench, 
-  Truck, 
   ShieldCheck, 
   Clock, 
-  Calendar,
   Phone,
   MapPin,
-  Mail,
   Volume2,
-  Users,
   Car,
-  Coffee,
   Star,
   User,
   Check,
-  CheckCircle,
   Settings,
-  ChevronRight,
-  ArrowRight,
-  Play
+  ArrowRight
 } from "lucide-react";
 import { useState } from "react";
 import type { Product, Category, Review } from "@shared/schema";
@@ -44,14 +35,9 @@ import promoVideo from "@assets/Verkorte-Video-Car-Audio-Limburg-Studio-1_175823
 
 export default function Home() {
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [showQuoteForm, setShowQuoteForm] = useState(false);
 
   const { data: featuredProducts, isLoading: isLoadingProducts } = useQuery({
     queryKey: ["/api/products", { featured: true, limit: 4 }],
-  });
-
-  const { data: brands } = useQuery({
-    queryKey: ["/api/brands"],
   });
 
   const { data: categories } = useQuery({
@@ -87,7 +73,7 @@ export default function Home() {
             <Link href="/products">
               <Button 
                 size="lg"
-                className="bg-white text-black hover:bg-white/90 rounded-full px-8 py-6 text-base font-medium transition-all duration-300"
+                className="bg-white text-black hover:bg-white/90 rounded-none px-8 py-6 text-base font-medium transition-all duration-300"
                 data-testid="button-begin-journey"
               >
                 Begin je journey
@@ -97,27 +83,27 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Services Section - Minimal */}
-      <section className="py-24 md:py-32 bg-black">
+      {/* Services Section - WHITE */}
+      <section className="py-24 md:py-32 bg-white">
         <div className="container px-8 md:px-16 lg:px-24 mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
             <div className="text-center md:text-left">
               <h3 className="text-[#d0a760] text-sm font-medium tracking-wider uppercase mb-4">Premium Merken</h3>
-              <p className="text-white/70 text-lg leading-relaxed">
+              <p className="text-zinc-600 text-lg leading-relaxed">
                 Alpine, Audison, Hertz en meer. Alleen de beste merken in car audio.
               </p>
             </div>
             
             <div className="text-center md:text-left">
               <h3 className="text-[#d0a760] text-sm font-medium tracking-wider uppercase mb-4">Expert Installatie</h3>
-              <p className="text-white/70 text-lg leading-relaxed">
+              <p className="text-zinc-600 text-lg leading-relaxed">
                 Gecertificeerde monteurs met 25+ jaar ervaring. OEM-look gegarandeerd.
               </p>
             </div>
             
             <div className="text-center md:text-left">
               <h3 className="text-[#d0a760] text-sm font-medium tracking-wider uppercase mb-4">Showroom Sittard</h3>
-              <p className="text-white/70 text-lg leading-relaxed">
+              <p className="text-zinc-600 text-lg leading-relaxed">
                 Bezoek onze studio voor persoonlijk advies en live demo's.
               </p>
             </div>
@@ -125,8 +111,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* About Section with Image */}
-      <section className="py-24 md:py-32 bg-zinc-950">
+      {/* About Section - BLACK */}
+      <section className="py-24 md:py-32 bg-black">
         <div className="container px-8 md:px-16 lg:px-24 mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
@@ -144,7 +130,7 @@ export default function Home() {
                 <Link href="/products">
                   <Button 
                     variant="outline" 
-                    className="border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760] hover:text-black rounded-full px-8 py-6"
+                    className="border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760] hover:text-black rounded-none px-8 py-6"
                     data-testid="button-view-products"
                   >
                     Bekijk Producten
@@ -154,7 +140,7 @@ export default function Home() {
                 <Link href="/contact">
                   <Button 
                     variant="ghost" 
-                    className="text-white/70 hover:text-white hover:bg-transparent rounded-full px-8 py-6"
+                    className="text-white/70 hover:text-white hover:bg-transparent rounded-none px-8 py-6"
                     data-testid="button-contact-us"
                   >
                     Neem Contact Op
@@ -163,7 +149,7 @@ export default function Home() {
               </div>
             </div>
             
-            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden">
+            <div className="relative aspect-[4/3] overflow-hidden">
               <img 
                 src={studioImage1} 
                 alt="Car Audio Limburg Studio" 
@@ -174,22 +160,22 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured Products - Clean Grid */}
-      <section className="py-24 md:py-32 bg-black">
+      {/* Featured Products - WHITE */}
+      <section className="py-24 md:py-32 bg-white">
         <div className="container px-8 md:px-16 lg:px-24 mx-auto">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-16">
             <div>
-              <h2 className="text-3xl md:text-4xl font-light text-white mb-4">
+              <h2 className="text-3xl md:text-4xl font-light text-black mb-4">
                 Uitgelichte Producten
               </h2>
-              <p className="text-white/60 text-lg">
+              <p className="text-zinc-600 text-lg">
                 Ontdek onze selectie van premium car audio systemen
               </p>
             </div>
             <Link href="/products">
               <Button 
                 variant="ghost" 
-                className="text-[#d0a760] hover:text-[#d0a760]/80 hover:bg-transparent mt-4 md:mt-0"
+                className="text-[#d0a760] hover:text-[#d0a760]/80 hover:bg-transparent mt-4 md:mt-0 rounded-none"
                 data-testid="button-all-products"
               >
                 Alle Producten
@@ -214,8 +200,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Video Section */}
-      <section className="py-24 md:py-32 bg-zinc-950">
+      {/* Video Section - BLACK */}
+      <section className="py-24 md:py-32 bg-black">
         <div className="container px-8 md:px-16 lg:px-24 mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-light text-white mb-4">
@@ -227,7 +213,7 @@ export default function Home() {
           </div>
           
           <div className="max-w-5xl mx-auto">
-            <div className="relative aspect-video rounded-2xl overflow-hidden">
+            <div className="relative aspect-video overflow-hidden">
               <video
                 className="w-full h-full object-cover"
                 autoPlay
@@ -246,40 +232,39 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Categories Section */}
-      <section className="py-24 md:py-32 bg-black">
+      {/* Categories Section - WHITE */}
+      <section className="py-24 md:py-32 bg-white">
         <div className="container px-8 md:px-16 lg:px-24 mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-light text-white mb-4">
+            <h2 className="text-3xl md:text-4xl font-light text-black mb-4">
               Shop per Categorie
             </h2>
-            <p className="text-white/60 text-lg">
+            <p className="text-zinc-600 text-lg">
               Vind precies wat je zoekt
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
             {(categories as Category[])?.map((category: Category) => (
               <Link key={category.id} href={`/products?category=${category.slug}`}>
                 <Card 
-                  className="group cursor-pointer bg-zinc-900 border-zinc-800 hover:border-[#d0a760]/50 transition-all duration-300"
+                  className="group cursor-pointer bg-zinc-100 border-zinc-200 hover:border-[#d0a760] transition-all duration-300 rounded-none"
                   data-testid={`category-card-${category.slug}`}
                 >
                   <CardContent className="p-6 text-center">
-                    <div className="w-14 h-14 mx-auto mb-4 bg-zinc-800 rounded-full flex items-center justify-center group-hover:bg-[#d0a760]/20 transition-colors">
+                    <div className="w-14 h-14 mx-auto mb-4 bg-white border border-zinc-200 flex items-center justify-center group-hover:border-[#d0a760] transition-colors">
                       {category.slug === 'multimedia-navigatie' && <Volume2 className="w-6 h-6 text-[#d0a760]" />}
                       {category.slug === 'speakers-subwoofers' && <Volume2 className="w-6 h-6 text-[#d0a760]" />}
                       {category.slug === 'versterkers-dsp' && <Settings className="w-6 h-6 text-[#d0a760]" />}
                       {category.slug === 'installatie-accessoires' && <Wrench className="w-6 h-6 text-[#d0a760]" />}
                       {category.slug === 'cameras-veiligheid' && <ShieldCheck className="w-6 h-6 text-[#d0a760]" />}
                       {category.slug === 'oem-upgrades' && <Car className="w-6 h-6 text-[#d0a760]" />}
-                      {category.slug === 'premium-audio' && <Star className="w-6 h-6 text-[#d0a760]" />}
-                      {!['multimedia-navigatie', 'speakers-subwoofers', 'versterkers-dsp', 'installatie-accessoires', 'cameras-veiligheid', 'oem-upgrades', 'premium-audio'].includes(category.slug) && 
+                      {!['multimedia-navigatie', 'speakers-subwoofers', 'versterkers-dsp', 'installatie-accessoires', 'cameras-veiligheid', 'oem-upgrades'].includes(category.slug) && 
                         <Volume2 className="w-6 h-6 text-[#d0a760]" />
                       }
                     </div>
                     
-                    <h3 className="font-medium text-white text-sm group-hover:text-[#d0a760] transition-colors">
+                    <h3 className="font-medium text-zinc-900 text-sm group-hover:text-[#d0a760] transition-colors">
                       {category.name}
                     </h3>
                   </CardContent>
@@ -290,8 +275,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* BMW CarPlay CTA */}
-      <section className="py-24 md:py-32 bg-gradient-to-br from-zinc-900 to-black relative overflow-hidden">
+      {/* BMW CarPlay CTA - BLACK */}
+      <section className="py-24 md:py-32 bg-black relative overflow-hidden">
         <div className="absolute inset-0 opacity-20">
           <img 
             src={studioImage2} 
@@ -301,7 +286,7 @@ export default function Home() {
         </div>
         <div className="container px-8 md:px-16 lg:px-24 mx-auto relative z-10">
           <div className="max-w-3xl mx-auto text-center">
-            <Badge className="mb-6 bg-[#d0a760]/20 text-[#d0a760] border-[#d0a760]/30 px-4 py-1.5 text-sm">
+            <Badge className="mb-6 bg-[#d0a760]/20 text-[#d0a760] border-[#d0a760]/30 px-4 py-1.5 text-sm rounded-none">
               BMW & MINI
             </Badge>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-white mb-6">
@@ -315,7 +300,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/apple-carplay-bmw">
                 <Button 
-                  className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-full px-8 py-6"
+                  className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none px-8 py-6"
                   data-testid="button-bmw-carplay"
                 >
                   Meer Informatie
@@ -324,7 +309,7 @@ export default function Home() {
               <Link href="/apple-carplay-bmw#offerte">
                 <Button 
                   variant="outline" 
-                  className="border-white/30 text-white hover:bg-white/10 rounded-full px-8 py-6"
+                  className="border-white/30 text-white hover:bg-white/10 rounded-none px-8 py-6"
                   data-testid="button-bmw-quote"
                 >
                   Vraag Offerte Aan
@@ -335,20 +320,20 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Installation Services */}
-      <section className="py-24 md:py-32 bg-zinc-950">
+      {/* Installation Services - WHITE */}
+      <section className="py-24 md:py-32 bg-white">
         <div className="container px-8 md:px-16 lg:px-24 mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="order-2 lg:order-1">
               <div className="grid grid-cols-2 gap-4">
-                <div className="aspect-[3/4] rounded-2xl overflow-hidden">
+                <div className="aspect-[3/4] overflow-hidden">
                   <img 
                     src={studioImage2} 
                     alt="Car Audio Limburg Installatie" 
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="aspect-[3/4] rounded-2xl overflow-hidden mt-8">
+                <div className="aspect-[3/4] overflow-hidden mt-8">
                   <img 
                     src={studioImage3} 
                     alt="Car Audio Limburg Werkplaats" 
@@ -359,7 +344,7 @@ export default function Home() {
             </div>
             
             <div className="order-1 lg:order-2">
-              <h2 className="text-3xl md:text-4xl font-light text-white mb-8">
+              <h2 className="text-3xl md:text-4xl font-light text-black mb-8">
                 Professionele
                 <br />
                 <span className="text-[#d0a760]">Installatie Service</span>
@@ -367,54 +352,54 @@ export default function Home() {
               
               <div className="space-y-6 mb-8">
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-[#d0a760]/20 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 bg-[#d0a760]/10 flex items-center justify-center flex-shrink-0">
                     <Clock className="w-5 h-5 text-[#d0a760]" />
                   </div>
                   <div>
-                    <h3 className="text-white font-medium mb-1">Snelle Montage</h3>
-                    <p className="text-white/60">Gemiddeld binnen 2-4 uur klaar</p>
+                    <h3 className="text-zinc-900 font-medium mb-1">Snelle Montage</h3>
+                    <p className="text-zinc-600">Gemiddeld binnen 2-4 uur klaar</p>
                   </div>
                 </div>
                 
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-[#d0a760]/20 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 bg-[#d0a760]/10 flex items-center justify-center flex-shrink-0">
                     <ShieldCheck className="w-5 h-5 text-[#d0a760]" />
                   </div>
                   <div>
-                    <h3 className="text-white font-medium mb-1">2 Jaar Garantie</h3>
-                    <p className="text-white/60">Op alle installaties</p>
+                    <h3 className="text-zinc-900 font-medium mb-1">2 Jaar Garantie</h3>
+                    <p className="text-zinc-600">Op alle installaties</p>
                   </div>
                 </div>
                 
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-[#d0a760]/20 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 bg-[#d0a760]/10 flex items-center justify-center flex-shrink-0">
                     <Award className="w-5 h-5 text-[#d0a760]" />
                   </div>
                   <div>
-                    <h3 className="text-white font-medium mb-1">OEM-Look</h3>
-                    <p className="text-white/60">Perfecte integratie met originele styling</p>
+                    <h3 className="text-zinc-900 font-medium mb-1">OEM-Look</h3>
+                    <p className="text-zinc-600">Perfecte integratie met originele styling</p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-zinc-900 rounded-2xl p-6 border border-zinc-800">
-                <h4 className="text-white font-medium mb-4">Populaire Installaties</h4>
+              <div className="bg-zinc-100 p-6 border border-zinc-200">
+                <h4 className="text-zinc-900 font-medium mb-4">Populaire Installaties</h4>
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-sm">
-                    <span className="text-white/60">Autoradio installatie</span>
-                    <span className="text-[#d0a760]">vanaf €89</span>
+                    <span className="text-zinc-600">Autoradio installatie</span>
+                    <span className="text-[#d0a760] font-medium">vanaf €89</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-white/60">Speaker upgrade</span>
-                    <span className="text-[#d0a760]">vanaf €129</span>
+                    <span className="text-zinc-600">Speaker upgrade</span>
+                    <span className="text-[#d0a760] font-medium">vanaf €129</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-white/60">Complete audio upgrade</span>
-                    <span className="text-[#d0a760]">vanaf €299</span>
+                    <span className="text-zinc-600">Complete audio upgrade</span>
+                    <span className="text-[#d0a760] font-medium">vanaf €299</span>
                   </div>
                 </div>
                 <Link href="/booking">
-                  <Button className="w-full bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-full" data-testid="button-book-installation">
+                  <Button className="w-full bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none" data-testid="button-book-installation">
                     Installatie Boeken
                   </Button>
                 </Link>
@@ -424,11 +409,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Quote Section */}
+      {/* Quote Section - BLACK */}
       <section className="py-24 md:py-32 bg-black">
         <div className="container px-8 md:px-16 lg:px-24 mx-auto">
           <div className="max-w-4xl mx-auto">
-            <div className="bg-gradient-to-br from-zinc-900 to-zinc-950 rounded-3xl p-8 md:p-12 border border-zinc-800">
+            <div className="bg-zinc-900 p-8 md:p-12 border border-zinc-800">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                 <div>
                   <h2 className="text-3xl md:text-4xl font-light text-white mb-6">
@@ -462,36 +447,36 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-24 md:py-32 bg-zinc-950">
+      {/* Testimonials - WHITE */}
+      <section className="py-24 md:py-32 bg-white">
         <div className="container px-8 md:px-16 lg:px-24 mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-light text-white mb-4">
+            <h2 className="text-3xl md:text-4xl font-light text-black mb-4">
               Wat Klanten Zeggen
             </h2>
-            <p className="text-white/60 text-lg">
+            <p className="text-zinc-600 text-lg">
               Meer dan 500 tevreden klanten
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {(reviews as Review[])?.slice(0, 3).map((review: Review) => (
-              <Card key={review.id} className="bg-zinc-900 border-zinc-800" data-testid={`testimonial-${review.id}`}>
+              <Card key={review.id} className="bg-zinc-100 border-zinc-200 rounded-none" data-testid={`testimonial-${review.id}`}>
                 <CardContent className="p-6">
                   <div className="flex items-center mb-4">
                     {[...Array(review.rating)].map((_, i) => (
                       <Star key={i} className="w-4 h-4 text-[#d0a760] fill-current" />
                     ))}
                   </div>
-                  <p className="text-white/80 mb-6 leading-relaxed">
+                  <p className="text-zinc-700 mb-6 leading-relaxed">
                     "{review.content}"
                   </p>
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-[#d0a760]/20 rounded-full flex items-center justify-center">
+                    <div className="w-10 h-10 bg-[#d0a760]/20 flex items-center justify-center">
                       <User className="w-5 h-5 text-[#d0a760]" />
                     </div>
                     <div>
-                      <p className="text-white font-medium text-sm">{review.customerName}</p>
+                      <p className="text-zinc-900 font-medium text-sm">{review.customerName}</p>
                       {review.isVerified && (
                         <p className="text-[#d0a760] text-xs">Geverifieerd</p>
                       )}
@@ -500,7 +485,7 @@ export default function Home() {
                 </CardContent>
               </Card>
             )) || (
-              <div className="col-span-3 text-center text-white/40">
+              <div className="col-span-3 text-center text-zinc-400">
                 Reviews worden geladen...
               </div>
             )}
@@ -508,7 +493,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Showroom CTA */}
+      {/* Showroom CTA - BLACK */}
       <section className="py-24 md:py-32 bg-black">
         <div className="container px-8 md:px-16 lg:px-24 mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -541,7 +526,7 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/contact">
                   <Button 
-                    className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-full px-8 py-6"
+                    className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none px-8 py-6"
                     data-testid="button-plan-visit"
                   >
                     Plan Je Bezoek
@@ -550,7 +535,7 @@ export default function Home() {
                 <a href="tel:0852733625">
                   <Button 
                     variant="outline" 
-                    className="border-white/30 text-white hover:bg-white/10 rounded-full px-8 py-6"
+                    className="border-white/30 text-white hover:bg-white/10 rounded-none px-8 py-6"
                     data-testid="button-call-now"
                   >
                     <Phone className="w-4 h-4 mr-2" />
@@ -560,7 +545,7 @@ export default function Home() {
               </div>
             </div>
             
-            <div className="relative aspect-square rounded-2xl overflow-hidden">
+            <div className="relative aspect-square overflow-hidden">
               <img 
                 src={studioImage1} 
                 alt="Car Audio Limburg Showroom" 

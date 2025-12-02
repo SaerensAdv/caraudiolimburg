@@ -71,13 +71,13 @@ export function QuoteForm() {
           <Input
             {...register("firstName")}
             placeholder="Voornaam"
-            className="bg-zinc-800 border-zinc-700 text-white placeholder:text-white/40 focus:border-[#d0a760]"
+            className="bg-zinc-800 border-zinc-700 text-white placeholder:text-white/40 focus:border-[#d0a760] rounded-none"
             data-testid="input-first-name"
           />
           <Input
             {...register("lastName")}
             placeholder="Achternaam"
-            className="bg-zinc-800 border-zinc-700 text-white placeholder:text-white/40 focus:border-[#d0a760]"
+            className="bg-zinc-800 border-zinc-700 text-white placeholder:text-white/40 focus:border-[#d0a760] rounded-none"
             data-testid="input-last-name"
           />
         </div>
@@ -86,7 +86,7 @@ export function QuoteForm() {
           {...register("email")}
           type="email"
           placeholder="E-mailadres"
-          className="bg-zinc-800 border-zinc-700 text-white placeholder:text-white/40 focus:border-[#d0a760]"
+          className="bg-zinc-800 border-zinc-700 text-white placeholder:text-white/40 focus:border-[#d0a760] rounded-none"
           data-testid="input-email"
         />
         
@@ -94,7 +94,7 @@ export function QuoteForm() {
           {...register("phone")}
           type="tel"
           placeholder="Telefoonnummer"
-          className="bg-zinc-800 border-zinc-700 text-white placeholder:text-white/40 focus:border-[#d0a760]"
+          className="bg-zinc-800 border-zinc-700 text-white placeholder:text-white/40 focus:border-[#d0a760] rounded-none"
           data-testid="input-phone"
         />
         
@@ -102,20 +102,20 @@ export function QuoteForm() {
           <Input
             {...register("vehicleMake")}
             placeholder="Merk"
-            className="bg-zinc-800 border-zinc-700 text-white placeholder:text-white/40 focus:border-[#d0a760]"
+            className="bg-zinc-800 border-zinc-700 text-white placeholder:text-white/40 focus:border-[#d0a760] rounded-none"
             data-testid="input-vehicle-make"
           />
           <Input
             {...register("vehicleModel")}
             placeholder="Model"
-            className="bg-zinc-800 border-zinc-700 text-white placeholder:text-white/40 focus:border-[#d0a760]"
+            className="bg-zinc-800 border-zinc-700 text-white placeholder:text-white/40 focus:border-[#d0a760] rounded-none"
             data-testid="input-vehicle-model"
           />
           <Select onValueChange={(value) => setValue("vehicleYear", parseInt(value))}>
-            <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white focus:border-[#d0a760]" data-testid="select-vehicle-year">
+            <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white focus:border-[#d0a760] rounded-none" data-testid="select-vehicle-year">
               <SelectValue placeholder="Bouwjaar" />
             </SelectTrigger>
-            <SelectContent className="bg-zinc-800 border-zinc-700">
+            <SelectContent className="bg-zinc-800 border-zinc-700 rounded-none">
               {years.map((year) => (
                 <SelectItem key={year} value={year.toString()} className="text-white hover:bg-zinc-700">
                   {year}
@@ -129,13 +129,13 @@ export function QuoteForm() {
           {...register("description")}
           placeholder="Beschrijf je wensen (optioneel)"
           rows={3}
-          className="bg-zinc-800 border-zinc-700 text-white placeholder:text-white/40 focus:border-[#d0a760]"
+          className="bg-zinc-800 border-zinc-700 text-white placeholder:text-white/40 focus:border-[#d0a760] rounded-none"
           data-testid="textarea-description"
         />
         
         <Button 
           type="submit" 
-          className="w-full bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-full" 
+          className="w-full bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none" 
           size="lg"
           disabled={createQuoteMutation.isPending}
           data-testid="button-submit-quote"

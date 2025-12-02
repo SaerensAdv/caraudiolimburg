@@ -61,25 +61,25 @@ export function VolumeSliderSkeleton({ className }: { className?: string }) {
 
 export function ProductAudioSkeleton({ className }: { className?: string }) {
   return (
-    <div className={cn("bg-zinc-900 rounded-2xl p-5 border border-zinc-800 animate-pulse", className)} data-testid="product-audio-skeleton">
-      <div className="aspect-square bg-zinc-800 rounded-xl mb-4 relative overflow-hidden">
+    <div className={cn("bg-zinc-900 p-5 border border-zinc-800 animate-pulse", className)} data-testid="product-audio-skeleton">
+      <div className="aspect-square bg-zinc-800 mb-4 relative overflow-hidden">
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-16 h-16 border-4 border-[#d0a760]/20 rounded-full flex items-center justify-center">
-            <div className="w-8 h-8 bg-[#d0a760]/30 rounded-full animate-ping" />
+          <div className="w-16 h-16 border-4 border-[#d0a760]/20 flex items-center justify-center">
+            <div className="w-8 h-8 bg-[#d0a760]/30 animate-ping" />
           </div>
         </div>
       </div>
       
-      <div className="h-5 bg-zinc-800 rounded-md mb-3 animate-pulse" />
-      <div className="h-4 w-3/4 bg-zinc-800/60 rounded-md mb-4 animate-pulse" />
+      <div className="h-5 bg-zinc-800 mb-3 animate-pulse" />
+      <div className="h-4 w-3/4 bg-zinc-800/60 mb-4 animate-pulse" />
       
       <div className="flex items-center justify-between mb-4">
-        <div className="h-6 w-20 bg-[#d0a760]/20 rounded-md animate-pulse" />
+        <div className="h-6 w-20 bg-[#d0a760]/20 animate-pulse" />
       </div>
       
       <div className="flex gap-2">
-        <div className="flex-1 h-9 bg-[#d0a760]/30 rounded-lg animate-pulse" />
-        <div className="w-9 h-9 bg-zinc-800 rounded-lg animate-pulse" />
+        <div className="flex-1 h-9 bg-[#d0a760]/30 animate-pulse" />
+        <div className="w-9 h-9 bg-zinc-800 animate-pulse" />
       </div>
     </div>
   );
@@ -87,18 +87,18 @@ export function ProductAudioSkeleton({ className }: { className?: string }) {
 
 export function CategoryAudioSkeleton({ className }: { className?: string }) {
   return (
-    <div className={cn("bg-zinc-900 border border-zinc-800 rounded-xl p-6 animate-pulse", className)}>
-      <div className="w-14 h-14 bg-zinc-800 rounded-full mb-4 mx-auto" />
-      <div className="h-4 bg-zinc-800 rounded-md animate-pulse" />
+    <div className={cn("bg-zinc-900 border border-zinc-800 p-6 animate-pulse", className)}>
+      <div className="w-14 h-14 bg-zinc-800 mb-4 mx-auto" />
+      <div className="h-4 bg-zinc-800 animate-pulse" />
     </div>
   );
 }
 
 export function BrandAudioSkeleton({ className }: { className?: string }) {
   return (
-    <div className={cn("bg-zinc-900 border border-zinc-800 rounded-xl p-6 text-center animate-pulse", className)}>
-      <div className="w-16 h-16 bg-zinc-800 rounded-xl mx-auto mb-3" />
-      <div className="h-4 bg-zinc-800 rounded-md animate-pulse" />
+    <div className={cn("bg-zinc-900 border border-zinc-800 p-6 text-center animate-pulse", className)}>
+      <div className="w-16 h-16 bg-zinc-800 mx-auto mb-3" />
+      <div className="h-4 bg-zinc-800 animate-pulse" />
     </div>
   );
 }

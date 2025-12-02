@@ -86,13 +86,13 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
           <Button 
             variant="ghost" 
             size="sm" 
-            className={`p-2 relative ${isTransparent ? 'text-white hover:text-white hover:bg-white/10' : ''}`}
+            className={`p-2 relative rounded-none ${isTransparent ? 'text-white hover:text-white hover:bg-white/10' : ''}`}
             onClick={onCartOpen}
             data-testid="button-cart"
           >
             <ShoppingCart className="w-5 h-5" />
             {cartItemCount > 0 && (
-              <Badge className="absolute -top-1 -right-1 bg-[#d0a760] text-black text-xs w-5 h-5 flex items-center justify-center p-0" data-testid="badge-cart-count">
+              <Badge className="absolute -top-1 -right-1 bg-[#d0a760] text-black text-xs w-5 h-5 flex items-center justify-center p-0 rounded-none" data-testid="badge-cart-count">
                 {cartItemCount}
               </Badge>
             )}
@@ -101,14 +101,14 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
           {isAuthenticated ? (
             <div className="flex items-center space-x-2">
               <Link href="/my-account">
-                <Button variant="ghost" size="sm" className={isTransparent ? 'text-white hover:text-white hover:bg-white/10' : ''} data-testid="button-my-account">
+                <Button variant="ghost" size="sm" className={`rounded-none ${isTransparent ? 'text-white hover:text-white hover:bg-white/10' : ''}`} data-testid="button-my-account">
                   <User className="w-4 h-4 mr-2" />
                   Account
                 </Button>
               </Link>
               {user?.role === 'admin' && (
                 <Link href="/admin">
-                  <Button variant="ghost" size="sm" className={isTransparent ? 'text-white hover:text-white hover:bg-white/10' : ''} data-testid="button-admin">
+                  <Button variant="ghost" size="sm" className={`rounded-none ${isTransparent ? 'text-white hover:text-white hover:bg-white/10' : ''}`} data-testid="button-admin">
                     Admin
                   </Button>
                 </Link>
@@ -116,7 +116,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className={`p-2 ${isTransparent ? 'text-white hover:text-white hover:bg-white/10' : ''}`}
+                className={`p-2 rounded-none ${isTransparent ? 'text-white hover:text-white hover:bg-white/10' : ''}`}
                 onClick={() => window.location.href = '/api/auth/logout'}
                 data-testid="button-logout"
               >
@@ -127,7 +127,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
             <Button 
               variant={isTransparent ? "ghost" : "outline"}
               size="sm"
-              className={isTransparent ? 'text-white hover:text-white hover:bg-white/10 border border-white/30' : ''}
+              className={`rounded-none ${isTransparent ? 'text-white hover:text-white hover:bg-white/10 border border-white/30' : ''}`}
               onClick={() => window.location.href = '/login'}
               data-testid="button-login"
             >
@@ -138,7 +138,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
           <Button 
             variant="ghost" 
             size="sm" 
-            className={`md:hidden p-2 ${isTransparent ? 'text-white hover:text-white hover:bg-white/10' : ''}`}
+            className={`md:hidden p-2 rounded-none ${isTransparent ? 'text-white hover:text-white hover:bg-white/10' : ''}`}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             data-testid="button-mobile-menu"
           >
@@ -153,7 +153,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
           <nav className="container px-4 py-6 space-y-3">
             <Link 
               href="/products" 
-              className={`flex items-center ${isTransparent ? 'text-white hover:text-[#d0a760]' : 'text-card-foreground hover:text-primary'} transition-colors font-medium py-2 px-3 rounded-lg hover:bg-white/5`} 
+              className={`flex items-center ${isTransparent ? 'text-white hover:text-[#d0a760]' : 'text-card-foreground hover:text-primary'} transition-colors font-medium py-2 px-3 hover:bg-white/5`} 
               data-testid="mobile-nav-products"
               onClick={() => setIsMenuOpen(false)}
             >
@@ -161,7 +161,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
             </Link>
             <Link 
               href="/apple-carplay-bmw" 
-              className={`flex items-center ${isTransparent ? 'text-[#d0a760]' : 'text-primary'} transition-colors font-semibold py-2 px-3 rounded-lg ${isTransparent ? 'bg-[#d0a760]/10' : 'bg-primary/10'}`} 
+              className={`flex items-center ${isTransparent ? 'text-[#d0a760]' : 'text-primary'} transition-colors font-semibold py-2 px-3 ${isTransparent ? 'bg-[#d0a760]/10' : 'bg-primary/10'}`} 
               data-testid="mobile-nav-carplay"
               onClick={() => setIsMenuOpen(false)}
             >
@@ -169,7 +169,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
             </Link>
             <Link 
               href="/about" 
-              className={`flex items-center ${isTransparent ? 'text-white hover:text-[#d0a760]' : 'text-card-foreground hover:text-primary'} transition-colors font-medium py-2 px-3 rounded-lg hover:bg-white/5`} 
+              className={`flex items-center ${isTransparent ? 'text-white hover:text-[#d0a760]' : 'text-card-foreground hover:text-primary'} transition-colors font-medium py-2 px-3 hover:bg-white/5`} 
               data-testid="mobile-nav-about"
               onClick={() => setIsMenuOpen(false)}
             >
@@ -177,7 +177,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
             </Link>
             <Link 
               href="/contact" 
-              className={`flex items-center ${isTransparent ? 'text-white hover:text-[#d0a760]' : 'text-card-foreground hover:text-primary'} transition-colors font-medium py-2 px-3 rounded-lg hover:bg-white/5`} 
+              className={`flex items-center ${isTransparent ? 'text-white hover:text-[#d0a760]' : 'text-card-foreground hover:text-primary'} transition-colors font-medium py-2 px-3 hover:bg-white/5`} 
               data-testid="mobile-nav-contact"
               onClick={() => setIsMenuOpen(false)}
             >
@@ -189,7 +189,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
                 <div className="space-y-2">
                   <Link 
                     href="/my-account" 
-                    className={`flex items-center ${isTransparent ? 'text-white hover:text-[#d0a760]' : 'text-card-foreground hover:text-primary'} transition-colors font-medium py-2 px-3 rounded-lg hover:bg-white/5`}
+                    className={`flex items-center ${isTransparent ? 'text-white hover:text-[#d0a760]' : 'text-card-foreground hover:text-primary'} transition-colors font-medium py-2 px-3 hover:bg-white/5`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <User className="w-4 h-4 mr-2" />
@@ -198,14 +198,14 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
                   {user?.role === 'admin' && (
                     <Link 
                       href="/admin" 
-                      className={`flex items-center ${isTransparent ? 'text-white hover:text-[#d0a760]' : 'text-card-foreground hover:text-primary'} transition-colors font-medium py-2 px-3 rounded-lg hover:bg-white/5`}
+                      className={`flex items-center ${isTransparent ? 'text-white hover:text-[#d0a760]' : 'text-card-foreground hover:text-primary'} transition-colors font-medium py-2 px-3 hover:bg-white/5`}
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Admin
                     </Link>
                   )}
                   <button 
-                    className={`flex items-center ${isTransparent ? 'text-white hover:text-[#d0a760]' : 'text-card-foreground hover:text-primary'} transition-colors font-medium py-2 px-3 rounded-lg hover:bg-white/5 w-full text-left`}
+                    className={`flex items-center ${isTransparent ? 'text-white hover:text-[#d0a760]' : 'text-card-foreground hover:text-primary'} transition-colors font-medium py-2 px-3 hover:bg-white/5 w-full text-left`}
                     onClick={() => {
                       window.location.href = '/api/auth/logout';
                       setIsMenuOpen(false);
@@ -218,7 +218,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
               ) : (
                 <Button 
                   variant="outline" 
-                  className={`w-full ${isTransparent ? 'border-white/30 text-white hover:bg-white/10' : ''}`}
+                  className={`w-full rounded-none ${isTransparent ? 'border-white/30 text-white hover:bg-white/10' : ''}`}
                   onClick={() => {
                     window.location.href = '/login';
                     setIsMenuOpen(false);

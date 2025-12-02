@@ -304,9 +304,8 @@ export default function Home() {
       {/* Transition: White to Black */}
       <SectionDivider variant="wave" fromColor="white" toColor="black" />
 
-      {/* Video Section - BLACK with Audio Wave */}
+      {/* Video Section - BLACK */}
       <section className="py-24 md:py-32 bg-black relative overflow-hidden">
-        <AudioWaveBackground className="opacity-50" />
         <div className="container px-8 md:px-16 lg:px-24 mx-auto relative z-10">
           <ScrollReveal>
             <div className="text-center mb-16">

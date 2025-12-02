@@ -182,15 +182,15 @@ export function SectionDivider({
   const bgTo = toColor === "black" ? "#000000" : "#ffffff";
 
   const paths = {
-    wave: "M0,64 C320,96 480,32 640,64 C800,96 960,32 1120,64 C1280,96 1440,64 1440,64 L1440,128 L0,128 Z",
-    angle: "M0,128 L1440,0 L1440,128 Z",
-    curve: "M0,128 Q720,0 1440,128 L1440,128 L0,128 Z",
-    steps: "M0,96 L360,96 L360,64 L720,64 L720,32 L1080,32 L1080,0 L1440,0 L1440,128 L0,128 Z"
+    wave: "M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,80 L0,80 Z",
+    angle: "M0,80 L1440,20 L1440,80 Z",
+    curve: "M0,80 Q720,0 1440,80 L1440,80 L0,80 Z",
+    steps: "M0,60 L360,60 L360,40 L720,40 L720,20 L1080,20 L1080,0 L1440,0 L1440,80 L0,80 Z"
   };
 
   return (
     <div 
-      className="relative h-24 -mt-px -mb-px overflow-hidden"
+      className="relative h-16 -mt-px -mb-px overflow-hidden z-20"
       style={{ 
         backgroundColor: bgFrom,
         transform: flip ? "scaleY(-1)" : "none"
@@ -198,7 +198,7 @@ export function SectionDivider({
     >
       <svg
         className="absolute bottom-0 left-0 w-full h-full"
-        viewBox="0 0 1440 128"
+        viewBox="0 0 1440 80"
         preserveAspectRatio="none"
       >
         <path d={paths[variant]} fill={bgTo} />

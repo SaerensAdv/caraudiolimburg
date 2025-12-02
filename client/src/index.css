@@ -289,16 +289,27 @@
 /* Audio Pulse Effects */
 @keyframes bass-pulse {
   0%, 100% {
-    opacity: 0.3;
-    transform: scale(1);
+    opacity: 1;
+    transform: scale(0.95);
   }
   50% {
-    opacity: 0.6;
-    transform: scale(1.02);
+    opacity: 1;
+    transform: scale(1.05);
   }
 }
 
-@keyframes wave-slow {
+@keyframes bass-pulse-slow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes wave-flow {
   0% {
     transform: translateX(0);
   }
@@ -307,12 +318,12 @@
   }
 }
 
-@keyframes wave-medium {
+@keyframes wave-flow-reverse {
   0% {
-    transform: translateX(0);
+    transform: translateX(-50%);
   }
   100% {
-    transform: translateX(-30%);
+    transform: translateX(0);
   }
 }
 
@@ -351,26 +362,33 @@
 
 @keyframes speaker-vibrate {
   0%, 100% {
-    transform: translateY(0);
+    transform: scale(1.05);
   }
   25% {
-    transform: translateY(-1px);
+    transform: scale(1.05) translateY(-1px) translateX(0.5px);
+  }
+  50% {
+    transform: scale(1.05) translateY(0.5px);
   }
   75% {
-    transform: translateY(1px);
+    transform: scale(1.05) translateY(0.5px) translateX(-0.5px);
   }
 }
 
 .animate-bass-pulse {
-  animation: bass-pulse 2s ease-in-out infinite;
+  animation: bass-pulse 2.5s ease-in-out infinite;
 }
 
-.animate-wave-slow {
-  animation: wave-slow 20s linear infinite;
+.animate-bass-pulse-slow {
+  animation: bass-pulse-slow 3.5s ease-in-out infinite;
 }
 
-.animate-wave-medium {
-  animation: wave-medium 15s linear infinite;
+.animate-wave-flow {
+  animation: wave-flow 15s linear infinite;
+}
+
+.animate-wave-flow-reverse {
+  animation: wave-flow-reverse 12s linear infinite;
 }
 
 .animate-speaker-ring-1 {
@@ -396,11 +414,11 @@
 }
 
 .animate-speaker-vibrate {
-  animation: speaker-vibrate 0.1s ease-in-out infinite;
+  animation: speaker-vibrate 0.15s ease-in-out infinite;
 }
 
 .group:hover .group-hover\:animate-speaker-vibrate {
-  animation: speaker-vibrate 0.1s ease-in-out infinite;
+  animation: speaker-vibrate 0.15s ease-in-out infinite;
 }
 
 /* Radial gradient for bass pulse */

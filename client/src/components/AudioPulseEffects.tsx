@@ -28,29 +28,42 @@ export function BassPulse({ className = "" }: { className?: string }) {
 
 export function AudioWaveBackground({ className = "" }: { className?: string }) {
   return (
-    <div className={`absolute bottom-16 left-0 right-0 h-24 overflow-hidden pointer-events-none z-10 ${className}`}>
+    <div className={`absolute bottom-0 left-0 right-0 h-40 overflow-hidden pointer-events-none ${className}`}>
       {/* Wave 1 - Front */}
       <svg
-        className="absolute bottom-0 left-0 w-[200%] h-16 animate-wave-flow"
-        viewBox="0 0 2400 60"
+        className="absolute bottom-0 left-0 w-[200%] h-24 animate-wave-flow"
+        viewBox="0 0 2400 100"
         preserveAspectRatio="none"
       >
         <path
-          d="M0,30 Q150,10 300,30 T600,30 T900,30 T1200,30 T1500,30 T1800,30 T2100,30 T2400,30 L2400,60 L0,60 Z"
-          fill="rgba(208,167,96,0.2)"
+          d="M0,50 Q150,20 300,50 T600,50 T900,50 T1200,50 T1500,50 T1800,50 T2100,50 T2400,50 L2400,100 L0,100 Z"
+          fill="rgba(208,167,96,0.25)"
         />
       </svg>
       
       {/* Wave 2 - Middle */}
       <svg
-        className="absolute bottom-0 left-0 w-[200%] h-12 animate-wave-flow-reverse"
-        viewBox="0 0 2400 50"
+        className="absolute bottom-0 left-0 w-[200%] h-20 animate-wave-flow-reverse"
+        viewBox="0 0 2400 80"
         preserveAspectRatio="none"
         style={{ animationDuration: '12s' }}
       >
         <path
-          d="M0,25 Q100,5 200,25 T400,25 T600,25 T800,25 T1000,25 T1200,25 T1400,25 T1600,25 T1800,25 T2000,25 T2200,25 T2400,25 L2400,50 L0,50 Z"
-          fill="rgba(208,167,96,0.12)"
+          d="M0,40 Q100,10 200,40 T400,40 T600,40 T800,40 T1000,40 T1200,40 T1400,40 T1600,40 T1800,40 T2000,40 T2200,40 T2400,40 L2400,80 L0,80 Z"
+          fill="rgba(208,167,96,0.15)"
+        />
+      </svg>
+      
+      {/* Wave 3 - Back */}
+      <svg
+        className="absolute bottom-0 left-0 w-[200%] h-16 animate-wave-flow"
+        viewBox="0 0 2400 60"
+        preserveAspectRatio="none"
+        style={{ animationDuration: '18s' }}
+      >
+        <path
+          d="M0,30 Q200,5 400,30 T800,30 T1200,30 T1600,30 T2000,30 T2400,30 L2400,60 L0,60 Z"
+          fill="rgba(208,167,96,0.08)"
         />
       </svg>
     </div>

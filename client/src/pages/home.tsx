@@ -171,9 +171,6 @@ export default function Home() {
         </section>
       )}
 
-      {/* Transition: Black to White */}
-      <SectionDivider variant="wave" fromColor="black" toColor="white" />
-
       {/* Services Section - WHITE */}
       <section className="py-24 md:py-32 bg-white">
         <div className="container px-8 md:px-16 lg:px-24 mx-auto">

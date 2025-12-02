@@ -4,6 +4,8 @@ import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
 import { QuoteForm } from "@/components/QuoteForm";
 import { CartSidebar } from "@/components/CartSidebar";
+import { VehicleHeroSelector } from "@/components/VehicleHeroSelector";
+import { AudioWaveBackground, BassPulse } from "@/components/AudioPulseEffects";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -20,9 +22,10 @@ import {
   User,
   Check,
   Settings,
-  ArrowRight
+  ArrowRight,
+  Sparkles
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import type { Product, Category, Review } from "@shared/schema";
 import { ProductAudioSkeleton } from "@/components/AudioSkeletons";
 import { Link } from "wouter";
@@ -35,6 +38,8 @@ import promoVideo from "@assets/Verkorte-Video-Car-Audio-Limburg-Studio-1_175823
 
 export default function Home() {
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [selectedVehicle, setSelectedVehicle] = useState<{make: string; model: string; year: number} | null>(null);
+  const recommendationsRef = useRef<HTMLDivElement>(null);
 
   const { data: featuredProducts, isLoading: isLoadingProducts } = useQuery({
     queryKey: ["/api/products", { featured: true, limit: 4 }],
@@ -48,11 +53,18 @@ export default function Home() {
     queryKey: ["/api/reviews", { isPublished: true, isFeatured: true, limit: 6 }],
   });
 
+  const handleVehicleSelect = (make: string, model: string, year: number) => {
+    setSelectedVehicle({ make, model, year });
+    setTimeout(() => {
+      recommendationsRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
+
   return (
     <div className="min-h-screen bg-black">
       <Header onCartOpen={() => setIsCartOpen(true)} variant="transparent" />
       
-      {/* Hero Section - Full Screen Premium */}
+      {/* Hero Section - Full Screen Premium with Vehicle Selector */}
       <section className="relative h-screen w-full overflow-hidden">
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -60,28 +72,92 @@ export default function Home() {
             backgroundImage: `url(${heroImage})`
           }}
         />
-        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 bg-black/50" />
+        
+        {/* Subtle Bass Pulse Effect */}
+        <BassPulse />
         
         <div className="relative z-10 h-full flex flex-col justify-center px-8 md:px-16 lg:px-24">
-          <div className="max-w-2xl">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-white leading-tight mb-8">
+          <div className="max-w-3xl">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-white leading-tight mb-6">
               Til je car audio naar
               <br />
               <span className="font-normal">het volgende niveau</span>
             </h1>
             
-            <Link href="/products">
-              <Button 
-                size="lg"
-                className="bg-white text-black hover:bg-white/90 rounded-none px-8 py-6 text-base font-medium transition-all duration-300"
-                data-testid="button-begin-journey"
-              >
-                Begin je journey
-              </Button>
-            </Link>
+            <p className="text-white/70 text-lg mb-10 max-w-xl">
+              Premium audio systemen met professionele installatie. 
+              Ontdek wat mogelijk is voor jouw auto.
+            </p>
+
+            {/* Vehicle Selector */}
+            <VehicleHeroSelector onVehicleSelect={handleVehicleSelect} />
+            
+            <div className="mt-8 flex items-center gap-6">
+              <Link href="/products">
+                <Button 
+                  variant="ghost"
+                  className="text-white/70 hover:text-white hover:bg-transparent rounded-none px-0 underline-offset-4 hover:underline"
+                  data-testid="button-browse-all"
+                >
+                  Of bekijk alle producten
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
+
+        {/* Audio Wave at bottom of hero */}
+        <AudioWaveBackground />
       </section>
+
+      {/* Vehicle Recommendations Section - Shows after selection */}
+      {selectedVehicle && (
+        <section 
+          ref={recommendationsRef}
+          id="vehicle-recommendations" 
+          className="py-24 md:py-32 bg-zinc-950 relative overflow-hidden"
+        >
+          <BassPulse className="opacity-50" />
+          <div className="container px-8 md:px-16 lg:px-24 mx-auto relative z-10">
+            <div className="flex items-center gap-3 mb-4">
+              <Sparkles className="w-5 h-5 text-[#d0a760]" />
+              <span className="text-[#d0a760] text-sm font-medium tracking-wider uppercase">Aanbevelingen voor jou</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-light text-white mb-4">
+              Upgrades voor je {selectedVehicle.make} {selectedVehicle.model}
+            </h2>
+            <p className="text-white/60 text-lg mb-12">
+              Op basis van jouw {selectedVehicle.year} {selectedVehicle.make} {selectedVehicle.model} raden wij deze producten aan
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+              {isLoadingProducts ? (
+                [...Array(4)].map((_, i) => (
+                  <ProductAudioSkeleton key={i} />
+                ))
+              ) : (
+                (featuredProducts as Product[])?.map((product: Product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))
+              )}
+            </div>
+
+            <div className="mt-12 text-center">
+              <Link href="/products">
+                <Button 
+                  className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none px-8 py-6"
+                  data-testid="button-view-all-compatible"
+                >
+                  Bekijk alle compatibele producten
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Services Section - WHITE */}
       <section className="py-24 md:py-32 bg-white">
@@ -111,9 +187,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* About Section - BLACK */}
-      <section className="py-24 md:py-32 bg-black">
-        <div className="container px-8 md:px-16 lg:px-24 mx-auto">
+      {/* About Section - BLACK with Bass Pulse */}
+      <section className="py-24 md:py-32 bg-black relative overflow-hidden">
+        <BassPulse className="opacity-30" />
+        <div className="container px-8 md:px-16 lg:px-24 mx-auto relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-white mb-8 leading-tight">
@@ -149,11 +226,11 @@ export default function Home() {
               </div>
             </div>
             
-            <div className="relative aspect-[4/3] overflow-hidden">
+            <div className="relative aspect-[4/3] overflow-hidden group">
               <img 
                 src={studioImage1} 
                 alt="Car Audio Limburg Studio" 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
             </div>
           </div>
@@ -200,9 +277,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Video Section - BLACK */}
-      <section className="py-24 md:py-32 bg-black">
-        <div className="container px-8 md:px-16 lg:px-24 mx-auto">
+      {/* Video Section - BLACK with Audio Wave */}
+      <section className="py-24 md:py-32 bg-black relative overflow-hidden">
+        <AudioWaveBackground className="opacity-50" />
+        <div className="container px-8 md:px-16 lg:px-24 mx-auto relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-light text-white mb-4">
               Ontdek Onze Studio
@@ -275,7 +353,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* BMW CarPlay CTA - BLACK */}
+      {/* BMW CarPlay CTA - BLACK with Pulse */}
       <section className="py-24 md:py-32 bg-black relative overflow-hidden">
         <div className="absolute inset-0 opacity-20">
           <img 
@@ -284,6 +362,7 @@ export default function Home() {
             className="w-full h-full object-cover"
           />
         </div>
+        <BassPulse className="opacity-40" />
         <div className="container px-8 md:px-16 lg:px-24 mx-auto relative z-10">
           <div className="max-w-3xl mx-auto text-center">
             <Badge className="mb-6 bg-[#d0a760]/20 text-[#d0a760] border-[#d0a760]/30 px-4 py-1.5 text-sm rounded-none">
@@ -410,8 +489,9 @@ export default function Home() {
       </section>
 
       {/* Quote Section - BLACK */}
-      <section className="py-24 md:py-32 bg-black">
-        <div className="container px-8 md:px-16 lg:px-24 mx-auto">
+      <section className="py-24 md:py-32 bg-black relative overflow-hidden">
+        <BassPulse className="opacity-20" />
+        <div className="container px-8 md:px-16 lg:px-24 mx-auto relative z-10">
           <div className="max-w-4xl mx-auto">
             <div className="bg-zinc-900 p-8 md:p-12 border border-zinc-800">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -494,8 +574,9 @@ export default function Home() {
       </section>
 
       {/* Showroom CTA - BLACK */}
-      <section className="py-24 md:py-32 bg-black">
-        <div className="container px-8 md:px-16 lg:px-24 mx-auto">
+      <section className="py-24 md:py-32 bg-black relative overflow-hidden">
+        <AudioWaveBackground className="opacity-30" />
+        <div className="container px-8 md:px-16 lg:px-24 mx-auto relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
               <h2 className="text-3xl md:text-4xl font-light text-white mb-6">
@@ -545,11 +626,11 @@ export default function Home() {
               </div>
             </div>
             
-            <div className="relative aspect-square overflow-hidden">
+            <div className="relative aspect-square overflow-hidden group">
               <img 
                 src={studioImage1} 
                 alt="Car Audio Limburg Showroom" 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
             </div>
           </div>

@@ -285,3 +285,125 @@
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   transition: all 0.2s ease;
 }
+
+/* Audio Pulse Effects */
+@keyframes bass-pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes wave-slow {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes wave-medium {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-30%);
+  }
+}
+
+@keyframes speaker-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+}
+
+@keyframes audio-bar {
+  0%, 100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes glow-sweep {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes speaker-vibrate {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-1px);
+  }
+  75% {
+    transform: translateY(1px);
+  }
+}
+
+.animate-bass-pulse {
+  animation: bass-pulse 2s ease-in-out infinite;
+}
+
+.animate-wave-slow {
+  animation: wave-slow 20s linear infinite;
+}
+
+.animate-wave-medium {
+  animation: wave-medium 15s linear infinite;
+}
+
+.animate-speaker-ring-1 {
+  animation: speaker-ring 2s ease-in-out infinite;
+}
+
+.animate-speaker-ring-2 {
+  animation: speaker-ring 2s ease-in-out infinite 0.3s;
+}
+
+.animate-speaker-ring-3 {
+  animation: speaker-ring 2s ease-in-out infinite 0.6s;
+}
+
+.animate-audio-bar {
+  animation: audio-bar 0.8s ease-in-out infinite;
+  transform-origin: bottom;
+}
+
+.animate-glow-sweep {
+  background-size: 200% 100%;
+  animation: glow-sweep 3s linear infinite;
+}
+
+.animate-speaker-vibrate {
+  animation: speaker-vibrate 0.1s ease-in-out infinite;
+}
+
+.group:hover .group-hover\:animate-speaker-vibrate {
+  animation: speaker-vibrate 0.1s ease-in-out infinite;
+}
+
+/* Radial gradient for bass pulse */
+.bg-gradient-radial {
+  background: radial-gradient(circle, var(--tw-gradient-from) 0%, var(--tw-gradient-via) 50%, var(--tw-gradient-to) 100%);
+}

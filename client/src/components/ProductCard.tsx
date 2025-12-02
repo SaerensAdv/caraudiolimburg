@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
-import { Heart, Star } from "lucide-react";
+import { ShoppingCart, Wrench } from "lucide-react";
 import type { Product } from "@shared/schema";
 import carAudioLogo from "@assets/Caraudiolimburg-logo_1757008375383_1757016657436.png";
 import fordFiestaImage from "@assets/ford-fiesta-real.webp";
@@ -19,7 +19,6 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const [isWishlisted, setIsWishlisted] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -66,12 +65,10 @@ export function ProductCard({ product }: ProductCardProps) {
   const currentPrice = parseFloat(product.price);
   const discount = originalPrice ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100) : null;
 
-  // Determine the image source - use imported assets for all images
   const getImageSrc = (imagePath: string) => {
     if (imagePath.startsWith('@assets/Caraudiolimburg-logo_1757008375383_1757016657436.png')) {
       return carAudioLogo;
     }
-    // Map specific product images to local assets
     if (imagePath.includes('Android-Ford-Fiesta.png')) {
       return fordFiestaImage;
     }
@@ -81,114 +78,87 @@ export function ProductCard({ product }: ProductCardProps) {
     if (imagePath.includes('Android-Audi-A3.png')) {
       return audiA3Image;
     }
-    // Fallback to original path
     return imagePath;
   };
 
   return (
-    <Card className="bg-card border-border hover:shadow-2xl transition-all duration-300 group" data-testid={`product-card-${product.id}`}>
-      <div className="relative overflow-hidden rounded-t-2xl">
-        <div className="aspect-square bg-white flex items-center justify-center p-8">
-          <img 
-            src={product.images?.[product.primaryImageIndex || 0] ? getImageSrc(product.images[product.primaryImageIndex || 0]) : carAudioLogo} 
-            alt={product.name}
-            className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300"
-            onError={(e) => {
-              e.currentTarget.src = carAudioLogo;
-            }}
-          />
+    <Card className="bg-zinc-900 border-zinc-800 hover:border-[#d0a760]/30 transition-all duration-300 group overflow-hidden" data-testid={`product-card-${product.id}`}>
+      <Link href={`/product/${product.slug}`}>
+        <div className="relative overflow-hidden">
+          <div className="aspect-square bg-zinc-800 flex items-center justify-center p-8">
+            <img 
+              src={product.images?.[product.primaryImageIndex || 0] ? getImageSrc(product.images[product.primaryImageIndex || 0]) : carAudioLogo} 
+              alt={product.name}
+              className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500"
+              onError={(e) => {
+                e.currentTarget.src = carAudioLogo;
+              }}
+            />
+          </div>
+          
+          {discount && (
+            <Badge className="absolute top-3 left-3 bg-[#d0a760] text-black font-medium" data-testid={`discount-badge-${product.id}`}>
+              -{discount}%
+            </Badge>
+          )}
         </div>
-        
-        {discount && (
-          <Badge className="absolute top-2 left-2 bg-destructive text-destructive-foreground" data-testid={`discount-badge-${product.id}`}>
-            -{discount}%
-          </Badge>
-        )}
-        
-        {product.stock && product.stock <= 5 && product.stock > 0 && (
-          <Badge className="absolute top-2 right-2 bg-orange-500 text-white" data-testid={`stock-warning-${product.id}`}>
-            Laatste {product.stock}
-          </Badge>
-        )}
-      </div>
+      </Link>
 
-      <CardContent className="p-6">
-        <div className="flex items-start justify-between mb-2">
-          <Badge variant="secondary" className="text-xs font-medium" data-testid={`brand-badge-${product.id}`}>
-            {/* Brand name would come from relation */}
-            Premium
-          </Badge>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="p-1"
-            onClick={() => setIsWishlisted(!isWishlisted)}
-            data-testid={`button-wishlist-${product.id}`}
-          >
-            <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-current text-red-500' : 'text-muted-foreground'}`} />
-          </Button>
-        </div>
-
+      <CardContent className="p-5">
         <Link href={`/product/${product.slug}`}>
-          <h3 className="text-lg font-semibold text-card-foreground mb-2 hover:text-primary transition-colors cursor-pointer" data-testid={`product-title-${product.id}`}>
+          <h3 className="text-white font-medium mb-2 group-hover:text-[#d0a760] transition-colors cursor-pointer line-clamp-2" data-testid={`product-title-${product.id}`}>
             {product.name}
           </h3>
         </Link>
 
         {product.shortDescription && (
-          <p className="text-sm text-muted-foreground mb-3" data-testid={`product-description-${product.id}`}>
+          <p className="text-white/50 text-sm mb-4 line-clamp-2" data-testid={`product-description-${product.id}`}>
             {product.shortDescription}
           </p>
         )}
 
-        <div className="flex items-center space-x-2 mb-3" data-testid={`product-rating-${product.id}`}>
-          <div className="flex items-center">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className="w-4 h-4 text-yellow-500 fill-current" />
-            ))}
-          </div>
-          <span className="text-xs text-muted-foreground">(24)</span>
-        </div>
-
         <div className="flex items-center justify-between mb-4">
-          <div>
-            <span className="text-xl font-bold text-foreground" data-testid={`product-price-${product.id}`}>
+          <div className="flex items-baseline gap-2">
+            <span className="text-xl font-semibold text-white" data-testid={`product-price-${product.id}`}>
               €{currentPrice.toFixed(0)}
             </span>
             {originalPrice && (
-              <span className="text-sm text-muted-foreground line-through ml-2" data-testid={`product-original-price-${product.id}`}>
+              <span className="text-sm text-white/40 line-through" data-testid={`product-original-price-${product.id}`}>
                 €{originalPrice.toFixed(0)}
               </span>
             )}
           </div>
-          
-          <Badge 
-            variant={product.stock && product.stock > 0 ? "default" : "secondary"}
-            className={product.stock && product.stock > 0 ? "bg-green-600 text-white" : ""}
-            data-testid={`stock-status-${product.id}`}
-          >
-            {product.stock && product.stock > 0 ? "Op voorraad" : "Uitverkocht"}
-          </Badge>
         </div>
 
-        <div className="space-y-2">
+        <div className="flex gap-2">
           <Button
-            className="w-full"
-            onClick={() => handleAddToCart(false)}
+            className="flex-1 bg-[#d0a760] text-black hover:bg-[#d0a760]/90"
+            size="sm"
+            onClick={(e) => {
+              e.preventDefault();
+              handleAddToCart(false);
+            }}
             disabled={!product.stock || product.stock <= 0 || addToCartMutation.isPending}
             data-testid={`button-add-to-cart-${product.id}`}
           >
-            {addToCartMutation.isPending ? "Toevoegen..." : "In Winkelwagen"}
+            <ShoppingCart className="w-4 h-4 mr-1.5" />
+            {addToCartMutation.isPending ? "..." : "Toevoegen"}
           </Button>
-          <Button
-            variant="secondary"
-            className="w-full"
-            onClick={() => handleAddToCart(true)}
-            disabled={!product.stock || product.stock <= 0 || addToCartMutation.isPending}
-            data-testid={`button-add-with-installation-${product.id}`}
-          >
-            + Installatie
-          </Button>
+          {product.canHaveInstallation && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-zinc-700 text-white/70 hover:text-white hover:bg-zinc-800 hover:border-zinc-600"
+              onClick={(e) => {
+                e.preventDefault();
+                handleAddToCart(true);
+              }}
+              disabled={!product.stock || product.stock <= 0 || addToCartMutation.isPending}
+              data-testid={`button-add-with-installation-${product.id}`}
+            >
+              <Wrench className="w-4 h-4" />
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>

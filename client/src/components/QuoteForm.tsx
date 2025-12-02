@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -66,87 +65,84 @@ export function QuoteForm() {
   const years = Array.from({ length: 30 }, (_, i) => currentYear - i);
 
   return (
-    <Card className="bg-card border-border" data-testid="quote-form">
-      <CardContent className="p-6">
-        <h3 className="text-xl font-semibold text-card-foreground mb-4">Vraag een offerte aan</h3>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
-              {...register("firstName")}
-              placeholder="Voornaam"
-              className="bg-input border-border"
-              data-testid="input-first-name"
-            />
-            <Input
-              {...register("lastName")}
-              placeholder="Achternaam"
-              className="bg-input border-border"
-              data-testid="input-last-name"
-            />
-          </div>
-          
+    <div data-testid="quote-form">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
-            {...register("email")}
-            type="email"
-            placeholder="E-mailadres"
-            className="bg-input border-border"
-            data-testid="input-email"
+            {...register("firstName")}
+            placeholder="Voornaam"
+            className="bg-zinc-800 border-zinc-700 text-white placeholder:text-white/40 focus:border-[#d0a760]"
+            data-testid="input-first-name"
           />
-          
           <Input
-            {...register("phone")}
-            type="tel"
-            placeholder="Telefoonnummer"
-            className="bg-input border-border"
-            data-testid="input-phone"
+            {...register("lastName")}
+            placeholder="Achternaam"
+            className="bg-zinc-800 border-zinc-700 text-white placeholder:text-white/40 focus:border-[#d0a760]"
+            data-testid="input-last-name"
           />
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Input
-              {...register("vehicleMake")}
-              placeholder="Voertuigmerk"
-              className="bg-input border-border"
-              data-testid="input-vehicle-make"
-            />
-            <Input
-              {...register("vehicleModel")}
-              placeholder="Model"
-              className="bg-input border-border"
-              data-testid="input-vehicle-model"
-            />
-            <Select onValueChange={(value) => setValue("vehicleYear", parseInt(value))}>
-              <SelectTrigger className="bg-input border-border" data-testid="select-vehicle-year">
-                <SelectValue placeholder="Bouwjaar" />
-              </SelectTrigger>
-              <SelectContent>
-                {years.map((year) => (
-                  <SelectItem key={year} value={year.toString()}>
-                    {year}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <Textarea
-            {...register("description")}
-            placeholder="Beschrijf je wensen (optioneel)"
-            rows={3}
-            className="bg-input border-border"
-            data-testid="textarea-description"
+        </div>
+        
+        <Input
+          {...register("email")}
+          type="email"
+          placeholder="E-mailadres"
+          className="bg-zinc-800 border-zinc-700 text-white placeholder:text-white/40 focus:border-[#d0a760]"
+          data-testid="input-email"
+        />
+        
+        <Input
+          {...register("phone")}
+          type="tel"
+          placeholder="Telefoonnummer"
+          className="bg-zinc-800 border-zinc-700 text-white placeholder:text-white/40 focus:border-[#d0a760]"
+          data-testid="input-phone"
+        />
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Input
+            {...register("vehicleMake")}
+            placeholder="Merk"
+            className="bg-zinc-800 border-zinc-700 text-white placeholder:text-white/40 focus:border-[#d0a760]"
+            data-testid="input-vehicle-make"
           />
-          
-          <Button 
-            type="submit" 
-            className="w-full" 
-            size="lg"
-            disabled={createQuoteMutation.isPending}
-            data-testid="button-submit-quote"
-          >
-            {createQuoteMutation.isPending ? "Verzenden..." : "Gratis Offerte Aanvragen"}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+          <Input
+            {...register("vehicleModel")}
+            placeholder="Model"
+            className="bg-zinc-800 border-zinc-700 text-white placeholder:text-white/40 focus:border-[#d0a760]"
+            data-testid="input-vehicle-model"
+          />
+          <Select onValueChange={(value) => setValue("vehicleYear", parseInt(value))}>
+            <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white focus:border-[#d0a760]" data-testid="select-vehicle-year">
+              <SelectValue placeholder="Bouwjaar" />
+            </SelectTrigger>
+            <SelectContent className="bg-zinc-800 border-zinc-700">
+              {years.map((year) => (
+                <SelectItem key={year} value={year.toString()} className="text-white hover:bg-zinc-700">
+                  {year}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <Textarea
+          {...register("description")}
+          placeholder="Beschrijf je wensen (optioneel)"
+          rows={3}
+          className="bg-zinc-800 border-zinc-700 text-white placeholder:text-white/40 focus:border-[#d0a760]"
+          data-testid="textarea-description"
+        />
+        
+        <Button 
+          type="submit" 
+          className="w-full bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-full" 
+          size="lg"
+          disabled={createQuoteMutation.isPending}
+          data-testid="button-submit-quote"
+        >
+          {createQuoteMutation.isPending ? "Verzenden..." : "Gratis Offerte Aanvragen"}
+        </Button>
+      </form>
+    </div>
   );
 }

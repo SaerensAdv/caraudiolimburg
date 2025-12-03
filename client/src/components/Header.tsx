@@ -98,7 +98,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
                 data-testid={`nav-${item.href.slice(1)}`}
               >
                 {item.label}
-                <span className={`absolute -bottom-1 left-0 w-0 h-0.5 ${item.highlight ? 'bg-[#d0a760]' : 'bg-[#d0a760]'} transition-all duration-300 ease-out group-hover:w-full`} />
+                <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-[#d0a760] origin-right group-hover:origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out" />
               </Link>
             ))}
           </nav>

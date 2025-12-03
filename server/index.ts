@@ -11,6 +11,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/products', express.static(path.join(process.cwd(), 'public', 'products')));
 app.use('/public/products', express.static(path.join(process.cwd(), 'public', 'products')));
 
+// Serve attached assets (stock images, etc.)
+app.use('/attached_assets', express.static(path.join(process.cwd(), 'attached_assets')));
+
 // Object Storage files are automatically served at /public/* paths when PUBLIC_OBJECT_SEARCH_PATHS is configured
 // Log Object Storage configuration on startup
 console.log("🗂️  Object Storage Configuration:");

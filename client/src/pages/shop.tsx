@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Header } from "@/components/Header";
@@ -6,7 +6,6 @@ import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
 import { CartSidebar } from "@/components/CartSidebar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -16,17 +15,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Filter, X, ChevronDown, Grid, Car, Volume2, Settings, ChevronRight, List, LayoutGrid, Euro } from "lucide-react";
+import { Search, Filter, X, ChevronDown, Grid, Car, Volume2, Settings, ChevronRight, LayoutGrid, List, SlidersHorizontal, Sparkles } from "lucide-react";
 import type { Product, Category, Brand, VehicleMake } from "@shared/schema";
-import { ProductAudioSkeleton, AudioLoadingSpinner } from "@/components/AudioSkeletons";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { ProductAudioSkeleton } from "@/components/AudioSkeletons";
+import { ScrollReveal, StaggerContainer, StaggerItem, ParallaxSection } from "@/components/ScrollAnimations";
 
 export default function Shop() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -34,16 +26,12 @@ export default function Shop() {
   const [selectedCategory, setSelectedCategory] = useState("all-categories");
   const [selectedBrand, setSelectedBrand] = useState("all-brands");
   const [selectedMake, setSelectedMake] = useState("all-makes");
-  const [selectedModel, setSelectedModel] = useState("all-models");
-  const [selectedYear, setSelectedYear] = useState("all-years");
   const [sortBy, setSortBy] = useState("name");
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 2000]);
 
-  // Get URL search params
   const [location] = useLocation();
-  const urlParams = new URLSearchParams(location.split('?')[1] || '');
 
   const { data: products, isLoading: isLoadingProducts } = useQuery({
     queryKey: ["/api/products", {
@@ -51,27 +39,20 @@ export default function Shop() {
       categoryId: selectedCategory.startsWith('all-') ? '' : selectedCategory,
       brandId: selectedBrand.startsWith('all-') ? '' : selectedBrand,
       vehicleMakeId: selectedMake.startsWith('all-') ? '' : selectedMake,
-      vehicleModelId: selectedModel.startsWith('all-') ? '' : selectedModel,
-      vehicleYear: selectedYear && !selectedYear.startsWith('all-') ? parseInt(selectedYear) : undefined,
       limit: 50,
     }],
   });
 
-  const { data: categories } = useQuery({
+  const { data: categories } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
   });
 
-  const { data: brands } = useQuery({
+  const { data: brands } = useQuery<Brand[]>({
     queryKey: ["/api/brands"],
   });
 
-  const { data: vehicleMakes } = useQuery({
+  const { data: vehicleMakes } = useQuery<VehicleMake[]>({
     queryKey: ["/api/vehicle-makes"],
-  });
-
-  const { data: vehicleModels } = useQuery({
-    queryKey: ["/api/vehicle-models", selectedMake],
-    enabled: !!selectedMake,
   });
 
   const clearFilters = () => {
@@ -79,8 +60,6 @@ export default function Shop() {
     setSelectedCategory("all-categories");
     setSelectedBrand("all-brands");
     setSelectedMake("all-makes");
-    setSelectedModel("all-models");
-    setSelectedYear("all-years");
     setPriceRange([0, 2000]);
     setSortBy("name");
   };
@@ -90,16 +69,10 @@ export default function Shop() {
     selectedCategory && !selectedCategory.startsWith('all-') ? selectedCategory : '',
     selectedBrand && !selectedBrand.startsWith('all-') ? selectedBrand : '',
     selectedMake && !selectedMake.startsWith('all-') ? selectedMake : '',
-    selectedModel && !selectedModel.startsWith('all-') ? selectedModel : '',
-    selectedYear && !selectedYear.startsWith('all-') ? selectedYear : '',
     (priceRange[0] > 0 || priceRange[1] < 2000) ? 'price' : '',
     sortBy !== 'name' ? 'sort' : ''
   ].filter(Boolean).length;
 
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 30 }, (_, i) => currentYear - i);
-
-  // Client-side sorting function
   const sortProducts = (products: Product[]) => {
     if (!products) return [];
     
@@ -125,614 +98,469 @@ export default function Shop() {
     });
   };
 
-  // Apply sorting and filtering to products
   const sortedProducts = sortProducts(products as Product[] || []);
 
+  const categoryIcons: Record<string, React.ReactNode> = {
+    speakers: <Volume2 className="w-6 h-6" />,
+    amplifiers: <Settings className="w-6 h-6" />,
+    headunits: <Car className="w-6 h-6" />,
+    accessories: <Grid className="w-6 h-6" />,
+  };
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black">
       <Header onCartOpen={() => setIsCartOpen(true)} />
       
-      <div className="container px-4 mx-auto py-8">
-        {/* Hero Section */}
-        <div className="mb-8 md:mb-12">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4">Car Audio Shop</h1>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-              Ontdek ons complete assortiment premium car audio producten voor de ultieme rijervaring
-            </p>
-          </div>
-
-          {/* Featured Categories Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <Card 
-              className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-border hover:border-primary/50"
-              onClick={() => {
-                const speakerCategory = categories?.find((c: Category) => c.name.toLowerCase().includes('speaker'));
-                if (speakerCategory) {
-                  setSelectedCategory(speakerCategory.id);
-                }
-                setShowFilters(false);
-              }}
-            >
-              <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-primary/20 transition-colors">
-                  <Volume2 className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">Speakers</h3>
-                <p className="text-sm text-muted-foreground">Premium sound</p>
-              </CardContent>
-            </Card>
-
-            <Card 
-              className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-border hover:border-primary/50"
-              onClick={() => {
-                const ampCategory = categories?.find((c: Category) => c.name.toLowerCase().includes('amplif'));
-                if (ampCategory) {
-                  setSelectedCategory(ampCategory.id);
-                }
-                setShowFilters(false);
-              }}
-            >
-              <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-primary/20 transition-colors">
-                  <Settings className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">Amplifiers</h3>
-                <p className="text-sm text-muted-foreground">Pure power</p>
-              </CardContent>
-            </Card>
-
-            <Card 
-              className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-border hover:border-primary/50"
-              onClick={() => {
-                const headUnitCategory = categories?.find((c: Category) => c.name.toLowerCase().includes('head'));
-                if (headUnitCategory) {
-                  setSelectedCategory(headUnitCategory.id);
-                }
-                setShowFilters(false);
-              }}
-            >
-              <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-primary/20 transition-colors">
-                  <Car className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">Head Units</h3>
-                <p className="text-sm text-muted-foreground">Smart control</p>
-              </CardContent>
-            </Card>
-
-            <Card 
-              className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-border hover:border-primary/50"
-              onClick={() => {
-                const accessCategory = categories?.find((c: Category) => c.name.toLowerCase().includes('access'));
-                if (accessCategory) {
-                  setSelectedCategory(accessCategory.id);
-                }
-                setShowFilters(false);
-              }}
-            >
-              <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:bg-primary/20 transition-colors">
-                  <Grid className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">Accessoires</h3>
-                <p className="text-sm text-muted-foreground">Complete setup</p>
-              </CardContent>
-            </Card>
-          </div>
+      {/* Premium Hero Section */}
+      <section className="relative bg-black pt-24 pb-20 overflow-hidden">
+        {/* Background effects */}
+        <div className="absolute inset-0">
+          <div className="absolute top-1/2 left-1/4 w-[600px] h-[600px] bg-[#d0a760]/5 rounded-full blur-[120px] -translate-y-1/2" />
+          <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-[#d0a760]/3 rounded-full blur-[100px]" />
         </div>
 
-        {/* Fancy Navigation Dropdown */}
-        <div className="mb-6 md:mb-8">
-          <div className="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 mb-4 md:mb-6">
-            {/* Categories Mega Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="h-12 px-6 border-border hover:bg-accent" data-testid="dropdown-categories">
-                  <Grid className="w-4 h-4 mr-2" />
-                  Categorieën
-                  <ChevronDown className="w-4 h-4 ml-2" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-80 p-4" align="start">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <DropdownMenuLabel>Audio Systemen</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    {categories && Array.isArray(categories) && (categories as Category[]).slice(0, 4).map((category: Category) => (
-                      <DropdownMenuItem 
-                        key={category.id}
-                        className="cursor-pointer"
-                        onClick={() => {
-                          setSelectedCategory(category.id);
-                          setShowFilters(false);
-                        }}
-                      >
-                        <Volume2 className="w-4 h-4 mr-2" />
-                        {category.name}
-                      </DropdownMenuItem>
-                    ))}
-                  </div>
-                  <div>
-                    <DropdownMenuLabel>Accessoires</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    {categories && Array.isArray(categories) && (categories as Category[]).slice(4, 8).map((category: Category) => (
-                      <DropdownMenuItem 
-                        key={category.id}
-                        className="cursor-pointer"
-                        onClick={() => {
-                          setSelectedCategory(category.id);
-                          setShowFilters(false);
-                        }}
-                      >
-                        <Settings className="w-4 h-4 mr-2" />
-                        {category.name}
-                      </DropdownMenuItem>
-                    ))}
-                  </div>
-                </div>
-                <DropdownMenuSeparator className="my-4" />
-                <DropdownMenuItem 
-                  className="cursor-pointer font-medium"
-                  onClick={() => setSelectedCategory("all-categories")}
-                >
-                  Alle categorieën bekijken
-                  <ChevronRight className="w-4 h-4 ml-auto" />
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+        {/* Audio wave decorations */}
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 flex flex-col gap-1 opacity-20">
+          {[...Array(8)].map((_, i) => (
+            <div
+              key={i}
+              className="h-1 bg-gradient-to-r from-[#d0a760] to-transparent animate-audio-bar"
+              style={{
+                width: `${40 + Math.random() * 60}px`,
+                animationDelay: `${i * 0.1}s`,
+              }}
+            />
+          ))}
+        </div>
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col gap-1 opacity-20">
+          {[...Array(8)].map((_, i) => (
+            <div
+              key={i}
+              className="h-1 bg-gradient-to-l from-[#d0a760] to-transparent animate-audio-bar"
+              style={{
+                width: `${40 + Math.random() * 60}px`,
+                animationDelay: `${i * 0.15}s`,
+              }}
+            />
+          ))}
+        </div>
 
-            {/* Brands Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="h-12 px-6 border-border hover:bg-accent" data-testid="dropdown-brands">
-                  <Volume2 className="w-4 h-4 mr-2" />
-                  Merken
-                  <ChevronDown className="w-4 h-4 ml-2" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-64 p-4" align="start">
-                <DropdownMenuLabel>Premium Merken</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <div className="grid grid-cols-2 gap-2">
-                  {brands && Array.isArray(brands) && (brands as Brand[]).slice(0, 8).map((brand: Brand) => (
-                    <DropdownMenuItem 
-                      key={brand.id}
-                      className="cursor-pointer"
-                      onClick={() => {
-                        setSelectedBrand(brand.id);
-                        setShowFilters(false);
-                      }}
-                    >
-                      {brand.name}
-                    </DropdownMenuItem>
-                  ))}
-                </div>
-                <DropdownMenuSeparator className="my-4" />
-                <DropdownMenuItem 
-                  className="cursor-pointer font-medium"
-                  onClick={() => setSelectedBrand("all-brands")}
-                >
-                  Alle merken
-                  <ChevronRight className="w-4 h-4 ml-auto" />
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+        <div className="container mx-auto px-4 relative z-10">
+          <ScrollReveal animation="fade-up">
+            <div className="text-center max-w-4xl mx-auto">
+              <Badge className="bg-[#d0a760]/10 text-[#d0a760] border-[#d0a760]/20 px-4 py-1.5 mb-6 rounded-none">
+                <Sparkles className="w-3 h-3 mr-2" />
+                Premium Car Audio Collection
+              </Badge>
+              
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight">
+                Ontdek Onze{" "}
+                <span className="text-[#d0a760]">Collectie</span>
+              </h1>
+              
+              <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-10">
+                Premium car audio systemen van de beste merken. Van speakers tot complete installaties.
+              </p>
 
-            {/* Vehicle Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="h-12 px-6 border-border hover:bg-accent" data-testid="dropdown-vehicles">
-                  <Car className="w-4 h-4 mr-2" />
-                  Voor Mijn Auto
-                  <ChevronDown className="w-4 h-4 ml-2" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-80 p-4" align="start">
-                <DropdownMenuLabel>Populaire Merken</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <div className="grid grid-cols-3 gap-2">
-                  {vehicleMakes && Array.isArray(vehicleMakes) && (vehicleMakes as VehicleMake[]).slice(0, 12).map((make: VehicleMake) => (
-                    <DropdownMenuItem 
-                      key={make.id}
-                      className="cursor-pointer text-sm"
-                      onClick={() => {
-                        setSelectedMake(make.id);
-                        setShowFilters(false);
-                      }}
-                    >
-                      {make.name}
-                    </DropdownMenuItem>
-                  ))}
-                </div>
-                <DropdownMenuSeparator className="my-4" />
-                <DropdownMenuItem 
-                  className="cursor-pointer font-medium"
-                  onClick={() => setSelectedMake("all-makes")}
-                >
-                  Alle automerken
-                  <ChevronRight className="w-4 h-4 ml-auto" />
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              {/* Search Bar */}
+              <div className="max-w-xl mx-auto relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+                <Input
+                  type="text"
+                  placeholder="Zoek producten, merken, categorieën..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full h-14 pl-12 pr-4 bg-white/5 border-white/10 text-white placeholder:text-white/40 rounded-none focus:border-[#d0a760] focus:ring-[#d0a760]/20"
+                  data-testid="input-product-search"
+                />
+              </div>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
 
-            {/* Quick Action Filters */}
-            <div className="ml-auto flex flex-wrap gap-2">
-              <Badge 
-                variant={sortBy === "newest" ? "default" : "outline"} 
-                className="cursor-pointer hover:bg-primary/10 transition-colors px-3 py-1"
-                onClick={() => setSortBy("newest")}
-                data-testid="badge-filter-newest"
+      {/* Category Quick Filters - White Section */}
+      <section className="bg-white py-12">
+        <div className="container mx-auto px-4">
+          <ScrollReveal animation="fade-up">
+            <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {[
+                { name: "Speakers", icon: <Volume2 className="w-8 h-8" />, desc: "Hi-Fi Geluid", key: "speaker" },
+                { name: "Versterkers", icon: <Settings className="w-8 h-8" />, desc: "Pure Power", key: "amplif" },
+                { name: "Head Units", icon: <Car className="w-8 h-8" />, desc: "Smart Control", key: "head" },
+                { name: "Accessoires", icon: <Grid className="w-8 h-8" />, desc: "Complete Setup", key: "access" },
+              ].map((cat, idx) => (
+                <StaggerItem key={cat.name}>
+                  <button
+                    onClick={() => {
+                      const matchingCategory = categories?.find((c: Category) => 
+                        c.name.toLowerCase().includes(cat.key)
+                      );
+                      if (matchingCategory) {
+                        setSelectedCategory(matchingCategory.id);
+                      }
+                    }}
+                    className={`w-full p-6 border transition-all duration-300 group ${
+                      selectedCategory !== 'all-categories' && 
+                      categories?.find((c: Category) => c.id === selectedCategory)?.name.toLowerCase().includes(cat.key)
+                        ? 'bg-black text-white border-black'
+                        : 'bg-white text-black border-zinc-200 hover:border-[#d0a760] hover:bg-zinc-50'
+                    }`}
+                    data-testid={`category-${cat.key}`}
+                  >
+                    <div className={`mb-3 transition-colors ${
+                      selectedCategory !== 'all-categories' && 
+                      categories?.find((c: Category) => c.id === selectedCategory)?.name.toLowerCase().includes(cat.key)
+                        ? 'text-[#d0a760]'
+                        : 'text-black group-hover:text-[#d0a760]'
+                    }`}>
+                      {cat.icon}
+                    </div>
+                    <h3 className="font-semibold text-lg mb-1">{cat.name}</h3>
+                    <p className="text-sm opacity-60">{cat.desc}</p>
+                  </button>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* Filters Bar - Black Section */}
+      <section className="bg-black py-6 border-y border-white/10 sticky top-16 z-40">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            {/* Left side - Filter controls */}
+            <div className="flex flex-wrap items-center gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setShowFilters(!showFilters)}
+                className="border-white/20 text-white hover:bg-white/10 hover:text-white rounded-none"
+                data-testid="button-toggle-filters"
               >
-                Nieuwste
-              </Badge>
-              <Badge 
-                variant={sortBy === "featured" ? "default" : "outline"} 
-                className="cursor-pointer hover:bg-primary/10 transition-colors px-3 py-1"
-                onClick={() => setSortBy("featured")}
-                data-testid="badge-filter-featured"
-              >
-                Uitgelicht
-              </Badge>
-              <Badge 
-                variant={sortBy === "price-low" ? "default" : "outline"} 
-                className="cursor-pointer hover:bg-primary/10 transition-colors px-3 py-1"
-                onClick={() => setSortBy("price-low")}
-                data-testid="badge-filter-sale"
-              >
-                Beste Prijs
-              </Badge>
+                <SlidersHorizontal className="w-4 h-4 mr-2" />
+                Filters
+                {activeFiltersCount > 0 && (
+                  <Badge className="ml-2 bg-[#d0a760] text-black rounded-none">
+                    {activeFiltersCount}
+                  </Badge>
+                )}
+              </Button>
+
+              {/* Quick filter badges */}
+              <div className="hidden md:flex items-center gap-2">
+                <Badge 
+                  variant={sortBy === "featured" ? "default" : "outline"} 
+                  className={`cursor-pointer rounded-none transition-colors ${
+                    sortBy === "featured" 
+                      ? 'bg-[#d0a760] text-black' 
+                      : 'border-white/20 text-white/60 hover:text-white hover:border-[#d0a760]'
+                  }`}
+                  onClick={() => setSortBy(sortBy === "featured" ? "name" : "featured")}
+                  data-testid="badge-filter-featured"
+                >
+                  Uitgelicht
+                </Badge>
+                <Badge 
+                  variant={sortBy === "newest" ? "default" : "outline"} 
+                  className={`cursor-pointer rounded-none transition-colors ${
+                    sortBy === "newest" 
+                      ? 'bg-[#d0a760] text-black' 
+                      : 'border-white/20 text-white/60 hover:text-white hover:border-[#d0a760]'
+                  }`}
+                  onClick={() => setSortBy(sortBy === "newest" ? "name" : "newest")}
+                  data-testid="badge-filter-newest"
+                >
+                  Nieuwste
+                </Badge>
+                <Badge 
+                  variant={sortBy === "price-low" ? "default" : "outline"} 
+                  className={`cursor-pointer rounded-none transition-colors ${
+                    sortBy === "price-low" 
+                      ? 'bg-[#d0a760] text-black' 
+                      : 'border-white/20 text-white/60 hover:text-white hover:border-[#d0a760]'
+                  }`}
+                  onClick={() => setSortBy(sortBy === "price-low" ? "name" : "price-low")}
+                  data-testid="badge-filter-price"
+                >
+                  Beste Prijs
+                </Badge>
+              </div>
+
+              {activeFiltersCount > 0 && (
+                <Button 
+                  variant="ghost" 
+                  onClick={clearFilters} 
+                  className="text-white/40 hover:text-white hover:bg-white/10 rounded-none"
+                  data-testid="button-clear-filters"
+                >
+                  <X className="w-4 h-4 mr-1" />
+                  Wis filters
+                </Button>
+              )}
+            </div>
+
+            {/* Right side - View mode and results */}
+            <div className="flex items-center gap-4">
+              <span className="text-white/40 text-sm hidden sm:block" data-testid="results-count">
+                {sortedProducts.length} producten
+              </span>
+              
+              <div className="flex bg-white/5 border border-white/10">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 transition-colors ${viewMode === 'grid' ? 'bg-[#d0a760] text-black' : 'text-white/60 hover:text-white'}`}
+                  data-testid="button-view-grid"
+                >
+                  <LayoutGrid className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-2 transition-colors ${viewMode === 'list' ? 'bg-[#d0a760] text-black' : 'text-white/60 hover:text-white'}`}
+                  data-testid="button-view-list"
+                >
+                  <List className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Search and Filters */}
-        <div className="mb-6 md:mb-8 space-y-3 md:space-y-4">
-          {/* Search Bar */}
-          <div className="relative max-w-md w-full">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-            <Input
-              type="text"
-              placeholder="Zoek producten..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-10 bg-input border-border h-11 md:h-10"
-              data-testid="input-product-search"
-            />
-          </div>
-
-          {/* Filter Toggle */}
-          <div className="flex items-center justify-between">
-            <Button
-              variant="outline"
-              onClick={() => setShowFilters(!showFilters)}
-              className="border-border"
-              data-testid="button-toggle-filters"
-            >
-              <Filter className="w-4 h-4 mr-2" />
-              Filters
-              {activeFiltersCount > 0 && (
-                <Badge variant="secondary" className="ml-2">
-                  {activeFiltersCount}
-                </Badge>
-              )}
-            </Button>
-
-            {activeFiltersCount > 0 && (
-              <Button variant="ghost" onClick={clearFilters} data-testid="button-clear-filters">
-                <X className="w-4 h-4 mr-2" />
-                Wis filters
-              </Button>
-            )}
-          </div>
-
-          {/* Filters Panel */}
+          {/* Expanded Filters Panel */}
           {showFilters && (
-            <Card className="bg-card border-border" data-testid="filters-panel">
-              <CardContent className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {/* Category Filter */}
-                  <div>
-                    <label className="text-sm font-medium text-foreground mb-2 block">Categorie</label>
-                    <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                      <SelectTrigger className="bg-input border-border" data-testid="select-category">
-                        <SelectValue placeholder="Alle categorieën" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all-categories">Alle categorieën</SelectItem>
-                        {categories && Array.isArray(categories) && (categories as Category[]).map((category: Category) => (
-                          <SelectItem key={category.id} value={category.id}>
-                            {category.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+            <div className="mt-6 pt-6 border-t border-white/10 grid grid-cols-1 md:grid-cols-4 gap-4">
+              {/* Category */}
+              <div>
+                <label className="text-sm text-white/40 mb-2 block">Categorie</label>
+                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <SelectTrigger className="bg-white/5 border-white/10 text-white rounded-none" data-testid="select-category">
+                    <SelectValue placeholder="Alle categorieën" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-900 border-zinc-800">
+                    <SelectItem value="all-categories" className="text-white">Alle categorieën</SelectItem>
+                    {categories && Array.isArray(categories) && (categories as Category[]).map((category: Category) => (
+                      <SelectItem key={category.id} value={category.id} className="text-white">
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-                  {/* Brand Filter */}
-                  <div>
-                    <label className="text-sm font-medium text-foreground mb-2 block">Merk</label>
-                    <Select value={selectedBrand} onValueChange={setSelectedBrand}>
-                      <SelectTrigger className="bg-input border-border" data-testid="select-brand">
-                        <SelectValue placeholder="Alle merken" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all-brands">Alle merken</SelectItem>
-                        {brands && Array.isArray(brands) && (brands as Brand[]).map((brand: Brand) => (
-                          <SelectItem key={brand.id} value={brand.id}>
-                            {brand.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+              {/* Brand */}
+              <div>
+                <label className="text-sm text-white/40 mb-2 block">Merk</label>
+                <Select value={selectedBrand} onValueChange={setSelectedBrand}>
+                  <SelectTrigger className="bg-white/5 border-white/10 text-white rounded-none" data-testid="select-brand">
+                    <SelectValue placeholder="Alle merken" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-900 border-zinc-800">
+                    <SelectItem value="all-brands" className="text-white">Alle merken</SelectItem>
+                    {brands && Array.isArray(brands) && (brands as Brand[]).map((brand: Brand) => (
+                      <SelectItem key={brand.id} value={brand.id} className="text-white">
+                        {brand.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-                  {/* Vehicle Make Filter */}
-                  <div>
-                    <label className="text-sm font-medium text-foreground mb-2 block">Voertuigmerk</label>
-                    <Select value={selectedMake} onValueChange={setSelectedMake}>
-                      <SelectTrigger className="bg-input border-border" data-testid="select-vehicle-make">
-                        <SelectValue placeholder="Alle merken" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all-makes">Alle merken</SelectItem>
-                        {vehicleMakes && Array.isArray(vehicleMakes) && (vehicleMakes as VehicleMake[]).map((make: VehicleMake) => (
-                          <SelectItem key={make.id} value={make.id}>
-                            {make.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+              {/* Vehicle Make */}
+              <div>
+                <label className="text-sm text-white/40 mb-2 block">Voertuigmerk</label>
+                <Select value={selectedMake} onValueChange={setSelectedMake}>
+                  <SelectTrigger className="bg-white/5 border-white/10 text-white rounded-none" data-testid="select-vehicle-make">
+                    <SelectValue placeholder="Alle merken" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-900 border-zinc-800">
+                    <SelectItem value="all-makes" className="text-white">Alle merken</SelectItem>
+                    {vehicleMakes && Array.isArray(vehicleMakes) && (vehicleMakes as VehicleMake[]).map((make: VehicleMake) => (
+                      <SelectItem key={make.id} value={make.id} className="text-white">
+                        {make.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-                  {/* Vehicle Model Filter */}
-                  <div>
-                    <label className="text-sm font-medium text-foreground mb-2 block">Model</label>
-                    <Select value={selectedModel} onValueChange={setSelectedModel} disabled={!selectedMake}>
-                      <SelectTrigger className="bg-input border-border" data-testid="select-vehicle-model">
-                        <SelectValue placeholder="Alle modellen" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all-models">Alle modellen</SelectItem>
-                        {vehicleModels && Array.isArray(vehicleModels) && (vehicleModels as any[]).map((model: any) => (
-                          <SelectItem key={model.id} value={model.id}>
-                            {model.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                  {/* Year Filter */}
-                  <div>
-                    <label className="text-sm font-medium text-foreground mb-2 block">Bouwjaar</label>
-                    <Select value={selectedYear} onValueChange={setSelectedYear}>
-                      <SelectTrigger className="bg-input border-border" data-testid="select-year">
-                        <SelectValue placeholder="Alle jaren" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all-years">Alle jaren</SelectItem>
-                        {years.map((year) => (
-                          <SelectItem key={year} value={year.toString()}>
-                            {year}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Price Range Filter */}
-                  <div className="lg:col-span-2">
-                    <div className="flex items-center justify-between mb-4">
-                      <label className="text-sm font-medium text-foreground flex items-center">
-                        <Euro className="w-4 h-4 mr-1" />
-                        Prijsbereik
-                      </label>
-                      <span className="text-sm font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full">
-                        €{priceRange[0]} - €{priceRange[1]}
-                      </span>
-                    </div>
-                    
-                    <div className="space-y-4">
-                      {/* Min Price Slider */}
-                      <div>
-                        <label className="text-xs text-muted-foreground mb-1 block">Minimum: €{priceRange[0]}</label>
-                        <input
-                          type="range"
-                          min="0"
-                          max="2000"
-                          step="50"
-                          value={priceRange[0]}
-                          onChange={(e) => {
-                            const newMin = parseInt(e.target.value);
-                            if (newMin <= priceRange[1]) {
-                              setPriceRange([newMin, priceRange[1]]);
-                            }
-                          }}
-                          className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer range-slider"
-                          data-testid="slider-min-price"
-                        />
-                      </div>
-                      
-                      {/* Max Price Slider */}
-                      <div>
-                        <label className="text-xs text-muted-foreground mb-1 block">Maximum: €{priceRange[1]}</label>
-                        <input
-                          type="range"
-                          min="0"
-                          max="2000"
-                          step="50"
-                          value={priceRange[1]}
-                          onChange={(e) => {
-                            const newMax = parseInt(e.target.value);
-                            if (newMax >= priceRange[0]) {
-                              setPriceRange([priceRange[0], newMax]);
-                            }
-                          }}
-                          className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer range-slider"
-                          data-testid="slider-max-price"
-                        />
-                      </div>
-                      
-                      <div className="flex justify-between text-xs text-muted-foreground pt-1">
-                        <span>€0</span>
-                        <span>€500</span>
-                        <span>€1000</span>
-                        <span>€1500</span>
-                        <span>€2000+</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Sort Filter */}
-                  <div>
-                    <label className="text-sm font-medium text-foreground mb-2 block">Sorteren</label>
-                    <Select value={sortBy} onValueChange={setSortBy}>
-                      <SelectTrigger className="bg-input border-border" data-testid="select-sort">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="name">Naam A-Z</SelectItem>
-                        <SelectItem value="price-low">Prijs laag-hoog</SelectItem>
-                        <SelectItem value="price-high">Prijs hoog-laag</SelectItem>
-                        <SelectItem value="newest">Nieuwste eerst</SelectItem>
-                        <SelectItem value="featured">Uitgelicht eerst</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+              {/* Sort */}
+              <div>
+                <label className="text-sm text-white/40 mb-2 block">Sorteren</label>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="bg-white/5 border-white/10 text-white rounded-none" data-testid="select-sort">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-900 border-zinc-800">
+                    <SelectItem value="name" className="text-white">Naam A-Z</SelectItem>
+                    <SelectItem value="price-low" className="text-white">Prijs laag-hoog</SelectItem>
+                    <SelectItem value="price-high" className="text-white">Prijs hoog-laag</SelectItem>
+                    <SelectItem value="newest" className="text-white">Nieuwste eerst</SelectItem>
+                    <SelectItem value="featured" className="text-white">Uitgelicht eerst</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
           )}
         </div>
+      </section>
 
-        {/* Results Header with View Toggle */}
-        <div className="mb-6 flex items-center justify-between">
-          <p className="text-muted-foreground" data-testid="results-count">
-            {products ? `${sortedProducts.length} producten gevonden` : "Laden..."}
-          </p>
-
-          {/* View Mode Toggle */}
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-muted-foreground hidden sm:block">Weergave:</span>
-            <div className="flex bg-muted rounded-lg p-1">
-              <Button
-                variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                size="sm"
-                className="h-8 px-3 rounded-md"
-                onClick={() => setViewMode('grid')}
-                data-testid="button-view-grid"
-              >
-                <LayoutGrid className="w-4 h-4" />
-                <span className="ml-1 hidden sm:inline">Grid</span>
-              </Button>
-              <Button
-                variant={viewMode === 'list' ? 'default' : 'ghost'}
-                size="sm"
-                className="h-8 px-3 rounded-md"
-                onClick={() => setViewMode('list')}
-                data-testid="button-view-list"
-              >
-                <List className="w-4 h-4" />
-                <span className="ml-1 hidden sm:inline">List</span>
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Products Display */}
-        {isLoadingProducts ? (
-          <div className={viewMode === 'grid' 
-            ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6"
-            : "space-y-4"
-          }>
-            {[...Array(8)].map((_, i) => (
-              <ProductAudioSkeleton key={i} data-testid={`skeleton-product-${i}`} />
-            ))}
-          </div>
-        ) : sortedProducts && sortedProducts.length > 0 ? (
-          viewMode === 'grid' ? (
-            // Grid View
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-              {sortedProducts.map((product: Product) => (
-                <ProductCard key={product.id} product={product} />
+      {/* Products Grid - Dark Section */}
+      <section className="bg-zinc-950 py-16">
+        <div className="container mx-auto px-4">
+          {isLoadingProducts ? (
+            <div className={viewMode === 'grid' 
+              ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+              : "space-y-4"
+            }>
+              {[...Array(8)].map((_, i) => (
+                <ProductAudioSkeleton key={i} data-testid={`skeleton-product-${i}`} />
               ))}
             </div>
-          ) : (
-            // List View
-            <div className="space-y-4">
-              {sortedProducts.map((product: Product) => (
-                <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300 border-border">
-                  <div className="flex flex-col sm:flex-row">
-                    {/* Product Image */}
-                    <div className="w-full sm:w-48 h-48 sm:h-auto bg-cover bg-center flex-shrink-0"
-                         style={{ backgroundImage: `url(${product.images?.[0] || '/api/placeholder/300/200'})` }}>
-                    </div>
-                    
-                    {/* Product Info */}
-                    <div className="flex-1 p-6">
-                      <div className="flex justify-between items-start mb-4">
-                        <div>
-                          <h3 className="text-xl font-semibold text-foreground mb-2 hover:text-primary transition-colors">
-                            <a href={`/product/${product.slug}`}>{product.name}</a>
-                          </h3>
-                          {product.shortDescription && (
-                            <p className="text-muted-foreground mb-3 line-clamp-2">
-                              {product.shortDescription}
-                            </p>
-                          )}
-                        </div>
-                        <div className="text-right">
-                          <div className="text-2xl font-bold text-foreground mb-1">
-                            €{parseFloat(product.price).toFixed(0)}
-                          </div>
+          ) : sortedProducts && sortedProducts.length > 0 ? (
+            viewMode === 'grid' ? (
+              <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {sortedProducts.map((product: Product, idx: number) => (
+                  <StaggerItem key={product.id}>
+                    <ProductCard product={product} />
+                  </StaggerItem>
+                ))}
+              </StaggerContainer>
+            ) : (
+              <div className="space-y-4">
+                {sortedProducts.map((product: Product) => (
+                  <ScrollReveal key={product.id} animation="fade-up">
+                    <div className="bg-zinc-900 border border-zinc-800 hover:border-[#d0a760]/30 transition-all duration-300 group">
+                      <div className="flex flex-col sm:flex-row">
+                        {/* Product Image */}
+                        <div className="w-full sm:w-56 h-56 sm:h-auto bg-zinc-800 flex-shrink-0 relative overflow-hidden">
+                          <img 
+                            src={product.images?.[0] || '/placeholder.png'} 
+                            alt={product.name}
+                            className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+                          />
                           {product.originalPrice && (
-                            <div className="text-sm text-muted-foreground line-through">
-                              €{parseFloat(product.originalPrice).toFixed(0)}
+                            <Badge className="absolute top-3 left-3 bg-[#d0a760] text-black rounded-none">
+                              -{Math.round(((parseFloat(product.originalPrice) - parseFloat(product.price)) / parseFloat(product.originalPrice)) * 100)}%
+                            </Badge>
+                          )}
+                        </div>
+                        
+                        {/* Product Info */}
+                        <div className="flex-1 p-6">
+                          <div className="flex justify-between items-start mb-4">
+                            <div>
+                              <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-[#d0a760] transition-colors">
+                                <a href={`/product/${product.slug}`}>{product.name}</a>
+                              </h3>
+                              {product.shortDescription && (
+                                <p className="text-white/50 mb-3 line-clamp-2">
+                                  {product.shortDescription}
+                                </p>
+                              )}
                             </div>
-                          )}
+                            <div className="text-right">
+                              <div className="text-2xl font-bold text-white mb-1">
+                                €{parseFloat(product.price).toFixed(0)}
+                              </div>
+                              {product.originalPrice && (
+                                <div className="text-sm text-white/40 line-through">
+                                  €{parseFloat(product.originalPrice).toFixed(0)}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4 text-sm">
+                              <span className={product.stock && product.stock > 0 ? "text-green-500" : "text-orange-500"}>
+                                {product.stock && product.stock > 0 ? "Op voorraad" : "Op aanvraag"}
+                              </span>
+                              {product.isFeatured && (
+                                <Badge className="bg-[#d0a760]/10 text-[#d0a760] border-[#d0a760]/20 rounded-none">
+                                  Uitgelicht
+                                </Badge>
+                              )}
+                            </div>
+                            <Button 
+                              asChild 
+                              className="bg-white text-black hover:bg-[#d0a760] rounded-none"
+                            >
+                              <a href={`/product/${product.slug}`}>
+                                Bekijk Product
+                                <ChevronRight className="w-4 h-4 ml-1" />
+                              </a>
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                          <span className={product.stock && product.stock > 0 ? "text-green-600" : "text-red-600"}>
-                            {product.stock && product.stock > 0 ? "Op voorraad" : "Uitverkocht"}
-                          </span>
-                          {product.isFeatured && (
-                            <Badge variant="secondary">Uitgelicht</Badge>
-                          )}
-                        </div>
-                        <Button asChild className="bg-primary hover:bg-primary/90">
-                          <a href={`/product/${product.slug}`}>
-                            Bekijk Product
-                            <ChevronRight className="w-4 h-4 ml-1" />
-                          </a>
-                        </Button>
                       </div>
                     </div>
-                  </div>
-                </Card>
-              ))}
+                  </ScrollReveal>
+                ))}
+              </div>
+            )
+          ) : (
+            <div className="text-center py-20">
+              <div className="mb-8">
+                {/* Audio wave animation */}
+                <div className="flex items-end justify-center gap-1 h-16">
+                  {[...Array(5)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="w-2 bg-gradient-to-t from-[#d0a760]/30 to-[#d0a760] animate-audio-bar"
+                      style={{
+                        height: `${20 + i * 10}px`,
+                        animationDelay: `${i * 0.1}s`,
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+              <h3 className="text-2xl font-semibold text-white mb-3">Geen producten gevonden</h3>
+              <p className="text-white/50 mb-6 max-w-md mx-auto">
+                Probeer je zoekopdracht aan te passen of verwijder enkele filters om meer resultaten te zien.
+              </p>
+              <Button 
+                onClick={clearFilters} 
+                className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"
+                data-testid="button-clear-filters-empty"
+              >
+                Wis alle filters
+              </Button>
             </div>
-          )
-        ) : (
-          <Card className="bg-card border-border p-12 text-center" data-testid="no-products">
-            <div className="mb-6">
-              <AudioLoadingSpinner size="lg" />
+          )}
+        </div>
+      </section>
+
+      {/* CTA Section - White */}
+      <section className="bg-white py-20">
+        <div className="container mx-auto px-4">
+          <ScrollReveal animation="fade-up">
+            <div className="max-w-4xl mx-auto text-center">
+              <h2 className="text-3xl md:text-4xl font-bold text-black mb-6">
+                Hulp nodig bij je keuze?
+              </h2>
+              <p className="text-lg text-black/60 mb-8 max-w-2xl mx-auto">
+                Onze experts helpen je graag met het vinden van de perfecte audio setup voor jouw auto. 
+                Vraag vrijblijvend advies aan.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button 
+                  asChild
+                  className="bg-black text-white hover:bg-[#d0a760] hover:text-black rounded-none px-8 py-6 text-lg"
+                >
+                  <a href="/contact">Vraag Advies Aan</a>
+                </Button>
+                <Button 
+                  asChild
+                  variant="outline"
+                  className="border-black text-black hover:bg-black hover:text-white rounded-none px-8 py-6 text-lg"
+                >
+                  <a href="/booking">Plan een Afspraak</a>
+                </Button>
+              </div>
             </div>
-            <h3 className="text-xl font-semibold text-card-foreground mb-2">Geen producten gevonden</h3>
-            <p className="text-muted-foreground mb-4">
-              Probeer je zoekopdracht aan te passen of verwijder enkele filters.
-            </p>
-            <Button onClick={clearFilters} data-testid="button-clear-filters-empty">
-              Wis alle filters
-            </Button>
-          </Card>
-        )}
-      </div>
+          </ScrollReveal>
+        </div>
+      </section>
 
       <Footer />
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />

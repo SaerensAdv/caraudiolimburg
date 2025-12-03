@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, createContext, useContext } from "react";
 
 interface ScrollRevealProps {
   children: React.ReactNode;
@@ -7,6 +7,7 @@ interface ScrollRevealProps {
   direction?: "up" | "down" | "left" | "right" | "none";
   duration?: number;
   once?: boolean;
+  animation?: "fade-up" | "fade-down" | "fade-left" | "fade-right" | "fade" | "zoom";
 }
 
 export function ScrollReveal({ 
@@ -15,8 +16,15 @@ export function ScrollReveal({
   delay = 0, 
   direction = "up",
   duration = 700,
-  once = true 
+  once = true,
+  animation
 }: ScrollRevealProps) {
+  const effectiveDirection = animation ? 
+    (animation === "fade-up" ? "up" : 
+     animation === "fade-down" ? "down" : 
+     animation === "fade-left" ? "left" : 
+     animation === "fade-right" ? "right" : "none") 
+    : direction;
   const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -43,12 +51,12 @@ export function ScrollReveal({
   }, [once]);
 
   const getTransform = () => {
-    switch (direction) {
+    switch (effectiveDirection) {
       case "up": return "translateY(40px)";
       case "down": return "translateY(-40px)";
       case "left": return "translateX(40px)";
       case "right": return "translateX(-40px)";
-      default: return "none";
+      default: return animation === "zoom" ? "scale(0.95)" : "none";
     }
   };
 
@@ -74,6 +82,15 @@ interface StaggerContainerProps {
   baseDelay?: number;
 }
 
+interface StaggerContextValue {
+  isVisible: boolean;
+  registerItem: () => number;
+  staggerDelay: number;
+  baseDelay: number;
+}
+
+const StaggerContext = createContext<StaggerContextValue | null>(null);
+
 export function StaggerContainer({ 
   children, 
   className = "", 
@@ -82,6 +99,11 @@ export function StaggerContainer({
 }: StaggerContainerProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const indexRef = useRef(0);
+
+  useEffect(() => {
+    indexRef.current = 0;
+  }, [children]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -103,20 +125,81 @@ export function StaggerContainer({
     return () => observer.disconnect();
   }, []);
 
+  const registerItem = () => {
+    return indexRef.current++;
+  };
+
   return (
-    <div ref={ref} className={className}>
-      {Array.isArray(children) ? children.map((child, index) => (
-        <div
-          key={index}
-          style={{
-            opacity: isVisible ? 1 : 0,
-            transform: isVisible ? "none" : "translateY(30px)",
-            transition: `opacity 600ms ease-out ${baseDelay + index * staggerDelay}ms, transform 600ms ease-out ${baseDelay + index * staggerDelay}ms`,
-          }}
-        >
-          {child}
-        </div>
-      )) : children}
+    <StaggerContext.Provider value={{ isVisible, registerItem, staggerDelay, baseDelay }}>
+      <div ref={ref} className={className}>
+        {children}
+      </div>
+    </StaggerContext.Provider>
+  );
+}
+
+export function StaggerItem({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  const context = useContext(StaggerContext);
+  const [index] = useState(() => context?.registerItem() ?? 0);
+  
+  if (!context) {
+    return <div className={className}>{children}</div>;
+  }
+
+  const { isVisible, staggerDelay, baseDelay } = context;
+  const delay = baseDelay + index * staggerDelay;
+
+  return (
+    <div 
+      className={className}
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? "none" : "translateY(30px)",
+        transition: `opacity 600ms ease-out ${delay}ms, transform 600ms ease-out ${delay}ms`,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+export function ParallaxSection({ 
+  children, 
+  className = "", 
+  speed = 0.3 
+}: { 
+  children: React.ReactNode; 
+  className?: string; 
+  speed?: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [offset, setOffset] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (ref.current) {
+        const rect = ref.current.getBoundingClientRect();
+        const scrolled = window.innerHeight - rect.top;
+        setOffset(scrolled * speed * -0.1);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [speed]);
+
+  return (
+    <div ref={ref} className={`relative overflow-hidden ${className}`}>
+      <div
+        style={{
+          transform: `translateY(${offset}px)`,
+          willChange: "transform",
+        }}
+      >
+        {children}
+      </div>
     </div>
   );
 }

@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Filter, X, ChevronDown, Grid, Car, Volume2, Settings, ChevronRight, LayoutGrid, List, SlidersHorizontal, Sparkles } from "lucide-react";
+import { Search, Filter, X, ChevronDown, Grid, Car, Volume2, Settings, ChevronRight, LayoutGrid, List, SlidersHorizontal, Sparkles, ArrowLeft, ShoppingCart, Home } from "lucide-react";
 import type { Product, Category, Brand, VehicleMake } from "@shared/schema";
 import { ProductAudioSkeleton } from "@/components/AudioSkeletons";
 import { ScrollReveal, StaggerContainer, StaggerItem, ParallaxSection } from "@/components/ScrollAnimations";
@@ -30,8 +30,17 @@ export default function Shop() {
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 2000]);
+  const [isMobile, setIsMobile] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
-  const [location] = useLocation();
+  const [location, navigate] = useLocation();
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const { data: products, isLoading: isLoadingProducts } = useQuery({
     queryKey: ["/api/products", {
@@ -109,10 +118,77 @@ export default function Shop() {
 
   return (
     <div className="min-h-screen bg-black">
-      <Header onCartOpen={() => setIsCartOpen(true)} />
+      {/* Desktop Header */}
+      <div className="hidden md:block">
+        <Header onCartOpen={() => setIsCartOpen(true)} />
+      </div>
+      
+      {/* Mobile App Header */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-lg border-b border-white/10 safe-area-top">
+        <div className="flex items-center justify-between px-4 h-14">
+          <button 
+            onClick={() => navigate("/")}
+            className="p-2 -ml-2 hover:bg-white/10 transition-colors active:scale-95"
+            data-testid="mobile-home-button"
+            aria-label="Ga naar homepage"
+          >
+            <Home className="w-5 h-5 text-white" />
+          </button>
+          
+          <h1 className="text-white font-semibold">Shop</h1>
+          
+          <div className="flex items-center gap-1">
+            <button 
+              onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
+              className="p-2 hover:bg-white/10 transition-colors active:scale-95"
+              data-testid="mobile-search-toggle"
+              aria-label={mobileSearchOpen ? "Sluit zoeken" : "Open zoeken"}
+              aria-expanded={mobileSearchOpen}
+            >
+              <Search className={`w-5 h-5 ${mobileSearchOpen ? 'text-[#d0a760]' : 'text-white'}`} />
+            </button>
+            <button 
+              onClick={() => setIsCartOpen(true)}
+              className="p-2 -mr-2 hover:bg-white/10 transition-colors active:scale-95"
+              data-testid="mobile-cart-button"
+              aria-label="Open winkelwagen"
+            >
+              <ShoppingCart className="w-5 h-5 text-white" />
+            </button>
+          </div>
+        </div>
+        
+        {/* Mobile Search Bar (expandable) */}
+        {mobileSearchOpen && (
+          <div className="px-4 pb-3 animate-in slide-in-from-top-2 duration-200">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" aria-hidden="true" />
+              <Input
+                type="text"
+                placeholder="Zoek producten..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full h-10 pl-10 pr-4 bg-white/5 border-white/10 text-white placeholder:text-white/40 rounded-none text-sm"
+                data-testid="mobile-search-input"
+                aria-label="Zoek producten"
+                autoFocus
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1"
+                  aria-label="Wis zoekopdracht"
+                >
+                  <X className="w-4 h-4 text-white/40" />
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
       
       {/* Premium Hero Section */}
-      <section className="relative bg-black pt-24 pb-20 overflow-hidden">
+      <section className="relative bg-black pt-14 md:pt-24 pb-12 md:pb-20 overflow-hidden">
         {/* Background effects */}
         <div className="absolute inset-0">
           <div className="absolute top-1/2 left-1/4 w-[600px] h-[600px] bg-[#d0a760]/5 rounded-full blur-[120px] -translate-y-1/2" />
@@ -147,7 +223,8 @@ export default function Shop() {
 
         <div className="container mx-auto px-4 relative z-10">
           <ScrollReveal animation="fade-up">
-            <div className="text-center max-w-4xl mx-auto">
+            {/* Desktop Hero Content */}
+            <div className="hidden md:block text-center max-w-4xl mx-auto">
               <Badge className="bg-[#d0a760]/10 text-[#d0a760] border-[#d0a760]/20 px-4 py-1.5 mb-6 rounded-none">
                 <Sparkles className="w-3 h-3 mr-2" />
                 Premium Car Audio Collection
@@ -175,15 +252,73 @@ export default function Shop() {
                 />
               </div>
             </div>
+            
+            {/* Mobile Hero Content - Compact */}
+            <div className="md:hidden text-center pt-4">
+              <h1 className="text-2xl font-bold text-white mb-2">
+                Premium <span className="text-[#d0a760]">Audio</span>
+              </h1>
+              <p className="text-sm text-white/50">
+                {sortedProducts.length} producten beschikbaar
+              </p>
+            </div>
           </ScrollReveal>
         </div>
       </section>
 
       {/* Category Quick Filters - White Section */}
-      <section className="bg-white py-12">
-        <div className="container mx-auto px-4">
+      <section className="bg-white py-6 md:py-12">
+        <div className="container mx-auto px-0 md:px-4">
           <ScrollReveal animation="fade-up">
-            <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {/* Mobile: Horizontal scrolling pills */}
+            <div className="md:hidden flex gap-2 overflow-x-auto px-4 pb-2 scrollbar-hide">
+              <button
+                onClick={() => setSelectedCategory("all-categories")}
+                className={`flex items-center gap-2 px-4 py-2 border whitespace-nowrap flex-shrink-0 transition-all active:scale-95 ${
+                  selectedCategory === 'all-categories'
+                    ? 'bg-black text-white border-black'
+                    : 'bg-white text-black border-zinc-200'
+                }`}
+                data-testid="mobile-category-all"
+              >
+                <Sparkles className="w-4 h-4" />
+                <span className="text-sm font-medium">Alles</span>
+              </button>
+              {[
+                { name: "Speakers", icon: <Volume2 className="w-4 h-4" />, key: "speaker" },
+                { name: "Versterkers", icon: <Settings className="w-4 h-4" />, key: "amplif" },
+                { name: "Head Units", icon: <Car className="w-4 h-4" />, key: "head" },
+                { name: "Accessoires", icon: <Grid className="w-4 h-4" />, key: "access" },
+              ].map((cat) => {
+                const isSelected = selectedCategory !== 'all-categories' && 
+                  categories?.find((c: Category) => c.id === selectedCategory)?.name.toLowerCase().includes(cat.key);
+                return (
+                  <button
+                    key={cat.name}
+                    onClick={() => {
+                      const matchingCategory = categories?.find((c: Category) => 
+                        c.name.toLowerCase().includes(cat.key)
+                      );
+                      if (matchingCategory) {
+                        setSelectedCategory(isSelected ? "all-categories" : matchingCategory.id);
+                      }
+                    }}
+                    className={`flex items-center gap-2 px-4 py-2 border whitespace-nowrap flex-shrink-0 transition-all active:scale-95 ${
+                      isSelected
+                        ? 'bg-black text-white border-black'
+                        : 'bg-white text-black border-zinc-200'
+                    }`}
+                    data-testid={`mobile-category-${cat.key}`}
+                  >
+                    <span className={isSelected ? 'text-[#d0a760]' : ''}>{cat.icon}</span>
+                    <span className="text-sm font-medium">{cat.name}</span>
+                  </button>
+                );
+              })}
+            </div>
+            
+            {/* Desktop: Grid cards */}
+            <StaggerContainer className="hidden md:grid grid-cols-2 md:grid-cols-4 gap-4 px-4">
               {[
                 { name: "Speakers", icon: <Volume2 className="w-8 h-8" />, desc: "Hi-Fi Geluid", key: "speaker" },
                 { name: "Versterkers", icon: <Settings className="w-8 h-8" />, desc: "Pure Power", key: "amplif" },
@@ -227,7 +362,7 @@ export default function Shop() {
       </section>
 
       {/* Filters Bar - Black Section */}
-      <section className="bg-black py-6 border-y border-white/10 sticky top-16 z-40">
+      <section className="bg-black py-4 md:py-6 border-y border-white/10 sticky top-14 md:top-16 z-40">
         <div className="container mx-auto px-4">
           <div className="flex flex-wrap items-center justify-between gap-4">
             {/* Left side - Filter controls */}
@@ -562,7 +697,14 @@ export default function Shop() {
         </div>
       </section>
 
-      <Footer />
+      {/* Footer - Desktop only */}
+      <div className="hidden md:block">
+        <Footer />
+      </div>
+      
+      {/* Mobile Bottom Spacer for potential future bottom nav */}
+      <div className="md:hidden h-4 safe-area-bottom" />
+      
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </div>
   );

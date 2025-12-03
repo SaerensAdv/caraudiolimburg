@@ -211,6 +211,7 @@ export default function ProductPage() {
             onClick={() => navigate("/shop")}
             className="p-2 -ml-2 hover:bg-white/10 transition-colors active:scale-95"
             data-testid="mobile-back-button"
+            aria-label="Terug naar shop"
           >
             <ArrowLeft className="w-6 h-6 text-white" />
           </button>
@@ -220,6 +221,7 @@ export default function ProductPage() {
               onClick={handleShare}
               className="p-2 hover:bg-white/10 transition-colors active:scale-95"
               data-testid="mobile-share-button"
+              aria-label="Deel dit product"
             >
               <Share2 className="w-5 h-5 text-white" />
             </button>
@@ -227,6 +229,8 @@ export default function ProductPage() {
               onClick={() => setIsWishlisted(!isWishlisted)}
               className="p-2 hover:bg-white/10 transition-colors active:scale-95"
               data-testid="mobile-wishlist-button"
+              aria-label={isWishlisted ? "Verwijder uit favorieten" : "Voeg toe aan favorieten"}
+              aria-pressed={isWishlisted}
             >
               <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-white'}`} />
             </button>
@@ -234,6 +238,7 @@ export default function ProductPage() {
               onClick={() => setIsCartOpen(true)}
               className="p-2 -mr-2 hover:bg-white/10 transition-colors active:scale-95"
               data-testid="mobile-cart-button"
+              aria-label="Open winkelwagen"
             >
               <ShoppingCart className="w-5 h-5 text-white" />
             </button>

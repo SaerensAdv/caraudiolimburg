@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useParams, Link } from "wouter";
+import { useState, useRef, useEffect } from "react";
+import { useParams, Link, useLocation } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -26,19 +26,79 @@ import {
   Package,
   Clock,
   Award,
-  Headphones
+  Headphones,
+  Share2,
+  X,
+  Plus,
+  Minus
 } from "lucide-react";
 import type { Product } from "@shared/schema";
 
 export default function ProductPage() {
   const { slug } = useParams();
+  const [, navigate] = useLocation();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const imageContainerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = (images: string[]) => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    
+    if (isLeftSwipe) {
+      setSelectedImageIndex((prev) => (prev + 1) % images.length);
+    }
+    if (isRightSwipe) {
+      setSelectedImageIndex((prev) => (prev - 1 + images.length) % images.length);
+    }
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: product?.name,
+          url: window.location.href,
+        });
+      } catch (err) {
+        // User cancelled sharing
+      }
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast({
+        title: "Link gekopieerd",
+        description: "Productlink is naar je klembord gekopieerd.",
+      });
+    }
+  };
 
   const { data: product, isLoading } = useQuery<Product>({
     queryKey: ["/api/products", slug],
@@ -139,10 +199,50 @@ export default function ProductPage() {
 
   return (
     <div className="min-h-screen bg-black">
-      <Header onCartOpen={() => setIsCartOpen(true)} />
+      {/* Desktop Header */}
+      <div className="hidden md:block">
+        <Header onCartOpen={() => setIsCartOpen(true)} />
+      </div>
       
-      {/* Breadcrumb */}
-      <div className="bg-zinc-950 border-b border-white/5">
+      {/* Mobile App Header */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-lg border-b border-white/10 safe-area-top">
+        <div className="flex items-center justify-between px-4 h-14">
+          <button 
+            onClick={() => navigate("/shop")}
+            className="p-2 -ml-2 hover:bg-white/10 transition-colors active:scale-95"
+            data-testid="mobile-back-button"
+          >
+            <ArrowLeft className="w-6 h-6 text-white" />
+          </button>
+          
+          <div className="flex items-center gap-1">
+            <button 
+              onClick={handleShare}
+              className="p-2 hover:bg-white/10 transition-colors active:scale-95"
+              data-testid="mobile-share-button"
+            >
+              <Share2 className="w-5 h-5 text-white" />
+            </button>
+            <button 
+              onClick={() => setIsWishlisted(!isWishlisted)}
+              className="p-2 hover:bg-white/10 transition-colors active:scale-95"
+              data-testid="mobile-wishlist-button"
+            >
+              <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-white'}`} />
+            </button>
+            <button 
+              onClick={() => setIsCartOpen(true)}
+              className="p-2 -mr-2 hover:bg-white/10 transition-colors active:scale-95"
+              data-testid="mobile-cart-button"
+            >
+              <ShoppingCart className="w-5 h-5 text-white" />
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      {/* Desktop Breadcrumb */}
+      <div className="hidden md:block bg-zinc-950 border-b border-white/5">
         <div className="container mx-auto px-4 py-4">
           <nav className="flex items-center gap-2 text-sm" data-testid="breadcrumb">
             <Link href="/" className="text-white/40 hover:text-[#d0a760] transition-colors">Home</Link>
@@ -155,28 +255,33 @@ export default function ProductPage() {
       </div>
 
       {/* Product Section - Black */}
-      <section className="py-12 md:py-20">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-            {/* Product Images */}
+      <section className="pt-14 md:pt-0 py-6 md:py-20 pb-32 md:pb-20">
+        <div className="container mx-auto px-0 md:px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 lg:gap-16">
+            {/* Product Images - Mobile Swipeable Gallery */}
             <ScrollReveal animation="fade-right">
               <div className="space-y-4" data-testid="product-images">
                 {images.length > 0 ? (
                   <>
-                    {/* Main Image */}
+                    {/* Main Image - Swipeable on Mobile */}
                     <div 
-                      className="relative aspect-square bg-zinc-900 border border-zinc-800 cursor-zoom-in group overflow-hidden"
+                      ref={imageContainerRef}
+                      className="relative aspect-square bg-zinc-900 md:border md:border-zinc-800 md:cursor-zoom-in group overflow-hidden touch-pan-y"
                       onClick={() => setIsLightboxOpen(true)}
+                      onTouchStart={images.length > 1 ? onTouchStart : undefined}
+                      onTouchMove={images.length > 1 ? onTouchMove : undefined}
+                      onTouchEnd={() => images.length > 1 && onTouchEnd(images)}
                       data-testid="main-product-image"
                     >
                       <img 
                         src={images[selectedImageIndex]} 
                         alt={product.name}
-                        className="w-full h-full object-contain p-8 group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-contain p-4 md:p-8 group-hover:scale-105 transition-transform duration-500 select-none"
+                        draggable={false}
                       />
                       
-                      {/* Zoom indicator */}
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
+                      {/* Zoom indicator - Desktop only */}
+                      <div className="hidden md:flex absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 items-center justify-center">
                         <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 p-3">
                           <ZoomIn className="w-6 h-6 text-black" />
                         </div>
@@ -189,7 +294,7 @@ export default function ProductPage() {
                         </Badge>
                       )}
 
-                      {/* Image navigation */}
+                      {/* Image navigation - Desktop only */}
                       {images.length > 1 && (
                         <>
                           <button
@@ -197,7 +302,7 @@ export default function ProductPage() {
                               e.stopPropagation();
                               setSelectedImageIndex((prev) => (prev - 1 + images.length) % images.length);
                             }}
-                            className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-black/60 hover:bg-[#d0a760] text-white hover:text-black transition-all"
+                            className="hidden md:block absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-black/60 hover:bg-[#d0a760] text-white hover:text-black transition-all"
                             data-testid="button-previous-image"
                           >
                             <ChevronLeft className="w-5 h-5" />
@@ -207,18 +312,39 @@ export default function ProductPage() {
                               e.stopPropagation();
                               setSelectedImageIndex((prev) => (prev + 1) % images.length);
                             }}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-black/60 hover:bg-[#d0a760] text-white hover:text-black transition-all"
+                            className="hidden md:block absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-black/60 hover:bg-[#d0a760] text-white hover:text-black transition-all"
                             data-testid="button-next-image"
                           >
                             <ChevronRight className="w-5 h-5" />
                           </button>
                         </>
                       )}
+                      
+                      {/* Mobile Image Dots Indicator */}
+                      {images.length > 1 && isMobile && (
+                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
+                          {images.map((_, index) => (
+                            <button
+                              key={index}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedImageIndex(index);
+                              }}
+                              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                                index === selectedImageIndex 
+                                  ? 'bg-[#d0a760] w-6' 
+                                  : 'bg-white/30'
+                              }`}
+                              data-testid={`mobile-dot-${index}`}
+                            />
+                          ))}
+                        </div>
+                      )}
                     </div>
                     
-                    {/* Thumbnails */}
+                    {/* Thumbnails - Desktop only */}
                     {images.length > 1 && (
-                      <div className="grid grid-cols-4 gap-3">
+                      <div className="hidden md:grid grid-cols-4 gap-3 px-4 md:px-0">
                         {images.map((image, index) => (
                           <button
                             key={index}
@@ -251,28 +377,29 @@ export default function ProductPage() {
 
             {/* Product Details */}
             <ScrollReveal animation="fade-left">
-              <div className="space-y-6" data-testid="product-details">
+              <div className="space-y-4 md:space-y-6 px-4 md:px-0" data-testid="product-details">
                 {/* Header */}
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <Badge className="bg-[#d0a760]/10 text-[#d0a760] border-[#d0a760]/20 rounded-none">
                       Premium Audio
                     </Badge>
+                    {/* Desktop wishlist button */}
                     <button
                       onClick={() => setIsWishlisted(!isWishlisted)}
-                      className="p-2 hover:bg-white/5 transition-colors"
+                      className="hidden md:block p-2 hover:bg-white/5 transition-colors"
                       data-testid="button-wishlist"
                     >
                       <Heart className={`w-6 h-6 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-white/40'}`} />
                     </button>
                   </div>
                   
-                  <h1 className="text-3xl md:text-4xl font-bold text-white mb-3" data-testid="product-title">
+                  <h1 className="text-2xl md:text-4xl font-bold text-white mb-2 md:mb-3" data-testid="product-title">
                     {product.name}
                   </h1>
                   
                   {product.shortDescription && (
-                    <p className="text-lg text-white/50" data-testid="product-short-description">
+                    <p className="text-base md:text-lg text-white/50" data-testid="product-short-description">
                       {product.shortDescription}
                     </p>
                   )}
@@ -282,20 +409,20 @@ export default function ProductPage() {
                 <div className="flex items-center gap-3" data-testid="product-rating">
                   <div className="flex items-center gap-0.5">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 text-[#d0a760] fill-current" />
+                      <Star key={i} className="w-4 h-4 md:w-5 md:h-5 text-[#d0a760] fill-current" />
                     ))}
                   </div>
                   <span className="text-white/40 text-sm">4.8 (24 reviews)</span>
                 </div>
 
-                {/* Price */}
-                <div className="py-6 border-y border-white/10" data-testid="product-pricing">
-                  <div className="flex items-baseline gap-4 mb-3">
-                    <span className="text-4xl font-bold text-white">
+                {/* Price - Mobile compact, Desktop full */}
+                <div className="py-4 md:py-6 border-y border-white/10" data-testid="product-pricing">
+                  <div className="flex items-baseline gap-3 md:gap-4 mb-2 md:mb-3">
+                    <span className="text-3xl md:text-4xl font-bold text-white">
                       €{currentPrice.toFixed(0)}
                     </span>
                     {originalPrice && (
-                      <span className="text-xl text-white/30 line-through">
+                      <span className="text-lg md:text-xl text-white/30 line-through">
                         €{originalPrice.toFixed(0)}
                       </span>
                     )}
@@ -307,7 +434,7 @@ export default function ProductPage() {
                     </p>
                   )}
 
-                  <div className="mt-4">
+                  <div className="mt-3 md:mt-4">
                     {product.stock && product.stock > 0 ? (
                       <span className="inline-flex items-center gap-2 text-green-500 text-sm">
                         <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
@@ -322,8 +449,8 @@ export default function ProductPage() {
                   </div>
                 </div>
 
-                {/* Quantity and Add to Cart */}
-                <div className="space-y-4" data-testid="add-to-cart-section">
+                {/* Quantity and Add to Cart - Desktop only */}
+                <div className="hidden md:block space-y-4" data-testid="add-to-cart-section">
                   <div className="flex items-center gap-4">
                     <span className="text-white/60 text-sm">Aantal:</span>
                     <div className="flex items-center border border-white/10">
@@ -375,44 +502,63 @@ export default function ProductPage() {
                   </div>
                 </div>
 
-                {/* Trust Indicators */}
-                <StaggerContainer className="grid grid-cols-1 gap-3 pt-6" data-testid="product-benefits">
-                  <StaggerItem>
-                    <div className="flex items-center gap-4 p-4 bg-zinc-900 border border-zinc-800">
-                      <div className="p-2 bg-[#d0a760]/10">
-                        <Truck className="w-5 h-5 text-[#d0a760]" />
-                      </div>
-                      <div>
-                        <p className="text-white font-medium text-sm">Gratis Verzending</p>
-                        <p className="text-white/40 text-xs">Bij bestellingen vanaf €50</p>
-                      </div>
+                {/* Trust Indicators - Mobile: Horizontal scroll, Desktop: Grid */}
+                <div className="pt-4 md:pt-6" data-testid="product-benefits">
+                  {/* Mobile: Compact horizontal badges */}
+                  <div className="flex md:hidden gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+                    <div className="flex items-center gap-2 px-3 py-2 bg-zinc-900 border border-zinc-800 whitespace-nowrap flex-shrink-0">
+                      <Truck className="w-4 h-4 text-[#d0a760]" />
+                      <span className="text-white text-xs font-medium">Gratis Verzending</span>
                     </div>
-                  </StaggerItem>
+                    <div className="flex items-center gap-2 px-3 py-2 bg-zinc-900 border border-zinc-800 whitespace-nowrap flex-shrink-0">
+                      <Shield className="w-4 h-4 text-[#d0a760]" />
+                      <span className="text-white text-xs font-medium">2 Jaar Garantie</span>
+                    </div>
+                    <div className="flex items-center gap-2 px-3 py-2 bg-zinc-900 border border-zinc-800 whitespace-nowrap flex-shrink-0">
+                      <Award className="w-4 h-4 text-[#d0a760]" />
+                      <span className="text-white text-xs font-medium">Prof. Installatie</span>
+                    </div>
+                  </div>
                   
-                  <StaggerItem>
-                    <div className="flex items-center gap-4 p-4 bg-zinc-900 border border-zinc-800">
-                      <div className="p-2 bg-[#d0a760]/10">
-                        <Shield className="w-5 h-5 text-[#d0a760]" />
+                  {/* Desktop: Full grid with stagger */}
+                  <StaggerContainer className="hidden md:grid grid-cols-1 gap-3">
+                    <StaggerItem>
+                      <div className="flex items-center gap-4 p-4 bg-zinc-900 border border-zinc-800">
+                        <div className="p-2 bg-[#d0a760]/10">
+                          <Truck className="w-5 h-5 text-[#d0a760]" />
+                        </div>
+                        <div>
+                          <p className="text-white font-medium text-sm">Gratis Verzending</p>
+                          <p className="text-white/40 text-xs">Bij bestellingen vanaf €50</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-white font-medium text-sm">2 Jaar Garantie</p>
-                        <p className="text-white/40 text-xs">Volledige fabrieksgarantie</p>
+                    </StaggerItem>
+                    
+                    <StaggerItem>
+                      <div className="flex items-center gap-4 p-4 bg-zinc-900 border border-zinc-800">
+                        <div className="p-2 bg-[#d0a760]/10">
+                          <Shield className="w-5 h-5 text-[#d0a760]" />
+                        </div>
+                        <div>
+                          <p className="text-white font-medium text-sm">2 Jaar Garantie</p>
+                          <p className="text-white/40 text-xs">Volledige fabrieksgarantie</p>
+                        </div>
                       </div>
-                    </div>
-                  </StaggerItem>
-                  
-                  <StaggerItem>
-                    <div className="flex items-center gap-4 p-4 bg-zinc-900 border border-zinc-800">
-                      <div className="p-2 bg-[#d0a760]/10">
-                        <Award className="w-5 h-5 text-[#d0a760]" />
+                    </StaggerItem>
+                    
+                    <StaggerItem>
+                      <div className="flex items-center gap-4 p-4 bg-zinc-900 border border-zinc-800">
+                        <div className="p-2 bg-[#d0a760]/10">
+                          <Award className="w-5 h-5 text-[#d0a760]" />
+                        </div>
+                        <div>
+                          <p className="text-white font-medium text-sm">Professionele Installatie</p>
+                          <p className="text-white/40 text-xs">Door gecertificeerde monteurs</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-white font-medium text-sm">Professionele Installatie</p>
-                        <p className="text-white/40 text-xs">Door gecertificeerde monteurs</p>
-                      </div>
-                    </div>
-                  </StaggerItem>
-                </StaggerContainer>
+                    </StaggerItem>
+                  </StaggerContainer>
+                </div>
               </div>
             </ScrollReveal>
           </div>
@@ -502,7 +648,77 @@ export default function ProductPage() {
         </div>
       </section>
 
-      <Footer />
+      {/* Footer - Desktop only */}
+      <div className="hidden md:block">
+        <Footer />
+      </div>
+
+      {/* Mobile Sticky Bottom Action Bar */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-zinc-950/98 backdrop-blur-xl border-t border-white/10 safe-area-bottom">
+        <div className="p-4">
+          {/* Quantity selector row */}
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center border border-white/10 bg-black/50">
+              <button
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                disabled={quantity <= 1}
+                className="p-2.5 text-white/60 hover:text-white active:bg-white/10 disabled:opacity-30 transition-colors"
+                data-testid="mobile-button-decrease-quantity"
+              >
+                <Minus className="w-4 h-4" />
+              </button>
+              <span className="w-10 text-center text-white font-medium text-sm" data-testid="mobile-quantity-display">
+                {quantity}
+              </span>
+              <button
+                onClick={() => setQuantity(quantity + 1)}
+                disabled={!product.stock || quantity >= product.stock}
+                className="p-2.5 text-white/60 hover:text-white active:bg-white/10 disabled:opacity-30 transition-colors"
+                data-testid="mobile-button-increase-quantity"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+            </div>
+            
+            <div className="text-right">
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-bold text-white">€{currentPrice.toFixed(0)}</span>
+                {originalPrice && (
+                  <span className="text-sm text-white/30 line-through">€{originalPrice.toFixed(0)}</span>
+                )}
+              </div>
+              {product.stock && product.stock > 0 && (
+                <span className="text-xs text-green-500">Op voorraad</span>
+              )}
+            </div>
+          </div>
+          
+          {/* Action buttons row */}
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 active:scale-[0.98] rounded-none h-12 text-sm font-semibold transition-transform"
+              onClick={() => addToCartMutation.mutate({ needsInstallation: false })}
+              disabled={!product.stock || product.stock <= 0 || addToCartMutation.isPending}
+              data-testid="mobile-button-add-to-cart"
+            >
+              <ShoppingCart className="w-4 h-4 mr-1.5" />
+              {addToCartMutation.isPending ? "..." : "In Wagen"}
+            </Button>
+            
+            <Button
+              variant="outline"
+              className="border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760]/10 active:scale-[0.98] rounded-none h-12 text-sm font-semibold transition-transform"
+              onClick={() => addToCartMutation.mutate({ needsInstallation: true })}
+              disabled={!product.stock || product.stock <= 0 || addToCartMutation.isPending}
+              data-testid="mobile-button-add-with-installation"
+            >
+              <Wrench className="w-4 h-4 mr-1.5" />
+              + Installatie
+            </Button>
+          </div>
+        </div>
+      </div>
+
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
       <ImageLightbox 
         images={images}

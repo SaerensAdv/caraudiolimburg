@@ -2,14 +2,13 @@ import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CartSidebar } from "@/components/CartSidebar";
+import { ScrollReveal, StaggerContainer, GoldAccentLine } from "@/components/ScrollAnimations";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { 
   HelpCircle, 
@@ -18,8 +17,12 @@ import {
   Wrench, 
   Shield, 
   Phone,
-  MessageCircle
+  MessageCircle,
+  MapPin,
+  ChevronDown,
+  ArrowRight
 } from "lucide-react";
+import { Link } from "wouter";
 
 export default function FAQ() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -120,135 +123,217 @@ export default function FAQ() {
   ];
 
   return (
-    <>
-      <Header onCartClick={() => setIsCartOpen(true)} />
+    <div className="min-h-screen bg-black scroll-smooth">
+      <Header onCartOpen={() => setIsCartOpen(true)} variant="transparent" />
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      
       <main className="flex-grow">
-        {/* Hero Section */}
-        <section className="bg-gradient-to-r from-gray-50 to-white py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <HelpCircle className="h-16 w-16 text-[#d0a760] mx-auto mb-6" />
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Veelgestelde Vragen
-            </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Hier vindt u antwoorden op de meest gestelde vragen over onze producten, 
-              installaties en service. Staat uw vraag er niet bij? Neem gerust contact op!
-            </p>
+        {/* Hero Section - Dark Premium */}
+        <section className="relative bg-black pt-32 pb-20 md:pt-40 md:pb-28">
+          <div className="absolute inset-0 bg-gradient-to-b from-zinc-900/50 to-black" />
+          <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <ScrollReveal direction="up" delay={100}>
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-zinc-900 border border-zinc-800 mb-8">
+                <HelpCircle className="h-8 w-8 text-[#d0a760]" />
+              </div>
+            </ScrollReveal>
+            
+            <ScrollReveal direction="up" delay={200}>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-white mb-6">
+                Veelgestelde <span className="text-[#d0a760]">Vragen</span>
+              </h1>
+            </ScrollReveal>
+            
+            <ScrollReveal direction="up" delay={300}>
+              <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed">
+                Hier vindt u antwoorden op de meest gestelde vragen over onze producten, 
+                installaties en service. Staat uw vraag er niet bij? Neem gerust contact op.
+              </p>
+            </ScrollReveal>
+
+            <ScrollReveal direction="up" delay={400}>
+              <GoldAccentLine className="mt-12 max-w-xs mx-auto" />
+            </ScrollReveal>
           </div>
         </section>
 
-        {/* Quick Contact */}
-        <section className="py-8 bg-[#d0a760] text-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col md:flex-row items-center justify-between">
-              <div className="text-center md:text-left mb-4 md:mb-0">
-                <h3 className="text-xl font-semibold mb-2">Nog vragen? We helpen graag!</h3>
-                <p className="opacity-90">Bel, WhatsApp of kom langs voor persoonlijk advies</p>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Button 
-                  variant="secondary" 
-                  className="bg-white text-[#d0a760] hover:bg-gray-100"
-                  data-testid="button-call"
-                >
-                  <Phone className="h-4 w-4 mr-2" />
-                  047 563 63 63
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="border-white text-white hover:bg-white hover:text-[#d0a760]"
-                  data-testid="button-whatsapp"
-                >
-                  <MessageCircle className="h-4 w-4 mr-2" />
-                  WhatsApp
-                </Button>
+        {/* Quick Contact Bar */}
+        <ScrollReveal>
+          <section className="bg-zinc-900 border-y border-zinc-800 py-6">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div className="text-center md:text-left">
+                  <h3 className="text-white font-medium mb-1">Nog vragen? We helpen graag!</h3>
+                  <p className="text-white/50 text-sm">Bel, WhatsApp of kom langs voor persoonlijk advies</p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <a href="tel:+31852733625">
+                    <Button 
+                      className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none min-h-[44px] px-6"
+                      data-testid="button-call"
+                    >
+                      <Phone className="h-4 w-4 mr-2" />
+                      +31(0)85 - 27 33 625
+                    </Button>
+                  </a>
+                  <a href="https://wa.me/31852733625" target="_blank" rel="noopener noreferrer">
+                    <Button 
+                      variant="outline" 
+                      className="border-zinc-700 text-white hover:bg-zinc-800 hover:border-[#d0a760] rounded-none min-h-[44px] px-6"
+                      data-testid="button-whatsapp"
+                    >
+                      <MessageCircle className="h-4 w-4 mr-2" />
+                      WhatsApp
+                    </Button>
+                  </a>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </ScrollReveal>
 
         {/* FAQ Sections */}
-        <section className="py-16">
+        <section className="py-16 md:py-24 bg-black">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="space-y-12">
+            <StaggerContainer className="space-y-12 md:space-y-16" staggerDelay={100}>
               {faqData.map((category, categoryIndex) => (
-                <div key={categoryIndex}>
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="p-2 bg-[#d0a760] text-white rounded-lg">
-                      {category.icon}
+                <ScrollReveal key={categoryIndex} delay={categoryIndex * 100}>
+                  <div>
+                    {/* Category Header */}
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="flex items-center justify-center w-10 h-10 bg-zinc-900 border border-zinc-800 text-[#d0a760]">
+                        {category.icon}
+                      </div>
+                      <h2 className="text-xl md:text-2xl font-light text-white">
+                        {category.category}
+                      </h2>
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-900">
-                      {category.category}
-                    </h2>
-                  </div>
 
-                  <Card>
-                    <CardContent className="p-6">
+                    {/* Accordion */}
+                    <div className="bg-zinc-900 border border-zinc-800">
                       <Accordion type="single" collapsible className="w-full">
                         {category.questions.map((item, questionIndex) => (
                           <AccordionItem 
                             key={questionIndex} 
                             value={`${categoryIndex}-${questionIndex}`}
+                            className="border-b border-zinc-800 last:border-b-0"
                             data-testid={`accordion-item-${categoryIndex}-${questionIndex}`}
                           >
-                            <AccordionTrigger className="text-left hover:text-[#d0a760] transition-colors">
+                            <AccordionTrigger 
+                              className="text-left text-white hover:text-[#d0a760] transition-colors px-5 py-4 min-h-[56px] text-base font-normal hover:no-underline group [&>svg]:text-[#d0a760] [&>svg]:h-5 [&>svg]:w-5"
+                            >
                               {item.question}
                             </AccordionTrigger>
-                            <AccordionContent className="text-gray-600 leading-relaxed">
+                            <AccordionContent className="text-white/60 leading-relaxed px-5 pb-5 text-base">
                               {item.answer}
                             </AccordionContent>
                           </AccordionItem>
                         ))}
                       </Accordion>
-                    </CardContent>
-                  </Card>
-                </div>
+                    </div>
+                  </div>
+                </ScrollReveal>
               ))}
-            </div>
+            </StaggerContainer>
           </div>
         </section>
 
-        {/* Contact CTA */}
-        <section className="py-16 bg-gray-50">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Staat uw vraag er niet bij?
-            </h2>
-            <p className="text-xl text-gray-600 mb-8">
-              Ons team staat klaar om al uw vragen te beantwoorden en u te helpen 
-              met de perfecte car audio oplossing.
-            </p>
+        {/* Contact CTA Section */}
+        <section className="py-16 md:py-24 bg-zinc-950 border-t border-zinc-800">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <ScrollReveal>
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-light text-white mb-4">
+                  Staat uw vraag er <span className="text-[#d0a760]">niet bij?</span>
+                </h2>
+                <p className="text-white/60 text-lg max-w-xl mx-auto">
+                  Ons team staat klaar om al uw vragen te beantwoorden en u te helpen 
+                  met de perfecte car audio oplossing.
+                </p>
+              </div>
+            </ScrollReveal>
             
-            <div className="grid md:grid-cols-3 gap-6">
-              <Card className="p-6">
-                <Phone className="h-12 w-12 text-[#d0a760] mx-auto mb-4" />
-                <h3 className="font-semibold text-gray-900 mb-2">Bellen</h3>
-                <p className="text-gray-600 mb-4">Direct contact met onze experts</p>
-                <Badge variant="secondary">+31(0)85 - 27 33 625</Badge>
-              </Card>
+            <StaggerContainer className="grid md:grid-cols-3 gap-6" staggerDelay={100}>
+              {/* Call Card */}
+              <ScrollReveal delay={100}>
+                <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8 text-center group hover:border-[#d0a760]/50 transition-colors">
+                  <div className="inline-flex items-center justify-center w-14 h-14 bg-zinc-800 border border-zinc-700 mb-5 group-hover:border-[#d0a760]/50 transition-colors">
+                    <Phone className="h-6 w-6 text-[#d0a760]" />
+                  </div>
+                  <h3 className="text-white font-medium text-lg mb-2">Bellen</h3>
+                  <p className="text-white/50 text-sm mb-4">Direct contact met onze experts</p>
+                  <a href="tel:+31852733625" className="inline-block">
+                    <span className="text-[#d0a760] text-sm font-medium hover:underline underline-offset-4">
+                      +31(0)85 - 27 33 625
+                    </span>
+                  </a>
+                </div>
+              </ScrollReveal>
 
-              <Card className="p-6">
-                <MessageCircle className="h-12 w-12 text-[#d0a760] mx-auto mb-4" />
-                <h3 className="font-semibold text-gray-900 mb-2">WhatsApp</h3>
-                <p className="text-gray-600 mb-4">Snel en makkelijk communiceren</p>
-                <a href="https://wa.me/31852733625" target="_blank" rel="noopener noreferrer">
-                  <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80 transition-colors">Online chat</Badge>
-                </a>
-              </Card>
+              {/* WhatsApp Card */}
+              <ScrollReveal delay={200}>
+                <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8 text-center group hover:border-[#d0a760]/50 transition-colors">
+                  <div className="inline-flex items-center justify-center w-14 h-14 bg-zinc-800 border border-zinc-700 mb-5 group-hover:border-[#d0a760]/50 transition-colors">
+                    <MessageCircle className="h-6 w-6 text-[#d0a760]" />
+                  </div>
+                  <h3 className="text-white font-medium text-lg mb-2">WhatsApp</h3>
+                  <p className="text-white/50 text-sm mb-4">Snel en makkelijk communiceren</p>
+                  <a 
+                    href="https://wa.me/31852733625" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-block"
+                  >
+                    <span className="text-[#d0a760] text-sm font-medium hover:underline underline-offset-4">
+                      Online chat starten
+                    </span>
+                  </a>
+                </div>
+              </ScrollReveal>
 
-              <Card className="p-6">
-                <HelpCircle className="h-12 w-12 text-[#d0a760] mx-auto mb-4" />
-                <h3 className="font-semibold text-gray-900 mb-2">Bezoek</h3>
-                <p className="text-gray-600 mb-4">Kom langs voor persoonlijk advies</p>
-                <Badge variant="secondary">Dr. Nolenslaan 157c,
-                6136 GM Sittard</Badge>
-              </Card>
-            </div>
+              {/* Visit Card */}
+              <ScrollReveal delay={300}>
+                <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8 text-center group hover:border-[#d0a760]/50 transition-colors">
+                  <div className="inline-flex items-center justify-center w-14 h-14 bg-zinc-800 border border-zinc-700 mb-5 group-hover:border-[#d0a760]/50 transition-colors">
+                    <MapPin className="h-6 w-6 text-[#d0a760]" />
+                  </div>
+                  <h3 className="text-white font-medium text-lg mb-2">Bezoek</h3>
+                  <p className="text-white/50 text-sm mb-4">Kom langs voor persoonlijk advies</p>
+                  <span className="text-[#d0a760] text-sm font-medium">
+                    Dr. Nolenslaan 157c, Sittard
+                  </span>
+                </div>
+              </ScrollReveal>
+            </StaggerContainer>
+
+            {/* CTA Buttons */}
+            <ScrollReveal delay={400}>
+              <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <Link href="/contact">
+                  <Button 
+                    className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none px-8 py-6 min-h-[52px] text-base"
+                    data-testid="button-contact-page"
+                  >
+                    Naar Contactpagina
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </Link>
+                <Link href="/booking">
+                  <Button 
+                    variant="outline"
+                    className="border-zinc-700 text-white hover:bg-zinc-800 hover:border-[#d0a760] rounded-none px-8 py-6 min-h-[52px] text-base"
+                    data-testid="button-book-appointment"
+                  >
+                    Afspraak Maken
+                  </Button>
+                </Link>
+              </div>
+            </ScrollReveal>
           </div>
         </section>
       </main>
+      
       <Footer />
-    </>
+    </div>
   );
 }

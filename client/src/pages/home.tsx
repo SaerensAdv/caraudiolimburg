@@ -66,7 +66,7 @@ export default function Home() {
       <Header onCartOpen={() => setIsCartOpen(true)} variant="transparent" />
       
       {/* Hero Section - Full Screen Premium with Vehicle Selector */}
-      <section className="relative h-screen w-full overflow-hidden">
+      <section className="relative h-[100dvh] w-full overflow-hidden">
         <Parallax speed={0.3} className="absolute inset-0">
           <div 
             className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-110"

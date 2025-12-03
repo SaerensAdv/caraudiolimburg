@@ -11,10 +11,11 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { AudioLoadingSpinner } from "@/components/AudioSkeletons";
-import { Mail, Lock, ArrowLeft, User } from "lucide-react";
+import { Mail, Lock, ArrowLeft, User, Volume2, Headphones, Speaker } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 
 import calLogo from "@assets/cal-white-logo.png";
+import calLogoDark from "@assets/Caraudiolimburg-logo_1757008375383.png";
 
 const loginSchema = z.object({
   email: z.string().email("Voer een geldig e-mailadres in"),
@@ -117,46 +118,55 @@ export default function Login() {
   const isLoading = loginMutation.isPending || registerMutation.isPending;
 
   return (
-    <div className="min-h-screen min-h-[100svh] bg-black flex flex-col">
-      <div className="absolute top-6 left-6 z-20">
-        <Button
-          variant="ghost"
-          onClick={() => setLocation("/")}
-          className="text-white/60 hover:text-white hover:bg-white/5 rounded-none"
-          data-testid="button-back-home"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Terug
-        </Button>
-      </div>
+    <div className="h-screen h-[100svh] overflow-hidden flex">
+      {/* Left Side - Form */}
+      <div className="w-full lg:w-1/2 bg-white flex flex-col overflow-y-auto lg:overflow-hidden">
+        {/* Back Button */}
+        <div className="p-6">
+          <Button
+            variant="ghost"
+            onClick={() => setLocation("/")}
+            className="text-zinc-600 hover:text-black hover:bg-zinc-100 rounded-none"
+            data-testid="button-back-home"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Terug
+          </Button>
+        </div>
 
-      <div className="flex-1 flex items-center justify-center px-4 py-16 md:py-8">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-10">
-            <Link href="/">
-              <img 
-                src={calLogo} 
-                alt="Car Audio Limburg" 
-                className="h-12 md:h-14 mx-auto mb-6 cursor-pointer"
-                data-testid="img-logo"
-              />
-            </Link>
-            <h1 className="text-2xl md:text-3xl font-light text-white mb-2">
-              {isRegistering ? "Account Aanmaken" : "Inloggen"}
-            </h1>
-            <p className="text-white/50 text-sm">
-              {isRegistering 
-                ? "Maak een account aan om te beginnen" 
-                : "Welkom terug bij Car Audio Limburg"
-              }
-            </p>
-          </div>
+        {/* Form Content */}
+        <div className="flex-1 flex items-center justify-center px-6 py-8 lg:py-0">
+          <div className="w-full max-w-md">
+            {/* Logo - visible on mobile only */}
+            <div className="lg:hidden text-center mb-8">
+              <Link href="/">
+                <img 
+                  src={calLogoDark} 
+                  alt="Car Audio Limburg" 
+                  className="h-10 mx-auto cursor-pointer"
+                  data-testid="img-logo-mobile"
+                />
+              </Link>
+            </div>
 
-          <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8">
+            {/* Header */}
+            <div className="mb-8">
+              <h1 className="text-2xl md:text-3xl font-semibold text-black mb-2">
+                {isRegistering ? "Account Aanmaken" : "Inloggen"}
+              </h1>
+              <p className="text-zinc-500 text-sm">
+                {isRegistering 
+                  ? "Maak een account aan om te beginnen met winkelen" 
+                  : "Welkom terug! Log in om door te gaan"
+                }
+              </p>
+            </div>
+
+            {/* Google Auth Button */}
             <Button
               onClick={handleGoogleAuth}
               variant="outline"
-              className="w-full py-6 text-base bg-transparent border-zinc-700 text-white hover:bg-zinc-800 hover:border-zinc-600 rounded-none"
+              className="w-full py-6 text-base bg-white border-zinc-300 text-zinc-700 hover:bg-zinc-50 hover:border-zinc-400 rounded-none transition-all duration-300"
               disabled={isLoading}
               data-testid="button-google-auth"
             >
@@ -164,58 +174,60 @@ export default function Login() {
               {isRegistering ? "Registreren" : "Inloggen"} met Google
             </Button>
 
+            {/* Divider */}
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <Separator className="w-full bg-zinc-700" />
+                <Separator className="w-full bg-zinc-200" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-zinc-900 px-3 text-zinc-500">Of</span>
+                <span className="bg-white px-3 text-zinc-400">Of met e-mail</span>
               </div>
             </div>
 
+            {/* Form */}
             <form 
               onSubmit={isRegistering 
                 ? registerForm.handleSubmit(onRegisterSubmit)
                 : loginForm.handleSubmit(onLoginSubmit)
               }
-              className="space-y-5"
+              className="space-y-4"
             >
               {isRegistering && (
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="firstName" className="text-white/70 text-sm">Voornaam</Label>
-                    <div className="relative mt-2">
-                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                    <Label htmlFor="firstName" className="text-zinc-700 text-sm font-medium">Voornaam</Label>
+                    <div className="relative mt-1.5">
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-400" />
                       <Input
                         id="firstName"
                         {...registerForm.register("firstName")}
                         disabled={isLoading}
-                        className="pl-10 py-6 bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500 rounded-none focus:border-[#d0a760] focus:ring-[#d0a760] focus:ring-1"
+                        className="pl-10 py-5 bg-zinc-50 border-zinc-200 text-black placeholder:text-zinc-400 rounded-none focus:border-[#d0a760] focus:ring-[#d0a760] focus:ring-1 focus:bg-white transition-all duration-300"
                         placeholder="Voornaam"
                         data-testid="input-firstName"
                       />
                     </div>
                     {registerForm.formState.errors.firstName && (
-                      <p className="text-sm text-red-400 mt-1">
+                      <p className="text-sm text-red-500 mt-1">
                         {registerForm.formState.errors.firstName.message}
                       </p>
                     )}
                   </div>
                   <div>
-                    <Label htmlFor="lastName" className="text-white/70 text-sm">Achternaam</Label>
-                    <div className="relative mt-2">
-                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                    <Label htmlFor="lastName" className="text-zinc-700 text-sm font-medium">Achternaam</Label>
+                    <div className="relative mt-1.5">
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-400" />
                       <Input
                         id="lastName"
                         {...registerForm.register("lastName")}
                         disabled={isLoading}
-                        className="pl-10 py-6 bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500 rounded-none focus:border-[#d0a760] focus:ring-[#d0a760] focus:ring-1"
+                        className="pl-10 py-5 bg-zinc-50 border-zinc-200 text-black placeholder:text-zinc-400 rounded-none focus:border-[#d0a760] focus:ring-[#d0a760] focus:ring-1 focus:bg-white transition-all duration-300"
                         placeholder="Achternaam"
                         data-testid="input-lastName"
                       />
                     </div>
                     {registerForm.formState.errors.lastName && (
-                      <p className="text-sm text-red-400 mt-1">
+                      <p className="text-sm text-red-500 mt-1">
                         {registerForm.formState.errors.lastName.message}
                       </p>
                     )}
@@ -224,42 +236,42 @@ export default function Login() {
               )}
 
               <div>
-                <Label htmlFor="email" className="text-white/70 text-sm">E-mailadres</Label>
-                <div className="relative mt-2">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                <Label htmlFor="email" className="text-zinc-700 text-sm font-medium">E-mailadres</Label>
+                <div className="relative mt-1.5">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-400" />
                   <Input
                     id="email"
                     type="email"
                     {...(isRegistering ? registerForm.register("email") : loginForm.register("email"))}
                     disabled={isLoading}
-                    className="pl-10 py-6 bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500 rounded-none focus:border-[#d0a760] focus:ring-[#d0a760] focus:ring-1"
+                    className="pl-10 py-5 bg-zinc-50 border-zinc-200 text-black placeholder:text-zinc-400 rounded-none focus:border-[#d0a760] focus:ring-[#d0a760] focus:ring-1 focus:bg-white transition-all duration-300"
                     placeholder="uw@email.nl"
                     data-testid="input-email"
                   />
                 </div>
                 {currentForm.formState.errors.email && (
-                  <p className="text-sm text-red-400 mt-1">
+                  <p className="text-sm text-red-500 mt-1">
                     {currentForm.formState.errors.email.message}
                   </p>
                 )}
               </div>
 
               <div>
-                <Label htmlFor="password" className="text-white/70 text-sm">Wachtwoord</Label>
-                <div className="relative mt-2">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                <Label htmlFor="password" className="text-zinc-700 text-sm font-medium">Wachtwoord</Label>
+                <div className="relative mt-1.5">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-400" />
                   <Input
                     id="password"
                     type="password"
                     {...(isRegistering ? registerForm.register("password") : loginForm.register("password"))}
                     disabled={isLoading}
-                    className="pl-10 py-6 bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500 rounded-none focus:border-[#d0a760] focus:ring-[#d0a760] focus:ring-1"
+                    className="pl-10 py-5 bg-zinc-50 border-zinc-200 text-black placeholder:text-zinc-400 rounded-none focus:border-[#d0a760] focus:ring-[#d0a760] focus:ring-1 focus:bg-white transition-all duration-300"
                     placeholder="••••••••"
                     data-testid="input-password"
                   />
                 </div>
                 {currentForm.formState.errors.password && (
-                  <p className="text-sm text-red-400 mt-1">
+                  <p className="text-sm text-red-500 mt-1">
                     {currentForm.formState.errors.password.message}
                   </p>
                 )}
@@ -267,21 +279,21 @@ export default function Login() {
 
               {isRegistering && (
                 <div>
-                  <Label htmlFor="confirmPassword" className="text-white/70 text-sm">Bevestig Wachtwoord</Label>
-                  <div className="relative mt-2">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                  <Label htmlFor="confirmPassword" className="text-zinc-700 text-sm font-medium">Bevestig Wachtwoord</Label>
+                  <div className="relative mt-1.5">
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-400" />
                     <Input
                       id="confirmPassword"
                       type="password"
                       {...registerForm.register("confirmPassword")}
                       disabled={isLoading}
-                      className="pl-10 py-6 bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500 rounded-none focus:border-[#d0a760] focus:ring-[#d0a760] focus:ring-1"
+                      className="pl-10 py-5 bg-zinc-50 border-zinc-200 text-black placeholder:text-zinc-400 rounded-none focus:border-[#d0a760] focus:ring-[#d0a760] focus:ring-1 focus:bg-white transition-all duration-300"
                       placeholder="••••••••"
                       data-testid="input-confirmPassword"
                     />
                   </div>
                   {registerForm.formState.errors.confirmPassword && (
-                    <p className="text-sm text-red-400 mt-1">
+                    <p className="text-sm text-red-500 mt-1">
                       {registerForm.formState.errors.confirmPassword.message}
                     </p>
                   )}
@@ -294,7 +306,7 @@ export default function Login() {
                     <Button
                       type="button"
                       variant="link"
-                      className="text-[#d0a760] hover:text-[#d0a760]/80 p-0 h-auto text-sm"
+                      className="text-[#d0a760] hover:text-[#b8954e] p-0 h-auto text-sm font-medium"
                       data-testid="link-forgot-password"
                     >
                       Wachtwoord vergeten?
@@ -305,7 +317,7 @@ export default function Login() {
 
               <Button
                 type="submit"
-                className="w-full py-6 text-base bg-[#d0a760] text-black hover:bg-[#d0a760]/90 font-medium rounded-none mt-2"
+                className="w-full py-6 text-base bg-[#d0a760] text-black hover:bg-[#b8954e] font-semibold rounded-none mt-2 transition-all duration-300"
                 disabled={isLoading}
                 data-testid={`button-${isRegistering ? 'register' : 'login'}`}
               >
@@ -320,42 +332,114 @@ export default function Login() {
               </Button>
             </form>
 
-            <div className="mt-6 pt-6 border-t border-zinc-800 text-center">
+            {/* Toggle Form */}
+            <div className="mt-6 text-center">
               <p className="text-zinc-500 text-sm">
                 {isRegistering ? "Heeft u al een account?" : "Nog geen account?"}
+                <Button
+                  variant="link"
+                  onClick={() => {
+                    setIsRegistering(!isRegistering);
+                    loginForm.reset();
+                    registerForm.reset();
+                  }}
+                  className="text-[#d0a760] hover:text-[#b8954e] p-0 h-auto ml-1 font-semibold"
+                  data-testid="button-toggle-form"
+                >
+                  {isRegistering ? "Inloggen" : "Account aanmaken"}
+                </Button>
               </p>
-              <Button
-                variant="link"
-                onClick={() => {
-                  setIsRegistering(!isRegistering);
-                  loginForm.reset();
-                  registerForm.reset();
-                }}
-                className="text-[#d0a760] hover:text-[#d0a760]/80 p-0 h-auto mt-1 font-medium"
-                data-testid="button-toggle-form"
-              >
-                {isRegistering ? "Inloggen" : "Account aanmaken"}
-              </Button>
             </div>
-          </div>
 
-          <div className="mt-8 text-center">
-            <p className="text-zinc-600 text-xs">
-              Door in te loggen gaat u akkoord met onze{" "}
-              <Link href="/terms" className="text-[#d0a760] hover:underline">
-                Algemene Voorwaarden
-              </Link>{" "}
-              en{" "}
-              <Link href="/privacy" className="text-[#d0a760] hover:underline">
-                Privacybeleid
-              </Link>
-            </p>
+            {/* Terms */}
+            <div className="mt-6 text-center">
+              <p className="text-zinc-400 text-xs">
+                Door in te loggen gaat u akkoord met onze{" "}
+                <Link href="/voorwaarden" className="text-[#d0a760] hover:underline">
+                  Algemene Voorwaarden
+                </Link>{" "}
+                en{" "}
+                <Link href="/privacy" className="text-[#d0a760] hover:underline">
+                  Privacybeleid
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="text-center py-6 text-xs text-zinc-600">
-        <p>&copy; 2024 Car Audio Limburg. Premium car audio solutions.</p>
+      {/* Right Side - Branding (Hidden on mobile) */}
+      <div className="hidden lg:flex lg:w-1/2 bg-black relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-black via-zinc-900 to-black" />
+          <div 
+            className="absolute inset-0 opacity-10"
+            style={{
+              backgroundImage: `radial-gradient(circle at 2px 2px, #d0a760 1px, transparent 0)`,
+              backgroundSize: '40px 40px'
+            }}
+          />
+          {/* Animated gradient orb */}
+          <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-[#d0a760]/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-1/4 left-1/4 w-72 h-72 bg-[#d0a760]/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        </div>
+
+        {/* Content */}
+        <div className="relative z-10 flex flex-col items-center justify-center w-full p-12">
+          {/* Logo */}
+          <Link href="/">
+            <img 
+              src={calLogo} 
+              alt="Car Audio Limburg" 
+              className="h-14 mb-12 cursor-pointer"
+              data-testid="img-logo"
+            />
+          </Link>
+
+          {/* Icon Display */}
+          <div className="relative mb-12">
+            <div className="w-32 h-32 border-2 border-[#d0a760]/30 flex items-center justify-center">
+              <div className="w-24 h-24 border border-[#d0a760]/50 flex items-center justify-center">
+                <Volume2 className="w-12 h-12 text-[#d0a760]" />
+              </div>
+            </div>
+            {/* Floating icons */}
+            <div className="absolute -top-4 -right-4 p-3 bg-[#d0a760] text-black">
+              <Headphones className="w-5 h-5" />
+            </div>
+            <div className="absolute -bottom-4 -left-4 p-3 bg-zinc-800 text-[#d0a760]">
+              <Speaker className="w-5 h-5" />
+            </div>
+          </div>
+
+          {/* Tagline */}
+          <h2 className="text-3xl font-light text-white text-center mb-4">
+            Premium Car Audio
+          </h2>
+          <p className="text-white/50 text-center max-w-sm mb-8">
+            Met passie voor auto's en muziek. Ontdek de beste audio-upgrades voor jouw voertuig.
+          </p>
+
+          {/* Features */}
+          <div className="flex gap-8 text-white/40 text-sm">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 bg-[#d0a760]" />
+              <span>Gratis Advies</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 bg-[#d0a760]" />
+              <span>Vakkundige Montage</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 bg-[#d0a760]" />
+              <span>Premium Merken</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom accent line */}
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#d0a760] to-transparent" />
       </div>
     </div>
   );

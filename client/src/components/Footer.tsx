@@ -50,7 +50,7 @@ export function Footer() {
           <div data-testid="footer-services">
             <h4 className="text-[#d0a760] text-sm font-medium tracking-wider uppercase mb-6">Services</h4>
             <ul className="space-y-3 text-sm">
-              <li><Link href="/booking" className="text-white/60 hover:text-white transition-colors" data-testid="footer-link-installation">Installatie Service</Link></li>
+              <li><Link href="/studio" className="text-white/60 hover:text-white transition-colors" data-testid="footer-link-studio">Inbouwstudio</Link></li>
               <li><Link href="/apple-carplay-bmw" className="text-white/60 hover:text-white transition-colors" data-testid="footer-link-carplay">BMW/MINI CarPlay</Link></li>
               <li><Link href="/faq" className="text-white/60 hover:text-white transition-colors" data-testid="footer-link-faq">Veelgestelde Vragen</Link></li>
               <li><Link href="/about" className="text-white/60 hover:text-white transition-colors" data-testid="footer-link-about">Over Ons</Link></li>

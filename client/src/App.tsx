@@ -12,7 +12,7 @@ import Shop from "@/pages/shop";
 import Product from "@/pages/product";
 import Cart from "@/pages/cart";
 import Checkout from "@/pages/checkout";
-import Booking from "@/pages/booking";
+import Studio from "@/pages/studio";
 import Admin from "@/pages/admin";
 import About from "@/pages/about";
 import FAQ from "@/pages/faq";
@@ -61,7 +61,8 @@ function Router() {
       <Route path="/cart" component={Cart} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/order-confirmation" component={OrderConfirmation} />
-      <Route path="/booking" component={Booking} />
+      <Route path="/studio" component={Studio} />
+      <Route path="/booking" component={Studio} />
       <Route path="/about" component={About} />
       <Route path="/faq" component={FAQ} />
       <Route path="/contact" component={Contact} />

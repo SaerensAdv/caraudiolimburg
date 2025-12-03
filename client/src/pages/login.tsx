@@ -120,7 +120,7 @@ export default function Login() {
   return (
     <div className="h-screen h-[100svh] overflow-hidden flex">
       {/* Left Side - Form */}
-      <div className="w-full lg:w-1/3 bg-white flex flex-col overflow-y-auto lg:overflow-hidden">
+      <div className="w-full lg:w-2/5 bg-white flex flex-col overflow-y-auto lg:overflow-hidden">
         {/* Back Button */}
         <div className="p-6">
           <Button
@@ -369,7 +369,7 @@ export default function Login() {
       </div>
 
       {/* Right Side - Branding (Hidden on mobile) */}
-      <div className="hidden lg:flex lg:w-2/3 bg-black relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-3/5 bg-black relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-br from-black via-zinc-900 to-black" />

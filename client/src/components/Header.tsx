@@ -94,10 +94,11 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
               <Link 
                 key={item.href}
                 href={item.href} 
-                className={`${isTransparent ? 'text-white/90 hover:text-white' : 'text-muted-foreground hover:text-primary'} transition-colors font-medium text-sm tracking-wide`} 
+                className={`relative ${isTransparent ? 'text-white/90 hover:text-white' : 'text-muted-foreground hover:text-[#d0a760]'} transition-all duration-300 font-medium text-sm tracking-wide group`} 
                 data-testid={`nav-${item.href.slice(1)}`}
               >
                 {item.label}
+                <span className={`absolute -bottom-1 left-0 w-0 h-0.5 ${item.highlight ? 'bg-[#d0a760]' : 'bg-[#d0a760]'} transition-all duration-300 ease-out group-hover:w-full`} />
               </Link>
             ))}
           </nav>
@@ -107,11 +108,11 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
             <Button 
               variant="ghost" 
               size="sm" 
-              className={`p-2 relative rounded-none ${isTransparent ? 'text-white hover:text-white hover:bg-white/10' : ''}`}
+              className={`p-2 relative rounded-none group/cart ${isTransparent ? 'text-white hover:text-white hover:bg-white/10' : ''}`}
               onClick={onCartOpen}
               data-testid="button-cart"
             >
-              <ShoppingCart className="w-5 h-5" />
+              <ShoppingCart className="w-5 h-5 transition-transform duration-300 group-hover/cart:scale-110" />
               {cartItemCount > 0 && (
                 <Badge className="absolute -top-1 -right-1 bg-[#d0a760] text-black text-xs w-5 h-5 flex items-center justify-center p-0 rounded-none" data-testid="badge-cart-count">
                   {cartItemCount}
@@ -122,8 +123,8 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
             {isAuthenticated ? (
               <div className="hidden md:flex items-center space-x-2">
                 <Link href="/my-account">
-                  <Button variant="ghost" size="sm" className={`rounded-none ${isTransparent ? 'text-white hover:text-white hover:bg-white/10' : ''}`} data-testid="button-my-account">
-                    <User className="w-4 h-4 mr-2" />
+                  <Button variant="ghost" size="sm" className={`rounded-none group/account ${isTransparent ? 'text-white hover:text-white hover:bg-white/10' : ''}`} data-testid="button-my-account">
+                    <User className="w-4 h-4 mr-2 transition-transform duration-300 group-hover/account:scale-110" />
                     Account
                   </Button>
                 </Link>
@@ -137,11 +138,11 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className={`p-2 rounded-none ${isTransparent ? 'text-white hover:text-white hover:bg-white/10' : ''}`}
+                  className={`p-2 rounded-none group/logout ${isTransparent ? 'text-white hover:text-white hover:bg-white/10' : ''}`}
                   onClick={() => window.location.href = '/api/auth/logout'}
                   data-testid="button-logout"
                 >
-                  <LogOut className="w-5 h-5" />
+                  <LogOut className="w-5 h-5 transition-transform duration-300 group-hover/logout:translate-x-0.5" />
                 </Button>
               </div>
             ) : (
@@ -164,7 +165,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               data-testid="button-mobile-menu"
             >
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isMenuOpen ? <X className="w-6 h-6 transition-transform duration-300 rotate-0 hover:rotate-90" /> : <Menu className="w-6 h-6 transition-transform duration-300" />}
             </Button>
           </div>
         </div>

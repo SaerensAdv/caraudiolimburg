@@ -85,7 +85,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <>
-      <Card className="bg-zinc-900 border-zinc-800 hover:border-[#d0a760]/30 transition-all duration-300 group overflow-hidden rounded-none" data-testid={`product-card-${product.id}`}>
+      <Card className="bg-zinc-900 border-zinc-800 hover:border-[#d0a760]/50 transition-all duration-300 ease-out group overflow-hidden rounded-none hover:-translate-y-1 hover:shadow-xl hover:shadow-black/50" data-testid={`product-card-${product.id}`}>
         <Link href={`/product/${product.slug}`}>
           <div className="relative overflow-hidden">
             <div className="aspect-square bg-zinc-800 flex items-center justify-center p-8">
@@ -106,11 +106,11 @@ export function ProductCard({ product }: ProductCardProps) {
                 e.stopPropagation();
                 setIsQuickViewOpen(true);
               }}
-              className="absolute top-3 right-3 p-2.5 bg-black/70 hover:bg-[#d0a760] text-white hover:text-black transition-all duration-200 opacity-0 group-hover:opacity-100 backdrop-blur-sm"
+              className="absolute top-3 right-3 p-2.5 bg-black/70 hover:bg-[#d0a760] text-white hover:text-black transition-all duration-300 ease-out opacity-0 group-hover:opacity-100 backdrop-blur-sm hover:scale-110 active:scale-95"
               title="Quick View"
               data-testid={`quick-view-${product.id}`}
             >
-              <Eye className="w-4 h-4" />
+              <Eye className="w-4 h-4 transition-transform duration-300" />
             </button>
             
             {discount && (
@@ -123,7 +123,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
         <CardContent className="p-5">
           <Link href={`/product/${product.slug}`}>
-            <h3 className="text-white font-medium mb-2 group-hover:text-[#d0a760] transition-colors cursor-pointer line-clamp-2" data-testid={`product-title-${product.id}`}>
+            <h3 className="text-white font-medium mb-2 group-hover:text-[#d0a760] transition-all duration-300 cursor-pointer line-clamp-2" data-testid={`product-title-${product.id}`}>
               {product.name}
             </h3>
           </Link>

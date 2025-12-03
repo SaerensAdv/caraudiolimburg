@@ -548,3 +548,120 @@
   animation: audio-loader 0.8s ease-in-out infinite;
   transform-origin: bottom;
 }
+
+/* ========================================
+   MICRO ANIMATIONS
+   ======================================== */
+
+/* Button press effect */
+@keyframes button-press {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+
+.animate-button-press {
+  animation: button-press 0.15s ease-out;
+}
+
+/* Icon bounce on hover */
+@keyframes icon-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+.group:hover .group-hover\:animate-icon-bounce {
+  animation: icon-bounce 0.4s ease-in-out;
+}
+
+/* Subtle pulse for CTAs */
+@keyframes subtle-pulse {
+  0%, 100% { 
+    box-shadow: 0 0 0 0 rgba(208, 167, 96, 0.4);
+  }
+  50% { 
+    box-shadow: 0 0 0 8px rgba(208, 167, 96, 0);
+  }
+}
+
+.animate-subtle-pulse {
+  animation: subtle-pulse 2s ease-in-out infinite;
+}
+
+/* Link underline slide */
+@keyframes underline-slide {
+  from { transform: scaleX(0); transform-origin: left; }
+  to { transform: scaleX(1); transform-origin: left; }
+}
+
+.animate-underline-slide {
+  animation: underline-slide 0.3s ease-out forwards;
+}
+
+/* Arrow slide for links */
+@keyframes arrow-slide {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(4px); }
+}
+
+.group:hover .group-hover\:animate-arrow-slide {
+  animation: arrow-slide 0.6s ease-in-out infinite;
+}
+
+/* Shimmer effect for loading states */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(208, 167, 96, 0.1), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Focus ring pulse */
+@keyframes focus-ring {
+  0% { box-shadow: 0 0 0 0 rgba(208, 167, 96, 0.5); }
+  100% { box-shadow: 0 0 0 4px rgba(208, 167, 96, 0); }
+}
+
+.animate-focus-ring {
+  animation: focus-ring 0.4s ease-out;
+}
+
+/* Cart badge bounce */
+@keyframes badge-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.animate-badge-bounce {
+  animation: badge-bounce 0.3s ease-out;
+}
+
+/* Fade in up for scroll reveals */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.4s ease-out;
+}
+
+/* Smooth icon rotation */
+@keyframes icon-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-icon-rotate {
+  animation: icon-rotate 0.5s ease-out;
+}

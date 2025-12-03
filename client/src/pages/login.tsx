@@ -3,17 +3,18 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { AudioLoadingSpinner, AudioWaveformSkeleton } from "@/components/AudioSkeletons";
-import { Mail, Lock, Volume2, Car, ArrowLeft } from "lucide-react";
+import { AudioLoadingSpinner } from "@/components/AudioSkeletons";
+import { Mail, Lock, ArrowLeft, User } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
+
+import calLogo from "@assets/cal-white-logo.png";
 
 const loginSchema = z.object({
   email: z.string().email("Voer een geldig e-mailadres in"),
@@ -116,267 +117,244 @@ export default function Login() {
   const isLoading = loginMutation.isPending || registerMutation.isPending;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-background flex flex-col">
-      {/* Header */}
-      <div className="absolute top-6 left-6">
+    <div className="min-h-screen min-h-[100svh] bg-black flex flex-col">
+      <div className="absolute top-6 left-6 z-20">
         <Button
           variant="ghost"
           onClick={() => setLocation("/")}
-          className="text-muted-foreground hover:text-foreground"
+          className="text-white/60 hover:text-white hover:bg-white/5 rounded-none"
           data-testid="button-back-home"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Terug naar home
+          Terug
         </Button>
       </div>
 
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="w-full h-full bg-cover bg-center bg-no-repeat" 
-             style={{
-               backgroundImage: "url('https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80')"
-             }}>
-        </div>
-      </div>
+      <div className="flex-1 flex items-center justify-center px-4 py-16 md:py-8">
+        <div className="w-full max-w-md">
+          <div className="text-center mb-10">
+            <Link href="/">
+              <img 
+                src={calLogo} 
+                alt="Car Audio Limburg" 
+                className="h-12 md:h-14 mx-auto mb-6 cursor-pointer"
+                data-testid="img-logo"
+              />
+            </Link>
+            <h1 className="text-2xl md:text-3xl font-light text-white mb-2">
+              {isRegistering ? "Account Aanmaken" : "Inloggen"}
+            </h1>
+            <p className="text-white/50 text-sm">
+              {isRegistering 
+                ? "Maak een account aan om te beginnen" 
+                : "Welkom terug bij Car Audio Limburg"
+              }
+            </p>
+          </div>
 
-      <div className="flex-1 flex items-center justify-center p-4">
-        <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-12 items-center">
-          
-          {/* Left Side - Brand & Features */}
-          <div className="hidden lg:flex flex-col justify-center space-y-8">
-            <div className="text-center lg:text-left">
-              <div className="flex items-center justify-center lg:justify-start mb-6">
-                <Volume2 className="w-12 h-12 text-primary mr-3" />
-                <h1 className="text-4xl font-bold text-foreground">Car Audio Limburg</h1>
+          <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8">
+            <Button
+              onClick={handleGoogleAuth}
+              variant="outline"
+              className="w-full py-6 text-base bg-transparent border-zinc-700 text-white hover:bg-zinc-800 hover:border-zinc-600 rounded-none"
+              disabled={isLoading}
+              data-testid="button-google-auth"
+            >
+              <FcGoogle className="w-5 h-5 mr-3" />
+              {isRegistering ? "Registreren" : "Inloggen"} met Google
+            </Button>
+
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <Separator className="w-full bg-zinc-700" />
               </div>
-              
-              <h2 className="text-2xl lg:text-3xl font-semibold text-foreground mb-4">
-                Premium Car Audio & Professionele Installatie
-              </h2>
-              
-              <p className="text-lg text-muted-foreground mb-8 max-w-lg">
-                Ontdek ons uitgebreide assortiment van Alpine, Audison, Pioneer en meer. 
-                Inclusief vakkundige montage in onze moderne showroom.
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-zinc-900 px-3 text-zinc-500">Of</span>
+              </div>
+            </div>
+
+            <form 
+              onSubmit={isRegistering 
+                ? registerForm.handleSubmit(onRegisterSubmit)
+                : loginForm.handleSubmit(onLoginSubmit)
+              }
+              className="space-y-5"
+            >
+              {isRegistering && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="firstName" className="text-white/70 text-sm">Voornaam</Label>
+                    <div className="relative mt-2">
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                      <Input
+                        id="firstName"
+                        {...registerForm.register("firstName")}
+                        disabled={isLoading}
+                        className="pl-10 py-6 bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500 rounded-none focus:border-[#d0a760] focus:ring-[#d0a760] focus:ring-1"
+                        placeholder="Voornaam"
+                        data-testid="input-firstName"
+                      />
+                    </div>
+                    {registerForm.formState.errors.firstName && (
+                      <p className="text-sm text-red-400 mt-1">
+                        {registerForm.formState.errors.firstName.message}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <Label htmlFor="lastName" className="text-white/70 text-sm">Achternaam</Label>
+                    <div className="relative mt-2">
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                      <Input
+                        id="lastName"
+                        {...registerForm.register("lastName")}
+                        disabled={isLoading}
+                        className="pl-10 py-6 bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500 rounded-none focus:border-[#d0a760] focus:ring-[#d0a760] focus:ring-1"
+                        placeholder="Achternaam"
+                        data-testid="input-lastName"
+                      />
+                    </div>
+                    {registerForm.formState.errors.lastName && (
+                      <p className="text-sm text-red-400 mt-1">
+                        {registerForm.formState.errors.lastName.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <Label htmlFor="email" className="text-white/70 text-sm">E-mailadres</Label>
+                <div className="relative mt-2">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                  <Input
+                    id="email"
+                    type="email"
+                    {...(isRegistering ? registerForm.register("email") : loginForm.register("email"))}
+                    disabled={isLoading}
+                    className="pl-10 py-6 bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500 rounded-none focus:border-[#d0a760] focus:ring-[#d0a760] focus:ring-1"
+                    placeholder="uw@email.nl"
+                    data-testid="input-email"
+                  />
+                </div>
+                {currentForm.formState.errors.email && (
+                  <p className="text-sm text-red-400 mt-1">
+                    {currentForm.formState.errors.email.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <Label htmlFor="password" className="text-white/70 text-sm">Wachtwoord</Label>
+                <div className="relative mt-2">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                  <Input
+                    id="password"
+                    type="password"
+                    {...(isRegistering ? registerForm.register("password") : loginForm.register("password"))}
+                    disabled={isLoading}
+                    className="pl-10 py-6 bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500 rounded-none focus:border-[#d0a760] focus:ring-[#d0a760] focus:ring-1"
+                    placeholder="••••••••"
+                    data-testid="input-password"
+                  />
+                </div>
+                {currentForm.formState.errors.password && (
+                  <p className="text-sm text-red-400 mt-1">
+                    {currentForm.formState.errors.password.message}
+                  </p>
+                )}
+              </div>
+
+              {isRegistering && (
+                <div>
+                  <Label htmlFor="confirmPassword" className="text-white/70 text-sm">Bevestig Wachtwoord</Label>
+                  <div className="relative mt-2">
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      {...registerForm.register("confirmPassword")}
+                      disabled={isLoading}
+                      className="pl-10 py-6 bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500 rounded-none focus:border-[#d0a760] focus:ring-[#d0a760] focus:ring-1"
+                      placeholder="••••••••"
+                      data-testid="input-confirmPassword"
+                    />
+                  </div>
+                  {registerForm.formState.errors.confirmPassword && (
+                    <p className="text-sm text-red-400 mt-1">
+                      {registerForm.formState.errors.confirmPassword.message}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {!isRegistering && (
+                <div className="flex justify-end">
+                  <Link href="/forgot-password">
+                    <Button
+                      type="button"
+                      variant="link"
+                      className="text-[#d0a760] hover:text-[#d0a760]/80 p-0 h-auto text-sm"
+                      data-testid="link-forgot-password"
+                    >
+                      Wachtwoord vergeten?
+                    </Button>
+                  </Link>
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                className="w-full py-6 text-base bg-[#d0a760] text-black hover:bg-[#d0a760]/90 font-medium rounded-none mt-2"
+                disabled={isLoading}
+                data-testid={`button-${isRegistering ? 'register' : 'login'}`}
+              >
+                {isLoading ? (
+                  <div className="flex items-center justify-center">
+                    <AudioLoadingSpinner size="sm" className="mr-3" />
+                    {isRegistering ? "Account aanmaken..." : "Inloggen..."}
+                  </div>
+                ) : (
+                  isRegistering ? "Account Aanmaken" : "Inloggen"
+                )}
+              </Button>
+            </form>
+
+            <div className="mt-6 pt-6 border-t border-zinc-800 text-center">
+              <p className="text-zinc-500 text-sm">
+                {isRegistering ? "Heeft u al een account?" : "Nog geen account?"}
               </p>
-
-              {/* Audio Waveform Animation */}
-              <AudioWaveformSkeleton className="mb-6" />
-              
-              {/* Features */}
-              <div className="space-y-4">
-                <div className="flex items-center text-foreground">
-                  <Car className="w-5 h-5 text-primary mr-3" />
-                  <span>Voertuig-specifieke oplossingen</span>
-                </div>
-                <div className="flex items-center text-foreground">
-                  <Volume2 className="w-5 h-5 text-primary mr-3" />
-                  <span>Premium audio merken</span>
-                </div>
-                <div className="flex items-center text-foreground">
-                  <Mail className="w-5 h-5 text-primary mr-3" />
-                  <span>Professionele installatie service</span>
-                </div>
-              </div>
+              <Button
+                variant="link"
+                onClick={() => {
+                  setIsRegistering(!isRegistering);
+                  loginForm.reset();
+                  registerForm.reset();
+                }}
+                className="text-[#d0a760] hover:text-[#d0a760]/80 p-0 h-auto mt-1 font-medium"
+                data-testid="button-toggle-form"
+              >
+                {isRegistering ? "Inloggen" : "Account aanmaken"}
+              </Button>
             </div>
           </div>
 
-          {/* Right Side - Login Form */}
-          <div className="flex items-center justify-center">
-            <Card className="w-full max-w-md bg-card/95 backdrop-blur-sm border-border shadow-2xl">
-              <CardHeader className="text-center pb-4">
-                <div className="flex justify-center mb-4 lg:hidden">
-                  <Volume2 className="w-8 h-8 text-primary" />
-                </div>
-                <h2 className="text-2xl font-bold text-card-foreground">
-                  {isRegistering ? "Account Aanmaken" : "Inloggen"}
-                </h2>
-                <p className="text-muted-foreground">
-                  {isRegistering 
-                    ? "Maak een account aan om te beginnen" 
-                    : "Welkom terug bij Car Audio Limburg"
-                  }
-                </p>
-              </CardHeader>
-
-              <CardContent className="space-y-6">
-                
-                {/* Google Auth Button */}
-                <Button
-                  onClick={handleGoogleAuth}
-                  variant="outline"
-                  className="w-full py-6 text-base border-border hover:bg-accent"
-                  disabled={isLoading}
-                  data-testid="button-google-auth"
-                >
-                  <FcGoogle className="w-5 h-5 mr-3" />
-                  {isRegistering ? "Registreren" : "Inloggen"} met Google
-                </Button>
-
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <Separator className="w-full" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-card px-2 text-muted-foreground">Of</span>
-                  </div>
-                </div>
-
-                {/* Email/Password Form */}
-                <form 
-                  onSubmit={isRegistering 
-                    ? registerForm.handleSubmit(onRegisterSubmit)
-                    : loginForm.handleSubmit(onLoginSubmit)
-                  }
-                  className="space-y-4"
-                >
-                  
-                  {/* First/Last Name for Registration */}
-                  {isRegistering && (
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="firstName">Voornaam</Label>
-                        <Input
-                          id="firstName"
-                          {...registerForm.register("firstName")}
-                          disabled={isLoading}
-                          className="mt-1"
-                          data-testid="input-firstName"
-                        />
-                        {registerForm.formState.errors.firstName && (
-                          <p className="text-sm text-destructive mt-1">
-                            {registerForm.formState.errors.firstName.message}
-                          </p>
-                        )}
-                      </div>
-                      <div>
-                        <Label htmlFor="lastName">Achternaam</Label>
-                        <Input
-                          id="lastName"
-                          {...registerForm.register("lastName")}
-                          disabled={isLoading}
-                          className="mt-1"
-                          data-testid="input-lastName"
-                        />
-                        {registerForm.formState.errors.lastName && (
-                          <p className="text-sm text-destructive mt-1">
-                            {registerForm.formState.errors.lastName.message}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Email */}
-                  <div>
-                    <Label htmlFor="email">E-mailadres</Label>
-                    <div className="relative mt-1">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        id="email"
-                        type="email"
-                        {...(isRegistering ? registerForm.register("email") : loginForm.register("email"))}
-                        disabled={isLoading}
-                        className="pl-10"
-                        data-testid="input-email"
-                      />
-                    </div>
-                    {currentForm.formState.errors.email && (
-                      <p className="text-sm text-destructive mt-1">
-                        {currentForm.formState.errors.email.message}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Password */}
-                  <div>
-                    <Label htmlFor="password">Wachtwoord</Label>
-                    <div className="relative mt-1">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                      <Input
-                        id="password"
-                        type="password"
-                        {...(isRegistering ? registerForm.register("password") : loginForm.register("password"))}
-                        disabled={isLoading}
-                        className="pl-10"
-                        data-testid="input-password"
-                      />
-                    </div>
-                    {currentForm.formState.errors.password && (
-                      <p className="text-sm text-destructive mt-1">
-                        {currentForm.formState.errors.password.message}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Confirm Password for Registration */}
-                  {isRegistering && (
-                    <div>
-                      <Label htmlFor="confirmPassword">Bevestig Wachtwoord</Label>
-                      <div className="relative mt-1">
-                        <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        <Input
-                          id="confirmPassword"
-                          type="password"
-                          {...registerForm.register("confirmPassword")}
-                          disabled={isLoading}
-                          className="pl-10"
-                          data-testid="input-confirmPassword"
-                        />
-                      </div>
-                      {registerForm.formState.errors.confirmPassword && (
-                        <p className="text-sm text-destructive mt-1">
-                          {registerForm.formState.errors.confirmPassword.message}
-                        </p>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Submit Button */}
-                  <Button
-                    type="submit"
-                    className="w-full py-6 text-base bg-primary hover:bg-primary/90"
-                    disabled={isLoading}
-                    data-testid={`button-${isRegistering ? 'register' : 'login'}`}
-                  >
-                    {isLoading ? (
-                      <div className="flex items-center">
-                        <AudioLoadingSpinner size="sm" className="mr-3" />
-                        {isRegistering ? "Account aanmaken..." : "Inloggen..."}
-                      </div>
-                    ) : (
-                      isRegistering ? "Account Aanmaken" : "Inloggen"
-                    )}
-                  </Button>
-                </form>
-
-                {/* Toggle Form */}
-                <div className="text-center pt-4">
-                  <Button
-                    variant="link"
-                    onClick={() => {
-                      setIsRegistering(!isRegistering);
-                      loginForm.reset();
-                      registerForm.reset();
-                    }}
-                    className="text-primary hover:text-primary/80"
-                    data-testid="button-toggle-form"
-                  >
-                    {isRegistering 
-                      ? "Heeft u al een account? Inloggen" 
-                      : "Nog geen account? Registreren"
-                    }
-                  </Button>
-                </div>
-
-              </CardContent>
-            </Card>
+          <div className="mt-8 text-center">
+            <p className="text-zinc-600 text-xs">
+              Door in te loggen gaat u akkoord met onze{" "}
+              <Link href="/terms" className="text-[#d0a760] hover:underline">
+                Algemene Voorwaarden
+              </Link>{" "}
+              en{" "}
+              <Link href="/privacy" className="text-[#d0a760] hover:underline">
+                Privacybeleid
+              </Link>
+            </p>
           </div>
-
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="text-center py-6 text-sm text-muted-foreground">
+      <div className="text-center py-6 text-xs text-zinc-600">
         <p>&copy; 2024 Car Audio Limburg. Premium car audio solutions.</p>
       </div>
     </div>

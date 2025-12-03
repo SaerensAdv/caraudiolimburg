@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { ScrollReveal, StaggerContainer } from "@/components/ScrollAnimations";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
@@ -20,7 +21,9 @@ import {
   ArrowRight,
   Wrench,
   Truck,
-  Shield
+  Shield,
+  ArrowLeft,
+  Lock
 } from "lucide-react";
 import type { CartItem, Product } from "@shared/schema";
 import carAudioLogo from "@assets/Caraudiolimburg-logo_1757008375383_1757016657436.png";
@@ -35,7 +38,7 @@ export default function Cart() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: cartItems, isLoading } = useQuery({
+  const { data: cartItems, isLoading } = useQuery<CartItemWithProduct[]>({
     queryKey: ["/api/cart"],
     enabled: isAuthenticated,
   });
@@ -100,44 +103,55 @@ export default function Cart() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-black flex flex-col">
         <Header onCartOpen={() => setIsCartOpen(true)} />
-        <div className="container px-4 mx-auto py-16">
-          <Card className="bg-card border-border p-12 text-center max-w-md mx-auto">
-            <h1 className="text-2xl font-bold text-card-foreground mb-4">Inloggen vereist</h1>
-            <p className="text-muted-foreground mb-6">
-              Je moet ingelogd zijn om je winkelwagen te bekijken.
-            </p>
-            <Button onClick={() => window.location.href = '/api/login'} data-testid="button-login">
-              Inloggen
-            </Button>
-          </Card>
+        <div className="flex-1 flex items-center justify-center px-4 py-16">
+          <ScrollReveal>
+            <Card className="bg-zinc-900 border-zinc-800 p-8 md:p-12 text-center max-w-md mx-auto rounded-none">
+              <ShoppingBag className="w-16 h-16 text-[#d0a760] mx-auto mb-6" />
+              <h1 className="text-2xl font-bold text-white mb-4">Inloggen vereist</h1>
+              <p className="text-white/60 mb-8">
+                Je moet ingelogd zijn om je winkelwagen te bekijken.
+              </p>
+              <Button 
+                onClick={() => window.location.href = '/api/login'} 
+                className="bg-[#d0a760] text-black hover:bg-[#b8954e] rounded-none px-8 py-6 text-lg font-semibold"
+                data-testid="button-login"
+              >
+                Inloggen
+              </Button>
+            </Card>
+          </ScrollReveal>
         </div>
+        <Footer />
+        <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
       </div>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-black flex flex-col">
         <Header onCartOpen={() => setIsCartOpen(true)} />
-        <div className="container px-4 mx-auto py-8">
-          <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-muted rounded w-48"></div>
+        <div className="container px-4 md:px-8 mx-auto py-8 flex-1">
+          <div className="animate-pulse space-y-6">
+            <div className="h-10 bg-zinc-800 w-64 rounded-none"></div>
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="bg-card rounded-2xl p-6">
+              <div key={i} className="bg-zinc-900 p-6 border border-zinc-800">
                 <div className="flex items-center space-x-4">
-                  <div className="w-24 h-24 bg-muted rounded-lg"></div>
-                  <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-muted rounded w-48"></div>
-                    <div className="h-4 bg-muted rounded w-32"></div>
+                  <div className="w-24 h-24 bg-zinc-800"></div>
+                  <div className="flex-1 space-y-3">
+                    <div className="h-5 bg-zinc-800 w-48"></div>
+                    <div className="h-4 bg-zinc-800 w-32"></div>
                   </div>
-                  <div className="h-8 bg-muted rounded w-24"></div>
+                  <div className="h-8 bg-zinc-800 w-24"></div>
                 </div>
               </div>
             ))}
           </div>
         </div>
+        <Footer />
+        <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
       </div>
     );
   }
@@ -154,213 +168,263 @@ export default function Cart() {
 
   if (!cartItems || cartItems.length === 0) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-black flex flex-col">
         <Header onCartOpen={() => setIsCartOpen(true)} />
-        <div className="container px-4 mx-auto py-16">
-          <Card className="bg-card border-border p-12 text-center max-w-md mx-auto" data-testid="empty-cart">
-            <ShoppingBag className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-card-foreground mb-4">Je winkelwagen is leeg</h1>
-            <p className="text-muted-foreground mb-6">
-              Voeg wat geweldige car audio producten toe om te beginnen!
-            </p>
-            <Link href="/shop">
-              <Button data-testid="button-continue-shopping">
-                Doorgaan met winkelen
-              </Button>
-            </Link>
-          </Card>
+        <div className="flex-1 flex items-center justify-center px-4 py-16">
+          <ScrollReveal>
+            <Card className="bg-zinc-900 border-zinc-800 p-8 md:p-12 text-center max-w-md mx-auto rounded-none" data-testid="empty-cart">
+              <ShoppingBag className="w-16 h-16 text-white/40 mx-auto mb-6" />
+              <h1 className="text-2xl font-bold text-white mb-4">Je winkelwagen is leeg</h1>
+              <p className="text-white/60 mb-8">
+                Voeg wat geweldige car audio producten toe om te beginnen!
+              </p>
+              <Link href="/shop">
+                <Button 
+                  className="bg-[#d0a760] text-black hover:bg-[#b8954e] rounded-none px-8 py-6 text-lg font-semibold"
+                  data-testid="button-continue-shopping"
+                >
+                  Doorgaan met winkelen
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              </Link>
+            </Card>
+          </ScrollReveal>
         </div>
+        <Footer />
+        <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black flex flex-col">
       <Header onCartOpen={() => setIsCartOpen(true)} />
       
-      <div className="container px-4 mx-auto py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">Winkelwagen</h1>
-          <p className="text-muted-foreground">
-            {totalItems} {totalItems === 1 ? 'product' : 'producten'} in je winkelwagen
-          </p>
-        </div>
+      <div className="container px-4 md:px-8 lg:px-16 mx-auto py-8 md:py-12 flex-1">
+        <ScrollReveal>
+          <div className="mb-8">
+            <Link href="/shop">
+              <Button 
+                variant="ghost" 
+                className="text-white/60 hover:text-white hover:bg-transparent p-0 mb-4"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Terug naar shop
+              </Button>
+            </Link>
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Winkelwagen</h1>
+            <p className="text-white/60">
+              {totalItems} {totalItems === 1 ? 'product' : 'producten'} in je winkelwagen
+            </p>
+          </div>
+        </ScrollReveal>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4" data-testid="cart-items">
-            {cartItems.map((item: any) => {
-              const product = item.product;
-              const price = parseFloat(product?.price || "0");
-              const originalPrice = product?.originalPrice ? parseFloat(product.originalPrice) : null;
-              
-              return (
-                <Card key={item.id} className="bg-card border-border" data-testid={`cart-item-${item.id}`}>
-                  <CardContent className="p-6">
-                    <div className="flex items-center space-x-4">
-                      {/* Product Image */}
-                      <div className="w-24 h-24 bg-muted rounded-lg flex-shrink-0">
-                        <img 
-                          src={product?.images?.[product.primaryImageIndex || 0] || carAudioLogo}
-                          alt={product?.name || "Product"}
-                          className="w-full h-full object-cover rounded-lg"
-                          onError={(e) => {
-                            e.currentTarget.src = carAudioLogo;
-                          }}
-                        />
-                      </div>
+            <StaggerContainer staggerDelay={100}>
+              {cartItems.map((item: any) => {
+                const product = item.product;
+                const price = parseFloat(product?.price || "0");
+                const originalPrice = product?.originalPrice ? parseFloat(product.originalPrice) : null;
+                
+                return (
+                  <Card key={item.id} className="bg-zinc-900 border-zinc-800 rounded-none" data-testid={`cart-item-${item.id}`}>
+                    <CardContent className="p-4 md:p-6">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                        <Link href={`/product/${product?.id}`}>
+                          <div className="w-full sm:w-24 h-32 sm:h-24 bg-zinc-800 flex-shrink-0 cursor-pointer">
+                            <img 
+                              src={product?.images?.[product.primaryImageIndex || 0] || carAudioLogo}
+                              alt={product?.name || "Product"}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.currentTarget.src = carAudioLogo;
+                              }}
+                            />
+                          </div>
+                        </Link>
 
-                      {/* Product Details */}
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-card-foreground mb-1" data-testid={`product-name-${item.id}`}>
-                          {product?.name || "Onbekend product"}
-                        </h3>
-                        {product?.shortDescription && (
-                          <p className="text-sm text-muted-foreground mb-2">
-                            {product.shortDescription}
-                          </p>
-                        )}
-                        
-                        <div className="flex items-center space-x-2 mb-2">
-                          <span className="font-bold text-foreground" data-testid={`product-price-${item.id}`}>
-                            €{price.toFixed(2)}
-                          </span>
-                          {originalPrice && (
-                            <span className="text-sm text-muted-foreground line-through">
-                              €{originalPrice.toFixed(2)}
+                        <div className="flex-1 min-w-0 w-full">
+                          <Link href={`/product/${product?.id}`}>
+                            <h3 className="font-semibold text-white mb-1 hover:text-[#d0a760] transition-colors cursor-pointer" data-testid={`product-name-${item.id}`}>
+                              {product?.name || "Onbekend product"}
+                            </h3>
+                          </Link>
+                          {product?.shortDescription && (
+                            <p className="text-sm text-white/60 mb-2 line-clamp-1">
+                              {product.shortDescription}
+                            </p>
+                          )}
+                          
+                          <div className="flex items-center space-x-2 mb-2">
+                            <span className="font-bold text-[#d0a760]" data-testid={`product-price-${item.id}`}>
+                              €{price.toFixed(2)}
                             </span>
+                            {originalPrice && (
+                              <span className="text-sm text-white/40 line-through">
+                                €{originalPrice.toFixed(2)}
+                              </span>
+                            )}
+                          </div>
+
+                          {item.needsInstallation && (
+                            <Badge className="text-xs bg-[#d0a760]/20 text-[#d0a760] border-[#d0a760]/30 rounded-none">
+                              <Wrench className="w-3 h-3 mr-1" />
+                              + Installatie
+                            </Badge>
                           )}
                         </div>
 
-                        {item.needsInstallation && (
-                          <Badge variant="secondary" className="text-xs">
-                            <Wrench className="w-3 h-3 mr-1" />
-                            Inclusief installatie
-                          </Badge>
-                        )}
-                      </div>
+                        <div className="flex items-center justify-between w-full sm:w-auto gap-4">
+                          <div className="flex items-center space-x-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => updateQuantityMutation.mutate({ id: item.id, quantity: item.quantity - 1 })}
+                              disabled={item.quantity <= 1 || updateQuantityMutation.isPending}
+                              className="w-8 h-8 p-0 border-zinc-700 text-white hover:bg-zinc-800 hover:text-white rounded-none"
+                              data-testid={`button-decrease-${item.id}`}
+                            >
+                              <Minus className="w-4 h-4" />
+                            </Button>
+                            <span className="w-10 text-center font-medium text-white" data-testid={`quantity-${item.id}`}>
+                              {item.quantity}
+                            </span>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => updateQuantityMutation.mutate({ id: item.id, quantity: item.quantity + 1 })}
+                              disabled={updateQuantityMutation.isPending}
+                              className="w-8 h-8 p-0 border-zinc-700 text-white hover:bg-zinc-800 hover:text-white rounded-none"
+                              data-testid={`button-increase-${item.id}`}
+                            >
+                              <Plus className="w-4 h-4" />
+                            </Button>
+                          </div>
 
-                      {/* Quantity Controls */}
-                      <div className="flex items-center space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => updateQuantityMutation.mutate({ id: item.id, quantity: item.quantity - 1 })}
-                          disabled={item.quantity <= 1 || updateQuantityMutation.isPending}
-                          data-testid={`button-decrease-${item.id}`}
-                        >
-                          <Minus className="w-4 h-4" />
-                        </Button>
-                        <span className="w-12 text-center font-medium" data-testid={`quantity-${item.id}`}>
-                          {item.quantity}
-                        </span>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => updateQuantityMutation.mutate({ id: item.id, quantity: item.quantity + 1 })}
-                          disabled={updateQuantityMutation.isPending}
-                          data-testid={`button-increase-${item.id}`}
-                        >
-                          <Plus className="w-4 h-4" />
-                        </Button>
-                      </div>
+                          <p className="font-bold text-white min-w-[80px] text-right" data-testid={`item-total-${item.id}`}>
+                            €{(price * item.quantity).toFixed(2)}
+                          </p>
 
-                      {/* Total Price */}
-                      <div className="text-right">
-                        <p className="font-bold text-foreground" data-testid={`item-total-${item.id}`}>
-                          €{(price * item.quantity).toFixed(2)}
-                        </p>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeItemMutation.mutate(item.id)}
+                            disabled={removeItemMutation.isPending}
+                            className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-2"
+                            data-testid={`button-remove-${item.id}`}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </div>
-
-                      {/* Remove Button */}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeItemMutation.mutate(item.id)}
-                        disabled={removeItemMutation.isPending}
-                        className="text-destructive hover:text-destructive"
-                        data-testid={`button-remove-${item.id}`}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </StaggerContainer>
           </div>
 
-          {/* Order Summary */}
           <div className="space-y-6">
-            <Card className="bg-card border-border" data-testid="order-summary">
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold text-card-foreground mb-4">Bestelling overzicht</h3>
-                
-                <div className="space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Subtotaal</span>
-                    <span className="text-foreground" data-testid="subtotal">€{subtotal.toFixed(2)}</span>
-                  </div>
+            <ScrollReveal delay={200}>
+              <Card className="bg-zinc-900 border-zinc-800 rounded-none sticky top-24" data-testid="order-summary">
+                <CardContent className="p-6">
+                  <h3 className="text-lg font-semibold text-white mb-6">Bestelling overzicht</h3>
                   
-                  {installationFee > 0 && (
+                  <div className="space-y-4">
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Installatie</span>
-                      <span className="text-foreground" data-testid="installation-fee">€{installationFee.toFixed(2)}</span>
+                      <span className="text-white/60">Subtotaal</span>
+                      <span className="text-white" data-testid="subtotal">€{subtotal.toFixed(2)}</span>
+                    </div>
+                    
+                    {installationFee > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-white/60">Installatie</span>
+                        <span className="text-white" data-testid="installation-fee">€{installationFee.toFixed(2)}</span>
+                      </div>
+                    )}
+                    
+                    <div className="flex justify-between text-sm">
+                      <span className="text-white/60">Verzending</span>
+                      <span className="text-white" data-testid="shipping-cost">
+                        {shipping === 0 ? (
+                          <span className="text-green-400">Gratis</span>
+                        ) : (
+                          `€${shipping.toFixed(2)}`
+                        )}
+                      </span>
+                    </div>
+                    
+                    <Separator className="bg-zinc-800" />
+                    
+                    <div className="flex justify-between text-lg font-semibold">
+                      <span className="text-white">Totaal</span>
+                      <span className="text-[#d0a760]" data-testid="total">€{total.toFixed(2)}</span>
+                    </div>
+                  </div>
+
+                  {subtotal > 0 && subtotal < 50 && (
+                    <div className="bg-[#d0a760]/10 border border-[#d0a760]/30 p-3 mt-4">
+                      <p className="text-xs text-center text-[#d0a760]">
+                        Nog €{(50 - subtotal).toFixed(2)} voor gratis verzending!
+                      </p>
                     </div>
                   )}
-                  
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Verzending</span>
-                    <span className="text-foreground" data-testid="shipping-cost">
-                      {shipping === 0 ? "Gratis" : `€${shipping.toFixed(2)}`}
-                    </span>
-                  </div>
-                  
-                  <Separator />
-                  
-                  <div className="flex justify-between text-lg font-semibold">
-                    <span className="text-card-foreground">Totaal</span>
-                    <span className="text-card-foreground" data-testid="total">€{total.toFixed(2)}</span>
-                  </div>
-                </div>
 
-                <Link href="/checkout">
-                  <Button className="w-full mt-6" size="lg" data-testid="button-checkout">
-                    Doorgaan naar betaling
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
+                  <Link href="/checkout">
+                    <Button 
+                      className="w-full mt-6 bg-[#d0a760] text-black hover:bg-[#b8954e] rounded-none py-6 text-lg font-semibold" 
+                      data-testid="button-checkout"
+                    >
+                      <Lock className="w-4 h-4 mr-2" />
+                      Veilig afrekenen
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            </ScrollReveal>
 
-            {/* Benefits */}
-            <Card className="bg-card border-border">
-              <CardContent className="p-6">
-                <h4 className="font-semibold text-card-foreground mb-4">Waarom bij ons kopen?</h4>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-3">
-                    <Truck className="w-4 h-4 text-primary" />
-                    <span className="text-sm text-card-foreground">Gratis verzending vanaf €50</span>
+            <ScrollReveal delay={300}>
+              <Card className="bg-zinc-900 border-zinc-800 rounded-none">
+                <CardContent className="p-6">
+                  <h4 className="font-semibold text-white mb-4">Waarom bij ons kopen?</h4>
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-[#d0a760]/20 flex items-center justify-center">
+                        <Truck className="w-5 h-5 text-[#d0a760]" />
+                      </div>
+                      <span className="text-sm text-white">Gratis verzending vanaf €50</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-[#d0a760]/20 flex items-center justify-center">
+                        <Shield className="w-5 h-5 text-[#d0a760]" />
+                      </div>
+                      <span className="text-sm text-white">2 jaar garantie op alle producten</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-[#d0a760]/20 flex items-center justify-center">
+                        <Wrench className="w-5 h-5 text-[#d0a760]" />
+                      </div>
+                      <span className="text-sm text-white">Professionele installatie service</span>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <Shield className="w-4 h-4 text-primary" />
-                    <span className="text-sm text-card-foreground">2 jaar garantie op alle producten</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <Wrench className="w-4 h-4 text-primary" />
-                    <span className="text-sm text-card-foreground">Professionele installatie service</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </ScrollReveal>
 
-            {/* Continue Shopping */}
-            <Link href="/shop">
-              <Button variant="outline" className="w-full" data-testid="button-continue-shopping">
-                Doorgaan met winkelen
-              </Button>
-            </Link>
+            <ScrollReveal delay={400}>
+              <Link href="/shop">
+                <Button 
+                  variant="outline" 
+                  className="w-full border-zinc-700 text-white hover:bg-zinc-800 hover:text-white rounded-none py-6" 
+                  data-testid="button-continue-shopping"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Doorgaan met winkelen
+                </Button>
+              </Link>
+            </ScrollReveal>
           </div>
         </div>
       </div>

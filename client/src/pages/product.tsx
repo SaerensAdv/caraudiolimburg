@@ -169,7 +169,7 @@ export default function ProductPage() {
         <div className="pt-24 pb-16">
           <div className="container mx-auto px-4 text-center py-20">
             <div className="mb-8">
-              <div className="w-24 h-24 mx-auto bg-zinc-900 rounded-full flex items-center justify-center mb-6">
+              <div className="w-24 h-24 mx-auto bg-zinc-900 flex items-center justify-center mb-6">
                 <Package className="w-12 h-12 text-white/20" />
               </div>
               <h1 className="text-3xl font-bold text-white mb-4">Product niet gevonden</h1>
@@ -590,10 +590,10 @@ export default function ProductPage() {
                 <div className="mb-12">
                   <h2 className="text-2xl font-bold text-black mb-6">Kenmerken</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {(product.features as string[]).map((feature, index) => (
+                    {(product.features as string[]).map((feature: string, index: number) => (
                       <div key={index} className="flex items-start gap-3 p-4 bg-zinc-50 border border-zinc-200">
                         <Check className="w-5 h-5 text-[#d0a760] flex-shrink-0 mt-0.5" />
-                        <span className="text-black/80">{String(feature)}</span>
+                        <span className="text-black/80">{feature}</span>
                       </div>
                     ))}
                   </div>

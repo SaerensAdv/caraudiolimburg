@@ -37,6 +37,7 @@ interface CartItemWithProduct extends CartItem {
     images?: string[];
     shortDescription?: string;
     stock?: number;
+    primaryImageIndex?: number;
   };
 }
 
@@ -45,7 +46,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: cartItems, isLoading } = useQuery({
+  const { data: cartItems, isLoading } = useQuery<CartItemWithProduct[]>({
     queryKey: ["/api/cart"],
     enabled: isAuthenticated && isOpen,
   });
@@ -133,16 +134,16 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent side="right" className="w-full sm:w-96 bg-card border-l border-border p-0">
+      <SheetContent side="right" className="w-full sm:w-96 bg-black border-l border-zinc-800 p-0">
         <div className="flex flex-col h-full">
           {/* Header */}
-          <SheetHeader className="p-6 border-b border-border">
+          <SheetHeader className="p-6 border-b border-zinc-800">
             <div className="flex items-center justify-between">
-              <SheetTitle className="text-lg font-semibold text-card-foreground flex items-center">
-                <ShoppingBag className="w-5 h-5 mr-2" />
+              <SheetTitle className="text-lg font-semibold text-white flex items-center">
+                <ShoppingBag className="w-5 h-5 mr-2 text-[#d0a760]" />
                 Winkelwagen
                 {itemCount > 0 && (
-                  <Badge variant="secondary" className="ml-2" data-testid="cart-item-count">
+                  <Badge className="ml-2 bg-[#d0a760] text-black" data-testid="cart-item-count">
                     {itemCount}
                   </Badge>
                 )}
@@ -151,7 +152,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                 variant="ghost"
                 size="sm"
                 onClick={onClose}
-                className="text-muted-foreground hover:text-primary"
+                className="text-white/60 hover:text-white hover:bg-white/10"
                 data-testid="button-close-cart"
               >
                 <X className="w-5 h-5" />
@@ -163,14 +164,15 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
           {!isAuthenticated ? (
             <div className="flex-1 flex items-center justify-center p-6">
               <div className="text-center space-y-4" data-testid="cart-login-required">
-                <ShoppingBag className="w-12 h-12 text-muted-foreground mx-auto" />
+                <ShoppingBag className="w-12 h-12 text-white/40 mx-auto" />
                 <div>
-                  <h3 className="font-semibold text-card-foreground mb-2">Inloggen vereist</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
+                  <h3 className="font-semibold text-white mb-2">Inloggen vereist</h3>
+                  <p className="text-sm text-white/60 mb-4">
                     Log in om je winkelwagen te bekijken
                   </p>
                   <Button 
                     onClick={() => window.location.href = '/api/login'}
+                    className="bg-[#d0a760] text-black hover:bg-[#b8954e]"
                     data-testid="button-login-cart"
                   >
                     Inloggen
@@ -184,10 +186,10 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                 {[...Array(3)].map((_, i) => (
                   <div key={i} className="animate-pulse">
                     <div className="flex items-center space-x-4">
-                      <div className="w-16 h-16 bg-muted rounded-lg"></div>
+                      <div className="w-16 h-16 bg-zinc-800"></div>
                       <div className="flex-1 space-y-2">
-                        <div className="h-4 bg-muted rounded w-3/4"></div>
-                        <div className="h-3 bg-muted rounded w-1/2"></div>
+                        <div className="h-4 bg-zinc-800 w-3/4"></div>
+                        <div className="h-3 bg-zinc-800 w-1/2"></div>
                       </div>
                     </div>
                   </div>
@@ -197,14 +199,14 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
           ) : !cartItems || cartItems.length === 0 ? (
             <div className="flex-1 flex items-center justify-center p-6">
               <div className="text-center space-y-4" data-testid="cart-empty">
-                <ShoppingBag className="w-12 h-12 text-muted-foreground mx-auto" />
+                <ShoppingBag className="w-12 h-12 text-white/40 mx-auto" />
                 <div>
-                  <h3 className="font-semibold text-card-foreground mb-2">Je winkelwagen is leeg</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
+                  <h3 className="font-semibold text-white mb-2">Je winkelwagen is leeg</h3>
+                  <p className="text-sm text-white/60 mb-4">
                     Voeg wat geweldige producten toe!
                   </p>
                   <Link href="/shop">
-                    <Button onClick={onClose} data-testid="button-continue-shopping-empty">
+                    <Button onClick={onClose} className="bg-[#d0a760] text-black hover:bg-[#b8954e]" data-testid="button-continue-shopping-empty">
                       Ga naar shop
                     </Button>
                   </Link>
@@ -222,15 +224,15 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                     const originalPrice = product?.originalPrice ? parseFloat(product.originalPrice) : null;
                     
                     return (
-                      <Card key={item.id} className="bg-background border-border" data-testid={`cart-item-${item.id}`}>
+                      <Card key={item.id} className="bg-zinc-900 border-zinc-800" data-testid={`cart-item-${item.id}`}>
                         <CardContent className="p-4">
                           <div className="flex items-center space-x-3">
                             {/* Product Image */}
-                            <div className="w-16 h-16 bg-muted rounded-lg flex-shrink-0">
+                            <div className="w-16 h-16 bg-zinc-800 flex-shrink-0">
                               <img 
                                 src={product?.images?.[product.primaryImageIndex || 0] || carAudioLogo}
                                 alt={product?.name || "Product"} 
-                                className="w-full h-full object-cover rounded-lg"
+                                className="w-full h-full object-cover"
                                 onError={(e) => {
                                   e.currentTarget.src = carAudioLogo;
                                 }}
@@ -239,23 +241,23 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
                             {/* Product Info */}
                             <div className="flex-1 min-w-0">
-                              <h4 className="font-medium text-foreground text-sm mb-1 truncate" data-testid={`cart-product-name-${item.id}`}>
+                              <h4 className="font-medium text-white text-sm mb-1 truncate" data-testid={`cart-product-name-${item.id}`}>
                                 {product?.name || "Onbekend product"}
                               </h4>
                               
                               <div className="flex items-center space-x-2 mb-2">
-                                <span className="font-bold text-foreground text-sm" data-testid={`cart-product-price-${item.id}`}>
+                                <span className="font-bold text-[#d0a760] text-sm" data-testid={`cart-product-price-${item.id}`}>
                                   €{price.toFixed(2)}
                                 </span>
                                 {originalPrice && (
-                                  <span className="text-xs text-muted-foreground line-through">
+                                  <span className="text-xs text-white/40 line-through">
                                     €{originalPrice.toFixed(2)}
                                   </span>
                                 )}
                               </div>
 
                               {item.needsInstallation && (
-                                <Badge variant="secondary" className="text-xs">
+                                <Badge className="text-xs bg-[#d0a760]/20 text-[#d0a760] border-[#d0a760]/30">
                                   <Wrench className="w-3 h-3 mr-1" />
                                   + Installatie
                                 </Badge>
@@ -269,20 +271,20 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                                     size="sm"
                                     onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
                                     disabled={updateQuantityMutation.isPending}
-                                    className="w-8 h-8 p-0"
+                                    className="w-8 h-8 p-0 border-zinc-700 text-white hover:bg-zinc-800 hover:text-white"
                                     data-testid={`button-decrease-cart-${item.id}`}
                                   >
                                     <Minus className="w-3 h-3" />
                                   </Button>
-                                  <span className="text-sm font-medium w-8 text-center" data-testid={`cart-quantity-${item.id}`}>
+                                  <span className="text-sm font-medium w-8 text-center text-white" data-testid={`cart-quantity-${item.id}`}>
                                     {item.quantity}
                                   </span>
                                   <Button
                                     variant="outline"
                                     size="sm"
                                     onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
-                                    disabled={updateQuantityMutation.isPending || (product?.stock && item.quantity >= product.stock)}
-                                    className="w-8 h-8 p-0"
+                                    disabled={updateQuantityMutation.isPending || !!(product?.stock && item.quantity >= product.stock)}
+                                    className="w-8 h-8 p-0 border-zinc-700 text-white hover:bg-zinc-800 hover:text-white"
                                     data-testid={`button-increase-cart-${item.id}`}
                                   >
                                     <Plus className="w-3 h-3" />
@@ -294,7 +296,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                                   size="sm"
                                   onClick={() => handleRemoveItem(item.id)}
                                   disabled={removeItemMutation.isPending}
-                                  className="text-destructive hover:text-destructive p-1"
+                                  className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-1"
                                   data-testid={`button-remove-cart-${item.id}`}
                                 >
                                   <Trash2 className="w-4 h-4" />
@@ -310,33 +312,33 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
               </ScrollArea>
 
               {/* Footer */}
-              <div className="border-t border-border p-6 space-y-4">
+              <div className="border-t border-zinc-800 p-6 space-y-4 bg-zinc-950">
                 {/* Order Summary */}
                 <div className="space-y-2" data-testid="cart-summary">
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Subtotaal</span>
-                    <span className="text-foreground" data-testid="cart-subtotal">€{subtotal.toFixed(2)}</span>
+                    <span className="text-white/60">Subtotaal</span>
+                    <span className="text-white" data-testid="cart-subtotal">€{subtotal.toFixed(2)}</span>
                   </div>
                   
                   {installationFee > 0 && (
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Installatie</span>
-                      <span className="text-foreground" data-testid="cart-installation-fee">€{installationFee.toFixed(2)}</span>
+                      <span className="text-white/60">Installatie</span>
+                      <span className="text-white" data-testid="cart-installation-fee">€{installationFee.toFixed(2)}</span>
                     </div>
                   )}
                   
                   <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Verzending</span>
-                    <span className="text-foreground" data-testid="cart-shipping">
+                    <span className="text-white/60">Verzending</span>
+                    <span className="text-white" data-testid="cart-shipping">
                       {shipping === 0 ? "Gratis" : `€${shipping.toFixed(2)}`}
                     </span>
                   </div>
                   
-                  <Separator />
+                  <Separator className="bg-zinc-800" />
                   
                   <div className="flex justify-between text-lg font-semibold">
-                    <span className="text-card-foreground">Totaal</span>
-                    <span className="text-card-foreground" data-testid="cart-total">€{total.toFixed(2)}</span>
+                    <span className="text-white">Totaal</span>
+                    <span className="text-[#d0a760]" data-testid="cart-total">€{total.toFixed(2)}</span>
                   </div>
                 </div>
 
@@ -344,7 +346,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                 <div className="space-y-2">
                   <Link href="/checkout">
                     <Button 
-                      className="w-full" 
+                      className="w-full bg-[#d0a760] text-black hover:bg-[#b8954e]" 
                       size="lg"
                       onClick={onClose}
                       disabled={!cartItems || cartItems.length === 0}
@@ -358,7 +360,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                   <Link href="/cart">
                     <Button 
                       variant="outline" 
-                      className="w-full border-border"
+                      className="w-full border-zinc-700 text-white hover:bg-zinc-800 hover:text-white"
                       onClick={onClose}
                       data-testid="button-view-cart"
                     >
@@ -369,7 +371,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                   <Link href="/shop">
                     <Button 
                       variant="ghost" 
-                      className="w-full"
+                      className="w-full text-white/60 hover:text-white hover:bg-white/5"
                       onClick={onClose}
                       data-testid="button-continue-shopping"
                     >
@@ -380,8 +382,8 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
                 {/* Free Shipping Notice */}
                 {subtotal > 0 && subtotal < 50 && (
-                  <div className="bg-secondary/50 border border-border rounded-lg p-3" data-testid="free-shipping-notice">
-                    <p className="text-xs text-center text-muted-foreground">
+                  <div className="bg-[#d0a760]/10 border border-[#d0a760]/30 p-3" data-testid="free-shipping-notice">
+                    <p className="text-xs text-center text-[#d0a760]">
                       Nog €{(50 - subtotal).toFixed(2)} voor gratis verzending!
                     </p>
                   </div>

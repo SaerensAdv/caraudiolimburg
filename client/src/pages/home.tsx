@@ -206,6 +206,14 @@ export default function Home() {
 
       {/* About Section - BLACK with Bass Pulse */}
       <section className="py-24 md:py-32 bg-black relative overflow-hidden">
+        {/* Dot Grid Pattern */}
+        <div 
+          className="absolute inset-0 opacity-[0.02]"
+          style={{
+            backgroundImage: `radial-gradient(circle at 2px 2px, #d0a760 1px, transparent 0)`,
+            backgroundSize: '40px 40px'
+          }}
+        />
         <BassPulse className="opacity-30" />
         <div className="container px-8 md:px-16 lg:px-24 mx-auto relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -306,6 +314,14 @@ export default function Home() {
 
       {/* Video Section - BLACK */}
       <section className="py-24 md:py-32 bg-black relative overflow-hidden">
+        {/* Dot Grid Pattern */}
+        <div 
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `radial-gradient(circle at 2px 2px, #d0a760 1px, transparent 0)`,
+            backgroundSize: '40px 40px'
+          }}
+        />
         <div className="container px-8 md:px-16 lg:px-24 mx-auto relative z-10">
           <ScrollReveal>
             <div className="text-center mb-16">

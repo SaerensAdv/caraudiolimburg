@@ -165,12 +165,12 @@ export default function Shop() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" aria-hidden="true" />
               <Input
                 type="text"
-                placeholder="Zoek producten..."
+                placeholder="Wat zoek je voor jouw auto?"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full h-10 pl-10 pr-4 bg-white/5 border-white/10 text-white placeholder:text-white/40 rounded-none text-sm"
                 data-testid="mobile-search-input"
-                aria-label="Zoek producten"
+                aria-label="Zoek producten voor jouw auto"
                 autoFocus
               />
               {search && (
@@ -227,16 +227,16 @@ export default function Shop() {
             <div className="hidden md:block text-center max-w-4xl mx-auto">
               <Badge className="bg-[#d0a760]/10 text-[#d0a760] border-[#d0a760]/20 px-4 py-1.5 mb-6 rounded-none">
                 <Sparkles className="w-3 h-3 mr-2" />
-                Premium Car Audio Collection
+                Met passie geselecteerd voor jou
               </Badge>
               
               <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight">
-                Ontdek Onze{" "}
-                <span className="text-[#d0a760]">Collectie</span>
+                Vind de perfecte upgrade{" "}
+                <span className="text-[#d0a760]">voor jouw auto</span>
               </h1>
               
               <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-10">
-                Premium car audio systemen van de beste merken. Van speakers tot complete installaties.
+                Wij nemen je graag mee in ons vakkundig geselecteerde assortiment. Van premium speakers tot complete audiosystemen — altijd met oog voor kwaliteit.
               </p>
 
               {/* Search Bar */}
@@ -244,7 +244,7 @@ export default function Shop() {
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
                 <Input
                   type="text"
-                  placeholder="Zoek producten, merken, categorieën..."
+                  placeholder="Wat zoek je voor jouw auto?"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="w-full h-14 pl-12 pr-4 bg-white/5 border-white/10 text-white placeholder:text-white/40 rounded-none focus:border-[#d0a760] focus:ring-[#d0a760]/20"
@@ -256,10 +256,10 @@ export default function Shop() {
             {/* Mobile Hero Content - Compact */}
             <div className="md:hidden text-center pt-4">
               <h1 className="text-2xl font-bold text-white mb-2">
-                Premium <span className="text-[#d0a760]">Audio</span>
+                Voor jouw <span className="text-[#d0a760]">auto</span>
               </h1>
               <p className="text-sm text-white/50">
-                {sortedProducts.length} producten beschikbaar
+                {sortedProducts.length} producten met passie geselecteerd
               </p>
             </div>
           </ScrollReveal>
@@ -320,10 +320,10 @@ export default function Shop() {
             {/* Desktop: Grid cards */}
             <StaggerContainer className="hidden md:grid grid-cols-2 md:grid-cols-4 gap-4 px-4">
               {[
-                { name: "Speakers", icon: <Volume2 className="w-8 h-8" />, desc: "Hi-Fi Geluid", key: "speaker" },
-                { name: "Versterkers", icon: <Settings className="w-8 h-8" />, desc: "Pure Power", key: "amplif" },
-                { name: "Head Units", icon: <Car className="w-8 h-8" />, desc: "Smart Control", key: "head" },
-                { name: "Accessoires", icon: <Grid className="w-8 h-8" />, desc: "Complete Setup", key: "access" },
+                { name: "Speakers", icon: <Volume2 className="w-8 h-8" />, desc: "Kristalhelder geluid", key: "speaker" },
+                { name: "Versterkers", icon: <Settings className="w-8 h-8" />, desc: "Krachtig en zuiver", key: "amplif" },
+                { name: "Head Units", icon: <Car className="w-8 h-8" />, desc: "Slim entertainment", key: "head" },
+                { name: "Accessoires", icon: <Grid className="w-8 h-8" />, desc: "De finishing touch", key: "access" },
               ].map((cat, idx) => (
                 <StaggerItem key={cat.name}>
                   <button
@@ -465,7 +465,7 @@ export default function Shop() {
             <div className="mt-6 pt-6 border-t border-white/10 grid grid-cols-1 md:grid-cols-4 gap-4">
               {/* Category */}
               <div>
-                <label className="text-sm text-white/40 mb-2 block">Categorie</label>
+                <label className="text-sm text-white/40 mb-2 block">Waar ben je naar op zoek?</label>
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                   <SelectTrigger className="bg-white/5 border-white/10 text-white rounded-none" data-testid="select-category">
                     <SelectValue placeholder="Alle categorieën" />
@@ -483,7 +483,7 @@ export default function Shop() {
 
               {/* Brand */}
               <div>
-                <label className="text-sm text-white/40 mb-2 block">Merk</label>
+                <label className="text-sm text-white/40 mb-2 block">Voorkeursmerk</label>
                 <Select value={selectedBrand} onValueChange={setSelectedBrand}>
                   <SelectTrigger className="bg-white/5 border-white/10 text-white rounded-none" data-testid="select-brand">
                     <SelectValue placeholder="Alle merken" />
@@ -501,7 +501,7 @@ export default function Shop() {
 
               {/* Vehicle Make */}
               <div>
-                <label className="text-sm text-white/40 mb-2 block">Voertuigmerk</label>
+                <label className="text-sm text-white/40 mb-2 block">Jouw automerk</label>
                 <Select value={selectedMake} onValueChange={setSelectedMake}>
                   <SelectTrigger className="bg-white/5 border-white/10 text-white rounded-none" data-testid="select-vehicle-make">
                     <SelectValue placeholder="Alle merken" />
@@ -519,7 +519,7 @@ export default function Shop() {
 
               {/* Sort */}
               <div>
-                <label className="text-sm text-white/40 mb-2 block">Sorteren</label>
+                <label className="text-sm text-white/40 mb-2 block">Rangschikken op</label>
                 <Select value={sortBy} onValueChange={setSortBy}>
                   <SelectTrigger className="bg-white/5 border-white/10 text-white rounded-none" data-testid="select-sort">
                     <SelectValue />
@@ -649,16 +649,16 @@ export default function Shop() {
                   ))}
                 </div>
               </div>
-              <h3 className="text-2xl font-semibold text-white mb-3">Geen producten gevonden</h3>
+              <h3 className="text-2xl font-semibold text-white mb-3">We hebben nog geen match gevonden</h3>
               <p className="text-white/50 mb-6 max-w-md mx-auto">
-                Probeer je zoekopdracht aan te passen of verwijder enkele filters om meer resultaten te zien.
+                Geen probleem! Probeer andere zoekwoorden of pas je filters aan. Wij helpen je graag bij het vinden van de perfecte audio voor jouw auto.
               </p>
               <Button 
                 onClick={clearFilters} 
                 className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"
                 data-testid="button-clear-filters-empty"
               >
-                Wis alle filters
+                Bekijk alle producten
               </Button>
             </div>
           )}
@@ -671,25 +671,24 @@ export default function Shop() {
           <ScrollReveal animation="fade-up">
             <div className="max-w-4xl mx-auto text-center">
               <h2 className="text-3xl md:text-4xl font-bold text-black mb-6">
-                Hulp nodig bij je keuze?
+                Wij denken graag met je mee
               </h2>
               <p className="text-lg text-black/60 mb-8 max-w-2xl mx-auto">
-                Onze experts helpen je graag met het vinden van de perfecte audio setup voor jouw auto. 
-                Vraag vrijblijvend advies aan.
+                Met onze passie voor auto's en muziek helpen we je vakkundig bij het samenstellen van de perfecte audio-upgrade voor jouw wensen. Persoonlijk advies, zonder verplichtingen.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
                   asChild
                   className="bg-black text-white hover:bg-[#d0a760] hover:text-black rounded-none px-8 py-6 text-lg"
                 >
-                  <a href="/contact">Vraag Advies Aan</a>
+                  <a href="/contact">Vraag vrijblijvend advies</a>
                 </Button>
                 <Button 
                   asChild
                   variant="outline"
                   className="border-black text-black hover:bg-black hover:text-white rounded-none px-8 py-6 text-lg"
                 >
-                  <a href="/booking">Plan een Afspraak</a>
+                  <a href="/booking">Bezoek onze showroom</a>
                 </Button>
               </div>
             </div>

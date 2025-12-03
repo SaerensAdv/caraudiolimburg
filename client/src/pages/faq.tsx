@@ -12,15 +12,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { 
   HelpCircle, 
-  Clock, 
-  Euro, 
+  Store, 
+  Truck, 
+  Settings, 
   Wrench, 
-  Shield, 
   Phone,
   MessageCircle,
   MapPin,
-  ChevronDown,
-  ArrowRight
+  ArrowRight,
+  ExternalLink
 } from "lucide-react";
 import { Link } from "wouter";
 
@@ -29,94 +29,90 @@ export default function FAQ() {
 
   const faqData = [
     {
-      category: "Installatie & Service",
-      icon: <Wrench className="h-5 w-5" />,
+      category: "Webshop & Studio",
+      icon: <Store className="h-5 w-5" />,
       questions: [
         {
-          question: "Hoeveel kost een installatie?",
-          answer: "Onze standaard installatiekosten zijn €89 excl. BTW. Dit geldt voor de meeste multimedia systemen en speakers. Voor complexere installaties maken we een offerte op maat."
+          question: "Wat is het verschil tussen de webshop en de studio?",
+          answer: "We begrijpen dat dit soms verwarrend kan zijn! Onze webshop (waar je nu bent) is bedoeld voor het bestellen van losse car audio producten die je zelf wilt installeren of door een installateur laat inbouwen. Voor professionele installaties en complete audio-upgrades kun je terecht bij onze inbouwstudio op caraudiolimburg.studio. Daar helpen onze experts je met advies op maat en vakkundige montage in ons atelier in Sittard."
         },
         {
-          question: "Hoe lang duurt een installatie?",
-          answer: "Een standaard multimedia installatie duurt ongeveer 2-3 uur. Speaker vervangingen 1-2 uur. Complete audiosystemen kunnen 1-2 dagen in beslag nemen, afhankelijk van de complexiteit."
+          question: "Kan ik producten uit de webshop ook laten installeren?",
+          answer: "Jazeker! Als je producten bij ons bestelt en deze graag professioneel wilt laten inbouwen, neem dan contact op met onze studio via caraudiolimburg.studio. We plannen dan een afspraak in waarbij we je nieuwe apparatuur vakkundig installeren. Zo weet je zeker dat alles optimaal is afgestemd op jouw auto."
         },
         {
-          question: "Kan ik tijdens de installatie wachten?",
-          answer: "Voor korte installaties (1-2 uur) kunt u wachten in onze wachtruimte. Bij langere projecten plannen we een afspraak en kunt u uw auto aan het eind van de dag ophalen."
-        },
-        {
-          question: "Bieden jullie garantie op installaties?",
-          answer: "Ja, wij geven 2 jaar garantie op al onze installaties. Op de producten zelf geldt de fabrieksgarantie van 2-5 jaar, afhankelijk van het merk."
-        },
-        {
-          question: "Installeren jullie ook producten die ik zelf heb gekocht?",
-          answer: "Ja, dat is mogelijk. We hanteren dan wel een aangepast uurtarief van €65 per uur en kunnen geen garantie geven op producten die we niet zelf geleverd hebben."
+          question: "Kan ik ook langskomen in de showroom?",
+          answer: "Natuurlijk! We ontvangen je graag in onze showroom in Sittard. Hier kun je verschillende producten bekijken en beluisteren, zodat je precies weet wat je koopt. We adviseren wel om even een afspraak te maken, zodat we voldoende tijd voor je kunnen vrijmaken. Bel ons op +31(0)85 - 27 33 625 of stuur een WhatsApp."
         }
       ]
     },
     {
-      category: "Producten & Prijzen",
-      icon: <Euro className="h-5 w-5" />,
+      category: "Verzending & Retourneren",
+      icon: <Truck className="h-5 w-5" />,
+      questions: [
+        {
+          question: "Hoe snel wordt mijn bestelling verzonden?",
+          answer: "We begrijpen dat je je nieuwe audio-apparatuur zo snel mogelijk wilt ontvangen! Bestellingen die op werkdagen vóór 16:00 uur worden geplaatst, verzenden we dezelfde dag nog. Standaard verzending binnen Nederland duurt 1-2 werkdagen. Voor België en Duitsland kun je rekenen op 2-3 werkdagen."
+        },
+        {
+          question: "Wat zijn de verzendkosten?",
+          answer: "Voor bestellingen boven de €50 verzenden we gratis binnen Nederland. Voor kleinere bestellingen rekenen we €4,95 verzendkosten. Naar België en Duitsland hanteren we een vast tarief van €9,95. Bij grote of zware producten nemen we vooraf contact met je op over eventuele meerkosten."
+        },
+        {
+          question: "Kan ik mijn bestelling retourneren?",
+          answer: "Uiteraard! We willen dat je 100% tevreden bent met je aankoop. Ongebruikte producten kun je binnen 14 dagen na ontvangst retourneren. Neem eerst even contact met ons op, dan sturen we je de retourinstructies. Het aankoopbedrag wordt na ontvangst en controle binnen 5 werkdagen teruggestort. Let op: op maat gemaakte producten kunnen niet worden geretourneerd."
+        },
+        {
+          question: "Mijn bestelling is beschadigd aangekomen, wat nu?",
+          answer: "Dat is natuurlijk heel vervelend! Neem zo snel mogelijk contact met ons op en stuur foto's van de beschadiging mee. We zorgen dan voor een snelle oplossing, of dat nu een vervangend product is of een terugbetaling. Jouw tevredenheid staat bij ons voorop."
+        }
+      ]
+    },
+    {
+      category: "Producten & Merken",
+      icon: <Settings className="h-5 w-5" />,
       questions: [
         {
           question: "Welke merken verkopen jullie?",
-          answer: "We zijn officiële dealer van Alpine, Audison, Focal, Hertz, JL Audio, Pioneer en Kenwood. We werken uitsluitend met A-merken voor optimale kwaliteit en garantie."
+          answer: "We werken uitsluitend met premium A-merken waar we zelf ook enthousiast over zijn. In ons assortiment vind je onder andere Audison, Alpine, Hertz, Focal en Boxmore. Dit zijn merken die bekendstaan om hun uitstekende geluidskwaliteit en betrouwbaarheid. We kiezen bewust voor kwaliteit boven kwantiteit, zodat je verzekerd bent van de beste audio-ervaring."
         },
         {
-          question: "Maken jullie ook offerte op maat?",
-          answer: "Absoluut! Elk project is uniek. We maken graag een persoonlijke offerte op basis van uw auto, wensen en budget. Een adviesgesprek is altijd gratis."
+          question: "Hoe weet ik of een product in mijn auto past?",
+          answer: "We begrijpen dat compatibiliteit belangrijk is! Bij veel producten vermelden we de passende automodellen. Twijfel je of een product geschikt is voor jouw auto? Stuur ons gerust een bericht via WhatsApp of e-mail met je autogegevens (merk, model, bouwjaar). Onze experts helpen je graag met eerlijk advies - we verkopen je liever niets dan het verkeerde product."
         },
         {
-          question: "Zijn jullie prijzen concurrerend?",
-          answer: "Door onze jarenlange ervaring en goede relaties met leveranciers kunnen we zeer scherpe prijzen bieden. We matchen ook geverifieerde prijzen van andere dealers."
+          question: "Verkopen jullie ook installatiemateriaal?",
+          answer: "Jazeker! Naast speakers, versterkers en headunits hebben we ook het bijbehorende installatiemateriaal. Denk aan bekabeling, aansluitsets, adapterframes en demontagegereedschap. Zo heb je alles in huis voor een nette installatie. Bij twijfel over wat je nodig hebt, adviseren we je graag."
         },
         {
-          question: "Kan ik producten reserveren?",
-          answer: "Ja, tegen betaling van een aanbetaling van 20% reserveren we producten voor u. De resterende betaling volgt bij afhaling of installatie."
+          question: "Kan ik advies krijgen over de beste producten voor mijn situatie?",
+          answer: "Absoluut! We delen graag onze kennis en ervaring. Vertel ons iets over je auto, je huidige systeem en wat je wilt bereiken. Op basis daarvan geven we eerlijk en persoonlijk advies. Dit kan via telefoon, WhatsApp of e-mail. Voor uitgebreid advies met luistersessies nodigen we je uit in onze showroom."
         }
       ]
     },
     {
-      category: "Voertuig Compatibiliteit",
-      icon: <Shield className="h-5 w-5" />,
+      category: "Installatie",
+      icon: <Wrench className="h-5 w-5" />,
       questions: [
         {
-          question: "Passen jullie producten in mijn auto?",
-          answer: "We controleren altijd de compatibiliteit vooraf. Voor moderne auto's met fabriek audiosystemen adviseren we vaak OEM upgrade oplossingen die alle functies behouden."
+          question: "Kan ik de producten zelf installeren?",
+          answer: "Dat hangt af van het product en je technische ervaring. Eenvoudige upgrades zoals het vervangen van speakers zijn voor handige doe-het-zelvers vaak goed te doen. Bij de producten vermelden we de installatiecomplexiteit. Voor complexere installaties, zoals het aansluiten van versterkers of DSP's, raden we professionele installatie aan. Zo weet je zeker dat alles optimaal werkt én je garantie behouden blijft."
         },
         {
-          question: "Blijven mijn stuurwielknoppen werken?",
-          answer: "In de meeste gevallen wel. We gebruiken speciale interfaces die alle fabrieksfuncties behouden, inclusief stuurwielknoppen en display informatie."
+          question: "Wat zijn de voordelen van professionele installatie?",
+          answer: "Bij professionele installatie door onze studio krijg je meer dan alleen montage. Onze experts stemmen het systeem perfect af op de akoestiek van jouw auto, gebruiken hoogwaardige aansluitmaterialen en zorgen voor een onzichtbare, fabrieksnette afwerking. Je krijgt bovendien 1 jaar garantie op de inbouw. Het resultaat? Een geluidskwaliteit die je niet zelf kunt bereiken."
         },
         {
-          question: "Kan mijn garantie vervallen door modificaties?",
-          answer: "Onze installaties zijn vakkundig uitgevoerd en tasten de fabrieksgarantie niet aan. We werken volgens branchestandaarden en documenteren alle aanpassingen."
+          question: "Installeren jullie ook producten die ik elders heb gekocht?",
+          answer: "In onze studio kunnen we ook producten installeren die je elders hebt aangeschaft. We hanteren dan een uurtarief en kunnen helaas geen garantie geven op de producten zelf. Producten uit onze eigen webshop installeren we natuurlijk met volle garantie. Neem voor installatie-afspraken contact op via caraudiolimburg.studio."
         },
         {
-          question: "Installeren jullie ook in elektrische auto's?",
-          answer: "Ja, we hebben speciale expertise voor EV's. Door het ontbreken van motorgeluid is goede audiokwaliteit extra belangrijk in elektrische voertuigen."
-        }
-      ]
-    },
-    {
-      category: "Afspraken & Service",
-      icon: <Clock className="h-5 w-5" />,
-      questions: [
-        {
-          question: "Hoe maak ik een afspraak?",
-          answer: "U kunt online een afspraak boeken, bellen naar 047 563 63 63, of WhatsApp sturen. We reageren meestal binnen 2 uur tijdens kantooruren."
+          question: "Blijven mijn stuurwielbediening en andere functies werken?",
+          answer: "We begrijpen dat je alle gemakken wilt behouden! Bij de meeste moderne auto's kunnen we stuurwielbediening, parkeersensoren en andere fabrieksfuncties behouden met speciale adapters en interfaces. Geef bij je bestelling of adviesaanvraag aan welke functies belangrijk voor je zijn, dan zoeken we de juiste oplossing."
         },
         {
-          question: "Kan ik ook 's avonds of weekends terecht?",
-          answer: "Op afspraak zijn avond- en weekendafspraken mogelijk tegen een kleine toeslag. Dit is handig voor werkende mensen die overdag niet kunnen."
-        },
-        {
-          question: "Wat als ik mijn afspraak moet verzetten?",
-          answer: "Geen probleem! Geef ons minimaal 24 uur van tevoren een seintje, dan kunnen we vaak een nieuw tijdstip inplannen zonder kosten."
-        },
-        {
-          question: "Bieden jullie ook onderhoud en reparaties?",
-          answer: "Ja, we onderhouden en repareren alle systemen die we geïnstalleerd hebben. Voor producten van andere installateurs kijken we eerst naar de haalbaarheid."
+          question: "Vervalt mijn fabrieksgarantie door modificaties?",
+          answer: "Dit is een veelgestelde vraag! Wanneer installaties vakkundig worden uitgevoerd, tasten ze de fabrieksgarantie normaal gesproken niet aan. Onze studio werkt volgens strikte branchestandaarden en documenteert alle aanpassingen. Bij twijfel adviseren we je om dit vooraf bij je dealer na te vragen."
         }
       ]
     }
@@ -146,8 +142,9 @@ export default function FAQ() {
             
             <ScrollReveal direction="up" delay={300}>
               <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed">
-                Hier vindt u antwoorden op de meest gestelde vragen over onze producten, 
-                installaties en service. Staat uw vraag er niet bij? Neem gerust contact op.
+                We helpen je graag op weg! Hieronder vind je antwoorden op de meest gestelde vragen 
+                over onze producten, verzending en installatie. Staat jouw vraag er niet bij? 
+                Neem gerust contact met ons op - we denken graag met je mee.
               </p>
             </ScrollReveal>
 
@@ -163,8 +160,8 @@ export default function FAQ() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                 <div className="text-center md:text-left">
-                  <h3 className="text-white font-medium mb-1">Nog vragen? We helpen graag!</h3>
-                  <p className="text-white/50 text-sm">Bel, WhatsApp of kom langs voor persoonlijk advies</p>
+                  <h3 className="text-white font-medium mb-1">Liever persoonlijk advies?</h3>
+                  <p className="text-white/50 text-sm">Onze experts staan voor je klaar via telefoon of WhatsApp</p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <a href="tel:+31852733625">
@@ -238,17 +235,44 @@ export default function FAQ() {
           </div>
         </section>
 
+        {/* Studio CTA Section */}
+        <section className="py-12 md:py-16 bg-zinc-900 border-y border-zinc-800">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <ScrollReveal>
+              <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div>
+                  <h3 className="text-xl md:text-2xl font-light text-white mb-2">
+                    Op zoek naar <span className="text-[#d0a760]">professionele installatie</span>?
+                  </h3>
+                  <p className="text-white/60">
+                    Bezoek onze inbouwstudio voor advies op maat en vakkundige montage.
+                  </p>
+                </div>
+                <a href="https://caraudiolimburg.studio" target="_blank" rel="noopener noreferrer">
+                  <Button 
+                    className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none px-6 py-5 min-h-[48px] whitespace-nowrap"
+                    data-testid="button-studio-link"
+                  >
+                    Naar de Studio
+                    <ExternalLink className="w-4 h-4 ml-2" />
+                  </Button>
+                </a>
+              </div>
+            </ScrollReveal>
+          </div>
+        </section>
+
         {/* Contact CTA Section */}
-        <section className="py-16 md:py-24 bg-zinc-950 border-t border-zinc-800">
+        <section className="py-16 md:py-24 bg-black">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <ScrollReveal>
               <div className="text-center mb-12">
                 <h2 className="text-3xl md:text-4xl font-light text-white mb-4">
-                  Staat uw vraag er <span className="text-[#d0a760]">niet bij?</span>
+                  Staat jouw vraag er <span className="text-[#d0a760]">niet bij?</span>
                 </h2>
                 <p className="text-white/60 text-lg max-w-xl mx-auto">
-                  Ons team staat klaar om al uw vragen te beantwoorden en u te helpen 
-                  met de perfecte car audio oplossing.
+                  Geen probleem! We helpen je graag persoonlijk verder. 
+                  Neem contact met ons op via telefoon, WhatsApp of kom langs in onze showroom.
                 </p>
               </div>
             </ScrollReveal>
@@ -261,7 +285,7 @@ export default function FAQ() {
                     <Phone className="h-6 w-6 text-[#d0a760]" />
                   </div>
                   <h3 className="text-white font-medium text-lg mb-2">Bellen</h3>
-                  <p className="text-white/50 text-sm mb-4">Direct contact met onze experts</p>
+                  <p className="text-white/50 text-sm mb-4">Direct advies van onze experts</p>
                   <a href="tel:+31852733625" className="inline-block">
                     <span className="text-[#d0a760] text-sm font-medium hover:underline underline-offset-4">
                       +31(0)85 - 27 33 625
@@ -277,7 +301,7 @@ export default function FAQ() {
                     <MessageCircle className="h-6 w-6 text-[#d0a760]" />
                   </div>
                   <h3 className="text-white font-medium text-lg mb-2">WhatsApp</h3>
-                  <p className="text-white/50 text-sm mb-4">Snel en makkelijk communiceren</p>
+                  <p className="text-white/50 text-sm mb-4">Snel en gemakkelijk contact</p>
                   <a 
                     href="https://wa.me/31852733625" 
                     target="_blank" 
@@ -285,7 +309,7 @@ export default function FAQ() {
                     className="inline-block"
                   >
                     <span className="text-[#d0a760] text-sm font-medium hover:underline underline-offset-4">
-                      Online chat starten
+                      Start een gesprek
                     </span>
                   </a>
                 </div>
@@ -297,8 +321,8 @@ export default function FAQ() {
                   <div className="inline-flex items-center justify-center w-14 h-14 bg-zinc-800 border border-zinc-700 mb-5 group-hover:border-[#d0a760]/50 transition-colors">
                     <MapPin className="h-6 w-6 text-[#d0a760]" />
                   </div>
-                  <h3 className="text-white font-medium text-lg mb-2">Bezoek</h3>
-                  <p className="text-white/50 text-sm mb-4">Kom langs voor persoonlijk advies</p>
+                  <h3 className="text-white font-medium text-lg mb-2">Showroom</h3>
+                  <p className="text-white/50 text-sm mb-4">Kom langs voor een demo</p>
                   <span className="text-[#d0a760] text-sm font-medium">
                     Dr. Nolenslaan 157c, Sittard
                   </span>
@@ -318,13 +342,13 @@ export default function FAQ() {
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
-                <Link href="/booking">
+                <Link href="/shop">
                   <Button 
                     variant="outline"
                     className="border-zinc-700 text-white hover:bg-zinc-800 hover:border-[#d0a760] rounded-none px-8 py-6 min-h-[52px] text-base"
-                    data-testid="button-book-appointment"
+                    data-testid="button-shop"
                   >
-                    Afspraak Maken
+                    Bekijk Producten
                   </Button>
                 </Link>
               </div>

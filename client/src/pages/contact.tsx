@@ -57,15 +57,15 @@ export default function Contact() {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       toast({
-        title: "Bericht verzonden!",
-        description: "We nemen zo snel mogelijk contact met u op.",
+        title: "Bedankt voor je bericht!",
+        description: "We reageren meestal binnen 24-48 uur. Tot snel!",
       });
       
       reset();
     } catch (error) {
       toast({
-        title: "Fout bij verzenden",
-        description: "Probeer het opnieuw of bel ons direct.",
+        title: "Oeps, dat ging niet goed",
+        description: "Probeer het nog eens, of bel ons gerust even op 085 - 27 33 625.",
         variant: "destructive",
       });
     } finally {
@@ -95,14 +95,15 @@ export default function Contact() {
             
             <ScrollReveal direction="up" delay={200}>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-white mb-6">
-                Neem Contact Op
+                We Horen Graag Van Je
               </h1>
             </ScrollReveal>
             
             <ScrollReveal direction="up" delay={300}>
               <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed">
-                Een vraag over een product, prijs of onze inbouwservice? We streven ernaar om binnen 48 uur te reageren. 
-                Voor het beste advies hebben we graag een foto van uw origineel scherm inclusief het dashboard.
+                Heb je een vraag, wil je advies of gewoon even sparren over de mogelijkheden voor jouw auto? 
+                Wij staan klaar om je te helpen en reageren meestal binnen 24-48 uur. Stuur gerust een foto 
+                van je dashboard mee — dan kunnen we je nog beter adviseren!
               </p>
             </ScrollReveal>
             
@@ -125,12 +126,13 @@ export default function Contact() {
                   <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center border border-[#d0a760] text-[#d0a760]">
                     <MapPin className="h-8 w-8" />
                   </div>
-                  <h3 className="text-lg font-semibold text-white mb-3">Adres</h3>
+                  <h3 className="text-lg font-semibold text-white mb-3">Kom Langs</h3>
                   <p className="text-white/60 leading-relaxed">
                     Dr. Nolenslaan 157c<br />
                     6136 GM Sittard<br />
                     Nederland
                   </p>
+                  <p className="text-sm text-[#d0a760] mt-3">Je bent van harte welkom!</p>
                 </div>
               </ScrollReveal>
 
@@ -140,7 +142,7 @@ export default function Contact() {
                   <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center border border-[#d0a760] text-[#d0a760]">
                     <Phone className="h-8 w-8" />
                   </div>
-                  <h3 className="text-lg font-semibold text-white mb-3">Telefoon</h3>
+                  <h3 className="text-lg font-semibold text-white mb-3">Bel of App Ons</h3>
                   <p className="text-white/60">
                     <a 
                       href="tel:0852733625" 
@@ -150,7 +152,7 @@ export default function Contact() {
                       085 - 27 33 625
                     </a>
                   </p>
-                  <p className="text-sm text-white/40 mt-2">WhatsApp beschikbaar</p>
+                  <p className="text-sm text-white/40 mt-2">Ook bereikbaar via WhatsApp</p>
                 </div>
               </ScrollReveal>
 
@@ -160,7 +162,7 @@ export default function Contact() {
                   <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center border border-[#d0a760] text-[#d0a760]">
                     <Mail className="h-8 w-8" />
                   </div>
-                  <h3 className="text-lg font-semibold text-white mb-3">E-mail</h3>
+                  <h3 className="text-lg font-semibold text-white mb-3">Mail Ons</h3>
                   <p className="text-white/60">
                     <a 
                       href="mailto:info@caraudiolimburg.nl" 
@@ -170,7 +172,7 @@ export default function Contact() {
                       info@caraudiolimburg.nl
                     </a>
                   </p>
-                  <p className="text-sm text-white/40 mt-2">We reageren binnen 48 uur</p>
+                  <p className="text-sm text-white/40 mt-2">Reactie binnen 24-48 uur</p>
                 </div>
               </ScrollReveal>
 
@@ -180,7 +182,7 @@ export default function Contact() {
                   <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center border border-[#d0a760] text-[#d0a760]">
                     <Clock className="h-8 w-8" />
                   </div>
-                  <h3 className="text-lg font-semibold text-white mb-3">Openingstijden</h3>
+                  <h3 className="text-lg font-semibold text-white mb-3">Wanneer Kun Je Langs?</h3>
                   <div className="text-white/60 text-sm space-y-1">
                     <p className="text-[#d0a760] font-medium">Showroom:</p>
                     <p>Ma-Do: 13:30 - 17:30</p>
@@ -188,7 +190,7 @@ export default function Contact() {
                     <p className="text-[#d0a760] font-medium mt-3">Inbouwstudio:</p>
                     <p>Ma-Do: 08:30 - 17:30</p>
                     <p>Vr: 08:30 - 12:30</p>
-                    <p className="text-red-400 text-xs mt-2">Enkel op afspraak</p>
+                    <p className="text-white/40 text-xs mt-2">Maak even een afspraak</p>
                   </div>
                 </div>
               </ScrollReveal>
@@ -207,18 +209,20 @@ export default function Contact() {
               {/* Contact Form */}
               <ScrollReveal direction="left" delay={100}>
                 <div className="bg-zinc-950 border border-zinc-800 p-8 md:p-10">
-                  <div className="flex items-center gap-3 mb-8">
+                  <div className="flex items-center gap-3 mb-4">
                     <Send className="h-6 w-6 text-[#d0a760]" />
-                    <h2 className="text-2xl font-light text-white">Stuur ons een bericht</h2>
+                    <h2 className="text-2xl font-light text-white">Laat van je horen</h2>
                   </div>
+                  <p className="text-white/50 text-sm mb-8">Vul het formulier in en we nemen zo snel mogelijk contact met je op. Geen vraag is te gek!</p>
                   
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                     <div className="grid md:grid-cols-2 gap-4">
                       <div>
-                        <Label htmlFor="firstName" className="text-white/80 mb-2 block">Voornaam *</Label>
+                        <Label htmlFor="firstName" className="text-white/80 mb-2 block">Je voornaam</Label>
                         <Input
                           id="firstName"
                           {...register("firstName")}
+                          placeholder="Hoe mogen we je noemen?"
                           className={`bg-zinc-900 border-zinc-700 text-white placeholder:text-white/40 rounded-none focus:border-[#d0a760] focus:ring-[#d0a760] focus:ring-1 ${errors.firstName ? "border-red-500" : ""}`}
                           data-testid="input-firstName"
                         />
@@ -227,7 +231,7 @@ export default function Contact() {
                         )}
                       </div>
                       <div>
-                        <Label htmlFor="lastName" className="text-white/80 mb-2 block">Achternaam *</Label>
+                        <Label htmlFor="lastName" className="text-white/80 mb-2 block">Je achternaam</Label>
                         <Input
                           id="lastName"
                           {...register("lastName")}
@@ -241,11 +245,12 @@ export default function Contact() {
                     </div>
 
                     <div>
-                      <Label htmlFor="email" className="text-white/80 mb-2 block">E-mailadres *</Label>
+                      <Label htmlFor="email" className="text-white/80 mb-2 block">Je e-mailadres</Label>
                       <Input
                         id="email"
                         type="email"
                         {...register("email")}
+                        placeholder="Voor ons antwoord"
                         className={`bg-zinc-900 border-zinc-700 text-white placeholder:text-white/40 rounded-none focus:border-[#d0a760] focus:ring-[#d0a760] focus:ring-1 ${errors.email ? "border-red-500" : ""}`}
                         data-testid="input-email"
                       />
@@ -255,11 +260,12 @@ export default function Contact() {
                     </div>
 
                     <div>
-                      <Label htmlFor="phone" className="text-white/80 mb-2 block">Telefoonnummer *</Label>
+                      <Label htmlFor="phone" className="text-white/80 mb-2 block">Je telefoonnummer</Label>
                       <Input
                         id="phone"
                         type="tel"
                         {...register("phone")}
+                        placeholder="Mocht bellen handiger zijn"
                         className={`bg-zinc-900 border-zinc-700 text-white placeholder:text-white/40 rounded-none focus:border-[#d0a760] focus:ring-[#d0a760] focus:ring-1 ${errors.phone ? "border-red-500" : ""}`}
                         data-testid="input-phone"
                       />
@@ -269,11 +275,11 @@ export default function Contact() {
                     </div>
 
                     <div>
-                      <Label htmlFor="subject" className="text-white/80 mb-2 block">Onderwerp *</Label>
+                      <Label htmlFor="subject" className="text-white/80 mb-2 block">Waar gaat het over?</Label>
                       <Input
                         id="subject"
                         {...register("subject")}
-                        placeholder="Bijv. Offerte aanvraag Alpine systeem"
+                        placeholder="Bijv. Vraag over CarPlay, advies speakers..."
                         className={`bg-zinc-900 border-zinc-700 text-white placeholder:text-white/40 rounded-none focus:border-[#d0a760] focus:ring-[#d0a760] focus:ring-1 ${errors.subject ? "border-red-500" : ""}`}
                         data-testid="input-subject"
                       />
@@ -283,12 +289,12 @@ export default function Contact() {
                     </div>
 
                     <div>
-                      <Label htmlFor="message" className="text-white/80 mb-2 block">Uw bericht *</Label>
+                      <Label htmlFor="message" className="text-white/80 mb-2 block">Vertel ons meer</Label>
                       <Textarea
                         id="message"
                         rows={5}
                         {...register("message")}
-                        placeholder="Vertel ons over uw auto, wensen en budget..."
+                        placeholder="Welke auto heb je? Wat zijn je wensen? We denken graag met je mee!"
                         className={`bg-zinc-900 border-zinc-700 text-white placeholder:text-white/40 rounded-none focus:border-[#d0a760] focus:ring-[#d0a760] focus:ring-1 resize-none ${errors.message ? "border-red-500" : ""}`}
                         data-testid="textarea-message"
                       />
@@ -308,7 +314,7 @@ export default function Contact() {
                       ) : (
                         <>
                           <Send className="h-5 w-5 mr-2" />
-                          Bericht verzenden
+                          Verstuur je bericht
                         </>
                       )}
                     </Button>
@@ -333,10 +339,10 @@ export default function Contact() {
                         </div>
                         <div className="flex-1">
                           <h3 className="text-xl font-medium text-white mb-2 flex items-center gap-2">
-                            WhatsApp
+                            Even Appen?
                             <ExternalLink className="h-4 w-4 text-white/40" />
                           </h3>
-                          <p className="text-white/60 mb-3">Direct contact via WhatsApp voor snelle vragen</p>
+                          <p className="text-white/60 mb-3">Snel een vraagje? Stuur ons gerust een appje!</p>
                           <span className="text-[#d0a760] font-medium">047 563 63 63</span>
                         </div>
                         <ArrowRight className="h-6 w-6 text-white/40 group-hover:text-[#d0a760] group-hover:translate-x-1 transition-all duration-300" />
@@ -357,8 +363,8 @@ export default function Contact() {
                           <Phone className="h-7 w-7" />
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-xl font-medium text-white mb-2">Bellen</h3>
-                          <p className="text-white/60 mb-3">Spreek direct met een van onze specialisten</p>
+                          <h3 className="text-xl font-medium text-white mb-2">Liever Bellen?</h3>
+                          <p className="text-white/60 mb-3">We praten je graag persoonlijk bij over de mogelijkheden</p>
                           <span className="text-[#d0a760] font-medium">085 - 27 33 625</span>
                         </div>
                         <ArrowRight className="h-6 w-6 text-white/40 group-hover:text-[#d0a760] group-hover:translate-x-1 transition-all duration-300" />
@@ -376,9 +382,9 @@ export default function Contact() {
                           <Calendar className="h-7 w-7" />
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-xl font-medium text-white mb-2">Afspraak maken</h3>
-                          <p className="text-white/60 mb-3">Plan direct een afspraak voor installatie of adviesgesprek</p>
-                          <span className="text-[#d0a760] font-medium">Plan nu in →</span>
+                          <h3 className="text-xl font-medium text-white mb-2">Kom Langs in de Showroom</h3>
+                          <p className="text-white/60 mb-3">Plan een afspraak en ervaar onze producten zelf. We nemen alle tijd voor je!</p>
+                          <span className="text-[#d0a760] font-medium">Plan je bezoek →</span>
                         </div>
                         <ArrowRight className="h-6 w-6 text-white/40 group-hover:text-[#d0a760] group-hover:translate-x-1 transition-all duration-300" />
                       </div>
@@ -388,27 +394,31 @@ export default function Contact() {
 
                 {/* Quote Card */}
                 <ScrollReveal direction="right" delay={400}>
-                  <div className="bg-gradient-to-br from-[#d0a760]/20 to-transparent border border-[#d0a760]/30 p-8">
-                    <div className="flex items-start gap-6">
-                      <div className="w-14 h-14 flex-shrink-0 flex items-center justify-center bg-[#d0a760] text-black">
-                        <Car className="h-7 w-7" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="text-xl font-medium text-white mb-2">Offerte op maat</h3>
-                        <p className="text-white/60 mb-4">
-                          Heeft u een specifiek audiosysteem in gedachten? 
-                          We maken graag een persoonlijke offerte voor uw voertuig.
-                        </p>
-                        <Button 
-                          className="bg-[#d0a760] hover:bg-[#b8954e] text-black rounded-none px-6 py-5"
-                          data-testid="button-quote"
-                        >
-                          <Car className="h-4 w-4 mr-2" />
-                          Offerte aanvragen
-                        </Button>
+                  <a 
+                    href="https://caraudiolimburg.studio/offerte-aanvragen/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
+                  >
+                    <div className="bg-gradient-to-br from-[#d0a760]/20 to-transparent border border-[#d0a760]/30 p-8 hover:border-[#d0a760]/50 transition-all duration-300">
+                      <div className="flex items-start gap-6">
+                        <div className="w-14 h-14 flex-shrink-0 flex items-center justify-center bg-[#d0a760] text-black">
+                          <Car className="h-7 w-7" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-xl font-medium text-white mb-2">Installatie Offerte Nodig?</h3>
+                          <p className="text-white/60 mb-4">
+                            Wil je een complete audio-upgrade of CarPlay inbouw? Via onze inbouwstudio 
+                            helpen we je graag met een offerte op maat voor jouw auto.
+                          </p>
+                          <div className="flex items-center gap-2 text-[#d0a760] font-medium">
+                            <span>Naar caraudiolimburg.studio</span>
+                            <ExternalLink className="h-4 w-4" />
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </a>
                 </ScrollReveal>
               </div>
             </div>
@@ -424,10 +434,11 @@ export default function Contact() {
             <ScrollReveal direction="up">
               <div className="text-center mb-12">
                 <h2 className="text-3xl md:text-4xl font-light text-black mb-4">
-                  Bezoek onze werkplaats
+                  Je Bent Van Harte Welkom
                 </h2>
                 <p className="text-lg text-zinc-600 max-w-2xl mx-auto">
-                  Dr. Nolenslaan 157c, 6136 GM Sittard - Makkelijk bereikbaar vanuit heel Limburg
+                  Kom gerust langs in onze showroom in Sittard! Luister naar onze demo-systemen, 
+                  stel al je vragen en ontdek wat we voor jouw auto kunnen betekenen.
                 </p>
               </div>
             </ScrollReveal>
@@ -441,10 +452,10 @@ export default function Contact() {
                       <MapPin className="h-10 w-10" />
                     </div>
                     <h3 className="text-2xl font-light text-white mb-3">
-                      Interactieve kaart
+                      Vind Ons
                     </h3>
                     <p className="text-white/60 mb-6 max-w-md mx-auto">
-                      Google Maps integratie voor routebeschrijving naar onze showroom en werkplaats
+                      Dr. Nolenslaan 157c, Sittard — makkelijk bereikbaar met voldoende parkeergelegenheid
                     </p>
                     <a 
                       href="https://maps.google.com/?q=Dr.+Nolenslaan+157c,+6136+GM+Sittard,+Nederland"
@@ -452,7 +463,7 @@ export default function Contact() {
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 text-[#d0a760] hover:text-[#b8954e] transition-colors"
                     >
-                      <span>Open in Google Maps</span>
+                      <span>Plan je route via Google Maps</span>
                       <ExternalLink className="h-4 w-4" />
                     </a>
                   </div>

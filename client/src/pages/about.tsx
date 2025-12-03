@@ -57,13 +57,13 @@ export default function About() {
             
             <ScrollReveal direction="up" delay={600}>
               <p className="text-[#d0a760] text-xl md:text-2xl font-light tracking-wider mb-8">
-                To enjoy a safe ride
+                Met passie voor auto's en muziek
               </p>
             </ScrollReveal>
             
             <ScrollReveal direction="up" delay={800}>
               <p className="text-white/70 text-lg md:text-xl max-w-2xl leading-relaxed">
-                Al 10 jaar dé specialist in Limburg op het gebied van mobiliteit beleving en audio in een voertuig. Wij zorgen voor gemak en plezier onderweg.
+                Al meer dan 10 jaar helpen wij autoliefhebbers in Limburg aan de perfecte audio-ervaring. Met vakkundige montage, premium merken en persoonlijke aandacht maken wij van elke rit een beleving.
               </p>
             </ScrollReveal>
             
@@ -83,22 +83,22 @@ export default function About() {
               <ScrollReveal direction="left">
                 <div>
                   <span className="text-[#d0a760] text-sm font-medium tracking-wider uppercase mb-4 block">
-                    Onze Visie
+                    Ons Verhaal
                   </span>
                   <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-black mb-8 leading-tight">
                     Passie voor
                     <br />
-                    <span className="text-[#d0a760]">perfecte audio</span>
+                    <span className="text-[#d0a760]">auto's en muziek</span>
                   </h2>
                   <div className="space-y-6 text-zinc-600 text-lg leading-relaxed">
                     <p>
-                      De afgelopen 30 jaar heeft de automobielindustrie enorme stappen gemaakt en ontwikkelen fabrikanten continu nieuwe innovaties. En dus is de kans groot dat uw voertuig niet is uitgerust met deze nieuwste snufjes.
+                      Welkom bij Car Audio Limburg! Wij zijn Dennis en Romy, en al meer dan 10 jaar delen wij onze passie voor auto's en muziek met klanten uit heel Limburg en daarbuiten. Wat begon als een liefde voor perfecte geluidsbeleving, is uitgegroeid tot een professionele inbouwstudio én webshop.
                     </p>
                     <p>
-                      Innovatie speelt een grote rol in ieders leven en voedt onze passie en drang naar verbetering. Met deze combinatie in gedachten zoeken wij continu naar antwoorden op deze uitdagingen.
+                      In onze <a href="https://caraudiolimburg.studio" target="_blank" rel="noopener noreferrer" className="text-[#d0a760] hover:underline font-medium">inbouwstudio in Sittard</a> verzorgen wij vakkundige montage van premium audiosystemen. Met jarenlange ervaring en oog voor detail zorgen wij ervoor dat elke installatie perfect is afgestemd op uw voertuig en wensen.
                     </p>
                     <p>
-                      Wij zijn Dennis en Romy, de enthousiaste eigenaren van Car Audio Limburg. Car Audio Limburg zet zich in om producten en diensten aan te bieden die uw mobiliteit ervaringen slimmer, veiliger en comfortabeler maken.
+                      Via deze webshop bieden wij u de mogelijkheid om zelf hoogwaardige producten te bestellen van topmerken zoals <span className="font-medium text-black">Audison, Alpine, Hertz en Focal</span>. Of u nu zelf aan de slag wilt of de producten bij ons wilt laten inbouwen - wij staan voor u klaar.
                     </p>
                   </div>
                 </div>
@@ -188,13 +188,13 @@ export default function About() {
             <ScrollReveal>
               <div className="text-center mb-16">
                 <span className="text-[#d0a760] text-sm font-medium tracking-wider uppercase mb-4 block">
-                  Onze Diensten
+                  Wat Wij Bieden
                 </span>
                 <h2 className="text-3xl md:text-4xl font-light text-black mb-4">
-                  Onze Specialiteiten
+                  Expertise & Kwaliteit
                 </h2>
                 <p className="text-zinc-600 text-lg max-w-2xl mx-auto">
-                  Van advies tot installatie - wij begeleiden u door het hele proces
+                  Met jarenlange ervaring en een passie voor perfectie helpen wij u aan de beste audio-oplossing
                 </p>
               </div>
             </ScrollReveal>
@@ -204,14 +204,14 @@ export default function About() {
                 <div className="bg-zinc-50 border border-zinc-200 p-8 h-full group hover:border-[#d0a760] transition-colors duration-300" data-testid="service-installation">
                   <Car className="h-12 w-12 text-[#d0a760] mb-6" />
                   <h3 className="text-xl font-medium text-black mb-4">
-                    Complete Installaties
+                    Webshop Producten
                   </h3>
                   <p className="text-zinc-600 mb-6 leading-relaxed">
-                    Van multimedia systemen tot complete audiosystemen. 
-                    Professioneel geïnstalleerd in onze werkplaats.
+                    Ontdek ons uitgebreide assortiment van Audison, Alpine, Hertz 
+                    en Focal. Premium producten direct bij u thuisbezorgd.
                   </p>
                   <span className="inline-block text-[#d0a760] text-sm font-medium border border-[#d0a760] px-4 py-2">
-                    €89 installatiekosten
+                    Snelle levering
                   </span>
                 </div>
               </StaggerItem>
@@ -220,15 +220,15 @@ export default function About() {
                 <div className="bg-zinc-50 border border-zinc-200 p-8 h-full group hover:border-[#d0a760] transition-colors duration-300" data-testid="service-premium">
                   <Headphones className="h-12 w-12 text-[#d0a760] mb-6" />
                   <h3 className="text-xl font-medium text-black mb-4">
-                    Premium Audio
+                    Vakkundige Montage
                   </h3>
                   <p className="text-zinc-600 mb-6 leading-relaxed">
-                    High-end audiosystemen met DSP tuning voor de perfecte 
-                    geluidsbeleving op maat van uw voertuig.
+                    Laat uw producten professioneel inbouwen in onze studio. 
+                    Met jarenlange ervaring garanderen wij perfectie.
                   </p>
-                  <span className="inline-block text-[#d0a760] text-sm font-medium border border-[#d0a760] px-4 py-2">
-                    Custom maatwerk
-                  </span>
+                  <a href="https://caraudiolimburg.studio" target="_blank" rel="noopener noreferrer" className="inline-block text-[#d0a760] text-sm font-medium border border-[#d0a760] px-4 py-2 hover:bg-[#d0a760] hover:text-black transition-colors">
+                    Naar de Studio
+                  </a>
                 </div>
               </StaggerItem>
 
@@ -236,14 +236,14 @@ export default function About() {
                 <div className="bg-zinc-50 border border-zinc-200 p-8 h-full group hover:border-[#d0a760] transition-colors duration-300" data-testid="service-advice">
                   <Heart className="h-12 w-12 text-[#d0a760] mb-6" />
                   <h3 className="text-xl font-medium text-black mb-4">
-                    Persoonlijk Advies
+                    Persoonlijke Aandacht
                   </h3>
                   <p className="text-zinc-600 mb-6 leading-relaxed">
-                    Elk project is uniek. Wij denken met u mee voor de beste 
-                    oplossing binnen uw budget en wensen.
+                    Wij nemen de tijd om uw wensen te begrijpen. Geen standaard 
+                    oplossingen, maar advies op maat voor uw situatie.
                   </p>
                   <span className="inline-block text-[#d0a760] text-sm font-medium border border-[#d0a760] px-4 py-2">
-                    Gratis adviesgesprek
+                    Gratis advies
                   </span>
                 </div>
               </StaggerItem>
@@ -275,11 +275,14 @@ export default function About() {
             <ScrollReveal>
               <div className="text-center mb-16">
                 <span className="text-[#d0a760] text-sm font-medium tracking-wider uppercase mb-4 block">
-                  Onze Studio
+                  Onze Inbouwstudio
                 </span>
-                <h2 className="text-3xl md:text-4xl font-light text-white">
-                  Achter de schermen
+                <h2 className="text-3xl md:text-4xl font-light text-white mb-4">
+                  Waar vakmanschap samenkomt
                 </h2>
+                <p className="text-white/60 text-lg max-w-2xl mx-auto">
+                  In onze professionele studio in Sittard werken wij met precisie aan uw droomaudio
+                </p>
               </div>
             </ScrollReveal>
 
@@ -324,13 +327,13 @@ export default function About() {
             <ScrollReveal>
               <div className="text-center mb-16">
                 <span className="text-[#d0a760] text-sm font-medium tracking-wider uppercase mb-4 block">
-                  Contact
+                  Welkom in Sittard
                 </span>
                 <h2 className="text-3xl md:text-4xl font-light text-black mb-4">
-                  Bezoek Onze Werkplaats
+                  Kom Gezellig Langs
                 </h2>
                 <p className="text-zinc-600 text-lg max-w-2xl mx-auto">
-                  Kom langs voor advies of maak een afspraak voor installatie
+                  Wij ontvangen u graag in onze showroom in het hart van Limburg. Kom vrijblijvend luisteren en ervaar zelf het verschil van premium audio.
                 </p>
               </div>
             </ScrollReveal>

@@ -64,41 +64,41 @@ export default function AppleCarPlayBMW() {
   const benefits = [
     {
       icon: <CheckCircle className="w-6 h-6 text-[#d0a760]" />,
-      title: "OEM-software, geen hardware nodig",
-      description: "Gebruik van originele BMW/MINI software"
+      title: "Originele BMW/MINI kwaliteit",
+      description: "Wij gebruiken uitsluitend OEM-software - jouw auto blijft 100% origineel"
     },
     {
       icon: <Clock className="w-6 h-6 text-[#d0a760]" />,
-      title: "Klaar binnen 30–60 minuten",
-      description: "Snelle activatie zonder hardware aanpassingen"
+      title: "Snel klaar, maximaal genieten",
+      description: "Binnen 30-60 minuten rij je weg met een volledig werkend systeem"
     },
     {
       icon: <MapPin className="w-6 h-6 text-[#d0a760]" />,
-      title: "Activatie op locatie mogelijk",
-      description: "In onze werkplaats of bij u thuis/kantoor"
+      title: "Flexibele service op maat",
+      description: "Wij komen naar jou toe, of ontvangen je graag in onze studio"
     }
   ];
 
   const features = [
     {
       icon: <Smartphone className="w-6 h-6" />,
-      title: "Naadloze iPhone integratie",
-      description: "Apple CarPlay voor navigatie, muziek, berichten en meer"
+      title: "Jouw iPhone, naadloos verbonden",
+      description: "Geniet van navigatie, muziek en berichten via het vertrouwde iDrive scherm"
     },
     {
       icon: <Wifi className="w-6 h-6" />,
-      title: "Draadloos beschikbaar",
-      description: "Geen kabels nodig - automatisch verbinden"
+      title: "Draadloos gemak",
+      description: "Stap in en je iPhone verbindt automatisch - geen gedoe met kabels"
     },
     {
       icon: <Shield className="w-6 h-6" />,
-      title: "100% OEM kwaliteit",
-      description: "Originele BMW software, geen aftermarket oplossing"
+      title: "Vakmanschap met garantie",
+      description: "Als specialist in BMW/MINI garanderen wij perfecte OEM-kwaliteit"
     },
     {
       icon: <Award className="w-6 h-6" />,
-      title: "Garantie behouden",
-      description: "Fabrieksgarantie blijft volledig intact"
+      title: "Fabrieksgarantie blijft behouden",
+      description: "Rijd zorgeloos verder - je garantie blijft volledig intact"
     }
   ];
 
@@ -167,7 +167,7 @@ export default function AppleCarPlayBMW() {
               transition={{ duration: 0.8 }}
             >
               <Badge className="mb-4 md:mb-6 bg-[#d0a760] text-black font-semibold text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2 rounded-none">
-                ✨ PREMIUM BMW & MINI SERVICE
+                ✨ SPECIALIST IN BMW & MINI CARPLAY
               </Badge>
               
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-4 md:mb-6 leading-tight">
@@ -177,11 +177,11 @@ export default function AppleCarPlayBMW() {
               </h1>
               
               <p className="text-lg md:text-xl lg:text-2xl text-gray-300 mb-3 md:mb-4">
-                (2015 – heden)
+                Modellen vanaf 2015 – wij kennen ze allemaal
               </p>
               
               <p className="text-base md:text-lg text-gray-400 mb-6 md:mb-8 max-w-2xl leading-relaxed">
-                Snel, voordelig en zonder hardware – check direct of jouw auto geschikt is via chassisnummer.
+                Met onze jarenlange ervaring en passie voor BMW en MINI activeren wij CarPlay vakkundig via originele software. Ontdek of jouw auto geschikt is en ervaar het gemak van naadloze smartphone integratie.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mb-8 md:mb-12">
@@ -253,10 +253,10 @@ export default function AppleCarPlayBMW() {
           <ScrollReveal>
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                Waarom kiezen voor <span className="text-[#d0a760]">onze activatie</span>?
+                Waarom kiezen voor <span className="text-[#d0a760]">Car Audio Limburg</span>?
               </h2>
               <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-                Professionele CarPlay activatie met behoud van fabrieksgarantie
+                Als specialist in BMW en MINI weten wij precies hoe we jouw rijervaring kunnen verbeteren - met passie en vakmanschap
               </p>
             </div>
           </ScrollReveal>
@@ -283,20 +283,20 @@ export default function AppleCarPlayBMW() {
           <ScrollReveal>
             <div className="text-center mb-12">
               <Badge className="mb-4 bg-[#d0a760]/20 text-[#d0a760] border-[#d0a760] rounded-none">
-                💡 Wist je dat...
+                💡 Bewezen expertise
               </Badge>
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                Al meer dan <span className="text-[#d0a760]">500 auto's</span> via onze software CarPlay actief gebruiken?
+                Al meer dan <span className="text-[#d0a760]">500 tevreden klanten</span> genieten van CarPlay
               </h2>
             </div>
           </ScrollReveal>
 
           <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-8" staggerDelay={100}>
             {[
-              { end: 500, suffix: "+", label: "Geactiveerde voertuigen" },
-              { end: 60, prefix: "30-", label: "Minuten installatietijd" },
-              { end: 2015, suffix: "+", label: "BMW & MINI modellen" },
-              { end: 100, suffix: "%", label: "OEM software" }
+              { end: 500, suffix: "+", label: "Tevreden klanten" },
+              { end: 60, prefix: "30-", label: "Minuten activatietijd" },
+              { end: 2015, suffix: "+", label: "Ondersteunde modellen" },
+              { end: 100, suffix: "%", label: "Originele software" }
             ].map((stat, index) => (
               <div key={index} className="text-center">
                 <div className="text-3xl lg:text-4xl font-bold text-[#d0a760] mb-2">
@@ -317,10 +317,10 @@ export default function AppleCarPlayBMW() {
           <ScrollReveal>
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                Bekijk onze <span className="text-[#d0a760]">installaties</span>
+                Bekijk ons <span className="text-[#d0a760]">vakmanschap</span>
               </h2>
               <p className="text-xl text-gray-400">
-                Professioneel geactiveerd in BMW en MINI voertuigen
+                Elke activatie voeren wij uit met dezelfde toewijding - bekijk het resultaat
               </p>
             </div>
           </ScrollReveal>
@@ -371,9 +371,9 @@ export default function AppleCarPlayBMW() {
                       <Star key={i} className="w-5 h-5 text-[#d0a760] fill-current" />
                     ))}
                   </div>
-                  <p className="text-white font-semibold mb-2">Perfecte integratie</p>
+                  <p className="text-white font-semibold mb-2">Precies zoals verwacht</p>
                   <p className="text-gray-400 text-sm">
-                    "Werkt vlekkeloos in mijn BMW 3-serie. Lijkt alsof het er altijd heeft gezeten!"
+                    "Geweldige service van Car Audio Limburg! De activatie verliep perfect en het voelt alsof CarPlay altijd in mijn auto heeft gezeten."
                   </p>
                   <p className="text-[#d0a760] text-sm mt-2">- Mark, BMW 3-serie eigenaar</p>
                 </div>
@@ -390,17 +390,23 @@ export default function AppleCarPlayBMW() {
             <div className="max-w-4xl mx-auto">
               <div className="text-center mb-12">
                 <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                  Komt jouw auto in <span className="text-[#d0a760]">aanmerking</span>?
+                  Ontdek of jouw auto <span className="text-[#d0a760]">geschikt</span> is
                 </h2>
-                <p className="text-xl text-gray-400">
-                  Vul onderstaand formulier in en wij laten je weten of jouw BMW of MINI geschikt is.
+                <p className="text-xl text-gray-400 mb-4">
+                  Vul onderstaand formulier in en wij checken vrijblijvend of jouw BMW of MINI in aanmerking komt voor CarPlay activatie.
+                </p>
+                <p className="text-base text-gray-500">
+                  Op deze pagina vind je ook onze CarPlay-gerelateerde producten die je direct in onze webshop kunt bestellen. Voor professionele installatie kun je terecht bij{" "}
+                  <a href="https://caraudiolimburg.studio" target="_blank" rel="noopener noreferrer" className="text-[#d0a760] hover:underline">
+                    caraudiolimburg.studio
+                  </a>
                 </p>
               </div>
 
               <Card className="bg-zinc-900 border-zinc-800 rounded-none">
                 <CardHeader className="border-b border-zinc-800">
                   <CardTitle className="text-2xl text-white text-center">
-                    Vraag jouw gratis offerte aan
+                    Vraag vrijblijvend een offerte aan
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6 md:p-8">
@@ -550,22 +556,22 @@ export default function AppleCarPlayBMW() {
                   {
                     id: "geschikt",
                     question: "Hoe weet ik of mijn auto geschikt is?",
-                    answer: "Je auto is geschikt als het originele multimediasysteem compatibel is met Apple CarPlay of Android Auto. Controleer dit eenvoudig in de handleiding van je auto, op de website van de fabrikant of door je systeem aan te zetten en te kijken of CarPlay/Android Auto als optie beschikbaar is. Twijfel je? Stuur ons het merk, model en bouwjaar van je auto, dan zoeken wij het voor je uit."
+                    answer: "Dat zoeken wij graag voor je uit! Stuur ons je chassisnummer (VIN) en wij controleren direct of jouw BMW of MINI geschikt is voor CarPlay activatie. Binnen korte tijd ontvang je van ons een eerlijk en vrijblijvend advies."
                   },
                   {
                     id: "wifi",
                     question: "Wat als mijn auto geen Wi-Fi heeft?",
-                    answer: "Geen probleem! Wi-Fi is niet vereist om gebruik te maken van CarPlay of Android Auto. Onze systemen werken ook zonder ingebouwde Wi-Fi en gebruiken de verbinding van je smartphone om de functies mogelijk te maken."
+                    answer: "Geen zorgen! Wi-Fi is geen vereiste voor CarPlay. Wij kunnen ook bekabelde CarPlay activeren, waarbij je je iPhone simpelweg via USB aansluit. Beide opties werken uitstekend - wij adviseren je graag welke het beste bij jouw situatie past."
                   },
                   {
                     id: "draadloos",
                     question: "Kan het draadloos of met kabel?",
-                    answer: "Ja, beide opties zijn mogelijk. Je kunt kiezen voor een draadloze verbinding via Bluetooth/Wi-Fi of een bekabelde verbinding via USB, afhankelijk van wat jouw auto ondersteunt en waar je voorkeur ligt. We adviseren een bekabelde verbinding voor de meest stabiele prestaties."
+                    answer: "Beide opties zijn mogelijk en werken perfect. Draadloze CarPlay biedt maximaal gemak - je iPhone verbindt automatisch zodra je instapt. Bekabelde CarPlay via USB is de meest stabiele optie en laadt tegelijk je telefoon op. Wij bespreken graag wat het beste werkt voor jouw auto."
                   },
                   {
                     id: "updates",
                     question: "Blijft CarPlay actief na updates?",
-                    answer: "Ja, CarPlay blijft actief na software-updates van je iPhone of Android-apparaat. Ook updates aan het multimediasysteem zelf hebben normaal gezien geen invloed op de werking. Mocht er toch een probleem optreden na een update, helpen we je graag verder met een oplossing."
+                    answer: "Absoluut! De activatie blijft behouden na software-updates van zowel je iPhone als het BMW/MINI systeem. Mocht je ooit toch een vraag hebben na een update, dan staan wij altijd voor je klaar met persoonlijke ondersteuning."
                   }
                 ].map((faq) => (
                   <AccordionItem
@@ -592,9 +598,15 @@ export default function AppleCarPlayBMW() {
         <div className="container mx-auto px-4 md:px-8 lg:px-16">
           <ScrollReveal>
             <div className="text-center max-w-4xl mx-auto">
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-                Kom langs op afspraak, of bezoek onze <span className="text-[#d0a760]">showroom</span>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                Wij staan voor je <span className="text-[#d0a760]">klaar</span>
               </h2>
+              <p className="text-gray-400 text-lg mb-8">
+                Voor professionele CarPlay installatie door onze specialisten bezoek je{" "}
+                <a href="https://caraudiolimburg.studio" target="_blank" rel="noopener noreferrer" className="text-[#d0a760] hover:underline font-semibold">
+                  caraudiolimburg.studio
+                </a>
+              </p>
               
               <StaggerContainer className="grid md:grid-cols-2 gap-8 mt-12" staggerDelay={150}>
                 <Card className="bg-zinc-900 border-zinc-800 hover:border-[#d0a760] transition-all duration-300 rounded-none">
@@ -602,18 +614,23 @@ export default function AppleCarPlayBMW() {
                     <div className="w-12 h-12 bg-[#d0a760]/20 flex items-center justify-center mx-auto mb-4">
                       <MapPin className="w-6 h-6 text-[#d0a760]" />
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-4">Bezoek onze showroom</h3>
+                    <h3 className="text-xl font-bold text-white mb-4">Bezoek onze studio</h3>
                     <p className="text-gray-400 mb-4">
                       Dr. Nolenslaan 157c<br />
                       6136 GM Sittard
                     </p>
-                    <Button 
-                      variant="outline" 
-                      className="border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760] hover:text-black rounded-none"
-                      data-testid="button-visit-showroom"
-                    >
-                      Route plannen
-                    </Button>
+                    <p className="text-gray-500 text-sm mb-4">
+                      Ervaar onze expertise en bekijk de mogelijkheden voor jouw BMW of MINI
+                    </p>
+                    <a href="https://caraudiolimburg.studio/offerte-aanvragen/" target="_blank" rel="noopener noreferrer">
+                      <Button 
+                        variant="outline" 
+                        className="border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760] hover:text-black rounded-none"
+                        data-testid="button-visit-showroom"
+                      >
+                        Offerte aanvragen bij studio
+                      </Button>
+                    </a>
                   </CardContent>
                 </Card>
 
@@ -622,7 +639,7 @@ export default function AppleCarPlayBMW() {
                     <div className="w-12 h-12 bg-[#d0a760]/20 flex items-center justify-center mx-auto mb-4">
                       <Phone className="w-6 h-6 text-[#d0a760]" />
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-4">Direct contact</h3>
+                    <h3 className="text-xl font-bold text-white mb-4">Persoonlijk advies</h3>
                     <p className="text-gray-400 mb-2">
                       <a href="tel:+31852733625" className="hover:text-[#d0a760] transition-colors">
                         +31 (0)85 - 27 33 625
@@ -633,12 +650,16 @@ export default function AppleCarPlayBMW() {
                         info@caraudiolimburg.nl
                       </a>
                     </p>
+                    <p className="text-gray-500 text-sm mb-4">
+                      Wij helpen je graag met al je vragen over CarPlay
+                    </p>
                     <Button 
                       className="bg-[#d0a760] hover:bg-[#b8954d] text-black rounded-none"
                       data-testid="button-call-direct"
+                      onClick={() => window.location.href = 'tel:+31852733625'}
                     >
                       <Phone className="w-4 h-4 mr-2" />
-                      Nu bellen
+                      Bel ons direct
                     </Button>
                   </CardContent>
                 </Card>

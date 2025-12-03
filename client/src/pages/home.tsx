@@ -83,16 +83,16 @@ export default function Home() {
           <div className="max-w-3xl">
             <ScrollReveal direction="up" delay={200}>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-white leading-tight mb-6">
-                Til je car audio naar
+                Met passie voor
                 <br />
-                <span className="font-normal">het volgende niveau</span>
+                <span className="font-normal">auto's en muziek</span>
               </h1>
             </ScrollReveal>
             
             <ScrollReveal direction="up" delay={400}>
               <p className="text-white/70 text-lg mb-10 max-w-xl">
-                Premium audio systemen met professionele installatie. 
-                Ontdek wat mogelijk is voor jouw auto.
+                Wij nemen je graag mee in onze wereld van hoogwaardige car audio. 
+                Ontdek wat wij voor jouw auto kunnen betekenen.
               </p>
             </ScrollReveal>
 
@@ -108,7 +108,7 @@ export default function Home() {
                     className="text-white/70 hover:text-white hover:bg-transparent rounded-none px-0 underline-offset-4 hover:underline"
                     data-testid="button-browse-all"
                   >
-                    Of bekijk alle producten
+                    Ontdek onze collectie
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
@@ -132,13 +132,13 @@ export default function Home() {
             <ScrollReveal>
               <div className="flex items-center gap-3 mb-4">
                 <Sparkles className="w-5 h-5 text-[#d0a760]" />
-                <span className="text-[#d0a760] text-sm font-medium tracking-wider uppercase">Aanbevelingen voor jou</span>
+                <span className="text-[#d0a760] text-sm font-medium tracking-wider uppercase">Speciaal voor jou geselecteerd</span>
               </div>
               <h2 className="text-3xl md:text-4xl font-light text-white mb-4">
-                Upgrades voor je {selectedVehicle.make} {selectedVehicle.model}
+                Upgrades voor jouw {selectedVehicle.make} {selectedVehicle.model}
               </h2>
               <p className="text-white/60 text-lg mb-12">
-                Op basis van jouw {selectedVehicle.year} {selectedVehicle.make} {selectedVehicle.model} raden wij deze producten aan
+                Op basis van jouw {selectedVehicle.year} {selectedVehicle.make} {selectedVehicle.model} hebben wij deze producten voor je uitgezocht
               </p>
             </ScrollReveal>
 
@@ -161,7 +161,7 @@ export default function Home() {
                     className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none px-8 py-6"
                     data-testid="button-view-all-compatible"
                   >
-                    Bekijk alle compatibele producten
+                    Ontdek meer voor jouw auto
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
@@ -176,23 +176,23 @@ export default function Home() {
         <div className="container px-8 md:px-16 lg:px-24 mx-auto">
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8" staggerDelay={150}>
             <div className="text-center md:text-left">
-              <h3 className="text-[#d0a760] text-sm font-medium tracking-wider uppercase mb-4">Premium Merken</h3>
+              <h3 className="text-[#d0a760] text-sm font-medium tracking-wider uppercase mb-4">Topkwaliteit Merken</h3>
               <p className="text-zinc-600 text-lg leading-relaxed">
-                Alpine, Audison, Hertz en meer. Alleen de beste merken in car audio.
+                Wij werken uitsluitend met premium merken zoals Alpine, Audison en Hertz. Kwaliteit die je hoort én voelt.
               </p>
             </div>
             
             <div className="text-center md:text-left">
-              <h3 className="text-[#d0a760] text-sm font-medium tracking-wider uppercase mb-4">Expert Installatie</h3>
+              <h3 className="text-[#d0a760] text-sm font-medium tracking-wider uppercase mb-4">Vakkundige Installatie</h3>
               <p className="text-zinc-600 text-lg leading-relaxed">
-                Gecertificeerde monteurs met 25+ jaar ervaring. OEM-look gegarandeerd.
+                Onze gecertificeerde monteurs zorgen met 25+ jaar ervaring voor een perfect resultaat in jouw auto.
               </p>
             </div>
             
             <div className="text-center md:text-left">
-              <h3 className="text-[#d0a760] text-sm font-medium tracking-wider uppercase mb-4">Showroom Sittard</h3>
+              <h3 className="text-[#d0a760] text-sm font-medium tracking-wider uppercase mb-4">Persoonlijk Advies</h3>
               <p className="text-zinc-600 text-lg leading-relaxed">
-                Bezoek onze studio voor persoonlijk advies en live demo's.
+                Kom langs in onze showroom in Sittard. Wij luisteren naar jouw wensen en adviseren op maat.
               </p>
             </div>
           </StaggerContainer>
@@ -212,14 +212,14 @@ export default function Home() {
             <ScrollReveal direction="left">
               <div>
                 <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-white mb-8 leading-tight">
-                  Vakmanschap dat je
+                  Jouw rijbeleving,
                   <br />
-                  <span className="text-[#d0a760]">hoort én ziet</span>
+                  <span className="text-[#d0a760]">onze passie</span>
                 </h2>
                 <p className="text-white/60 text-lg leading-relaxed mb-8">
-                  Bij Car Audio Limburg combineren we Belgische en Nederlandse vakkennis met een passie voor 
-                  perfecte audio. Elke installatie wordt uitgevoerd met oog voor detail, zodat het resultaat 
-                  eruitziet alsof het rechtstreeks van de fabriek komt.
+                  Bij Car Audio Limburg delen we onze liefde voor auto's en muziek graag met jou. 
+                  Met vakkundige installatie zorgen we ervoor dat elke upgrade eruitziet alsof hij 
+                  rechtstreeks van de fabriek komt. Jouw tevredenheid is waar wij voor gaan.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Link href="/products">
@@ -228,7 +228,7 @@ export default function Home() {
                       className="border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760] hover:text-black rounded-none px-8 py-6"
                       data-testid="button-view-products"
                     >
-                      Bekijk Producten
+                      Ontdek Onze Producten
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </Link>
@@ -238,7 +238,7 @@ export default function Home() {
                       className="text-white/70 hover:text-white hover:bg-transparent rounded-none px-8 py-6"
                       data-testid="button-contact-us"
                     >
-                      Neem Contact Op
+                      Stel Je Vraag
                     </Button>
                   </Link>
                 </div>
@@ -266,10 +266,10 @@ export default function Home() {
             <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-16">
               <div>
                 <h2 className="text-3xl md:text-4xl font-light text-black mb-4">
-                  Uitgelichte Producten
+                  Onze Favorieten voor Jou
                 </h2>
                 <p className="text-zinc-600 text-lg">
-                  Ontdek onze selectie van premium car audio systemen
+                  Hoogwaardige car audio producten die wij met trots aanbevelen
                 </p>
               </div>
               <Link href="/products">
@@ -278,7 +278,7 @@ export default function Home() {
                   className="text-[#d0a760] hover:text-[#d0a760]/80 hover:bg-transparent mt-4 md:mt-0 rounded-none"
                   data-testid="button-all-products"
                 >
-                  Alle Producten
+                  Bekijk Alles
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </Link>
@@ -310,10 +310,10 @@ export default function Home() {
           <ScrollReveal>
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-light text-white mb-4">
-                Ontdek Onze Studio
+                Welkom in Onze Wereld
               </h2>
               <p className="text-white/60 text-lg max-w-2xl mx-auto">
-                Een kijkje achter de schermen van Car Audio Limburg
+                Neem een kijkje in onze studio en ontdek waar onze passie voor car audio tot leven komt
               </p>
             </div>
           </ScrollReveal>
@@ -349,10 +349,10 @@ export default function Home() {
           <ScrollReveal>
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-light text-black mb-4">
-                Shop per Categorie
+                Wat Zoek Jij?
               </h2>
               <p className="text-zinc-600 text-lg">
-                Vind precies wat je zoekt
+                Ontdek ons aanbod per categorie en vind wat bij jouw wensen past
               </p>
             </div>
           </ScrollReveal>
@@ -405,11 +405,11 @@ export default function Home() {
                 BMW & MINI
               </Badge>
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-white mb-6">
-                Apple CarPlay Activatie
+                Apple CarPlay voor Jouw BMW
               </h2>
               <p className="text-white/60 text-lg mb-8 max-w-2xl mx-auto">
-                OEM software activatie voor BMW en MINI. Geen hardware nodig, 
-                binnen 30-60 minuten klaar. Vanaf €199.
+                Professionele OEM software activatie voor BMW en MINI. Wij zorgen ervoor dat je 
+                binnen 30-60 minuten van CarPlay kunt genieten. Geen hardware nodig, wel garantie.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -418,7 +418,7 @@ export default function Home() {
                     className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none px-8 py-6"
                     data-testid="button-bmw-carplay"
                   >
-                    Meer Informatie
+                    Ontdek de Mogelijkheden
                   </Button>
                 </Link>
                 <Link href="/apple-carplay-bmw#offerte">
@@ -427,7 +427,7 @@ export default function Home() {
                     className="border-white/30 text-white hover:bg-white/10 rounded-none px-8 py-6"
                     data-testid="button-bmw-quote"
                   >
-                    Vraag Offerte Aan
+                    Ontvang Jouw Offerte
                   </Button>
                 </Link>
               </div>
@@ -447,19 +447,19 @@ export default function Home() {
               <div className="text-4xl md:text-5xl font-light text-[#d0a760] mb-2">
                 <CountUp end={25} suffix="+" />
               </div>
-              <p className="text-zinc-600 text-sm uppercase tracking-wider">Jaar Ervaring</p>
+              <p className="text-zinc-600 text-sm uppercase tracking-wider">Jaar Vakmanschap</p>
             </div>
             <div>
               <div className="text-4xl md:text-5xl font-light text-[#d0a760] mb-2">
                 <CountUp end={500} suffix="+" />
               </div>
-              <p className="text-zinc-600 text-sm uppercase tracking-wider">Tevreden Klanten</p>
+              <p className="text-zinc-600 text-sm uppercase tracking-wider">Blije Klanten</p>
             </div>
             <div>
               <div className="text-4xl md:text-5xl font-light text-[#d0a760] mb-2">
                 <CountUp end={15} suffix="+" />
               </div>
-              <p className="text-zinc-600 text-sm uppercase tracking-wider">Premium Merken</p>
+              <p className="text-zinc-600 text-sm uppercase tracking-wider">Topmerken</p>
             </div>
             <div>
               <div className="text-4xl md:text-5xl font-light text-[#d0a760] mb-2">
@@ -495,9 +495,9 @@ export default function Home() {
             <ScrollReveal direction="right" delay={200} className="order-1 lg:order-2">
               <div>
                 <h2 className="text-3xl md:text-4xl font-light text-black mb-8">
-                  Professionele
+                  Wij zorgen voor
                   <br />
-                  <span className="text-[#d0a760]">Installatie Service</span>
+                  <span className="text-[#d0a760]">jouw perfecte geluid</span>
                 </h2>
                 
                 <div className="space-y-6 mb-8">
@@ -506,8 +506,8 @@ export default function Home() {
                       <Clock className="w-5 h-5 text-[#d0a760]" />
                     </div>
                     <div>
-                      <h3 className="text-zinc-900 font-medium mb-1">Snelle Montage</h3>
-                      <p className="text-zinc-600">Gemiddeld binnen 2-4 uur klaar</p>
+                      <h3 className="text-zinc-900 font-medium mb-1">Snel en Vakkundig</h3>
+                      <p className="text-zinc-600">Jouw auto is gemiddeld binnen 2-4 uur klaar</p>
                     </div>
                   </div>
                   
@@ -516,8 +516,8 @@ export default function Home() {
                       <ShieldCheck className="w-5 h-5 text-[#d0a760]" />
                     </div>
                     <div>
-                      <h3 className="text-zinc-900 font-medium mb-1">2 Jaar Garantie</h3>
-                      <p className="text-zinc-600">Op alle installaties</p>
+                      <h3 className="text-zinc-900 font-medium mb-1">Met Garantie</h3>
+                      <p className="text-zinc-600">2 jaar garantie op al onze installaties</p>
                     </div>
                   </div>
                   
@@ -526,14 +526,14 @@ export default function Home() {
                       <Award className="w-5 h-5 text-[#d0a760]" />
                     </div>
                     <div>
-                      <h3 className="text-zinc-900 font-medium mb-1">OEM-Look</h3>
-                      <p className="text-zinc-600">Perfecte integratie met originele styling</p>
+                      <h3 className="text-zinc-900 font-medium mb-1">Fabriekskwaliteit</h3>
+                      <p className="text-zinc-600">Het resultaat ziet eruit alsof het van de fabriek komt</p>
                     </div>
                   </div>
                 </div>
 
                 <div className="bg-zinc-100 p-6 border border-zinc-200">
-                  <h4 className="text-zinc-900 font-medium mb-4">Populaire Installaties</h4>
+                  <h4 className="text-zinc-900 font-medium mb-4">Meest Gekozen door Onze Klanten</h4>
                   <div className="space-y-3 mb-6">
                     <div className="flex justify-between text-sm">
                       <span className="text-zinc-600">Autoradio installatie</span>
@@ -550,7 +550,7 @@ export default function Home() {
                   </div>
                   <Link href="/booking">
                     <Button className="w-full bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none" data-testid="button-book-installation">
-                      Installatie Boeken
+                      Plan Jouw Afspraak
                     </Button>
                   </Link>
                 </div>
@@ -573,25 +573,25 @@ export default function Home() {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                   <div>
                     <h2 className="text-3xl md:text-4xl font-light text-white mb-6">
-                      Niet zeker wat je nodig hebt?
+                      Wij denken graag met je mee
                     </h2>
                     <p className="text-white/60 text-lg mb-8">
-                      Onze experts adviseren je graag. Vraag een gratis offerte aan 
-                      en ontvang persoonlijk advies voor jouw auto.
+                      Niet zeker welke upgrade bij jouw auto past? Geen probleem! 
+                      Vraag vrijblijvend een offerte aan en wij adviseren je persoonlijk.
                     </p>
                     
                     <div className="space-y-4">
                       <div className="flex items-center gap-3">
                         <Check className="w-5 h-5 text-[#d0a760]" />
-                        <span className="text-white/80">Persoonlijk advies van experts</span>
+                        <span className="text-white/80">Eerlijk en deskundig advies op maat</span>
                       </div>
                       <div className="flex items-center gap-3">
                         <Check className="w-5 h-5 text-[#d0a760]" />
-                        <span className="text-white/80">Gratis offerte zonder verplichtingen</span>
+                        <span className="text-white/80">Vrijblijvende offerte, geen verplichtingen</span>
                       </div>
                       <div className="flex items-center gap-3">
                         <Check className="w-5 h-5 text-[#d0a760]" />
-                        <span className="text-white/80">Reactie binnen 24 uur</span>
+                        <span className="text-white/80">Wij reageren binnen 24 uur</span>
                       </div>
                     </div>
                   </div>
@@ -613,10 +613,10 @@ export default function Home() {
           <ScrollReveal>
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-light text-black mb-4">
-                Wat Klanten Zeggen
+                Onze Klanten aan het Woord
               </h2>
               <p className="text-zinc-600 text-lg">
-                Meer dan 500 tevreden klanten
+                Dit is waarom meer dan 500 klanten ons hun vertrouwen gaven
               </p>
             </div>
           </ScrollReveal>
@@ -666,13 +666,13 @@ export default function Home() {
             <ScrollReveal direction="left">
               <div>
                 <h2 className="text-3xl md:text-4xl font-light text-white mb-6">
-                  Bezoek Onze
+                  Wij ontvangen je graag
                   <br />
-                  <span className="text-[#d0a760]">Showroom in Sittard</span>
+                  <span className="text-[#d0a760]">in onze showroom</span>
                 </h2>
                 <p className="text-white/60 text-lg mb-8">
-                  Ervaar onze producten live. Luister naar demo's, 
-                  krijg persoonlijk advies en plan direct je installatie.
+                  Kom langs en ervaar zelf hoe goed jouw auto kan klinken. 
+                  Wij nemen de tijd om naar jouw wensen te luisteren en je te adviseren.
                 </p>
                 
                 <div className="space-y-4 mb-8">
@@ -696,7 +696,7 @@ export default function Home() {
                       className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none px-8 py-6"
                       data-testid="button-plan-visit"
                     >
-                      Plan Je Bezoek
+                      Maak een Afspraak
                     </Button>
                   </Link>
                   <a href="tel:0852733625">
@@ -706,7 +706,7 @@ export default function Home() {
                       data-testid="button-call-now"
                     >
                       <Phone className="w-4 h-4 mr-2" />
-                      Bel Nu
+                      Bel Ons
                     </Button>
                   </a>
                 </div>

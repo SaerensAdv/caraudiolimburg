@@ -69,7 +69,9 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
   const menuItems = [
     { href: "/products", label: "Producten", highlight: false },
     { href: "/apple-carplay-bmw", label: "BMW/MINI CarPlay", highlight: true },
+    { href: "/booking", label: "Installatie", highlight: false },
     { href: "/about", label: "Over Ons", highlight: false },
+    { href: "/faq", label: "FAQ", highlight: false },
     { href: "/contact", label: "Contact", highlight: false },
   ];
 

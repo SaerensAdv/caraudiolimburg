@@ -21,6 +21,8 @@ import CustomerPortal from "@/pages/customer-portal";
 import Login from "@/pages/login";
 import AppleCarPlayBMW from "@/pages/apple-carplay-bmw";
 import OrderConfirmation from "@/pages/order-confirmation";
+import Privacy from "@/pages/privacy";
+import Voorwaarden from "@/pages/voorwaarden";
 import { useState, useEffect } from "react";
 
 function Router() {
@@ -67,6 +69,8 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/my-account" component={CustomerPortal} />
       <Route path="/admin" component={Admin} />
+      <Route path="/privacy" component={Privacy} />
+      <Route path="/voorwaarden" component={Voorwaarden} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -52,8 +52,8 @@ export function Footer() {
             <ul className="space-y-3 text-sm">
               <li><Link href="/booking" className="text-white/60 hover:text-white transition-colors" data-testid="footer-link-installation">Installatie Service</Link></li>
               <li><Link href="/apple-carplay-bmw" className="text-white/60 hover:text-white transition-colors" data-testid="footer-link-carplay">BMW/MINI CarPlay</Link></li>
-              <li><Link href="/contact" className="text-white/60 hover:text-white transition-colors" data-testid="footer-link-advice">Gratis Advies</Link></li>
-              <li><Link href="/contact" className="text-white/60 hover:text-white transition-colors" data-testid="footer-link-showroom">Showroom Bezoek</Link></li>
+              <li><Link href="/faq" className="text-white/60 hover:text-white transition-colors" data-testid="footer-link-faq">Veelgestelde Vragen</Link></li>
+              <li><Link href="/about" className="text-white/60 hover:text-white transition-colors" data-testid="footer-link-about">Over Ons</Link></li>
               <li><Link href="/contact" className="text-white/60 hover:text-white transition-colors" data-testid="footer-link-quote">Offerte Aanvragen</Link></li>
             </ul>
           </div>

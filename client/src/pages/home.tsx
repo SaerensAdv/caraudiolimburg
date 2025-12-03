@@ -66,7 +66,7 @@ export default function Home() {
       <Header onCartOpen={() => setIsCartOpen(true)} variant="transparent" />
       
       {/* Hero Section - Full Screen Premium with Vehicle Selector */}
-      <section className="relative h-[100dvh] w-full overflow-hidden">
+      <section className="relative min-h-screen min-h-[100svh] w-full overflow-hidden">
         <Parallax speed={0.3} className="absolute inset-0">
           <div 
             className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-110"
@@ -79,7 +79,7 @@ export default function Home() {
         
         <BassPulse />
         
-        <div className="relative z-10 h-full flex flex-col justify-center px-8 md:px-16 lg:px-24">
+        <div className="relative z-10 h-full min-h-screen min-h-[100svh] flex flex-col justify-center pt-20 pb-8 px-8 md:px-16 lg:px-24">
           <div className="max-w-3xl">
             <ScrollReveal direction="up" delay={200}>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-white leading-tight mb-6">

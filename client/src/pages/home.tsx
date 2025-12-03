@@ -208,10 +208,10 @@ export default function Home() {
       <section className="py-24 md:py-32 bg-black relative overflow-hidden">
         {/* Dot Grid Pattern */}
         <div 
-          className="absolute inset-0 opacity-[0.02]"
+          className="absolute inset-0 opacity-[0.08]"
           style={{
             backgroundImage: `radial-gradient(circle at 2px 2px, #d0a760 1px, transparent 0)`,
-            backgroundSize: '40px 40px'
+            backgroundSize: '32px 32px'
           }}
         />
         <BassPulse className="opacity-30" />
@@ -316,10 +316,10 @@ export default function Home() {
       <section className="py-24 md:py-32 bg-black relative overflow-hidden">
         {/* Dot Grid Pattern */}
         <div 
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.08]"
           style={{
             backgroundImage: `radial-gradient(circle at 2px 2px, #d0a760 1px, transparent 0)`,
-            backgroundSize: '40px 40px'
+            backgroundSize: '32px 32px'
           }}
         />
         <div className="container px-8 md:px-16 lg:px-24 mx-auto relative z-10">

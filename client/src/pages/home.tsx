@@ -397,11 +397,11 @@ export default function Home() {
             </div>
           </ScrollReveal>
 
-          <StaggerContainer className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6" staggerDelay={80}>
+          <StaggerContainer className="flex flex-wrap justify-center gap-6" staggerDelay={80}>
             {(categories as Category[])?.map((category: Category) => (
-              <Link key={category.id} href={`/products?category=${category.slug}`}>
+              <Link key={category.id} href={`/products?category=${category.slug}`} className="w-[calc(50%-12px)] md:w-[calc(25%-18px)]">
                 <Card 
-                  className="group cursor-pointer bg-zinc-100 border-zinc-200 hover:border-[#d0a760] transition-all duration-300 rounded-none hover:-translate-y-1"
+                  className="group cursor-pointer bg-zinc-100 border-zinc-200 hover:border-[#d0a760] transition-all duration-300 rounded-none hover:-translate-y-1 h-full"
                   data-testid={`category-card-${category.slug}`}
                 >
                   <CardContent className="p-6 text-center">

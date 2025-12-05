@@ -391,6 +391,32 @@ export default function Shop() {
           <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-[#d0a760]/3 rounded-full blur-[100px]" />
         </div>
 
+        {/* Audio wave decorations */}
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 flex flex-col gap-1 opacity-20">
+          {[...Array(8)].map((_, i) => (
+            <div
+              key={i}
+              className="h-1 bg-gradient-to-r from-[#d0a760] to-transparent animate-audio-bar"
+              style={{
+                width: `${40 + Math.random() * 60}px`,
+                animationDelay: `${i * 0.1}s`,
+              }}
+            />
+          ))}
+        </div>
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 flex flex-col gap-1 opacity-20">
+          {[...Array(8)].map((_, i) => (
+            <div
+              key={i}
+              className="h-1 bg-gradient-to-l from-[#d0a760] to-transparent animate-audio-bar"
+              style={{
+                width: `${40 + Math.random() * 60}px`,
+                animationDelay: `${i * 0.15}s`,
+              }}
+            />
+          ))}
+        </div>
+
         <div className="container mx-auto px-4 relative z-10">
           <ScrollReveal animation="fade-up">
             {/* Desktop Hero Content */}
@@ -807,8 +833,20 @@ export default function Shop() {
             )
           ) : (
             <div className="text-center py-20">
-              <div className="mb-6">
-                <Search className="w-16 h-16 text-white/20 mx-auto" />
+              <div className="mb-8">
+                {/* Audio wave animation */}
+                <div className="flex items-end justify-center gap-1 h-16">
+                  {[...Array(5)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="w-2 bg-gradient-to-t from-[#d0a760]/30 to-[#d0a760] animate-audio-bar"
+                      style={{
+                        height: `${20 + i * 10}px`,
+                        animationDelay: `${i * 0.1}s`,
+                      }}
+                    />
+                  ))}
+                </div>
               </div>
               <h3 className="text-2xl font-semibold text-white mb-3">We hebben nog geen match gevonden</h3>
               <p className="text-white/50 mb-6 max-w-md mx-auto">

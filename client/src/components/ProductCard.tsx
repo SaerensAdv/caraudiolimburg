@@ -92,7 +92,7 @@ export function ProductCard({ product }: ProductCardProps) {
               <img 
                 src={product.images?.[product.primaryImageIndex || 0] ? getImageSrc(product.images[product.primaryImageIndex || 0]) : carAudioLogo} 
                 alt={product.name}
-                className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500 group-hover:animate-speaker-vibrate"
+                className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500"
                 onError={(e) => {
                   e.currentTarget.src = carAudioLogo;
                 }}

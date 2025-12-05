@@ -78,7 +78,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
   return (
     <div
       ref={menuRef}
-      className={`absolute left-0 right-0 top-full w-full bg-black/98 backdrop-blur-xl border-b border-zinc-800 shadow-2xl z-40 transition-all duration-300 ease-out ${
+      className={`absolute left-0 right-0 top-full w-full bg-black/95 backdrop-blur-md border-b border-zinc-800 shadow-2xl z-40 transition-all duration-300 ease-out ${
         isAnimating 
           ? "opacity-100 translate-y-0" 
           : "opacity-0 -translate-y-2"
@@ -162,7 +162,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
                     <li key={brand.id} role="none">
                       <Link
                         href={`/products?brand=${brand.slug}`}
-                        className="flex items-center gap-3 py-3 px-4 rounded-lg text-white/80 hover:text-white bg-zinc-900/50 hover:bg-zinc-800/80 border border-zinc-800/50 hover:border-zinc-700 transition-all duration-200 group"
+                        className="flex items-center gap-3 py-3 px-4 rounded-lg text-white/80 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 transition-all duration-200 group"
                         role="menuitem"
                         onClick={onClose}
                         data-testid={`megamenu-brand-${brand.slug}`}

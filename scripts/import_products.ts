@@ -221,26 +221,11 @@ async function main() {
   
   const categoriesToCreate = [
     { name: 'Navigatie & Multimedia', slug: 'navigatie-multimedia' },
-    { name: 'Autospecifieke Navigatie', slug: 'autospecifieke-navigatie', parent: 'navigatie-multimedia' },
-    { name: '2-DIN Systemen', slug: '2-din-systemen', parent: 'navigatie-multimedia' },
-    { name: '1-DIN Systemen', slug: '1-din-systemen', parent: 'navigatie-multimedia' },
-    { name: 'Android Auto/CarPlay', slug: 'android-auto-carplay', parent: 'navigatie-multimedia' },
     { name: 'Speakers', slug: 'speakers' },
-    { name: 'Coaxiaal Speakers', slug: 'coaxiaal-speakers', parent: 'speakers' },
-    { name: 'Component Speakers', slug: 'component-speakers', parent: 'speakers' },
-    { name: 'Pasklare Speakers', slug: 'pasklare-speakers', parent: 'speakers' },
     { name: 'Subwoofers', slug: 'subwoofers' },
-    { name: 'Losse Subwoofers', slug: 'losse-subwoofers', parent: 'subwoofers' },
-    { name: 'Subwoofer met Behuizing', slug: 'subwoofer-behuizing', parent: 'subwoofers' },
-    { name: 'Actieve Subwoofers', slug: 'actieve-subwoofers', parent: 'subwoofers' },
     { name: 'Versterkers', slug: 'versterkers' },
-    { name: 'Dempingsmateriaal', slug: 'dempingsmateriaal' },
-    { name: 'Camera Systemen', slug: 'camera-systemen' },
-    { name: 'Achteruitrijcamera', slug: 'achteruitrijcamera', parent: 'camera-systemen' },
-    { name: 'Dashcams', slug: 'dashcams', parent: 'camera-systemen' },
-    { name: 'Camper Navigatie', slug: 'camper-navigatie' },
-    { name: 'OEM Upgrades', slug: 'oem-upgrades' },
-    { name: 'DAB+ Modules', slug: 'dab-modules' },
+    { name: "Camera's & Veiligheid", slug: 'cameras-veiligheid' },
+    { name: 'Camper', slug: 'camper' },
     { name: 'Accessoires', slug: 'accessoires' },
   ];
   
@@ -249,22 +234,11 @@ async function main() {
   
   const categoryIdMap: Record<string, string> = {};
   
-  // First pass: create parent categories
-  for (const cat of categoriesToCreate.filter(c => !c.parent)) {
+  // Create all categories (flat structure, no parent-child)
+  for (const cat of categoriesToCreate) {
     const [created] = await db.insert(schema.categories).values({
       name: cat.name,
       slug: cat.slug,
-    }).returning();
-    categoryIdMap[cat.slug] = created.id;
-  }
-  
-  // Second pass: create child categories
-  for (const cat of categoriesToCreate.filter(c => c.parent)) {
-    const parentId = categoryIdMap[cat.parent!];
-    const [created] = await db.insert(schema.categories).values({
-      name: cat.name,
-      slug: cat.slug,
-      parentId: parentId,
     }).returning();
     categoryIdMap[cat.slug] = created.id;
   }
@@ -344,54 +318,25 @@ async function main() {
       const brand = extractBrand(mainProduct.title);
       const brandId = brand ? brandMap[brand.toLowerCase()] : null;
       
-      // Determine category based on WooCommerce categories
+      // Determine category based on WooCommerce categories (simplified to 7 categories)
       let categorySlug = 'navigatie-multimedia'; // Default
       const wooCategory = mainProduct.category.toLowerCase();
+      const productName = baseName.toLowerCase();
       
       if (wooCategory.includes('speakers') || wooCategory.includes('speaker')) {
-        if (wooCategory.includes('coaxiaal')) {
-          categorySlug = 'coaxiaal-speakers';
-        } else if (wooCategory.includes('composet') || wooCategory.includes('component')) {
-          categorySlug = 'component-speakers';
-        } else if (wooCategory.includes('pasklare')) {
-          categorySlug = 'pasklare-speakers';
-        } else {
-          categorySlug = 'speakers';
-        }
+        categorySlug = 'speakers';
       } else if (wooCategory.includes('subwoofer')) {
-        if (wooCategory.includes('kist') || wooCategory.includes('box')) {
-          categorySlug = 'subwoofer-behuizing';
-        } else if (wooCategory.includes('losse')) {
-          categorySlug = 'losse-subwoofers';
-        } else {
-          categorySlug = 'subwoofers';
-        }
+        categorySlug = 'subwoofers';
       } else if (wooCategory.includes('versterker')) {
         categorySlug = 'versterkers';
-      } else if (wooCategory.includes('demping')) {
-        categorySlug = 'dempingsmateriaal';
-      } else if (wooCategory.includes('camera') || wooCategory.includes('blackvue')) {
-        if (wooCategory.includes('achteruit')) {
-          categorySlug = 'achteruitrijcamera';
-        } else if (baseName.toLowerCase().includes('blackvue') || baseName.toLowerCase().includes('dashcam')) {
-          categorySlug = 'dashcams';
-        } else {
-          categorySlug = 'camera-systemen';
-        }
+      } else if (wooCategory.includes('demping') || wooCategory.includes('stp') || productName.includes('demping')) {
+        categorySlug = 'accessoires';
+      } else if (wooCategory.includes('camera') || wooCategory.includes('blackvue') || productName.includes('blackvue') || productName.includes('dashcam') || productName.includes('camera')) {
+        categorySlug = 'cameras-veiligheid';
       } else if (wooCategory.includes('camper')) {
-        categorySlug = 'camper-navigatie';
-      } else if (wooCategory.includes('1 din')) {
-        categorySlug = '1-din-systemen';
-      } else if (wooCategory.includes('2 din')) {
-        categorySlug = '2-din-systemen';
-      } else if (wooCategory.includes('dab')) {
-        categorySlug = 'dab-modules';
-      } else if (wooCategory.includes('android') || wooCategory.includes('carplay') || wooCategory.includes('multimedia')) {
-        if (wooCategory.includes('autospecifieke') || baseName.toLowerCase().includes('android multimedia')) {
-          categorySlug = 'autospecifieke-navigatie';
-        } else {
-          categorySlug = 'navigatie-multimedia';
-        }
+        categorySlug = 'camper';
+      } else if (wooCategory.includes('multimedia') || wooCategory.includes('navigatie') || wooCategory.includes('android') || wooCategory.includes('carplay') || wooCategory.includes('din')) {
+        categorySlug = 'navigatie-multimedia';
       }
       
       const categoryId = categoryIdMap[categorySlug];

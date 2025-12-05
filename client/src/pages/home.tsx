@@ -300,7 +300,7 @@ export default function Home() {
           ) : (
             <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8" staggerDelay={100}>
               {(featuredProducts as Product[])?.map((product: Product) => (
-                <ProductCard key={product.id} product={product} data-testid={`product-card-${product.id}`} />
+                <ProductCard key={product.id} product={product} featured data-testid={`product-card-${product.id}`} />
               ))}
             </StaggerContainer>
           )}

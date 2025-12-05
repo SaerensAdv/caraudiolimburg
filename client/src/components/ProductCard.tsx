@@ -17,9 +17,10 @@ import audiA3Image from "@assets/audi-a3.png";
 
 interface ProductCardProps {
   product: Product;
+  featured?: boolean;
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+export function ProductCard({ product, featured = false }: ProductCardProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
@@ -85,7 +86,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <>
-      <Card className="bg-zinc-900 border-zinc-800 hover:border-[#d0a760]/50 transition-all duration-300 ease-out group overflow-hidden rounded-none hover:-translate-y-1 hover:shadow-xl hover:shadow-black/50" data-testid={`product-card-${product.id}`}>
+      <Card className={`bg-zinc-900 border-zinc-800 hover:border-[#d0a760]/50 transition-all duration-300 ease-out group overflow-hidden rounded-none hover:-translate-y-1 hover:shadow-xl hover:shadow-black/50 ${featured ? 'animated-gold-border' : ''}`} data-testid={`product-card-${product.id}`}>
         <Link href={`/product/${product.slug}`}>
           <div className="relative overflow-hidden">
             <div className="aspect-square bg-zinc-800 flex items-center justify-center p-8">

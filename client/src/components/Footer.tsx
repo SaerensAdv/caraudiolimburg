@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import whiteLogoUrl from "@assets/CAL white_1758369495328.png";
+import saerensLogoUrl from "@assets/Saerens_Advertising_1764900190628.png";
 import { Facebook, Instagram, Youtube, MapPin, Phone, Mail, Clock } from "lucide-react";
 import { EqualizerBars } from "@/components/EqualizerBars";
 
@@ -96,9 +97,24 @@ export function Footer() {
               <EqualizerBars size="xs" animated={false} />
               <p className="text-sm text-white/40">© 2025 Car Audio Limburg. Alle rechten voorbehouden.</p>
             </div>
-            <div className="flex space-x-6 mt-4 md:mt-0">
+            <div className="flex items-center space-x-6 mt-4 md:mt-0">
               <Link href="/privacy" className="text-sm text-white/40 hover:text-[#d0a760] transition-all duration-300" data-testid="footer-link-privacy">Privacy</Link>
               <Link href="/voorwaarden" className="text-sm text-white/40 hover:text-[#d0a760] transition-all duration-300" data-testid="footer-link-terms">Voorwaarden</Link>
+              <span className="text-white/20">|</span>
+              <a 
+                href="https://saerens.agency" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="flex items-center gap-2 text-sm text-white/40 hover:text-white/60 transition-all duration-300 group"
+                data-testid="footer-link-saerens"
+              >
+                <span>Website by</span>
+                <img 
+                  src={saerensLogoUrl} 
+                  alt="Saerens Agency" 
+                  className="h-4 w-auto opacity-50 group-hover:opacity-80 transition-opacity"
+                />
+              </a>
             </div>
           </div>
         </div>

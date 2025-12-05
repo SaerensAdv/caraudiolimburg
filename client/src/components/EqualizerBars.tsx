@@ -16,7 +16,7 @@ const BAR_HEIGHTS = {
 
 interface EqualizerBarsProps {
   className?: string;
-  size?: "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg";
   animated?: boolean;
   variant?: "default" | "compact" | "inline";
 }
@@ -28,6 +28,7 @@ export function EqualizerBars({
   variant = "default"
 }: EqualizerBarsProps) {
   const sizeConfig = {
+    xs: { gap: "gap-0.5", width: "w-1", heights: { tall: "h-4", medium: "h-3", short: "h-1.5" } },
     sm: { gap: "gap-1", width: "w-2 md:w-3", heights: { tall: "h-8", medium: "h-6", short: "h-3" } },
     md: { gap: "gap-1.5", width: "w-3 md:w-4", heights: { tall: "h-12 md:h-16", medium: "h-9 md:h-12", short: "h-4 md:h-6" } },
     lg: { gap: "gap-2", width: "w-4 md:w-6", heights: { tall: "h-16 md:h-24", medium: "h-12 md:h-16", short: "h-6 md:h-10" } }
@@ -56,7 +57,7 @@ export function EqualizerBars({
             )}
             style={{ 
               backgroundColor: bar.color,
-              height: size === "sm" ? "12px" : size === "md" ? "16px" : "24px",
+              height: size === "xs" ? "8px" : size === "sm" ? "12px" : size === "md" ? "16px" : "24px",
               animationDelay: animated ? bar.delay : undefined,
               animationDuration: animated ? `${0.8 + index * 0.1}s` : undefined
             }}

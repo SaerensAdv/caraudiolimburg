@@ -341,7 +341,6 @@ export default function Home() {
                   muted
                   loop
                   playsInline
-                  controls
                   preload="metadata"
                   data-testid="promotional-video"
                 >

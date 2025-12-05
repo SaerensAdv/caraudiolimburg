@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import type { Category, Brand } from "@shared/schema";
@@ -72,10 +73,12 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
   }, [isOpen]);
 
   if (!isVisible) return null;
+  
+  if (typeof document === 'undefined') return null;
 
   const isLoading = isLoadingCategories || isLoadingBrands;
 
-  return (
+  return createPortal(
     <div
       ref={menuRef}
       className={`fixed inset-0 top-16 w-full h-[calc(100vh-64px)] bg-black/60 backdrop-blur-xl z-40 transition-all duration-300 ease-out overflow-y-auto ${
@@ -249,6 +252,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
       </nav>
 
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#d0a760]/30 to-transparent" />
-    </div>
+    </div>,
+    document.body
   );
 }

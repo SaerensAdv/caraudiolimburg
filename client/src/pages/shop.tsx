@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useLocation } from "wouter";
+import { useLocation, useSearch, Link } from "wouter";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
@@ -9,13 +9,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Filter, X, ChevronDown, Grid, Car, Volume2, Settings, ChevronRight, LayoutGrid, List, SlidersHorizontal, Sparkles, ArrowLeft, ShoppingCart, Home } from "lucide-react";
+import { Search, Filter, X, ChevronDown, Grid, Car, Volume2, Settings, ChevronRight, LayoutGrid, List, SlidersHorizontal, Sparkles, ArrowLeft, ShoppingCart, Home as HomeIcon } from "lucide-react";
 import type { Product, Category, Brand, VehicleMake } from "@shared/schema";
 import { ProductAudioSkeleton } from "@/components/AudioSkeletons";
 import { ScrollReveal, StaggerContainer, StaggerItem, ParallaxSection } from "@/components/ScrollAnimations";
@@ -34,6 +42,17 @@ export default function Shop() {
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
   const [location, navigate] = useLocation();
+  const searchString = useSearch();
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchString || '');
+    const categoryParam = params.get('category');
+    const brandParam = params.get('brand');
+    
+    // Always update state based on URL params (including resetting when empty)
+    setSelectedCategory(categoryParam || 'all-categories');
+    setSelectedBrand(brandParam || 'all-brands');
+  }, [searchString]);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -42,22 +61,43 @@ export default function Shop() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const { data: products, isLoading: isLoadingProducts } = useQuery({
-    queryKey: ["/api/products", {
-      search,
-      categoryId: selectedCategory.startsWith('all-') ? '' : selectedCategory,
-      brandId: selectedBrand.startsWith('all-') ? '' : selectedBrand,
-      vehicleMakeId: selectedMake.startsWith('all-') ? '' : selectedMake,
-      limit: 50,
-    }],
-  });
-
   const { data: categories } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
   });
 
   const { data: brands } = useQuery<Brand[]>({
     queryKey: ["/api/brands"],
+  });
+
+  // Convert slug to ID for API queries
+  const selectedCategoryId = useMemo(() => {
+    if (selectedCategory === 'all-categories' || !categories) return '';
+    // Check if it's a slug or ID
+    const bySlug = (categories as Category[]).find(c => c.slug === selectedCategory);
+    if (bySlug) return bySlug.id;
+    // Maybe it's already an ID
+    const byId = (categories as Category[]).find(c => c.id === selectedCategory);
+    return byId?.id || '';
+  }, [selectedCategory, categories]);
+
+  const selectedBrandId = useMemo(() => {
+    if (selectedBrand === 'all-brands' || !brands) return '';
+    // Check if it's a slug or ID
+    const bySlug = (brands as Brand[]).find(b => b.slug === selectedBrand);
+    if (bySlug) return bySlug.id;
+    // Maybe it's already an ID
+    const byId = (brands as Brand[]).find(b => b.id === selectedBrand);
+    return byId?.id || '';
+  }, [selectedBrand, brands]);
+
+  const { data: products, isLoading: isLoadingProducts } = useQuery({
+    queryKey: ["/api/products", {
+      search,
+      categoryId: selectedCategoryId,
+      brandId: selectedBrandId,
+      vehicleMakeId: selectedMake.startsWith('all-') ? '' : selectedMake,
+      limit: 50,
+    }],
   });
 
   const { data: vehicleMakes } = useQuery<VehicleMake[]>({
@@ -109,6 +149,96 @@ export default function Shop() {
 
   const sortedProducts = sortProducts(products as Product[] || []);
 
+  const activeCategoryName = useMemo(() => {
+    if (selectedCategory === 'all-categories' || !categories) return null;
+    // Try matching by slug first, then by ID
+    const bySlug = (categories as Category[]).find(c => c.slug === selectedCategory);
+    if (bySlug) return bySlug.name;
+    const byId = (categories as Category[]).find(c => c.id === selectedCategory);
+    return byId?.name || null;
+  }, [selectedCategory, categories]);
+
+  const activeBrandName = useMemo(() => {
+    if (selectedBrand === 'all-brands' || !brands) return null;
+    // Try matching by slug first, then by ID
+    const bySlug = (brands as Brand[]).find(b => b.slug === selectedBrand);
+    if (bySlug) return bySlug.name;
+    const byId = (brands as Brand[]).find(b => b.id === selectedBrand);
+    return byId?.name || null;
+  }, [selectedBrand, brands]);
+
+  useEffect(() => {
+    let title = "Producten | Car Audio Limburg";
+    let description = "Bekijk ons complete assortiment car audio producten. Premium speakers, versterkers, head units en accessoires van topmerken. Met vakkundige installatie in Limburg.";
+    
+    if (activeCategoryName && activeBrandName) {
+      title = `${activeBrandName} ${activeCategoryName} | Producten | Car Audio Limburg`;
+      description = `Ontdek ${activeBrandName} ${activeCategoryName.toLowerCase()} bij Car Audio Limburg. Vakkundig advies en professionele installatie van premium car audio.`;
+    } else if (activeCategoryName) {
+      title = `${activeCategoryName} | Producten | Car Audio Limburg`;
+      description = `Bekijk ons assortiment ${activeCategoryName.toLowerCase()}. Premium kwaliteit met vakkundige installatie bij Car Audio Limburg.`;
+    } else if (activeBrandName) {
+      title = `${activeBrandName} Producten | Car Audio Limburg`;
+      description = `Ontdek het complete ${activeBrandName} assortiment bij Car Audio Limburg. Vakkundig advies en professionele installatie.`;
+    }
+    
+    document.title = title;
+    
+    let metaDescription = document.querySelector('meta[name="description"]');
+    if (!metaDescription) {
+      metaDescription = document.createElement('meta');
+      metaDescription.setAttribute('name', 'description');
+      document.head.appendChild(metaDescription);
+    }
+    metaDescription.setAttribute('content', description);
+    
+    return () => {
+      document.title = "Car Audio Limburg";
+    };
+  }, [activeCategoryName, activeBrandName]);
+
+  const breadcrumbJsonLd = useMemo(() => {
+    const items: { "@type": string; position: number; name: string; item?: string }[] = [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: typeof window !== 'undefined' ? `${window.location.origin}/` : "/"
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Producten",
+        item: typeof window !== 'undefined' ? `${window.location.origin}/products` : "/products"
+      }
+    ];
+
+    if (activeCategoryName) {
+      items.push({
+        "@type": "ListItem",
+        position: 3,
+        name: activeCategoryName,
+        item: typeof window !== 'undefined' 
+          ? `${window.location.origin}/products?category=${selectedCategory}` 
+          : `/products?category=${selectedCategory}`
+      });
+    }
+
+    if (activeBrandName) {
+      items.push({
+        "@type": "ListItem",
+        position: activeCategoryName ? 4 : 3,
+        name: activeBrandName
+      });
+    }
+
+    return {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: items
+    };
+  }, [activeCategoryName, activeBrandName, selectedCategory]);
+
   const categoryIcons: Record<string, React.ReactNode> = {
     speakers: <Volume2 className="w-6 h-6" />,
     amplifiers: <Settings className="w-6 h-6" />,
@@ -118,13 +248,18 @@ export default function Shop() {
 
   return (
     <div className="min-h-screen bg-black">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      
       {/* Desktop Header */}
       <div className="hidden md:block">
         <Header onCartOpen={() => setIsCartOpen(true)} />
       </div>
       
       {/* Mobile App Header */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-lg border-b border-white/10 safe-area-top">
+      <header className="md:hidden fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-lg border-b border-white/10 safe-area-top">
         <div className="flex items-center justify-between px-4 h-14">
           <button 
             onClick={() => navigate("/")}
@@ -132,7 +267,7 @@ export default function Shop() {
             data-testid="mobile-home-button"
             aria-label="Ga naar homepage"
           >
-            <Home className="w-5 h-5 text-white" />
+            <HomeIcon className="w-5 h-5 text-white" />
           </button>
           
           <h1 className="text-white font-semibold">Shop</h1>
@@ -185,8 +320,69 @@ export default function Shop() {
             </div>
           </div>
         )}
-      </div>
+      </header>
       
+      {/* Breadcrumb Navigation */}
+      <nav className="bg-black pt-16 md:pt-20 pb-4" aria-label="Breadcrumb" data-testid="breadcrumb-nav">
+        <div className="container mx-auto px-4">
+          <Breadcrumb>
+            <BreadcrumbList className="text-white/60">
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link href="/" className="hover:text-[#d0a760] transition-colors" data-testid="breadcrumb-home">
+                    Home
+                  </Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator className="text-white/40" />
+              <BreadcrumbItem>
+                {activeCategoryName || activeBrandName ? (
+                  <BreadcrumbLink asChild>
+                    <Link href="/products" className="hover:text-[#d0a760] transition-colors" data-testid="breadcrumb-products">
+                      Producten
+                    </Link>
+                  </BreadcrumbLink>
+                ) : (
+                  <BreadcrumbPage className="text-white" data-testid="breadcrumb-products-current">Producten</BreadcrumbPage>
+                )}
+              </BreadcrumbItem>
+              {activeCategoryName && (
+                <>
+                  <BreadcrumbSeparator className="text-white/40" />
+                  <BreadcrumbItem>
+                    {activeBrandName ? (
+                      <BreadcrumbLink asChild>
+                        <Link 
+                          href={`/products?category=${selectedCategory}`} 
+                          className="hover:text-[#d0a760] transition-colors"
+                          data-testid="breadcrumb-category"
+                        >
+                          {activeCategoryName}
+                        </Link>
+                      </BreadcrumbLink>
+                    ) : (
+                      <BreadcrumbPage className="text-white" data-testid="breadcrumb-category-current">
+                        {activeCategoryName}
+                      </BreadcrumbPage>
+                    )}
+                  </BreadcrumbItem>
+                </>
+              )}
+              {activeBrandName && (
+                <>
+                  <BreadcrumbSeparator className="text-white/40" />
+                  <BreadcrumbItem>
+                    <BreadcrumbPage className="text-white" data-testid="breadcrumb-brand-current">
+                      {activeBrandName}
+                    </BreadcrumbPage>
+                  </BreadcrumbItem>
+                </>
+              )}
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+      </nav>
+
       {/* Premium Hero Section */}
       <section className="relative bg-black pt-14 md:pt-24 pb-12 md:pb-20 overflow-hidden">
         {/* Background effects */}
@@ -362,7 +558,7 @@ export default function Shop() {
       </section>
 
       {/* Filters Bar - Black Section */}
-      <section className="bg-black py-4 md:py-6 border-y border-white/10 sticky top-14 md:top-16 z-40">
+      <aside className="bg-black py-4 md:py-6 border-y border-white/10 sticky top-14 md:top-16 z-40" aria-label="Product filters">
         <div className="container mx-auto px-4">
           <div className="flex flex-wrap items-center justify-between gap-4">
             {/* Left side - Filter controls */}
@@ -536,10 +732,10 @@ export default function Shop() {
             </div>
           )}
         </div>
-      </section>
+      </aside>
 
       {/* Products Grid - Dark Section */}
-      <section className="bg-zinc-950 py-16">
+      <main className="bg-zinc-950 py-16" role="main">
         <div className="container mx-auto px-4">
           {isLoadingProducts ? (
             <div className={viewMode === 'grid' 
@@ -563,7 +759,10 @@ export default function Shop() {
               <div className="space-y-4">
                 {sortedProducts.map((product: Product) => (
                   <ScrollReveal key={product.id} animation="fade-up">
-                    <div className="bg-zinc-900 border border-zinc-800 hover:border-[#d0a760]/30 transition-all duration-300 group">
+                    <article 
+                      className="bg-zinc-900 border border-zinc-800 hover:border-[#d0a760]/30 transition-all duration-300 group"
+                      data-testid={`product-article-${product.id}`}
+                    >
                       <div className="flex flex-col sm:flex-row">
                         {/* Product Image */}
                         <div className="w-full sm:w-56 h-56 sm:h-auto bg-zinc-800 flex-shrink-0 relative overflow-hidden">
@@ -583,9 +782,9 @@ export default function Shop() {
                         <div className="flex-1 p-6">
                           <div className="flex justify-between items-start mb-4">
                             <div>
-                              <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-[#d0a760] transition-colors">
+                              <h2 className="text-xl font-semibold text-white mb-2 group-hover:text-[#d0a760] transition-colors">
                                 <a href={`/product/${product.slug}`}>{product.name}</a>
-                              </h3>
+                              </h2>
                               {product.shortDescription && (
                                 <p className="text-white/50 mb-3 line-clamp-2">
                                   {product.shortDescription}
@@ -627,7 +826,7 @@ export default function Shop() {
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </article>
                   </ScrollReveal>
                 ))}
               </div>
@@ -663,7 +862,7 @@ export default function Shop() {
             </div>
           )}
         </div>
-      </section>
+      </main>
 
       {/* CTA Section - White */}
       <section className="bg-white py-20">

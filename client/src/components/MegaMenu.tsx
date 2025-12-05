@@ -19,6 +19,7 @@ interface MegaMenuProps {
   isOpen: boolean;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
+  onClose: () => void;
   isTransparent?: boolean;
 }
 
@@ -40,7 +41,7 @@ const brandColors: Record<string, string> = {
   "pioneer": "#7c3aed",
 };
 
-export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, isTransparent }: MegaMenuProps) {
+export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransparent }: MegaMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -115,6 +116,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, isTransparent }: 
                         href={`/products?category=${category.slug}`}
                         className="flex items-center gap-3 py-2.5 px-3 rounded-lg text-white/80 hover:text-white hover:bg-white/5 transition-all duration-200 group"
                         role="menuitem"
+                        onClick={onClose}
                         data-testid={`megamenu-category-${category.slug}`}
                       >
                         <IconComponent className="w-5 h-5 text-[#d0a760]/70 group-hover:text-[#d0a760] transition-colors" />
@@ -131,6 +133,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, isTransparent }: 
               <Link
                 href="/products"
                 className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-[#d0a760] transition-colors group"
+                onClick={onClose}
                 data-testid="megamenu-all-products"
               >
                 Bekijk alle producten
@@ -161,6 +164,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, isTransparent }: 
                         href={`/products?brand=${brand.slug}`}
                         className="flex items-center gap-3 py-3 px-4 rounded-lg text-white/80 hover:text-white bg-zinc-900/50 hover:bg-zinc-800/80 border border-zinc-800/50 hover:border-zinc-700 transition-all duration-200 group"
                         role="menuitem"
+                        onClick={onClose}
                         data-testid={`megamenu-brand-${brand.slug}`}
                       >
                         <span 
@@ -192,6 +196,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, isTransparent }: 
             <Link
               href="/apple-carplay-bmw"
               className="group block relative overflow-hidden rounded-xl border border-zinc-800 hover:border-[#d0a760]/50 transition-all duration-300"
+              onClick={onClose}
               data-testid="megamenu-featured-bmw-carplay"
               role="menuitem"
             >

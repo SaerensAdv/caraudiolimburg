@@ -67,6 +67,17 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
     };
   }, []);
 
+  // Close mega menu on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isMegaMenuOpen) {
+        setIsMegaMenuOpen(false);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isMegaMenuOpen]);
+
   const { data: cartItems = [] } = useQuery({
     queryKey: ["/api/cart"],
     enabled: isAuthenticated,
@@ -157,6 +168,15 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
                       className={`relative flex items-center gap-1 ${isTransparent ? 'text-white/90 hover:text-white' : 'text-muted-foreground hover:text-[#d0a760]'} transition-all duration-300 font-medium text-sm tracking-wide group`}
                       aria-expanded={isMegaMenuOpen}
                       aria-haspopup="true"
+                      onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          setIsMegaMenuOpen(!isMegaMenuOpen);
+                        } else if (e.key === 'Escape' && isMegaMenuOpen) {
+                          setIsMegaMenuOpen(false);
+                        }
+                      }}
                       data-testid="nav-products-trigger"
                     >
                       {item.label}
@@ -253,6 +273,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
           isOpen={isMegaMenuOpen}
           onMouseEnter={handleMegaMenuEnter}
           onMouseLeave={handleMegaMenuLeave}
+          onClose={() => setIsMegaMenuOpen(false)}
           isTransparent={isTransparent}
         />
       </header>

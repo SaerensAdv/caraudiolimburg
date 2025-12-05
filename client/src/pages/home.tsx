@@ -7,7 +7,6 @@ import { CartSidebar } from "@/components/CartSidebar";
 import { VehicleHeroSelector } from "@/components/VehicleHeroSelector";
 import { AudioWaveBackground, BassPulse } from "@/components/AudioPulseEffects";
 import { ScrollReveal, StaggerContainer, Parallax, SectionDivider, GoldAccentLine, ImageReveal, CountUp } from "@/components/ScrollAnimations";
-import { EqualizerBars } from "@/components/EqualizerBars";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -79,11 +78,6 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/70" />
         
         <BassPulse />
-        
-        {/* 3D Equalizer accent - desktop only, right side */}
-        <div className="hidden lg:block absolute right-16 top-1/2 -translate-y-1/2 z-10">
-          <EqualizerBars size="lg" variant="3d" className="opacity-90" />
-        </div>
         
         <div className="relative z-10 h-full min-h-screen min-h-[100svh] flex flex-col justify-center pt-20 pb-8 px-8 md:px-16 lg:px-24">
           <div className="max-w-3xl">

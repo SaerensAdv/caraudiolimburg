@@ -604,7 +604,20 @@ export default function Home() {
 
       {/* Quote Section - BLACK */}
       <section className="py-24 md:py-32 bg-black relative overflow-hidden">
-        <BassPulse className="opacity-20" />
+        {/* Electric Circuit Background */}
+        <div className="absolute inset-0 overflow-hidden">
+          {/* Horizontal pulse lines */}
+          <div className="absolute top-1/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#d0a760]/20 to-transparent animate-pulse" style={{ animationDuration: '5s' }} />
+          <div className="absolute top-2/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#d0a760]/15 to-transparent animate-pulse" style={{ animationDuration: '4s', animationDelay: '1.5s' }} />
+          
+          {/* Vertical pulse lines */}
+          <div className="absolute left-1/3 top-0 h-full w-px bg-gradient-to-b from-transparent via-[#d0a760]/15 to-transparent animate-pulse" style={{ animationDuration: '5.5s', animationDelay: '0.5s' }} />
+          <div className="absolute right-1/3 top-0 h-full w-px bg-gradient-to-b from-transparent via-[#d0a760]/20 to-transparent animate-pulse" style={{ animationDuration: '4.5s', animationDelay: '2s' }} />
+          
+          {/* Corner accent nodes */}
+          <div className="absolute top-1/3 left-1/3 w-1 h-1 bg-[#d0a760]/30 rounded-full animate-ping" style={{ animationDuration: '3.5s' }} />
+          <div className="absolute top-2/3 right-1/3 w-1 h-1 bg-[#d0a760]/25 rounded-full animate-ping" style={{ animationDuration: '4.5s', animationDelay: '1s' }} />
+        </div>
         <div className="container px-8 md:px-16 lg:px-24 mx-auto relative z-10">
           <ScrollReveal>
             <div className="max-w-4xl mx-auto">

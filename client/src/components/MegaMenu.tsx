@@ -78,7 +78,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
   return (
     <div
       ref={menuRef}
-      className={`fixed inset-0 top-16 w-full h-[calc(100vh-64px)] bg-black/40 backdrop-blur-2xl backdrop-saturate-150 shadow-2xl z-40 transition-all duration-300 ease-out overflow-y-auto ${
+      className={`fixed inset-0 top-16 w-full h-[calc(100vh-64px)] bg-black/60 backdrop-blur-xl z-40 transition-all duration-300 ease-out overflow-y-auto ${
         isAnimating 
           ? "opacity-100" 
           : "opacity-0 pointer-events-none"

@@ -7,7 +7,7 @@ import { CartSidebar } from "@/components/CartSidebar";
 import { VehicleHeroSelector } from "@/components/VehicleHeroSelector";
 import { AudioWaveBackground, BassPulse } from "@/components/AudioPulseEffects";
 import { ScrollReveal, StaggerContainer, Parallax, SectionDivider, GoldAccentLine, ImageReveal, CountUp } from "@/components/ScrollAnimations";
-import { EqualizerBars, EqualizerDivider } from "@/components/EqualizerBars";
+import { EqualizerBars } from "@/components/EqualizerBars";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -207,8 +207,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Transition: White to Black with Equalizer */}
-      <EqualizerDivider className="bg-gradient-to-b from-white to-black py-12" />
+      {/* Transition: White to Black */}
+      <SectionDivider variant="curve" fromColor="white" toColor="black" />
 
       {/* About Section - BLACK with Bass Pulse */}
       <section className="py-24 md:py-32 bg-black relative overflow-hidden">
@@ -270,8 +270,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Transition: Black to White with Equalizer */}
-      <EqualizerDivider className="bg-gradient-to-b from-black to-white py-12" />
+      {/* Transition: Black to White */}
+      <SectionDivider variant="angle" fromColor="black" toColor="white" />
 
       {/* Featured Products - WHITE */}
       <section className="py-24 md:py-32 bg-white">

@@ -665,3 +665,24 @@
 .animate-icon-rotate {
   animation: icon-rotate 0.5s ease-out;
 }
+
+/* Equalizer Bars Animation */
+@keyframes equalizer {
+  0%, 100% {
+    transform: scaleY(1);
+  }
+  25% {
+    transform: scaleY(0.6);
+  }
+  50% {
+    transform: scaleY(0.85);
+  }
+  75% {
+    transform: scaleY(0.4);
+  }
+}
+
+.animate-equalizer {
+  animation: equalizer 1s ease-in-out infinite;
+  transform-origin: bottom;
+}

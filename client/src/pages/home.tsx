@@ -7,6 +7,7 @@ import { CartSidebar } from "@/components/CartSidebar";
 import { VehicleHeroSelector } from "@/components/VehicleHeroSelector";
 import { AudioWaveBackground, BassPulse } from "@/components/AudioPulseEffects";
 import { ScrollReveal, StaggerContainer, Parallax, SectionDivider, GoldAccentLine, ImageReveal, CountUp } from "@/components/ScrollAnimations";
+import { EqualizerBars, EqualizerDivider, EqualizerLineAccent, BRAND_COLORS } from "@/components/EqualizerBars";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -26,7 +27,7 @@ import {
   ArrowRight,
   Sparkles
 } from "lucide-react";
-import { useState, useRef } from "react";
+import { useState, useRef, type CSSProperties } from "react";
 import type { Product, Category, Review } from "@shared/schema";
 import { ProductAudioSkeleton } from "@/components/AudioSkeletons";
 import { Link } from "wouter";
@@ -82,11 +83,12 @@ export default function Home() {
         <div className="relative z-10 h-full min-h-screen min-h-[100svh] flex flex-col justify-center pt-20 pb-8 px-8 md:px-16 lg:px-24">
           <div className="max-w-3xl">
             <ScrollReveal direction="up" delay={200}>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-white leading-tight mb-6">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-light text-white leading-tight mb-4">
                 Met passie voor
                 <br />
                 <span className="font-normal">auto's en muziek</span>
               </h1>
+              <EqualizerBars size="md" className="justify-start mb-6" />
             </ScrollReveal>
             
             <ScrollReveal direction="up" delay={400}>
@@ -197,12 +199,12 @@ export default function Home() {
             </div>
           </StaggerContainer>
           
-          <GoldAccentLine className="mt-16" />
+          <EqualizerLineAccent className="mt-16" />
         </div>
       </section>
 
-      {/* Transition: White to Black */}
-      <SectionDivider variant="curve" fromColor="white" toColor="black" />
+      {/* Transition: White to Black with Equalizer */}
+      <EqualizerDivider className="bg-gradient-to-b from-white to-black py-12" />
 
       {/* About Section - BLACK with Bass Pulse */}
       <section className="py-24 md:py-32 bg-black relative overflow-hidden">
@@ -264,8 +266,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Transition: Black to White */}
-      <SectionDivider variant="angle" fromColor="black" toColor="white" />
+      {/* Transition: Black to White with Equalizer */}
+      <EqualizerDivider className="bg-gradient-to-b from-black to-white py-12" />
 
       {/* Featured Products - WHITE */}
       <section className="py-24 md:py-32 bg-white">
@@ -374,32 +376,51 @@ export default function Home() {
           </ScrollReveal>
 
           <StaggerContainer className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6" staggerDelay={80}>
-            {(categories as Category[])?.map((category: Category) => (
-              <Link key={category.id} href={`/products?category=${category.slug}`}>
-                <Card 
-                  className="group cursor-pointer bg-zinc-100 border-zinc-200 hover:border-[#d0a760] transition-all duration-300 rounded-none hover:-translate-y-1"
-                  data-testid={`category-card-${category.slug}`}
-                >
-                  <CardContent className="p-6 text-center">
-                    <div className="w-14 h-14 mx-auto mb-4 bg-white border border-zinc-200 flex items-center justify-center group-hover:border-[#d0a760] group-hover:bg-[#d0a760]/5 transition-all duration-300">
-                      {category.slug === 'multimedia-navigatie' && <Volume2 className="w-6 h-6 text-[#d0a760]" />}
-                      {category.slug === 'speakers-subwoofers' && <Volume2 className="w-6 h-6 text-[#d0a760]" />}
-                      {category.slug === 'versterkers-dsp' && <Settings className="w-6 h-6 text-[#d0a760]" />}
-                      {category.slug === 'installatie-accessoires' && <Wrench className="w-6 h-6 text-[#d0a760]" />}
-                      {category.slug === 'cameras-veiligheid' && <ShieldCheck className="w-6 h-6 text-[#d0a760]" />}
-                      {category.slug === 'oem-upgrades' && <Car className="w-6 h-6 text-[#d0a760]" />}
-                      {!['multimedia-navigatie', 'speakers-subwoofers', 'versterkers-dsp', 'installatie-accessoires', 'cameras-veiligheid', 'oem-upgrades'].includes(category.slug) && 
-                        <Volume2 className="w-6 h-6 text-[#d0a760]" />
-                      }
-                    </div>
-                    
-                    <h3 className="font-medium text-zinc-900 text-sm group-hover:text-[#d0a760] transition-colors">
-                      {category.name}
-                    </h3>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
+            {(categories as Category[])?.map((category: Category, index: number) => {
+              const colorKeys = Object.keys(BRAND_COLORS) as (keyof typeof BRAND_COLORS)[];
+              const brandColor = BRAND_COLORS[colorKeys[index % colorKeys.length]];
+              
+              return (
+                <Link key={category.id} href={`/products?category=${category.slug}`}>
+                  <Card 
+                    className="group cursor-pointer bg-zinc-100 border-zinc-200 transition-all duration-300 rounded-none hover:-translate-y-1"
+                    style={{ '--hover-color': brandColor } as CSSProperties}
+                    data-testid={`category-card-${category.slug}`}
+                  >
+                    <CardContent className="p-6 text-center">
+                      <div 
+                        className="w-14 h-14 mx-auto mb-4 bg-white border border-zinc-200 flex items-center justify-center transition-all duration-300"
+                        style={{ 
+                          borderColor: 'transparent',
+                          boxShadow: `0 0 0 2px ${brandColor}20`
+                        }}
+                      >
+                        {category.slug === 'multimedia-navigatie' && <Volume2 className="w-6 h-6" style={{ color: brandColor }} />}
+                        {category.slug === 'speakers-subwoofers' && <Volume2 className="w-6 h-6" style={{ color: brandColor }} />}
+                        {category.slug === 'versterkers-dsp' && <Settings className="w-6 h-6" style={{ color: brandColor }} />}
+                        {category.slug === 'installatie-accessoires' && <Wrench className="w-6 h-6" style={{ color: brandColor }} />}
+                        {category.slug === 'cameras-veiligheid' && <ShieldCheck className="w-6 h-6" style={{ color: brandColor }} />}
+                        {category.slug === 'oem-upgrades' && <Car className="w-6 h-6" style={{ color: brandColor }} />}
+                        {!['multimedia-navigatie', 'speakers-subwoofers', 'versterkers-dsp', 'installatie-accessoires', 'cameras-veiligheid', 'oem-upgrades'].includes(category.slug) && 
+                          <Volume2 className="w-6 h-6" style={{ color: brandColor }} />
+                        }
+                      </div>
+                      
+                      <h3 
+                        className="font-medium text-zinc-900 text-sm group-hover:transition-colors"
+                        style={{ '--text-hover': brandColor } as CSSProperties}
+                      >
+                        {category.name}
+                      </h3>
+                      <div 
+                        className="w-8 h-1 mx-auto mt-3 rounded-full opacity-60"
+                        style={{ backgroundColor: brandColor }}
+                      />
+                    </CardContent>
+                  </Card>
+                </Link>
+              );
+            })}
           </StaggerContainer>
         </div>
       </section>
@@ -455,30 +476,33 @@ export default function Home() {
       {/* Transition: Black to White */}
       <SectionDivider variant="wave" fromColor="black" toColor="white" />
 
-      {/* Stats Section - WHITE */}
+      {/* Stats Section - WHITE with Equalizer Colors */}
       <section className="py-16 bg-white">
         <div className="container px-8 md:px-16 lg:px-24 mx-auto">
+          <div className="flex justify-center mb-8">
+            <EqualizerBars size="sm" animated={true} />
+          </div>
           <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center" staggerDelay={150}>
             <div>
-              <div className="text-4xl md:text-5xl font-light text-[#d0a760] mb-2">
+              <div className="text-4xl md:text-5xl font-light mb-2" style={{ color: BRAND_COLORS.orange }}>
                 <CountUp end={25} suffix="+" />
               </div>
               <p className="text-zinc-600 text-sm uppercase tracking-wider">Jaar Vakmanschap</p>
             </div>
             <div>
-              <div className="text-4xl md:text-5xl font-light text-[#d0a760] mb-2">
+              <div className="text-4xl md:text-5xl font-light mb-2" style={{ color: BRAND_COLORS.blue }}>
                 <CountUp end={500} suffix="+" />
               </div>
               <p className="text-zinc-600 text-sm uppercase tracking-wider">Blije Klanten</p>
             </div>
             <div>
-              <div className="text-4xl md:text-5xl font-light text-[#d0a760] mb-2">
+              <div className="text-4xl md:text-5xl font-light mb-2" style={{ color: BRAND_COLORS.green }}>
                 <CountUp end={15} suffix="+" />
               </div>
               <p className="text-zinc-600 text-sm uppercase tracking-wider">Topmerken</p>
             </div>
             <div>
-              <div className="text-4xl md:text-5xl font-light text-[#d0a760] mb-2">
+              <div className="text-4xl md:text-5xl font-light mb-2" style={{ color: BRAND_COLORS.pink }}>
                 <CountUp end={2} />
               </div>
               <p className="text-zinc-600 text-sm uppercase tracking-wider">Jaar Garantie</p>

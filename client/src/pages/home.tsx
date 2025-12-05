@@ -340,24 +340,19 @@ export default function Home() {
           
           <ScrollReveal delay={200}>
             <div className="max-w-5xl mx-auto">
-              <div className="relative aspect-video">
-                {/* Ambilight Glow Effect - Blurred duplicate behind main video */}
-                <div className="absolute -inset-8 md:-inset-12 lg:-inset-16 pointer-events-none">
-                  <video
-                    className="w-full h-full object-cover blur-2xl md:blur-3xl opacity-50 scale-105"
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="metadata"
-                    aria-hidden="true"
-                  >
-                    <source src={promoVideo} type="video/mp4" />
-                  </video>
-                </div>
+              <div className="relative aspect-video group">
+                {/* Ambilight Glow Effect - CSS-based for performance */}
+                <div 
+                  className="absolute -inset-4 md:-inset-6 lg:-inset-8 opacity-60 blur-2xl md:blur-3xl pointer-events-none animate-pulse"
+                  style={{ 
+                    background: 'radial-gradient(ellipse at center, rgba(208, 167, 96, 0.4) 0%, rgba(201, 162, 39, 0.2) 40%, transparent 70%)',
+                    animationDuration: '4s'
+                  }}
+                  aria-hidden="true"
+                />
                 
                 {/* Main Video */}
-                <div className="relative z-10 overflow-hidden">
+                <div className="relative z-10 overflow-hidden shadow-2xl shadow-[#d0a760]/20">
                   <video
                     className="w-full h-full object-cover"
                     autoPlay

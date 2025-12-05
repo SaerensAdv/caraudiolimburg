@@ -115,7 +115,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
     };
   }, [isMenuOpen]);
 
-  const showSolidHeader = !isTransparent || scrolled;
+  const showSolidHeader = !isTransparent || scrolled || isMegaMenuOpen;
 
   const menuItems = [
     { href: "/products", label: "Producten", highlight: false },

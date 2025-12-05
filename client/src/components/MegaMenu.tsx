@@ -105,11 +105,11 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
       role="menu"
       aria-label="Producten navigatiemenu"
     >
-      <nav className="container mx-auto px-8 py-12" aria-label="Product categorieën en merken">
-        <div className="grid grid-cols-12 gap-8">
+      <nav className="container mx-auto px-4 py-6 sm:px-6 md:py-8 lg:px-8 lg:py-10 max-w-[1280px]" aria-label="Product categorieën en merken">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 md:gap-8">
           
           {/* Column 1: Categories */}
-          <div className="col-span-4">
+          <div className="lg:col-span-4">
             <h3 className="text-[#d0a760] text-xs font-semibold tracking-widest uppercase mb-5 flex items-center gap-2">
               <span className="w-8 h-px bg-[#d0a760]/50" />
               Categorieën
@@ -160,7 +160,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
           </div>
 
           {/* Column 2: Brands */}
-          <div className="col-span-4">
+          <div className="lg:col-span-4">
             <h3 className="text-[#d0a760] text-xs font-semibold tracking-widest uppercase mb-5 flex items-center gap-2">
               <span className="w-8 h-px bg-[#d0a760]/50" />
               Topmerken
@@ -204,7 +204,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
           </div>
 
           {/* Column 3: Featured CTA */}
-          <div className="col-span-4">
+          <div className="md:col-span-2 lg:col-span-4">
             <h3 className="text-[#d0a760] text-xs font-semibold tracking-widest uppercase mb-5 flex items-center gap-2">
               <span className="w-8 h-px bg-[#d0a760]/50" />
               Uitgelicht
@@ -265,8 +265,8 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
         </div>
 
         {/* Car Brands Section */}
-        <div className="mt-10 pt-8 border-t border-white/10">
-          <div className="flex items-center gap-3 mb-6">
+        <div className="mt-6 md:mt-8 lg:mt-10 pt-6 md:pt-8 border-t border-white/10">
+          <div className="flex items-center gap-3 mb-4 md:mb-6">
             <Car className="w-5 h-5 text-[#d0a760]" />
             <h3 className="text-[#d0a760] text-xs font-semibold tracking-widest uppercase">
               Automerken
@@ -274,10 +274,11 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
             <div className="flex-1 h-px bg-gradient-to-r from-[#d0a760]/30 to-transparent" />
           </div>
           
-          <div className="flex flex-wrap items-center gap-4">
+          {/* Mobile: horizontal scroll, Desktop: wrap */}
+          <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory lg:flex-wrap lg:overflow-x-visible lg:pb-0 lg:gap-4 scrollbar-hide">
             {isLoadingVehicleMakes ? (
               [...Array(12)].map((_, i) => (
-                <div key={i} className="w-16 h-10 bg-zinc-800/50 rounded animate-pulse" />
+                <div key={i} className="w-16 h-10 bg-zinc-800/50 rounded animate-pulse shrink-0" />
               ))
             ) : (
               vehicleMakes.map((make) => (
@@ -285,10 +286,10 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
                   key={make.id}
                   href={`/products?make=${make.slug}`}
                   onClick={onClose}
-                  className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#d0a760]/30 transition-all duration-200 group"
+                  className="shrink-0 snap-start px-3 py-2 md:px-4 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#d0a760]/30 transition-all duration-200 group"
                   data-testid={`megamenu-car-brand-${make.slug}`}
                 >
-                  <span className="text-white/70 group-hover:text-white text-sm font-medium transition-colors">
+                  <span className="text-white/70 group-hover:text-white text-xs md:text-sm font-medium transition-colors whitespace-nowrap">
                     {make.name}
                   </span>
                 </Link>

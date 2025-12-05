@@ -348,6 +348,20 @@ export default function Home() {
                   <source src={promoVideo} type="video/mp4" />
                   Je browser ondersteunt geen video.
                 </video>
+                
+                {/* Animated Equalizer Overlay */}
+                <div className="absolute bottom-4 right-4 flex items-end gap-1 p-3 bg-black/50 backdrop-blur-sm pointer-events-none">
+                  {[...Array(5)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="w-1.5 bg-[#d0a760] animate-audio-bar"
+                      style={{
+                        height: `${12 + i * 4}px`,
+                        animationDelay: `${i * 0.12}s`,
+                      }}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
           </ScrollReveal>

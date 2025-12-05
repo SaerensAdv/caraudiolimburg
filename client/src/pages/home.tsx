@@ -236,20 +236,18 @@ export default function Home() {
                   rechtstreeks van de fabriek komt. Jouw tevredenheid is waar wij voor gaan.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <Link href="/products">
+                  <Link href="/products" className="w-full sm:w-auto">
                     <Button 
-                      variant="outline" 
-                      className="border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760] hover:text-black rounded-none px-8 py-6"
+                      className="w-full bg-transparent border border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760] hover:text-black rounded-none px-8 py-6"
                       data-testid="button-view-products"
                     >
                       Ontdek Onze Producten
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </Link>
-                  <Link href="/contact">
+                  <Link href="/contact" className="w-full sm:w-auto">
                     <Button 
-                      variant="ghost" 
-                      className="text-white/70 hover:text-white hover:bg-transparent rounded-none px-8 py-6"
+                      className="w-full bg-transparent text-white/70 hover:text-white rounded-none px-8 py-6"
                       data-testid="button-contact-us"
                     >
                       Stel Je Vraag
@@ -435,18 +433,17 @@ export default function Home() {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/apple-carplay-bmw">
+                <Link href="/apple-carplay-bmw" className="w-full sm:w-auto">
                   <Button 
-                    className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none px-8 py-6"
+                    className="w-full bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none px-8 py-6"
                     data-testid="button-bmw-carplay"
                   >
                     Ontdek de Mogelijkheden
                   </Button>
                 </Link>
-                <Link href="/apple-carplay-bmw#offerte">
+                <Link href="/apple-carplay-bmw#offerte" className="w-full sm:w-auto">
                   <Button 
-                    variant="outline" 
-                    className="border-white/30 text-white hover:bg-white/10 rounded-none px-8 py-6"
+                    className="w-full bg-transparent border border-white/30 text-white hover:bg-white/10 rounded-none px-8 py-6"
                     data-testid="button-bmw-quote"
                   >
                     Ontvang Jouw Offerte
@@ -713,18 +710,17 @@ export default function Home() {
                 </div>
                 
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <Link href="/contact">
+                  <Link href="/contact" className="w-full sm:w-auto">
                     <Button 
-                      className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none px-8 py-6"
+                      className="w-full bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none px-8 py-6"
                       data-testid="button-plan-visit"
                     >
                       Maak een Afspraak
                     </Button>
                   </Link>
-                  <a href="tel:0852733625">
+                  <a href="tel:0852733625" className="w-full sm:w-auto">
                     <Button 
-                      variant="outline" 
-                      className="border-white/30 text-white hover:bg-white/10 rounded-none px-8 py-6"
+                      className="w-full bg-transparent border border-white/30 text-white hover:bg-white/10 rounded-none px-8 py-6"
                       data-testid="button-call-now"
                     >
                       <Phone className="w-4 h-4 mr-2" />

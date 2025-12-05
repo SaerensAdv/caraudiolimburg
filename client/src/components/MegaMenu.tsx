@@ -2,7 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import type { Category, Brand } from "@shared/schema";
+import type { Category, Brand, VehicleMake } from "@shared/schema";
+import { Car } from "lucide-react";
 import { 
   Monitor, 
   Speaker, 
@@ -62,6 +63,11 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
 
   const { data: brands = [], isLoading: isLoadingBrands } = useQuery<Brand[]>({
     queryKey: ["/api/brands"],
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: vehicleMakes = [], isLoading: isLoadingVehicleMakes } = useQuery<VehicleMake[]>({
+    queryKey: ["/api/vehicle-makes"],
     staleTime: 5 * 60 * 1000,
   });
 
@@ -255,6 +261,39 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Car Brands Section */}
+        <div className="mt-10 pt-8 border-t border-white/10">
+          <div className="flex items-center gap-3 mb-6">
+            <Car className="w-5 h-5 text-[#d0a760]" />
+            <h3 className="text-[#d0a760] text-xs font-semibold tracking-widest uppercase">
+              Automerken
+            </h3>
+            <div className="flex-1 h-px bg-gradient-to-r from-[#d0a760]/30 to-transparent" />
+          </div>
+          
+          <div className="flex flex-wrap items-center gap-4">
+            {isLoadingVehicleMakes ? (
+              [...Array(12)].map((_, i) => (
+                <div key={i} className="w-16 h-10 bg-zinc-800/50 rounded animate-pulse" />
+              ))
+            ) : (
+              vehicleMakes.map((make) => (
+                <Link
+                  key={make.id}
+                  href={`/products?make=${make.slug}`}
+                  onClick={onClose}
+                  className="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#d0a760]/30 transition-all duration-200 group"
+                  data-testid={`megamenu-car-brand-${make.slug}`}
+                >
+                  <span className="text-white/70 group-hover:text-white text-sm font-medium transition-colors">
+                    {make.name}
+                  </span>
+                </Link>
+              ))
+            )}
           </div>
         </div>
       </nav>

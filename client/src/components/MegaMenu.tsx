@@ -119,8 +119,8 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
                 [...Array(6)].map((_, i) => (
                   <li key={i} className="py-2.5 px-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-5 h-5 bg-zinc-800 rounded animate-pulse" />
-                      <div className="h-4 bg-zinc-800 rounded w-32 animate-pulse" />
+                      <div className="w-5 h-5 bg-zinc-800 animate-pulse" />
+                      <div className="h-4 bg-zinc-800 w-32 animate-pulse" />
                     </div>
                   </li>
                 ))
@@ -131,7 +131,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
                     <li key={category.id} role="none">
                       <Link
                         href={`/products?category=${category.slug}`}
-                        className="flex items-center gap-3 py-2.5 px-3 rounded-lg text-white/80 hover:text-white hover:bg-white/5 transition-all duration-200 group"
+                        className="flex items-center gap-3 py-2.5 px-3 text-white/80 hover:text-white hover:bg-white/5 transition-all duration-200 group"
                         role="menuitem"
                         onClick={onClose}
                         data-testid={`megamenu-category-${category.slug}`}
@@ -169,7 +169,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
               {isLoading ? (
                 [...Array(6)].map((_, i) => (
                   <li key={i} className="py-3 px-4">
-                    <div className="h-5 bg-zinc-800 rounded w-20 animate-pulse" />
+                    <div className="h-5 bg-zinc-800 w-20 animate-pulse" />
                   </li>
                 ))
               ) : (
@@ -179,13 +179,13 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
                     <li key={brand.id} role="none">
                       <Link
                         href={`/products?brand=${brand.slug}`}
-                        className="flex items-center gap-3 py-3 px-4 rounded-lg text-white/80 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-200 group"
+                        className="flex items-center gap-3 py-3 px-4 text-white/80 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-200 group"
                         role="menuitem"
                         onClick={onClose}
                         data-testid={`megamenu-brand-${brand.slug}`}
                       >
                         <span 
-                          className="w-2 h-2 rounded-full transition-transform group-hover:scale-125"
+                          className="w-2 h-2 transition-transform group-hover:scale-125"
                           style={{ backgroundColor: brandColor }}
                         />
                         <span className="text-sm font-medium">{brand.name}</span>
@@ -212,7 +212,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
             
             <Link
               href="/apple-carplay-bmw"
-              className="group block relative overflow-hidden rounded-xl border border-white/10 hover:border-[#d0a760]/50 transition-all duration-300"
+              className="group block relative overflow-hidden border border-white/10 hover:border-[#d0a760]/50 transition-all duration-300"
               onClick={onClose}
               data-testid="megamenu-featured-bmw-carplay"
               role="menuitem"
@@ -246,9 +246,9 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
               </div>
             </Link>
 
-            <div className="mt-4 p-4 rounded-xl bg-gradient-to-br from-[#d0a760]/10 to-transparent border border-[#d0a760]/20">
+            <div className="mt-4 p-4 bg-gradient-to-br from-[#d0a760]/10 to-transparent border border-[#d0a760]/20">
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-lg bg-[#d0a760]/20 flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 bg-[#d0a760]/20 flex items-center justify-center flex-shrink-0">
                   <Wrench className="w-5 h-5 text-[#d0a760]" />
                 </div>
                 <div>
@@ -278,7 +278,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
           <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory lg:flex-wrap lg:overflow-x-visible lg:pb-0 lg:gap-4 scrollbar-hide">
             {isLoadingVehicleMakes ? (
               [...Array(12)].map((_, i) => (
-                <div key={i} className="w-16 h-10 bg-zinc-800/50 rounded animate-pulse shrink-0" />
+                <div key={i} className="w-16 h-10 bg-zinc-800/50 animate-pulse shrink-0" />
               ))
             ) : (
               vehicleMakes.map((make) => (
@@ -286,7 +286,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
                   key={make.id}
                   href={`/products?make=${make.slug}`}
                   onClick={onClose}
-                  className="shrink-0 snap-start px-3 py-2 md:px-4 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#d0a760]/30 transition-all duration-200 group"
+                  className="shrink-0 snap-start px-3 py-2 md:px-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#d0a760]/30 transition-all duration-200 group"
                   data-testid={`megamenu-car-brand-${make.slug}`}
                 >
                   <span className="text-white/70 group-hover:text-white text-xs md:text-sm font-medium transition-colors whitespace-nowrap">

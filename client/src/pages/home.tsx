@@ -340,22 +340,40 @@ export default function Home() {
           
           <ScrollReveal delay={200}>
             <div className="max-w-5xl mx-auto">
-              <div className="relative aspect-video overflow-hidden">
-                <video
-                  className="w-full h-full object-cover"
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="metadata"
-                  data-testid="promotional-video"
-                >
-                  <source src={promoVideo} type="video/mp4" />
-                  Je browser ondersteunt geen video.
-                </video>
+              <div className="relative aspect-video">
+                {/* Ambilight Glow Effect - Blurred duplicate behind main video */}
+                <div className="absolute -inset-8 md:-inset-12 lg:-inset-16 pointer-events-none">
+                  <video
+                    className="w-full h-full object-cover blur-2xl md:blur-3xl opacity-50 scale-105"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    aria-hidden="true"
+                  >
+                    <source src={promoVideo} type="video/mp4" />
+                  </video>
+                </div>
+                
+                {/* Main Video */}
+                <div className="relative z-10 overflow-hidden">
+                  <video
+                    className="w-full h-full object-cover"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    data-testid="promotional-video"
+                  >
+                    <source src={promoVideo} type="video/mp4" />
+                    Je browser ondersteunt geen video.
+                  </video>
+                </div>
                 
                 {/* Animated Equalizer Overlay - Logo Colors */}
-                <div className="absolute bottom-4 right-4 flex items-end gap-1 p-3 bg-black/60 backdrop-blur-sm pointer-events-none">
+                <div className="absolute bottom-4 right-4 z-20 flex items-end gap-1 p-3 bg-black/60 backdrop-blur-sm pointer-events-none">
                   {[
                     { color: '#c9a227', height: 12 },
                     { color: '#d4af37', height: 16 },

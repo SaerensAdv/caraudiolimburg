@@ -124,7 +124,7 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
 
         <CardContent className="p-5">
           <Link href={`/product/${product.slug}`}>
-            <h3 className="text-white font-medium mb-2 group-hover:text-[#d0a760] transition-all duration-300 cursor-pointer line-clamp-2" data-testid={`product-title-${product.id}`}>
+            <h3 className="text-white font-medium mb-2 group-hover:text-[#d0a760] transition-all duration-300 cursor-pointer line-clamp-2 min-h-[2.5rem]" data-testid={`product-title-${product.id}`}>
               {product.name}
             </h3>
           </Link>

@@ -34,12 +34,20 @@ const categoryIcons: Record<string, React.ComponentType<{ className?: string }>>
 };
 
 const brandColors: Record<string, string> = {
+  "acv": "#6b7280",
   "alpine": "#1e40af",
   "audison": "#dc2626",
+  "blackvue": "#1f2937",
+  "blaupunkt": "#2563eb",
+  "boxmore": "#78716c",
+  "carvision": "#0891b2",
+  "car-audio-limburg": "#d0a760",
   "focal": "#f59e0b",
+  "gcc": "#4ade80",
   "hertz": "#059669",
-  "jbl": "#ea580c",
-  "pioneer": "#7c3aed",
+  "kenwood": "#7c3aed",
+  "pioneer": "#ea580c",
+  "stp": "#ef4444",
 };
 
 export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransparent }: MegaMenuProps) {

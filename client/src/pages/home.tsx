@@ -80,9 +80,9 @@ export default function Home() {
         
         <BassPulse />
         
-        {/* Equalizer accent - desktop only, right side */}
+        {/* 3D Equalizer accent - desktop only, right side */}
         <div className="hidden lg:block absolute right-16 top-1/2 -translate-y-1/2 z-10">
-          <EqualizerBars size="lg" className="opacity-80" />
+          <EqualizerBars size="lg" variant="3d" className="opacity-90" />
         </div>
         
         <div className="relative z-10 h-full min-h-screen min-h-[100svh] flex flex-col justify-center pt-20 pb-8 px-8 md:px-16 lg:px-24">

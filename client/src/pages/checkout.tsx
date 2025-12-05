@@ -134,6 +134,9 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems }: { clientSecret: s
 
     setIsProcessing(true);
 
+    // Store shipping details in localStorage for redirect-based payments (iDEAL, Bancontact, etc.)
+    localStorage.setItem('checkout_shipping_details', JSON.stringify(data));
+
     const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       redirect: 'if_required',

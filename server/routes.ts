@@ -21,9 +21,7 @@ import {
 let stripe: Stripe | null = null;
 
 if (process.env.STRIPE_SECRET_KEY) {
-  stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: "2024-06-20", // Pinned version for stability
-  });
+  stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 }
 
 // Multer configuration for file uploads
@@ -472,7 +470,9 @@ ${message || 'Geen aanvullende informatie'}`
       const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(amount * 100), // Convert to cents
         currency: "eur",
-        payment_method_types: ['card'], // Restrict to card-only to avoid redirect issues
+        automatic_payment_methods: {
+          enabled: true,
+        },
         metadata: {
           userId: (req as any).user.id,
         },
@@ -673,6 +673,131 @@ ${message || 'Geen aanvullende informatie'}`
     } catch (error) {
       console.error("Error confirming order:", error);
       res.status(500).json({ message: "Failed to confirm order" });
+    }
+  });
+
+  // Order creation from redirect (iDEAL, Bancontact, etc.) - idempotent
+  app.post("/api/orders/create-from-redirect", isAuthenticated, async (req, res) => {
+    try {
+      const { paymentIntentId, shippingDetails } = req.body;
+      const userId = (req as any).user.id;
+      
+      if (!stripe) {
+        return res.status(500).json({ message: "Payment system not configured" });
+      }
+
+      if (!paymentIntentId) {
+        return res.status(400).json({ message: "Payment intent ID required" });
+      }
+
+      // Verify payment intent with Stripe
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      
+      // Verify the payment intent belongs to this user
+      if (paymentIntent.metadata?.userId !== userId) {
+        return res.status(403).json({ message: "Unauthorized - payment doesn't belong to user" });
+      }
+
+      // Check if order already exists (idempotency)
+      const existingOrders = await storage.getOrdersByUserId(userId);
+      const existingOrder = existingOrders.find(o => o.stripePaymentIntentId === paymentIntentId);
+      if (existingOrder) {
+        return res.json(existingOrder);
+      }
+
+      // Verify payment was successful
+      if (paymentIntent.status !== 'succeeded') {
+        return res.status(400).json({ message: "Payment not successful", status: paymentIntent.status });
+      }
+
+      // Get cart items
+      const cartItems = await storage.getCartItems(userId);
+      if (cartItems.length === 0) {
+        // If cart is empty but payment succeeded, the order was likely already created
+        // Check once more for existing order and return 400 if not found
+        const finalCheck = await storage.getOrdersByUserId(userId);
+        const existingOrder = finalCheck.find(o => o.stripePaymentIntentId === paymentIntentId);
+        if (existingOrder) {
+          return res.json(existingOrder);
+        }
+        return res.status(400).json({ message: "Cart is empty - order may have already been created. Please check your order history." });
+      }
+
+      // Calculate totals
+      const subtotal = await Promise.all(
+        cartItems.map(async (item) => {
+          const product = await storage.getProduct(item.productId);
+          const price = parseFloat(product?.price || "0");
+          return price * item.quantity;
+        })
+      ).then(prices => prices.reduce((sum, price) => sum + price, 0));
+      
+      const installationFee = cartItems.some(item => item.needsInstallation) ? 89 : 0;
+      const shipping = subtotal >= 50 ? 0 : 5.95;
+      const expectedTotal = subtotal + installationFee + shipping;
+
+      // Verify amount matches payment intent (security check)
+      const expectedAmountInCents = Math.round(expectedTotal * 100);
+      if (paymentIntent.amount !== expectedAmountInCents) {
+        console.error("Payment amount mismatch:", { expected: expectedAmountInCents, received: paymentIntent.amount });
+        return res.status(400).json({ 
+          message: "Payment amount doesn't match cart total. Please contact support.",
+          expected: expectedAmountInCents,
+          received: paymentIntent.amount
+        });
+      }
+
+      // Generate unique order number
+      const orderNumber = `CAL-${Date.now()}`;
+
+      // Create order with shipping details from localStorage (passed from frontend)
+      const order = await storage.createOrder({
+        userId,
+        orderNumber,
+        status: "confirmed",
+        totalAmount: expectedTotal.toString(),
+        stripePaymentIntentId: paymentIntentId,
+        shippingAddress: shippingDetails || {},
+      });
+
+      // Create order items
+      for (const cartItem of cartItems) {
+        const product = await storage.getProduct(cartItem.productId);
+        await storage.createOrderItem({
+          orderId: order.id,
+          productId: cartItem.productId,
+          quantity: cartItem.quantity,
+          price: product?.price || "0",
+          needsInstallation: cartItem.needsInstallation,
+        });
+
+        // If installation is needed, create a booking placeholder
+        if (cartItem.needsInstallation && shippingDetails) {
+          await storage.createBooking({
+            userId,
+            orderId: order.id,
+            customerName: (shippingDetails.firstName || "") + " " + (shippingDetails.lastName || ""),
+            customerEmail: shippingDetails.email || "noreply@caraudiolimburg.shop",
+            customerPhone: shippingDetails.phone || "085 273 36 25",
+            vehicleMake: "Te bepalen",
+            vehicleModel: "Te bepalen", 
+            vehicleYear: new Date().getFullYear(),
+            serviceType: "installatie",
+            scheduledDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            duration: 2,
+            status: "pending_scheduling",
+            totalCost: installationFee.toString(),
+          });
+        }
+      }
+
+      // Clear cart
+      await storage.clearCart(userId);
+
+      res.json(order);
+    } catch (error) {
+      console.error("Error creating order from redirect:", error);
+      res.status(500).json({ message: "Failed to create order" });
     }
   });
 

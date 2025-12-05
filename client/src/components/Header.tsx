@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
+import { MegaMenu } from "@/components/MegaMenu";
 import logoUrl from "@assets/Caraudiolimburg-logo_1757008375383.png";
 import whiteLogoUrl from "@assets/CAL white_1758369495328.png";
 import { 
@@ -14,7 +15,8 @@ import {
   LogOut,
   Phone,
   MapPin,
-  ArrowRight
+  ArrowRight,
+  ChevronDown
 } from "lucide-react";
 
 interface HeaderProps {
@@ -25,7 +27,30 @@ interface HeaderProps {
 
 export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
+  const megaMenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { isAuthenticated, user } = useAuth();
+
+  const handleMegaMenuEnter = () => {
+    if (megaMenuTimeoutRef.current) {
+      clearTimeout(megaMenuTimeoutRef.current);
+    }
+    setIsMegaMenuOpen(true);
+  };
+
+  const handleMegaMenuLeave = () => {
+    megaMenuTimeoutRef.current = setTimeout(() => {
+      setIsMegaMenuOpen(false);
+    }, 150);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (megaMenuTimeoutRef.current) {
+        clearTimeout(megaMenuTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const { data: cartItems = [] } = useQuery({
     queryKey: ["/api/cart"],
@@ -89,18 +114,42 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            {menuItems.map((item) => (
-              <Link 
-                key={item.href}
-                href={item.href} 
-                className={`relative ${isTransparent ? 'text-white/90 hover:text-white' : 'text-muted-foreground hover:text-[#d0a760]'} transition-all duration-300 font-medium text-sm tracking-wide group`} 
-                data-testid={`nav-${item.href.slice(1)}`}
-              >
-                {item.label}
-                <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-[#d0a760] origin-right group-hover:origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out" />
-              </Link>
-            ))}
+          <nav className="hidden md:flex items-center space-x-8" aria-label="Hoofdnavigatie">
+            {menuItems.map((item) => {
+              if (item.href === "/products") {
+                return (
+                  <div
+                    key={item.href}
+                    className="relative"
+                    onMouseEnter={handleMegaMenuEnter}
+                    onMouseLeave={handleMegaMenuLeave}
+                  >
+                    <button
+                      className={`relative flex items-center gap-1 ${isTransparent ? 'text-white/90 hover:text-white' : 'text-muted-foreground hover:text-[#d0a760]'} transition-all duration-300 font-medium text-sm tracking-wide group`}
+                      aria-expanded={isMegaMenuOpen}
+                      aria-haspopup="true"
+                      data-testid="nav-products-trigger"
+                    >
+                      {item.label}
+                      <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isMegaMenuOpen ? 'rotate-180' : ''}`} />
+                      <span className={`absolute -bottom-1 left-0 w-full h-0.5 bg-[#d0a760] origin-right group-hover:origin-left transition-transform duration-300 ease-out ${isMegaMenuOpen ? 'scale-x-100 origin-left' : 'scale-x-0 group-hover:scale-x-100'}`} />
+                    </button>
+                  </div>
+                );
+              }
+              
+              return (
+                <Link 
+                  key={item.href}
+                  href={item.href} 
+                  className={`relative ${isTransparent ? 'text-white/90 hover:text-white' : 'text-muted-foreground hover:text-[#d0a760]'} transition-all duration-300 font-medium text-sm tracking-wide group`} 
+                  data-testid={`nav-${item.href.slice(1)}`}
+                >
+                  {item.label}
+                  <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-[#d0a760] origin-right group-hover:origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out" />
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Right side actions */}
@@ -169,6 +218,14 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
             </Button>
           </div>
         </div>
+
+        {/* Mega Menu - Full Width Dropdown */}
+        <MegaMenu 
+          isOpen={isMegaMenuOpen}
+          onMouseEnter={handleMegaMenuEnter}
+          onMouseLeave={handleMegaMenuLeave}
+          isTransparent={isTransparent}
+        />
       </header>
 
       {/* Fullscreen Mobile Menu */}

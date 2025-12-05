@@ -1,0 +1,249 @@
+import { useState, useRef, useEffect } from "react";
+import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
+import type { Category, Brand } from "@shared/schema";
+import { 
+  Monitor, 
+  Speaker, 
+  Zap, 
+  Settings, 
+  Camera, 
+  Wrench,
+  ChevronRight,
+  ArrowRight,
+  Sparkles
+} from "lucide-react";
+import bmwCarplayImage from "@assets/bmw-carplay-1.jpg";
+
+interface MegaMenuProps {
+  isOpen: boolean;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+  isTransparent?: boolean;
+}
+
+const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
+  "multimedia-navigatie": Monitor,
+  "speakers-subwoofers": Speaker,
+  "versterkers-dsp": Zap,
+  "oem-upgrades": Settings,
+  "cameras-veiligheid": Camera,
+  "installatie-accessoires": Wrench,
+};
+
+const brandColors: Record<string, string> = {
+  "alpine": "#1e40af",
+  "audison": "#dc2626",
+  "focal": "#f59e0b",
+  "hertz": "#059669",
+  "jbl": "#ea580c",
+  "pioneer": "#7c3aed",
+};
+
+export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, isTransparent }: MegaMenuProps) {
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const { data: categories = [], isLoading: isLoadingCategories } = useQuery<Category[]>({
+    queryKey: ["/api/categories"],
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: brands = [], isLoading: isLoadingBrands } = useQuery<Brand[]>({
+    queryKey: ["/api/brands"],
+    staleTime: 5 * 60 * 1000,
+  });
+
+  useEffect(() => {
+    if (isOpen) {
+      setIsVisible(true);
+      requestAnimationFrame(() => {
+        setIsAnimating(true);
+      });
+    } else {
+      setIsAnimating(false);
+      const timer = setTimeout(() => {
+        setIsVisible(false);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
+  if (!isVisible) return null;
+
+  const isLoading = isLoadingCategories || isLoadingBrands;
+
+  return (
+    <div
+      ref={menuRef}
+      className={`absolute left-0 right-0 top-full w-full bg-black/98 backdrop-blur-xl border-b border-zinc-800 shadow-2xl z-40 transition-all duration-300 ease-out ${
+        isAnimating 
+          ? "opacity-100 translate-y-0" 
+          : "opacity-0 -translate-y-2"
+      }`}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      role="menu"
+      aria-label="Producten navigatiemenu"
+    >
+      <nav className="container mx-auto px-8 py-8" aria-label="Product categorieën en merken">
+        <div className="grid grid-cols-12 gap-8">
+          
+          {/* Column 1: Categories */}
+          <div className="col-span-4">
+            <h3 className="text-[#d0a760] text-xs font-semibold tracking-widest uppercase mb-5 flex items-center gap-2">
+              <span className="w-8 h-px bg-[#d0a760]/50" />
+              Categorieën
+            </h3>
+            <ul className="space-y-1" role="menu" aria-label="Product categorieën">
+              {isLoading ? (
+                [...Array(6)].map((_, i) => (
+                  <li key={i} className="py-2.5 px-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-5 h-5 bg-zinc-800 rounded animate-pulse" />
+                      <div className="h-4 bg-zinc-800 rounded w-32 animate-pulse" />
+                    </div>
+                  </li>
+                ))
+              ) : (
+                categories.map((category) => {
+                  const IconComponent = categoryIcons[category.slug] || Settings;
+                  return (
+                    <li key={category.id} role="none">
+                      <Link
+                        href={`/products?category=${category.slug}`}
+                        className="flex items-center gap-3 py-2.5 px-3 rounded-lg text-white/80 hover:text-white hover:bg-white/5 transition-all duration-200 group"
+                        role="menuitem"
+                        data-testid={`megamenu-category-${category.slug}`}
+                      >
+                        <IconComponent className="w-5 h-5 text-[#d0a760]/70 group-hover:text-[#d0a760] transition-colors" />
+                        <span className="text-sm font-medium">{category.name}</span>
+                        <ChevronRight className="w-4 h-4 ml-auto opacity-0 -translate-x-2 group-hover:opacity-50 group-hover:translate-x-0 transition-all duration-200" />
+                      </Link>
+                    </li>
+                  );
+                })
+              )}
+            </ul>
+            
+            <div className="mt-6 pt-4 border-t border-zinc-800/50">
+              <Link
+                href="/products"
+                className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-[#d0a760] transition-colors group"
+                data-testid="megamenu-all-products"
+              >
+                Bekijk alle producten
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Column 2: Brands */}
+          <div className="col-span-4">
+            <h3 className="text-[#d0a760] text-xs font-semibold tracking-widest uppercase mb-5 flex items-center gap-2">
+              <span className="w-8 h-px bg-[#d0a760]/50" />
+              Topmerken
+            </h3>
+            <ul className="grid grid-cols-2 gap-2" role="menu" aria-label="Productmerken">
+              {isLoading ? (
+                [...Array(6)].map((_, i) => (
+                  <li key={i} className="py-3 px-4">
+                    <div className="h-5 bg-zinc-800 rounded w-20 animate-pulse" />
+                  </li>
+                ))
+              ) : (
+                brands.map((brand) => {
+                  const brandColor = brandColors[brand.slug.toLowerCase()] || "#d0a760";
+                  return (
+                    <li key={brand.id} role="none">
+                      <Link
+                        href={`/products?brand=${brand.slug}`}
+                        className="flex items-center gap-3 py-3 px-4 rounded-lg text-white/80 hover:text-white bg-zinc-900/50 hover:bg-zinc-800/80 border border-zinc-800/50 hover:border-zinc-700 transition-all duration-200 group"
+                        role="menuitem"
+                        data-testid={`megamenu-brand-${brand.slug}`}
+                      >
+                        <span 
+                          className="w-2 h-2 rounded-full transition-transform group-hover:scale-125"
+                          style={{ backgroundColor: brandColor }}
+                        />
+                        <span className="text-sm font-medium">{brand.name}</span>
+                      </Link>
+                    </li>
+                  );
+                })
+              )}
+            </ul>
+            
+            <div className="mt-6 pt-4 border-t border-zinc-800/50">
+              <p className="text-xs text-white/40">
+                Officiële dealer van premium car audio merken
+              </p>
+            </div>
+          </div>
+
+          {/* Column 3: Featured CTA */}
+          <div className="col-span-4">
+            <h3 className="text-[#d0a760] text-xs font-semibold tracking-widest uppercase mb-5 flex items-center gap-2">
+              <span className="w-8 h-px bg-[#d0a760]/50" />
+              Uitgelicht
+            </h3>
+            
+            <Link
+              href="/apple-carplay-bmw"
+              className="group block relative overflow-hidden rounded-xl border border-zinc-800 hover:border-[#d0a760]/50 transition-all duration-300"
+              data-testid="megamenu-featured-bmw-carplay"
+              role="menuitem"
+            >
+              <div className="relative aspect-[16/10] overflow-hidden">
+                <img 
+                  src={bmwCarplayImage} 
+                  alt="BMW CarPlay Activatie" 
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+                
+                <div className="absolute bottom-0 left-0 right-0 p-5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Sparkles className="w-4 h-4 text-[#d0a760]" />
+                    <span className="text-[#d0a760] text-xs font-semibold tracking-wider uppercase">
+                      Populair
+                    </span>
+                  </div>
+                  <h4 className="text-white text-lg font-semibold mb-1">
+                    BMW & MINI CarPlay
+                  </h4>
+                  <p className="text-white/60 text-sm mb-3">
+                    Activeer Apple CarPlay in je BMW of MINI
+                  </p>
+                  <span className="inline-flex items-center gap-2 text-[#d0a760] text-sm font-medium group-hover:gap-3 transition-all">
+                    Meer informatie
+                    <ArrowRight className="w-4 h-4" />
+                  </span>
+                </div>
+              </div>
+            </Link>
+
+            <div className="mt-4 p-4 rounded-xl bg-gradient-to-br from-[#d0a760]/10 to-transparent border border-[#d0a760]/20">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-lg bg-[#d0a760]/20 flex items-center justify-center flex-shrink-0">
+                  <Wrench className="w-5 h-5 text-[#d0a760]" />
+                </div>
+                <div>
+                  <h4 className="text-white text-sm font-medium mb-1">
+                    Vakkundige Installatie
+                  </h4>
+                  <p className="text-white/50 text-xs">
+                    Al onze producten kunnen professioneel worden ingebouwd
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#d0a760]/30 to-transparent" />
+    </div>
+  );
+}

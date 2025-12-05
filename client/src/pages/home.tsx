@@ -312,14 +312,20 @@ export default function Home() {
 
       {/* Video Section - BLACK */}
       <section className="py-24 md:py-32 bg-black relative overflow-hidden">
-        {/* Dot Grid Pattern */}
-        <div 
-          className="absolute inset-0 opacity-[0.08]"
-          style={{
-            backgroundImage: `radial-gradient(circle at 2px 2px, #d0a760 1px, transparent 0)`,
-            backgroundSize: '32px 32px'
-          }}
-        />
+        {/* Electric Circuit Background */}
+        <div className="absolute inset-0 overflow-hidden">
+          {/* Horizontal pulse lines */}
+          <div className="absolute top-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#d0a760]/20 to-transparent animate-pulse" style={{ animationDuration: '4s' }} />
+          <div className="absolute top-3/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#d0a760]/15 to-transparent animate-pulse" style={{ animationDuration: '5s', animationDelay: '1s' }} />
+          
+          {/* Vertical pulse lines */}
+          <div className="absolute left-1/4 top-0 h-full w-px bg-gradient-to-b from-transparent via-[#d0a760]/15 to-transparent animate-pulse" style={{ animationDuration: '6s', animationDelay: '0.5s' }} />
+          <div className="absolute right-1/4 top-0 h-full w-px bg-gradient-to-b from-transparent via-[#d0a760]/20 to-transparent animate-pulse" style={{ animationDuration: '4.5s', animationDelay: '2s' }} />
+          
+          {/* Corner accent nodes */}
+          <div className="absolute top-1/4 left-1/4 w-1 h-1 bg-[#d0a760]/30 rounded-full animate-ping" style={{ animationDuration: '3s' }} />
+          <div className="absolute top-3/4 right-1/4 w-1 h-1 bg-[#d0a760]/25 rounded-full animate-ping" style={{ animationDuration: '4s', animationDelay: '1.5s' }} />
+        </div>
         <div className="container px-8 md:px-16 lg:px-24 mx-auto relative z-10">
           <ScrollReveal>
             <div className="text-center mb-16">

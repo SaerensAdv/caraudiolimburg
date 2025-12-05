@@ -86,7 +86,7 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
 
   return (
     <>
-      <Card className={`bg-zinc-900 border-zinc-800 hover:border-[#d0a760]/50 transition-all duration-300 ease-out group overflow-hidden rounded-none hover:-translate-y-1 hover:shadow-xl hover:shadow-black/50 ${featured ? 'animated-gold-border' : ''}`} data-testid={`product-card-${product.id}`}>
+      <Card className={`bg-zinc-900 border-zinc-800 hover:border-[#d0a760]/50 transition-all duration-300 ease-out group overflow-hidden rounded-none hover:-translate-y-1 hover:shadow-xl hover:shadow-black/50 h-full flex flex-col ${featured ? 'animated-gold-border' : ''}`} data-testid={`product-card-${product.id}`}>
         <Link href={`/product/${product.slug}`}>
           <div className="relative overflow-hidden">
             <div className="aspect-square bg-zinc-800 flex items-center justify-center p-8">
@@ -122,57 +122,57 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
           </div>
         </Link>
 
-        <CardContent className="p-5">
+        <CardContent className="p-5 flex flex-col flex-grow">
           <Link href={`/product/${product.slug}`}>
-            <h3 className="text-white font-medium mb-2 group-hover:text-[#d0a760] transition-all duration-300 cursor-pointer line-clamp-2 min-h-[2.5rem]" data-testid={`product-title-${product.id}`}>
+            <h3 className="text-white font-medium mb-2 group-hover:text-[#d0a760] transition-all duration-300 cursor-pointer line-clamp-2 min-h-[3rem]" data-testid={`product-title-${product.id}`}>
               {product.name}
             </h3>
           </Link>
 
-          {product.shortDescription && (
-            <p className="text-white/50 text-sm mb-4 line-clamp-2" data-testid={`product-description-${product.id}`}>
-              {product.shortDescription}
-            </p>
-          )}
+          <p className="text-white/50 text-sm mb-4 line-clamp-2 min-h-[2.5rem]" data-testid={`product-description-${product.id}`}>
+            {product.shortDescription || '\u00A0'}
+          </p>
 
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-baseline gap-2">
-              <span className="text-xl font-semibold text-white" data-testid={`product-price-${product.id}`}>
-                €{currentPrice.toFixed(0)}
-              </span>
-              {originalPrice && (
-                <span className="text-sm text-white/40 line-through">
-                  €{originalPrice.toFixed(0)}
+          <div className="mt-auto">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-baseline gap-2">
+                <span className="text-xl font-semibold text-white" data-testid={`product-price-${product.id}`}>
+                  €{currentPrice.toFixed(0)}
                 </span>
-              )}
+                {originalPrice && (
+                  <span className="text-sm text-white/40 line-through">
+                    €{originalPrice.toFixed(0)}
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
 
-          <div className="flex gap-2">
-            <Button 
-              onClick={() => handleAddToCart(false)}
-              disabled={addToCartMutation.isPending}
-              size="sm"
-              className="flex-1 bg-white text-black hover:bg-[#d0a760] rounded-none text-xs"
-              data-testid={`add-to-cart-${product.id}`}
-            >
-              <ShoppingCart className="w-3 h-3 mr-1" />
-              Toevoegen
-            </Button>
-            
-            {product.installationPrice && (
+            <div className="flex gap-2">
               <Button 
-                onClick={() => handleAddToCart(true)}
+                onClick={() => handleAddToCart(false)}
                 disabled={addToCartMutation.isPending}
                 size="sm"
-                variant="outline"
-                className="border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760] hover:text-black rounded-none"
-                title="Inclusief installatie"
-                data-testid={`add-with-install-${product.id}`}
+                className="flex-1 bg-white text-black hover:bg-[#d0a760] rounded-none text-xs"
+                data-testid={`add-to-cart-${product.id}`}
               >
-                <Wrench className="w-3 h-3" />
+                <ShoppingCart className="w-3 h-3 mr-1" />
+                Toevoegen
               </Button>
-            )}
+              
+              {product.installationPrice && (
+                <Button 
+                  onClick={() => handleAddToCart(true)}
+                  disabled={addToCartMutation.isPending}
+                  size="sm"
+                  variant="outline"
+                  className="border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760] hover:text-black rounded-none"
+                  title="Inclusief installatie"
+                  data-testid={`add-with-install-${product.id}`}
+                >
+                  <Wrench className="w-3 h-3" />
+                </Button>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>

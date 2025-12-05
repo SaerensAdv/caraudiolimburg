@@ -566,7 +566,7 @@ export default function Shop() {
               <Button
                 variant="outline"
                 onClick={() => setShowFilters(!showFilters)}
-                className="border-white/20 text-white hover:bg-white/10 hover:text-white rounded-none"
+                className="bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white rounded-none"
                 data-testid="button-toggle-filters"
               >
                 <SlidersHorizontal className="w-4 h-4 mr-2" />

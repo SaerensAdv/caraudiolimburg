@@ -78,17 +78,17 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
   return (
     <div
       ref={menuRef}
-      className={`absolute left-0 right-0 top-full w-full bg-black/95 backdrop-blur-md border-b border-zinc-800 shadow-2xl z-40 transition-all duration-300 ease-out ${
+      className={`fixed inset-0 top-[72px] w-full h-[calc(100vh-72px)] bg-black/70 backdrop-blur-xl border-t border-white/10 shadow-2xl z-40 transition-all duration-300 ease-out overflow-y-auto ${
         isAnimating 
-          ? "opacity-100 translate-y-0" 
-          : "opacity-0 -translate-y-2"
+          ? "opacity-100" 
+          : "opacity-0 pointer-events-none"
       }`}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       role="menu"
       aria-label="Producten navigatiemenu"
     >
-      <nav className="container mx-auto px-8 py-8" aria-label="Product categorieën en merken">
+      <nav className="container mx-auto px-8 py-12" aria-label="Product categorieën en merken">
         <div className="grid grid-cols-12 gap-8">
           
           {/* Column 1: Categories */}
@@ -129,7 +129,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
               )}
             </ul>
             
-            <div className="mt-6 pt-4 border-t border-zinc-800/50">
+            <div className="mt-6 pt-4 border-t border-white/10">
               <Link
                 href="/products"
                 className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-[#d0a760] transition-colors group"
@@ -162,7 +162,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
                     <li key={brand.id} role="none">
                       <Link
                         href={`/products?brand=${brand.slug}`}
-                        className="flex items-center gap-3 py-3 px-4 rounded-lg text-white/80 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 transition-all duration-200 group"
+                        className="flex items-center gap-3 py-3 px-4 rounded-lg text-white/80 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-200 group"
                         role="menuitem"
                         onClick={onClose}
                         data-testid={`megamenu-brand-${brand.slug}`}
@@ -179,7 +179,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
               )}
             </ul>
             
-            <div className="mt-6 pt-4 border-t border-zinc-800/50">
+            <div className="mt-6 pt-4 border-t border-white/10">
               <p className="text-xs text-white/40">
                 Officiële dealer van premium car audio merken
               </p>
@@ -195,7 +195,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
             
             <Link
               href="/apple-carplay-bmw"
-              className="group block relative overflow-hidden rounded-xl border border-zinc-800 hover:border-[#d0a760]/50 transition-all duration-300"
+              className="group block relative overflow-hidden rounded-xl border border-white/10 hover:border-[#d0a760]/50 transition-all duration-300"
               onClick={onClose}
               data-testid="megamenu-featured-bmw-carplay"
               role="menuitem"

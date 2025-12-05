@@ -142,7 +142,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
 
   return (
     <>
-      <header className={`fixed top-0 z-50 w-full transition-all duration-300 ${showSolidHeader ? 'bg-black/95 backdrop-blur-md border-b border-zinc-800' : 'bg-transparent border-transparent'}`}>
+      <header className={`fixed top-0 z-50 w-full transition-all duration-300 ${showSolidHeader ? 'bg-black/60 backdrop-blur-xl border-b border-white/10' : 'bg-transparent border-transparent'}`}>
         <div className="container flex h-16 items-center justify-between px-4 mx-auto">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 relative z-[60]" data-testid="link-home">

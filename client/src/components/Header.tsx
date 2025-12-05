@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { MegaMenu } from "@/components/MegaMenu";
 import logoUrl from "@assets/Caraudiolimburg-logo_1757008375383.png";
 import whiteLogoUrl from "@assets/CAL white_1758369495328.png";
+import type { Category, Brand } from "@shared/schema";
 import { 
   ShoppingCart,
   User,
@@ -16,7 +17,9 @@ import {
   Phone,
   MapPin,
   ArrowRight,
-  ChevronDown
+  ChevronDown,
+  Grid3X3,
+  Tag
 } from "lucide-react";
 
 interface HeaderProps {
@@ -28,8 +31,20 @@ interface HeaderProps {
 export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
+  const [categoriesExpanded, setCategoriesExpanded] = useState(false);
+  const [brandsExpanded, setBrandsExpanded] = useState(false);
   const megaMenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { isAuthenticated, user } = useAuth();
+
+  const { data: categories = [], isLoading: isLoadingCategories } = useQuery<Category[]>({
+    queryKey: ["/api/categories"],
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: brands = [], isLoading: isLoadingBrands } = useQuery<Brand[]>({
+    queryKey: ["/api/brands"],
+    staleTime: 5 * 60 * 1000,
+  });
 
   const handleMegaMenuEnter = () => {
     if (megaMenuTimeoutRef.current) {
@@ -99,6 +114,20 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
     { href: "/faq", label: "FAQ", highlight: false },
     { href: "/contact", label: "Contact", highlight: false },
   ];
+
+  const mobileMenuItems = [
+    { href: "/apple-carplay-bmw", label: "BMW/MINI CarPlay", highlight: true },
+    { href: "/studio", label: "Studio", highlight: false },
+    { href: "/about", label: "Over Ons", highlight: false },
+    { href: "/faq", label: "FAQ", highlight: false },
+    { href: "/contact", label: "Contact", highlight: false },
+  ];
+
+  const handleMobileMenuClose = () => {
+    setIsMenuOpen(false);
+    setCategoriesExpanded(false);
+    setBrandsExpanded(false);
+  };
 
   return (
     <>
@@ -251,25 +280,138 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
         </div>
 
         {/* Menu Content */}
-        <div className="relative h-full flex flex-col justify-between pt-24 pb-8 px-8">
+        <div className="relative h-full flex flex-col justify-between pt-24 pb-8 px-8 overflow-y-auto">
           {/* Navigation Links */}
-          <nav className="flex-1 flex flex-col justify-center">
-            <div className="space-y-2">
-              {menuItems.map((item, index) => (
+          <nav className="flex-1" aria-label="Mobiele navigatie">
+            <div className="space-y-1">
+              {/* Categories Accordion */}
+              <div 
+                className={`transition-all duration-500 ${isMenuOpen ? 'translate-x-0 opacity-100' : 'translate-x-8 opacity-0'}`}
+                style={{ transitionDelay: '150ms' }}
+              >
+                <button
+                  onClick={() => setCategoriesExpanded(!categoriesExpanded)}
+                  className="w-full flex items-center justify-between py-4 border-b border-white/10 group"
+                  aria-expanded={categoriesExpanded}
+                  aria-controls="mobile-categories-list"
+                  data-testid="mobile-accordion-categories"
+                >
+                  <div className="flex items-center gap-3">
+                    <Grid3X3 className="w-5 h-5 text-[#d0a760]" />
+                    <span className="text-2xl font-light tracking-wide text-white group-hover:text-[#d0a760] transition-colors">
+                      Shop Categorieën
+                    </span>
+                  </div>
+                  <ChevronDown 
+                    className={`w-5 h-5 text-white/60 transition-transform duration-300 ${categoriesExpanded ? 'rotate-180' : ''}`} 
+                  />
+                </button>
+                <div 
+                  id="mobile-categories-list"
+                  className={`overflow-hidden transition-all duration-300 ease-out ${categoriesExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
+                  role="region"
+                  aria-labelledby="mobile-accordion-categories"
+                >
+                  <div className="py-2 pl-8 space-y-1">
+                    {isLoadingCategories ? (
+                      [...Array(6)].map((_, i) => (
+                        <div key={i} className="py-2">
+                          <div className="h-5 w-32 bg-white/10 rounded animate-pulse" />
+                        </div>
+                      ))
+                    ) : (
+                      categories.map((category) => (
+                        <Link
+                          key={category.id}
+                          href={`/products?category=${category.slug}`}
+                          onClick={handleMobileMenuClose}
+                          className="block py-2.5 text-white/70 hover:text-[#d0a760] transition-colors text-lg"
+                          data-testid={`mobile-category-${category.slug}`}
+                        >
+                          {category.name}
+                        </Link>
+                      ))
+                    )}
+                    <Link
+                      href="/products"
+                      onClick={handleMobileMenuClose}
+                      className="block py-2.5 text-[#d0a760] hover:text-[#d0a760]/80 transition-colors text-lg font-medium"
+                      data-testid="mobile-all-products"
+                    >
+                      Alle producten →
+                    </Link>
+                  </div>
+                </div>
+              </div>
+
+              {/* Brands Accordion */}
+              <div 
+                className={`transition-all duration-500 ${isMenuOpen ? 'translate-x-0 opacity-100' : 'translate-x-8 opacity-0'}`}
+                style={{ transitionDelay: '225ms' }}
+              >
+                <button
+                  onClick={() => setBrandsExpanded(!brandsExpanded)}
+                  className="w-full flex items-center justify-between py-4 border-b border-white/10 group"
+                  aria-expanded={brandsExpanded}
+                  aria-controls="mobile-brands-list"
+                  data-testid="mobile-accordion-brands"
+                >
+                  <div className="flex items-center gap-3">
+                    <Tag className="w-5 h-5 text-[#d0a760]" />
+                    <span className="text-2xl font-light tracking-wide text-white group-hover:text-[#d0a760] transition-colors">
+                      Shop Merken
+                    </span>
+                  </div>
+                  <ChevronDown 
+                    className={`w-5 h-5 text-white/60 transition-transform duration-300 ${brandsExpanded ? 'rotate-180' : ''}`} 
+                  />
+                </button>
+                <div 
+                  id="mobile-brands-list"
+                  className={`overflow-hidden transition-all duration-300 ease-out ${brandsExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
+                  role="region"
+                  aria-labelledby="mobile-accordion-brands"
+                >
+                  <div className="py-2 pl-8 space-y-1">
+                    {isLoadingBrands ? (
+                      [...Array(6)].map((_, i) => (
+                        <div key={i} className="py-2">
+                          <div className="h-5 w-24 bg-white/10 rounded animate-pulse" />
+                        </div>
+                      ))
+                    ) : (
+                      brands.map((brand) => (
+                        <Link
+                          key={brand.id}
+                          href={`/products?brand=${brand.slug}`}
+                          onClick={handleMobileMenuClose}
+                          className="block py-2.5 text-white/70 hover:text-[#d0a760] transition-colors text-lg"
+                          data-testid={`mobile-brand-${brand.slug}`}
+                        >
+                          {brand.name}
+                        </Link>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Other Menu Items */}
+              {mobileMenuItems.map((item, index) => (
                 <Link 
                   key={item.href}
                   href={item.href}
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={handleMobileMenuClose}
                   data-testid={`mobile-nav-${item.href.slice(1)}`}
                 >
                   <div 
                     className={`group flex items-center justify-between py-4 border-b border-white/10 transition-all duration-500 ${isMenuOpen ? 'translate-x-0 opacity-100' : 'translate-x-8 opacity-0'}`}
-                    style={{ transitionDelay: `${150 + index * 75}ms` }}
+                    style={{ transitionDelay: `${300 + index * 75}ms` }}
                   >
-                    <span className={`text-3xl font-light tracking-wide transition-colors ${item.highlight ? 'text-[#d0a760]' : 'text-white group-hover:text-[#d0a760]'}`}>
+                    <span className={`text-2xl font-light tracking-wide transition-colors ${item.highlight ? 'text-[#d0a760]' : 'text-white group-hover:text-[#d0a760]'}`}>
                       {item.label}
                     </span>
-                    <ArrowRight className={`w-6 h-6 transition-all duration-300 ${item.highlight ? 'text-[#d0a760]' : 'text-white/40 group-hover:text-[#d0a760]'} group-hover:translate-x-2`} />
+                    <ArrowRight className={`w-5 h-5 transition-all duration-300 ${item.highlight ? 'text-[#d0a760]' : 'text-white/40 group-hover:text-[#d0a760]'} group-hover:translate-x-2`} />
                   </div>
                 </Link>
               ))}
@@ -278,18 +420,18 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
             {/* Account Section */}
             <div 
               className={`mt-8 pt-6 border-t border-white/20 transition-all duration-500 ${isMenuOpen ? 'translate-x-0 opacity-100' : 'translate-x-8 opacity-0'}`}
-              style={{ transitionDelay: '450ms' }}
+              style={{ transitionDelay: '600ms' }}
             >
               {isAuthenticated ? (
                 <div className="space-y-3">
-                  <Link href="/my-account" onClick={() => setIsMenuOpen(false)}>
+                  <Link href="/my-account" onClick={handleMobileMenuClose}>
                     <div className="flex items-center gap-3 text-white/70 hover:text-white transition-colors py-2">
                       <User className="w-5 h-5" />
                       <span className="text-lg">Mijn Account</span>
                     </div>
                   </Link>
                   {user?.role === 'admin' && (
-                    <Link href="/admin" onClick={() => setIsMenuOpen(false)}>
+                    <Link href="/admin" onClick={handleMobileMenuClose}>
                       <div className="flex items-center gap-3 text-white/70 hover:text-white transition-colors py-2">
                         <span className="text-lg">Admin Dashboard</span>
                       </div>
@@ -298,7 +440,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
                   <button 
                     onClick={() => {
                       window.location.href = '/api/auth/logout';
-                      setIsMenuOpen(false);
+                      handleMobileMenuClose();
                     }}
                     className="flex items-center gap-3 text-white/70 hover:text-white transition-colors py-2"
                   >
@@ -311,7 +453,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
                   className="w-full bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none py-6 text-lg font-medium"
                   onClick={() => {
                     window.location.href = '/login';
-                    setIsMenuOpen(false);
+                    handleMobileMenuClose();
                   }}
                 >
                   Inloggen / Registreren
@@ -323,7 +465,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
           {/* Footer Contact Info */}
           <div 
             className={`transition-all duration-500 ${isMenuOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
-            style={{ transitionDelay: '550ms' }}
+            style={{ transitionDelay: '700ms' }}
           >
             <div className="space-y-3 text-white/50 text-sm">
               <div className="flex items-center gap-3">

@@ -349,14 +349,21 @@ export default function Home() {
                   Je browser ondersteunt geen video.
                 </video>
                 
-                {/* Animated Equalizer Overlay */}
-                <div className="absolute bottom-4 right-4 flex items-end gap-1 p-3 bg-black/50 backdrop-blur-sm pointer-events-none">
-                  {[...Array(5)].map((_, i) => (
+                {/* Animated Equalizer Overlay - Logo Colors */}
+                <div className="absolute bottom-4 right-4 flex items-end gap-1 p-3 bg-black/60 backdrop-blur-sm pointer-events-none">
+                  {[
+                    { color: '#c9a227', height: 12 },
+                    { color: '#d4af37', height: 16 },
+                    { color: '#d0a760', height: 20 },
+                    { color: '#e8c87a', height: 24 },
+                    { color: '#f5dea3', height: 28 },
+                  ].map((bar, i) => (
                     <div
                       key={i}
-                      className="w-1.5 bg-[#d0a760] animate-audio-bar"
+                      className="w-1.5 animate-audio-bar"
                       style={{
-                        height: `${12 + i * 4}px`,
+                        height: `${bar.height}px`,
+                        background: `linear-gradient(to top, ${bar.color}, #f5dea3)`,
                         animationDelay: `${i * 0.12}s`,
                       }}
                     />

@@ -1194,6 +1194,141 @@ ${message || 'Geen aanvullende informatie'}`
     }
   });
 
+  // ============================================
+  // SITEMAP.XML - SEO Compliant (sitemaps.org)
+  // ============================================
+  
+  // Helper: Escape XML special characters
+  function escapeXml(str: string): string {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
+  }
+
+  // Helper: Normalize URL (no trailing slash, except for root)
+  function normalizeUrl(baseUrl: string, path: string): string {
+    const cleanPath = path.replace(/\/+$/, ''); // Remove trailing slashes
+    if (cleanPath === '' || cleanPath === '/') {
+      return baseUrl; // Root URL without trailing slash
+    }
+    return `${baseUrl}${cleanPath.startsWith('/') ? cleanPath : '/' + cleanPath}`;
+  }
+
+  // Helper: Generate sitemap XML
+  async function generateSitemapXml(baseUrl: string): Promise<string> {
+    const urls: Array<{ loc: string; lastmod?: string; changefreq?: string; priority?: string }> = [];
+
+    // Static pages (public, indexable)
+    const staticPages = [
+      { path: '/', priority: '1.0', changefreq: 'daily' },
+      { path: '/products', priority: '0.9', changefreq: 'daily' },
+      { path: '/shop', priority: '0.9', changefreq: 'daily' },
+      { path: '/studio', priority: '0.8', changefreq: 'weekly' },
+      { path: '/booking', priority: '0.8', changefreq: 'weekly' },
+      { path: '/about', priority: '0.7', changefreq: 'monthly' },
+      { path: '/faq', priority: '0.6', changefreq: 'monthly' },
+      { path: '/contact', priority: '0.7', changefreq: 'monthly' },
+      { path: '/apple-carplay-bmw', priority: '0.8', changefreq: 'weekly' },
+      { path: '/privacy', priority: '0.3', changefreq: 'yearly' },
+      { path: '/voorwaarden', priority: '0.3', changefreq: 'yearly' },
+    ];
+
+    // Add static pages
+    for (const page of staticPages) {
+      urls.push({
+        loc: normalizeUrl(baseUrl, page.path),
+        changefreq: page.changefreq,
+        priority: page.priority,
+      });
+    }
+
+    // Add dynamic product pages
+    try {
+      const products = await storage.getProducts({ limit: 50000 }); // Sitemap limit
+      for (const product of products) {
+        if (product.slug) {
+          urls.push({
+            loc: normalizeUrl(baseUrl, `/product/${product.slug}`),
+            changefreq: 'weekly',
+            priority: '0.7',
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Sitemap: Error fetching products:', error);
+    }
+
+    // Build XML
+    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+
+    for (const url of urls) {
+      xml += '  <url>\n';
+      xml += `    <loc>${escapeXml(url.loc)}</loc>\n`;
+      if (url.lastmod) {
+        xml += `    <lastmod>${escapeXml(url.lastmod)}</lastmod>\n`;
+      }
+      if (url.changefreq) {
+        xml += `    <changefreq>${escapeXml(url.changefreq)}</changefreq>\n`;
+      }
+      if (url.priority) {
+        xml += `    <priority>${escapeXml(url.priority)}</priority>\n`;
+      }
+      xml += '  </url>\n';
+    }
+
+    xml += '</urlset>';
+    return xml;
+  }
+
+  // Sitemap route
+  app.get('/sitemap.xml', async (req, res) => {
+    try {
+      // Always use HTTPS for sitemap URLs (required by Google)
+      const host = req.headers['x-forwarded-host'] || req.headers.host || 'caraudiolimburg.replit.app';
+      const baseUrl = process.env.BASE_URL || `https://${host}`;
+
+      const xml = await generateSitemapXml(baseUrl.replace(/\/+$/, '')); // Remove trailing slash from base
+
+      // Set correct headers for XML
+      res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+      res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
+      res.setHeader('X-Robots-Tag', 'noindex'); // Sitemap itself should not be indexed
+      
+      res.send(xml);
+    } catch (error) {
+      console.error('Sitemap generation error:', error);
+      res.status(500).setHeader('Content-Type', 'text/plain').send('Error generating sitemap');
+    }
+  });
+
+  // Robots.txt route
+  app.get('/robots.txt', (req, res) => {
+    // Always use HTTPS for sitemap reference
+    const host = req.headers['x-forwarded-host'] || req.headers.host || 'caraudiolimburg.replit.app';
+    const baseUrl = process.env.BASE_URL || `https://${host}`;
+
+    const robotsTxt = `User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+Disallow: /login
+Disallow: /my-account
+Disallow: /cart
+Disallow: /checkout
+Disallow: /order-confirmation
+
+Sitemap: ${baseUrl.replace(/\/+$/, '')}/sitemap.xml
+`;
+
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
+    res.send(robotsTxt);
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

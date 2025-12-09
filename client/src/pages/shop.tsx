@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Filter, X, ChevronDown, Grid, Car, Volume2, Settings, ChevronRight, LayoutGrid, List, SlidersHorizontal, Sparkles, ArrowLeft, ShoppingCart, Home as HomeIcon, Package } from "lucide-react";
+import { Search, Filter, X, ChevronDown, Grid, Car, Volume2, Settings, ChevronRight, LayoutGrid, List, SlidersHorizontal, ArrowLeft, ShoppingCart, Home as HomeIcon, Package } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { Product, Category, Brand, VehicleMake } from "@shared/schema";
@@ -431,7 +431,7 @@ export default function Shop() {
             {/* Desktop Hero Content */}
             <div className="hidden md:block text-center max-w-4xl mx-auto">
               <Badge className="bg-[#d0a760]/10 text-[#d0a760] border-[#d0a760]/20 px-4 py-1.5 mb-6 rounded-none">
-                <Sparkles className="w-3 h-3 mr-2" />
+                <Volume2 className="w-3 h-3 mr-2" />
                 Met passie geselecteerd voor jou
               </Badge>
               
@@ -467,101 +467,6 @@ export default function Shop() {
                 {sortedProducts.length} producten met passie geselecteerd
               </p>
             </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* Category Quick Filters - White Section */}
-      <section className="bg-white py-6 md:py-12">
-        <div className="container mx-auto px-0 md:px-4">
-          <ScrollReveal animation="fade-up">
-            {/* Mobile: Horizontal scrolling pills */}
-            <div className="md:hidden flex gap-2 overflow-x-auto px-4 pb-2 scrollbar-hide">
-              <button
-                onClick={() => setSelectedCategory("all-categories")}
-                className={`flex items-center gap-2 px-4 py-2 border whitespace-nowrap flex-shrink-0 transition-all active:scale-95 ${
-                  selectedCategory === 'all-categories'
-                    ? 'bg-black text-white border-black'
-                    : 'bg-white text-black border-zinc-200'
-                }`}
-                data-testid="mobile-category-all"
-              >
-                <Sparkles className="w-4 h-4" />
-                <span className="text-sm font-medium">Alles</span>
-              </button>
-              {[
-                { name: "Speakers", icon: <Volume2 className="w-4 h-4" />, key: "speaker" },
-                { name: "Versterkers", icon: <Settings className="w-4 h-4" />, key: "amplif" },
-                { name: "Head Units", icon: <Car className="w-4 h-4" />, key: "head" },
-                { name: "Accessoires", icon: <Grid className="w-4 h-4" />, key: "access" },
-              ].map((cat) => {
-                const isSelected = selectedCategory !== 'all-categories' && 
-                  categories?.find((c: Category) => c.id === selectedCategory)?.name.toLowerCase().includes(cat.key);
-                return (
-                  <button
-                    key={cat.name}
-                    onClick={() => {
-                      const matchingCategory = categories?.find((c: Category) => 
-                        c.name.toLowerCase().includes(cat.key)
-                      );
-                      if (matchingCategory) {
-                        setSelectedCategory(isSelected ? "all-categories" : matchingCategory.id);
-                      }
-                    }}
-                    className={`flex items-center gap-2 px-4 py-2 border whitespace-nowrap flex-shrink-0 transition-all active:scale-95 ${
-                      isSelected
-                        ? 'bg-black text-white border-black'
-                        : 'bg-white text-black border-zinc-200'
-                    }`}
-                    data-testid={`mobile-category-${cat.key}`}
-                  >
-                    <span className={isSelected ? 'text-[#d0a760]' : ''}>{cat.icon}</span>
-                    <span className="text-sm font-medium">{cat.name}</span>
-                  </button>
-                );
-              })}
-            </div>
-            
-            {/* Desktop: Grid cards */}
-            <StaggerContainer className="hidden md:grid grid-cols-2 md:grid-cols-4 gap-4 px-4">
-              {[
-                { name: "Speakers", icon: <Volume2 className="w-8 h-8" />, desc: "Kristalhelder geluid", key: "speaker" },
-                { name: "Versterkers", icon: <Settings className="w-8 h-8" />, desc: "Krachtig en zuiver", key: "amplif" },
-                { name: "Head Units", icon: <Car className="w-8 h-8" />, desc: "Slim entertainment", key: "head" },
-                { name: "Accessoires", icon: <Grid className="w-8 h-8" />, desc: "De finishing touch", key: "access" },
-              ].map((cat, idx) => (
-                <StaggerItem key={cat.name}>
-                  <button
-                    onClick={() => {
-                      const matchingCategory = categories?.find((c: Category) => 
-                        c.name.toLowerCase().includes(cat.key)
-                      );
-                      if (matchingCategory) {
-                        setSelectedCategory(matchingCategory.id);
-                      }
-                    }}
-                    className={`w-full p-6 border transition-all duration-300 group ${
-                      selectedCategory !== 'all-categories' && 
-                      categories?.find((c: Category) => c.id === selectedCategory)?.name.toLowerCase().includes(cat.key)
-                        ? 'bg-black text-white border-black'
-                        : 'bg-white text-black border-zinc-200 hover:border-[#d0a760] hover:bg-zinc-50'
-                    }`}
-                    data-testid={`category-${cat.key}`}
-                  >
-                    <div className={`mb-3 transition-colors ${
-                      selectedCategory !== 'all-categories' && 
-                      categories?.find((c: Category) => c.id === selectedCategory)?.name.toLowerCase().includes(cat.key)
-                        ? 'text-[#d0a760]'
-                        : 'text-black group-hover:text-[#d0a760]'
-                    }`}>
-                      {cat.icon}
-                    </div>
-                    <h3 className="font-semibold text-lg mb-1">{cat.name}</h3>
-                    <p className="text-sm opacity-60">{cat.desc}</p>
-                  </button>
-                </StaggerItem>
-              ))}
-            </StaggerContainer>
           </ScrollReveal>
         </div>
       </section>

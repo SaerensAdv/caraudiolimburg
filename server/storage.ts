@@ -12,6 +12,8 @@ import {
   quoteRequests,
   productVehicleCompatibility,
   wishlists,
+  blogPosts,
+  blogCategories,
   type User,
   type UpsertUser,
   type Product,
@@ -38,6 +40,10 @@ import {
   type Review,
   type InsertReview,
   type Wishlist,
+  type BlogPost,
+  type InsertBlogPost,
+  type BlogCategory,
+  type InsertBlogCategory,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, or, desc, asc, like, inArray } from "drizzle-orm";
@@ -136,6 +142,31 @@ export interface IStorage {
   addToWishlist(userId: string, productId: string): Promise<Wishlist>;
   removeFromWishlist(userId: string, productId: string): Promise<void>;
   isInWishlist(userId: string, productId: string): Promise<boolean>;
+
+  // Blog category operations
+  getBlogCategories(): Promise<BlogCategory[]>;
+  getBlogCategory(id: string): Promise<BlogCategory | undefined>;
+  getBlogCategoryBySlug(slug: string): Promise<BlogCategory | undefined>;
+  createBlogCategory(category: InsertBlogCategory): Promise<BlogCategory>;
+  updateBlogCategory(id: string, updates: Partial<InsertBlogCategory>): Promise<BlogCategory>;
+  deleteBlogCategory(id: string): Promise<void>;
+
+  // Blog post operations
+  getBlogPosts(options?: {
+    categoryId?: string;
+    status?: "draft" | "published";
+    featured?: boolean;
+    search?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<BlogPost[]>;
+  getBlogPost(id: string): Promise<BlogPost | undefined>;
+  getBlogPostBySlug(slug: string): Promise<BlogPost | undefined>;
+  createBlogPost(post: InsertBlogPost): Promise<BlogPost>;
+  updateBlogPost(id: string, updates: Partial<InsertBlogPost>): Promise<BlogPost>;
+  deleteBlogPost(id: string): Promise<void>;
+  incrementBlogPostViews(id: string): Promise<void>;
+  getPublishedBlogPostsForSitemap(): Promise<{ slug: string; updatedAt: Date | null }[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -663,6 +694,132 @@ export class DatabaseStorage implements IStorage {
       .from(wishlists)
       .where(and(eq(wishlists.userId, userId), eq(wishlists.productId, productId)));
     return !!result;
+  }
+
+  // Blog category operations
+  async getBlogCategories(): Promise<BlogCategory[]> {
+    return await db.select().from(blogCategories).orderBy(asc(blogCategories.name));
+  }
+
+  async getBlogCategory(id: string): Promise<BlogCategory | undefined> {
+    const [category] = await db.select().from(blogCategories).where(eq(blogCategories.id, id));
+    return category;
+  }
+
+  async getBlogCategoryBySlug(slug: string): Promise<BlogCategory | undefined> {
+    const [category] = await db.select().from(blogCategories).where(eq(blogCategories.slug, slug));
+    return category;
+  }
+
+  async createBlogCategory(category: InsertBlogCategory): Promise<BlogCategory> {
+    const [newCategory] = await db.insert(blogCategories).values(category).returning();
+    return newCategory;
+  }
+
+  async updateBlogCategory(id: string, updates: Partial<InsertBlogCategory>): Promise<BlogCategory> {
+    const [updated] = await db
+      .update(blogCategories)
+      .set(updates)
+      .where(eq(blogCategories.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteBlogCategory(id: string): Promise<void> {
+    await db.delete(blogCategories).where(eq(blogCategories.id, id));
+  }
+
+  // Blog post operations
+  async getBlogPosts(options: {
+    categoryId?: string;
+    status?: "draft" | "published";
+    featured?: boolean;
+    search?: string;
+    limit?: number;
+    offset?: number;
+  } = {}): Promise<BlogPost[]> {
+    const conditions = [];
+    
+    if (options.categoryId) {
+      conditions.push(eq(blogPosts.categoryId, options.categoryId));
+    }
+    if (options.status) {
+      conditions.push(eq(blogPosts.status, options.status));
+    }
+    if (options.featured !== undefined) {
+      conditions.push(eq(blogPosts.isFeatured, options.featured));
+    }
+    if (options.search) {
+      conditions.push(
+        or(
+          like(blogPosts.title, `%${options.search}%`),
+          like(blogPosts.excerpt, `%${options.search}%`)
+        )
+      );
+    }
+
+    let query = db.select().from(blogPosts);
+    
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions)) as typeof query;
+    }
+    
+    query = query.orderBy(desc(blogPosts.publishedAt), desc(blogPosts.createdAt)) as typeof query;
+    
+    if (options.limit) {
+      query = query.limit(options.limit) as typeof query;
+    }
+    if (options.offset) {
+      query = query.offset(options.offset) as typeof query;
+    }
+
+    return await query;
+  }
+
+  async getBlogPost(id: string): Promise<BlogPost | undefined> {
+    const [post] = await db.select().from(blogPosts).where(eq(blogPosts.id, id));
+    return post;
+  }
+
+  async getBlogPostBySlug(slug: string): Promise<BlogPost | undefined> {
+    const [post] = await db.select().from(blogPosts).where(eq(blogPosts.slug, slug));
+    return post;
+  }
+
+  async createBlogPost(post: InsertBlogPost): Promise<BlogPost> {
+    const [newPost] = await db.insert(blogPosts).values(post).returning();
+    return newPost;
+  }
+
+  async updateBlogPost(id: string, updates: Partial<InsertBlogPost>): Promise<BlogPost> {
+    const [updated] = await db
+      .update(blogPosts)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(blogPosts.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteBlogPost(id: string): Promise<void> {
+    await db.delete(blogPosts).where(eq(blogPosts.id, id));
+  }
+
+  async incrementBlogPostViews(id: string): Promise<void> {
+    const post = await this.getBlogPost(id);
+    if (post) {
+      await db
+        .update(blogPosts)
+        .set({ viewCount: (post.viewCount || 0) + 1 })
+        .where(eq(blogPosts.id, id));
+    }
+  }
+
+  async getPublishedBlogPostsForSitemap(): Promise<{ slug: string; updatedAt: Date | null }[]> {
+    return await db
+      .select({ slug: blogPosts.slug, updatedAt: blogPosts.updatedAt })
+      .from(blogPosts)
+      .where(eq(blogPosts.status, "published"))
+      .orderBy(desc(blogPosts.publishedAt));
   }
 }
 

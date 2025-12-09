@@ -65,7 +65,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { nl } from "date-fns/locale";
-import type { Product, Order, Booking, QuoteRequest, User } from "@shared/schema";
+import type { Product, Order, Booking, QuoteRequest, User, BlogPost, BlogCategory } from "@shared/schema";
 import { Link } from "wouter";
 
 import logoImage from "@assets/CAL white_1758369495328.png";
@@ -81,7 +81,7 @@ const productFormSchema = insertProductSchema.extend({
 
 type ProductFormData = z.infer<typeof productFormSchema>;
 
-type AdminSection = 'dashboard' | 'products' | 'orders' | 'bookings' | 'quotes' | 'users';
+type AdminSection = 'dashboard' | 'products' | 'orders' | 'bookings' | 'quotes' | 'users' | 'blog';
 
 export default function Admin() {
   const [activeSection, setActiveSection] = useState<AdminSection>('dashboard');
@@ -155,6 +155,39 @@ export default function Admin() {
     queryKey: ["/api/admin/users"],
     enabled: isAuthenticated && user?.role === 'admin',
   });
+
+  // Blog queries
+  const { data: blogPosts = [], isLoading: isLoadingBlogPosts } = useQuery<BlogPost[]>({
+    queryKey: ["/api/admin/blog/posts"],
+    enabled: isAuthenticated && user?.role === 'admin',
+  });
+
+  const { data: blogCategories = [] } = useQuery<BlogCategory[]>({
+    queryKey: ["/api/blog/categories"],
+    enabled: isAuthenticated && user?.role === 'admin',
+  });
+
+  // Blog state
+  const [isBlogPostDialogOpen, setIsBlogPostDialogOpen] = useState(false);
+  const [selectedBlogPost, setSelectedBlogPost] = useState<BlogPost | null>(null);
+  const [isBlogCategoryDialogOpen, setIsBlogCategoryDialogOpen] = useState(false);
+  const [selectedBlogCategory, setSelectedBlogCategory] = useState<BlogCategory | null>(null);
+  
+  // Blog post form state
+  const [blogPostTitle, setBlogPostTitle] = useState('');
+  const [blogPostSlug, setBlogPostSlug] = useState('');
+  const [blogPostExcerpt, setBlogPostExcerpt] = useState('');
+  const [blogPostContent, setBlogPostContent] = useState('');
+  const [blogPostFeaturedImage, setBlogPostFeaturedImage] = useState('');
+  const [blogPostMetaDescription, setBlogPostMetaDescription] = useState('');
+  const [blogPostCategoryId, setBlogPostCategoryId] = useState('');
+  const [blogPostStatus, setBlogPostStatus] = useState<'draft' | 'published'>('draft');
+  const [blogPostIsFeatured, setBlogPostIsFeatured] = useState(false);
+  
+  // Blog category form state
+  const [blogCategoryName, setBlogCategoryName] = useState('');
+  const [blogCategorySlug, setBlogCategorySlug] = useState('');
+  const [blogCategoryDescription, setBlogCategoryDescription] = useState('');
 
   const createProductMutation = useMutation({
     mutationFn: async (data: ProductFormData) => {
@@ -360,6 +393,281 @@ export default function Admin() {
     },
   });
 
+  // Blog post mutations
+  const createBlogPostMutation = useMutation({
+    mutationFn: async (data: any) => {
+      await apiRequest("POST", "/api/admin/blog/posts", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/blog/posts"] });
+      toast({
+        title: "Blogpost aangemaakt",
+        description: "De blogpost is succesvol toegevoegd.",
+      });
+      resetBlogPostForm();
+      setIsBlogPostDialogOpen(false);
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Geen toegang",
+          description: "Je hebt geen toegang tot deze functie.",
+          variant: "destructive",
+        });
+        return;
+      }
+      toast({
+        title: "Fout",
+        description: "Kon blogpost niet aanmaken.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateBlogPostMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: any }) => {
+      await apiRequest("PATCH", `/api/admin/blog/posts/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/blog/posts"] });
+      toast({
+        title: "Blogpost bijgewerkt",
+        description: "De blogpost is succesvol gewijzigd.",
+      });
+      resetBlogPostForm();
+      setIsBlogPostDialogOpen(false);
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Geen toegang",
+          description: "Je hebt geen toegang tot deze functie.",
+          variant: "destructive",
+        });
+        return;
+      }
+      toast({
+        title: "Fout",
+        description: "Kon blogpost niet bijwerken.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteBlogPostMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await apiRequest("DELETE", `/api/admin/blog/posts/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/blog/posts"] });
+      toast({
+        title: "Blogpost verwijderd",
+        description: "De blogpost is succesvol verwijderd.",
+      });
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Geen toegang",
+          description: "Je hebt geen toegang tot deze functie.",
+          variant: "destructive",
+        });
+        return;
+      }
+      toast({
+        title: "Fout",
+        description: "Kon blogpost niet verwijderen.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Blog category mutations
+  const createBlogCategoryMutation = useMutation({
+    mutationFn: async (data: any) => {
+      await apiRequest("POST", "/api/admin/blog/categories", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/blog/categories"] });
+      toast({
+        title: "Categorie aangemaakt",
+        description: "De blog categorie is succesvol toegevoegd.",
+      });
+      resetBlogCategoryForm();
+      setIsBlogCategoryDialogOpen(false);
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Geen toegang",
+          description: "Je hebt geen toegang tot deze functie.",
+          variant: "destructive",
+        });
+        return;
+      }
+      toast({
+        title: "Fout",
+        description: "Kon categorie niet aanmaken.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateBlogCategoryMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: any }) => {
+      await apiRequest("PATCH", `/api/admin/blog/categories/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/blog/categories"] });
+      toast({
+        title: "Categorie bijgewerkt",
+        description: "De blog categorie is succesvol gewijzigd.",
+      });
+      resetBlogCategoryForm();
+      setIsBlogCategoryDialogOpen(false);
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Geen toegang",
+          description: "Je hebt geen toegang tot deze functie.",
+          variant: "destructive",
+        });
+        return;
+      }
+      toast({
+        title: "Fout",
+        description: "Kon categorie niet bijwerken.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteBlogCategoryMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await apiRequest("DELETE", `/api/admin/blog/categories/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/blog/categories"] });
+      toast({
+        title: "Categorie verwijderd",
+        description: "De blog categorie is succesvol verwijderd.",
+      });
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Geen toegang",
+          description: "Je hebt geen toegang tot deze functie.",
+          variant: "destructive",
+        });
+        return;
+      }
+      toast({
+        title: "Fout",
+        description: "Kon categorie niet verwijderen.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Blog helper functions
+  const resetBlogPostForm = () => {
+    setBlogPostTitle('');
+    setBlogPostSlug('');
+    setBlogPostExcerpt('');
+    setBlogPostContent('');
+    setBlogPostFeaturedImage('');
+    setBlogPostMetaDescription('');
+    setBlogPostCategoryId('');
+    setBlogPostStatus('draft');
+    setBlogPostIsFeatured(false);
+    setSelectedBlogPost(null);
+  };
+
+  const resetBlogCategoryForm = () => {
+    setBlogCategoryName('');
+    setBlogCategorySlug('');
+    setBlogCategoryDescription('');
+    setSelectedBlogCategory(null);
+  };
+
+  const generateSlug = (title: string) => {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+  };
+
+  const handleEditBlogPost = (post: BlogPost) => {
+    setSelectedBlogPost(post);
+    setBlogPostTitle(post.title);
+    setBlogPostSlug(post.slug);
+    setBlogPostExcerpt(post.excerpt || '');
+    setBlogPostContent(post.content);
+    setBlogPostFeaturedImage(post.featuredImage || '');
+    setBlogPostMetaDescription(post.metaDescription || '');
+    setBlogPostCategoryId(post.categoryId || '');
+    setBlogPostStatus(post.status || 'draft');
+    setBlogPostIsFeatured(post.isFeatured || false);
+    setIsBlogPostDialogOpen(true);
+  };
+
+  const handleDeleteBlogPost = (post: BlogPost) => {
+    if (window.confirm(`Weet je zeker dat je "${post.title}" wilt verwijderen?`)) {
+      deleteBlogPostMutation.mutate(post.id);
+    }
+  };
+
+  const handleEditBlogCategory = (category: BlogCategory) => {
+    setSelectedBlogCategory(category);
+    setBlogCategoryName(category.name);
+    setBlogCategorySlug(category.slug);
+    setBlogCategoryDescription(category.description || '');
+    setIsBlogCategoryDialogOpen(true);
+  };
+
+  const handleDeleteBlogCategory = (category: BlogCategory) => {
+    if (window.confirm(`Weet je zeker dat je de categorie "${category.name}" wilt verwijderen?`)) {
+      deleteBlogCategoryMutation.mutate(category.id);
+    }
+  };
+
+  const handleSaveBlogPost = () => {
+    const postData = {
+      title: blogPostTitle,
+      slug: blogPostSlug || generateSlug(blogPostTitle),
+      excerpt: blogPostExcerpt || null,
+      content: blogPostContent,
+      featuredImage: blogPostFeaturedImage || null,
+      metaDescription: blogPostMetaDescription || null,
+      categoryId: blogPostCategoryId || null,
+      status: blogPostStatus,
+      isFeatured: blogPostIsFeatured,
+      publishedAt: blogPostStatus === 'published' ? new Date().toISOString() : null,
+    };
+
+    if (selectedBlogPost) {
+      updateBlogPostMutation.mutate({ id: selectedBlogPost.id, data: postData });
+    } else {
+      createBlogPostMutation.mutate(postData);
+    }
+  };
+
+  const handleSaveBlogCategory = () => {
+    const categoryData = {
+      name: blogCategoryName,
+      slug: blogCategorySlug || generateSlug(blogCategoryName),
+      description: blogCategoryDescription || null,
+    };
+
+    if (selectedBlogCategory) {
+      updateBlogCategoryMutation.mutate({ id: selectedBlogCategory.id, data: categoryData });
+    } else {
+      createBlogCategoryMutation.mutate(categoryData);
+    }
+  };
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -516,6 +824,7 @@ export default function Admin() {
     { id: 'bookings' as AdminSection, label: 'Afspraken', icon: Calendar },
     { id: 'quotes' as AdminSection, label: 'Offertes', icon: FileText },
     { id: 'users' as AdminSection, label: 'Gebruikers', icon: Users },
+    { id: 'blog' as AdminSection, label: 'Blog', icon: FileText },
   ];
 
   return (
@@ -1951,6 +2260,500 @@ export default function Admin() {
                       </div>
                       <p className="text-xs text-zinc-500">
                         Geregistreerd: {user.createdAt ? format(new Date(user.createdAt), "dd MMM yyyy", { locale: nl }) : "-"}
+                      </p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Blog Section */}
+          {activeSection === 'blog' && (
+            <div className="space-y-6">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                  <h1 className="text-2xl md:text-3xl font-bold text-white mb-2" data-testid="text-blog-title">
+                    Blog Beheer
+                  </h1>
+                  <p className="text-zinc-400">Beheer blogposts en categorieën</p>
+                </div>
+
+                <div className="flex gap-2">
+                  {/* Blog Category Dialog */}
+                  <Dialog open={isBlogCategoryDialogOpen} onOpenChange={(open) => {
+                    setIsBlogCategoryDialogOpen(open);
+                    if (!open) resetBlogCategoryForm();
+                  }}>
+                    <DialogTrigger asChild>
+                      <Button 
+                        variant="outline"
+                        className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white rounded-none"
+                        data-testid="button-add-category"
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Categorie
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-lg bg-zinc-900 border-zinc-700 rounded-none">
+                      <DialogHeader>
+                        <DialogTitle className="text-white text-xl">
+                          {selectedBlogCategory ? "Categorie Bewerken" : "Nieuwe Categorie"}
+                        </DialogTitle>
+                      </DialogHeader>
+                      
+                      <div className="space-y-4 py-4">
+                        <div>
+                          <Label className="text-zinc-300">Naam</Label>
+                          <Input
+                            value={blogCategoryName}
+                            onChange={(e) => {
+                              setBlogCategoryName(e.target.value);
+                              if (!selectedBlogCategory) {
+                                setBlogCategorySlug(generateSlug(e.target.value));
+                              }
+                            }}
+                            placeholder="Categorie naam"
+                            className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                            data-testid="input-category-name"
+                          />
+                        </div>
+
+                        <div>
+                          <Label className="text-zinc-300">Slug</Label>
+                          <Input
+                            value={blogCategorySlug}
+                            onChange={(e) => setBlogCategorySlug(e.target.value)}
+                            placeholder="categorie-slug"
+                            className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                            data-testid="input-category-slug"
+                          />
+                        </div>
+
+                        <div>
+                          <Label className="text-zinc-300">Beschrijving</Label>
+                          <Textarea
+                            value={blogCategoryDescription}
+                            onChange={(e) => setBlogCategoryDescription(e.target.value)}
+                            placeholder="Korte beschrijving van de categorie"
+                            rows={3}
+                            className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                            data-testid="input-category-description"
+                          />
+                        </div>
+
+                        <div className="flex justify-end gap-3 pt-4">
+                          <Button 
+                            type="button" 
+                            variant="outline"
+                            onClick={() => {
+                              setIsBlogCategoryDialogOpen(false);
+                              resetBlogCategoryForm();
+                            }}
+                            className="bg-transparent border-zinc-600 text-zinc-300 hover:bg-zinc-800 rounded-none"
+                            data-testid="button-cancel-category"
+                          >
+                            Annuleren
+                          </Button>
+                          <Button 
+                            onClick={handleSaveBlogCategory}
+                            disabled={createBlogCategoryMutation.isPending || updateBlogCategoryMutation.isPending || !blogCategoryName}
+                            className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"
+                            data-testid="button-save-category"
+                          >
+                            {(createBlogCategoryMutation.isPending || updateBlogCategoryMutation.isPending) 
+                              ? "Opslaan..."
+                              : (selectedBlogCategory ? "Bijwerken" : "Opslaan")
+                            }
+                          </Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+
+                  {/* Blog Post Dialog */}
+                  <Dialog open={isBlogPostDialogOpen} onOpenChange={(open) => {
+                    setIsBlogPostDialogOpen(open);
+                    if (!open) resetBlogPostForm();
+                  }}>
+                    <DialogTrigger asChild>
+                      <Button 
+                        className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"
+                        data-testid="button-add-blogpost"
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Nieuwe Blogpost
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-zinc-900 border-zinc-700 rounded-none">
+                      <DialogHeader>
+                        <DialogTitle className="text-white text-xl">
+                          {selectedBlogPost ? "Blogpost Bewerken" : "Nieuwe Blogpost"}
+                        </DialogTitle>
+                      </DialogHeader>
+                      
+                      <div className="space-y-6 py-4">
+                        {/* Title & Slug */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <Label className="text-zinc-300">Titel</Label>
+                            <Input
+                              value={blogPostTitle}
+                              onChange={(e) => {
+                                setBlogPostTitle(e.target.value);
+                                if (!selectedBlogPost) {
+                                  setBlogPostSlug(generateSlug(e.target.value));
+                                }
+                              }}
+                              placeholder="Blogpost titel"
+                              className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                              data-testid="input-blogpost-title"
+                            />
+                          </div>
+                          
+                          <div>
+                            <Label className="text-zinc-300">Slug</Label>
+                            <Input
+                              value={blogPostSlug}
+                              onChange={(e) => setBlogPostSlug(e.target.value)}
+                              placeholder="blogpost-slug"
+                              className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                              data-testid="input-blogpost-slug"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Excerpt */}
+                        <div>
+                          <Label className="text-zinc-300">Samenvatting (Excerpt)</Label>
+                          <Textarea
+                            value={blogPostExcerpt}
+                            onChange={(e) => setBlogPostExcerpt(e.target.value)}
+                            placeholder="Korte samenvatting van het artikel..."
+                            rows={2}
+                            className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                            data-testid="input-blogpost-excerpt"
+                          />
+                        </div>
+
+                        {/* Content */}
+                        <div>
+                          <Label className="text-zinc-300">Inhoud</Label>
+                          <Textarea
+                            value={blogPostContent}
+                            onChange={(e) => setBlogPostContent(e.target.value)}
+                            placeholder="Volledige artikelinhoud..."
+                            rows={12}
+                            className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                            data-testid="input-blogpost-content"
+                          />
+                        </div>
+
+                        {/* Featured Image & Meta Description */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <Label className="text-zinc-300">Uitgelichte Afbeelding URL</Label>
+                            <Input
+                              value={blogPostFeaturedImage}
+                              onChange={(e) => setBlogPostFeaturedImage(e.target.value)}
+                              placeholder="https://..."
+                              className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                              data-testid="input-blogpost-image"
+                            />
+                          </div>
+                          
+                          <div>
+                            <Label className="text-zinc-300">Meta Beschrijving (SEO)</Label>
+                            <Input
+                              value={blogPostMetaDescription}
+                              onChange={(e) => setBlogPostMetaDescription(e.target.value)}
+                              placeholder="SEO meta beschrijving..."
+                              className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                              data-testid="input-blogpost-meta"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Category & Status */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                            <Label className="text-zinc-300">Categorie</Label>
+                            <Select value={blogPostCategoryId} onValueChange={setBlogPostCategoryId}>
+                              <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white rounded-none" data-testid="select-blogpost-category">
+                                <SelectValue placeholder="Selecteer categorie" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-zinc-800 border-zinc-700">
+                                {blogCategories?.map((category) => (
+                                  <SelectItem key={category.id} value={category.id} className="text-white hover:bg-zinc-700">
+                                    {category.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          
+                          <div>
+                            <Label className="text-zinc-300">Status</Label>
+                            <Select value={blogPostStatus} onValueChange={(value: 'draft' | 'published') => setBlogPostStatus(value)}>
+                              <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white rounded-none" data-testid="select-blogpost-status">
+                                <SelectValue placeholder="Selecteer status" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-zinc-800 border-zinc-700">
+                                <SelectItem value="draft" className="text-white hover:bg-zinc-700">Concept</SelectItem>
+                                <SelectItem value="published" className="text-white hover:bg-zinc-700">Gepubliceerd</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+
+                        {/* Featured Toggle */}
+                        <div className="flex items-center justify-between p-4 bg-zinc-800">
+                          <div>
+                            <Label className="text-white">Uitgelicht artikel</Label>
+                            <p className="text-sm text-zinc-400">Toon op homepage of in uitgelichte sectie</p>
+                          </div>
+                          <Switch
+                            checked={blogPostIsFeatured}
+                            onCheckedChange={setBlogPostIsFeatured}
+                            data-testid="switch-blogpost-featured"
+                          />
+                        </div>
+
+                        <Separator className="bg-zinc-700" />
+
+                        <div className="flex justify-end gap-3 pt-4">
+                          <Button 
+                            type="button" 
+                            variant="outline"
+                            onClick={() => {
+                              setIsBlogPostDialogOpen(false);
+                              resetBlogPostForm();
+                            }}
+                            className="bg-transparent border-zinc-600 text-zinc-300 hover:bg-zinc-800 rounded-none"
+                            data-testid="button-cancel-blogpost"
+                          >
+                            Annuleren
+                          </Button>
+                          <Button 
+                            onClick={handleSaveBlogPost}
+                            disabled={createBlogPostMutation.isPending || updateBlogPostMutation.isPending || !blogPostTitle || !blogPostContent}
+                            className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"
+                            data-testid="button-save-blogpost"
+                          >
+                            {(createBlogPostMutation.isPending || updateBlogPostMutation.isPending) 
+                              ? "Opslaan..."
+                              : (selectedBlogPost ? "Bijwerken" : "Opslaan")
+                            }
+                          </Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </div>
+
+              {/* Blog Categories Section */}
+              <div className="bg-zinc-900 border border-zinc-800 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-white">Categorieën</h3>
+                  <Badge className="bg-zinc-800 text-zinc-300 rounded-none">
+                    {blogCategories.length} categorieën
+                  </Badge>
+                </div>
+                
+                {blogCategories.length === 0 ? (
+                  <p className="text-zinc-500 text-center py-4">Nog geen categorieën toegevoegd</p>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    {blogCategories.map((category) => (
+                      <div 
+                        key={category.id} 
+                        className="flex items-center gap-2 bg-zinc-800 border border-zinc-700 px-3 py-2"
+                        data-testid={`category-item-${category.id}`}
+                      >
+                        <span className="text-white">{category.name}</span>
+                        <button
+                          onClick={() => handleEditBlogCategory(category)}
+                          className="text-zinc-400 hover:text-[#d0a760]"
+                          data-testid={`button-edit-category-${category.id}`}
+                        >
+                          <Edit className="w-3 h-3" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteBlogCategory(category)}
+                          className="text-zinc-400 hover:text-red-400"
+                          data-testid={`button-delete-category-${category.id}`}
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Blog Posts Table - Desktop */}
+              <div className="hidden md:block bg-zinc-900 border border-zinc-800 overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-zinc-800 hover:bg-transparent">
+                      <TableHead className="text-[#d0a760] font-semibold">Titel</TableHead>
+                      <TableHead className="text-[#d0a760] font-semibold">Status</TableHead>
+                      <TableHead className="text-[#d0a760] font-semibold">Categorie</TableHead>
+                      <TableHead className="text-[#d0a760] font-semibold">Publicatiedatum</TableHead>
+                      <TableHead className="text-[#d0a760] font-semibold">Weergaven</TableHead>
+                      <TableHead className="text-[#d0a760] font-semibold text-right">Acties</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {isLoadingBlogPosts ? (
+                      [...Array(5)].map((_, i) => (
+                        <TableRow key={i} className="border-zinc-800">
+                          {[...Array(6)].map((_, j) => (
+                            <TableCell key={j}><div className="h-4 bg-zinc-800 animate-pulse"></div></TableCell>
+                          ))}
+                        </TableRow>
+                      ))
+                    ) : blogPosts?.length === 0 ? (
+                      <TableRow className="border-zinc-800">
+                        <TableCell colSpan={6} className="text-center text-zinc-500 py-12">
+                          <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                          <p>Nog geen blogposts</p>
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      blogPosts?.map((post: BlogPost) => (
+                        <TableRow key={post.id} className="border-zinc-800 hover:bg-zinc-800/50" data-testid={`blogpost-row-${post.id}`}>
+                          <TableCell>
+                            <div className="flex items-center gap-3">
+                              {post.featuredImage && (
+                                <img 
+                                  src={post.featuredImage} 
+                                  alt={post.title}
+                                  className="w-10 h-10 object-cover border border-zinc-700"
+                                />
+                              )}
+                              <div>
+                                <p className="font-medium text-white">{post.title}</p>
+                                {post.isFeatured && (
+                                  <Badge className="bg-[#d0a760]/20 text-[#d0a760] rounded-none text-xs mt-1">
+                                    Uitgelicht
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge className={`rounded-none ${post.status === 'published' 
+                              ? 'bg-green-500/20 text-green-400' 
+                              : 'bg-yellow-500/20 text-yellow-400'}`}
+                            >
+                              {post.status === 'published' ? 'Gepubliceerd' : 'Concept'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-zinc-300">
+                            {blogCategories.find(c => c.id === post.categoryId)?.name || '-'}
+                          </TableCell>
+                          <TableCell className="text-zinc-400">
+                            {post.publishedAt ? format(new Date(post.publishedAt), "dd MMM yyyy", { locale: nl }) : "-"}
+                          </TableCell>
+                          <TableCell className="text-zinc-300">
+                            <div className="flex items-center gap-1">
+                              <Eye className="w-4 h-4 text-zinc-500" />
+                              {post.viewCount || 0}
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => handleEditBlogPost(post)}
+                                className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-[#d0a760] rounded-none"
+                                data-testid={`button-edit-blogpost-${post.id}`}
+                              >
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => handleDeleteBlogPost(post)}
+                                disabled={deleteBlogPostMutation.isPending}
+                                className="bg-transparent border-zinc-700 text-red-400 hover:bg-red-500/10 hover:border-red-500/50 rounded-none"
+                                data-testid={`button-delete-blogpost-${post.id}`}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Blog Posts Cards - Mobile */}
+              <div className="md:hidden space-y-3">
+                {isLoadingBlogPosts ? (
+                  [...Array(3)].map((_, i) => (
+                    <div key={i} className="bg-zinc-900 border border-zinc-800 p-4 animate-pulse">
+                      <div className="h-5 bg-zinc-800 w-3/4 mb-2"></div>
+                      <div className="h-4 bg-zinc-800 w-1/2"></div>
+                    </div>
+                  ))
+                ) : blogPosts?.length === 0 ? (
+                  <div className="bg-zinc-900 border border-zinc-800 p-8 text-center">
+                    <FileText className="w-12 h-12 mx-auto mb-4 text-zinc-600" />
+                    <p className="text-zinc-500">Nog geen blogposts</p>
+                  </div>
+                ) : (
+                  blogPosts?.map((post: BlogPost) => (
+                    <div key={post.id} className="bg-zinc-900 border border-zinc-800 p-4" data-testid={`blogpost-card-${post.id}`}>
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex-1">
+                          <h3 className="font-medium text-white">{post.title}</h3>
+                          <div className="flex gap-2 mt-1">
+                            <Badge className={`rounded-none text-xs ${post.status === 'published' 
+                              ? 'bg-green-500/20 text-green-400' 
+                              : 'bg-yellow-500/20 text-yellow-400'}`}
+                            >
+                              {post.status === 'published' ? 'Gepubliceerd' : 'Concept'}
+                            </Badge>
+                            {post.isFeatured && (
+                              <Badge className="bg-[#d0a760]/20 text-[#d0a760] rounded-none text-xs">
+                                Uitgelicht
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex gap-1">
+                          <Button 
+                            size="sm" 
+                            variant="ghost"
+                            onClick={() => handleEditBlogPost(post)}
+                            className="h-8 w-8 p-0 text-zinc-400 hover:text-[#d0a760]"
+                            data-testid={`button-edit-blogpost-mobile-${post.id}`}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="ghost"
+                            onClick={() => handleDeleteBlogPost(post)}
+                            className="h-8 w-8 p-0 text-zinc-400 hover:text-red-400"
+                            data-testid={`button-delete-blogpost-mobile-${post.id}`}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      <p className="text-sm text-zinc-400">
+                        {blogCategories.find(c => c.id === post.categoryId)?.name || 'Geen categorie'} • 
+                        {post.viewCount || 0} weergaven
+                      </p>
+                      <p className="text-xs text-zinc-500 mt-1">
+                        {post.publishedAt ? format(new Date(post.publishedAt), "dd MMM yyyy", { locale: nl }) : "Niet gepubliceerd"}
                       </p>
                     </div>
                   ))

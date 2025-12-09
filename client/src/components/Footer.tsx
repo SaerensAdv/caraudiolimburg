@@ -54,6 +54,7 @@ export function Footer() {
             <ul className="space-y-3 text-sm">
               <li><Link href="/studio" className="text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-block hover:translate-x-1" data-testid="footer-link-studio">Inbouwstudio</Link></li>
               <li><Link href="/apple-carplay-bmw" className="text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-block hover:translate-x-1" data-testid="footer-link-carplay">BMW/MINI CarPlay</Link></li>
+              <li><Link href="/blog" className="text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-block hover:translate-x-1" data-testid="footer-link-blog">Kenniscentrum</Link></li>
               <li><Link href="/faq" className="text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-block hover:translate-x-1" data-testid="footer-link-faq">Veelgestelde Vragen</Link></li>
               <li><Link href="/about" className="text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-block hover:translate-x-1" data-testid="footer-link-about">Over Ons</Link></li>
               <li><Link href="/contact" className="text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-block hover:translate-x-1" data-testid="footer-link-quote">Offerte Aanvragen</Link></li>

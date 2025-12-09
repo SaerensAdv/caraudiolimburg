@@ -23,6 +23,8 @@ import AppleCarPlayBMW from "@/pages/apple-carplay-bmw";
 import OrderConfirmation from "@/pages/order-confirmation";
 import Privacy from "@/pages/privacy";
 import Voorwaarden from "@/pages/voorwaarden";
+import Blog from "@/pages/blog";
+import BlogPostPage from "@/pages/blog-post";
 import { useState, useEffect } from "react";
 
 function Router() {
@@ -72,6 +74,9 @@ function Router() {
       <Route path="/admin" component={Admin} />
       <Route path="/privacy" component={Privacy} />
       <Route path="/voorwaarden" component={Voorwaarden} />
+      <Route path="/blog" component={Blog} />
+      <Route path="/kenniscentrum" component={Blog} />
+      <Route path="/blog/:slug" component={BlogPostPage} />
       <Route component={NotFound} />
     </Switch>
   );

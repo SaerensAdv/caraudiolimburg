@@ -1596,18 +1596,27 @@ ${message || 'Geen aanvullende informatie'}`
 
   // AI Chatbot route
   app.post('/api/chat', async (req, res) => {
-    try {
-      const { messages, message } = req.body;
-      
-      if (!message || typeof message !== 'string') {
-        return res.status(400).json({ error: 'Message is required' });
-      }
+    const chatRequestSchema = z.object({
+      messages: z.array(z.object({
+        role: z.enum(['user', 'assistant']),
+        content: z.string()
+      })).default([]),
+      message: z.string().min(1, 'Bericht is verplicht')
+    });
 
-      const response = await handleChatMessage(messages || [], message);
+    const parsed = chatRequestSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: 'Ongeldig verzoek. Voer een bericht in.' });
+    }
+
+    const { messages, message } = parsed.data;
+
+    try {
+      const response = await handleChatMessage(messages, message);
       res.json({ response });
     } catch (error) {
       console.error('Chat API error:', error);
-      res.status(500).json({ error: 'Failed to process chat message' });
+      res.status(500).json({ error: 'Er is een fout opgetreden. Probeer het later opnieuw.' });
     }
   });
 

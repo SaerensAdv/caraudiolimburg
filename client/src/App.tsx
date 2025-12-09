@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { VerticalScrollProgress } from "@/components/ScrollProgress";
 import { PageLoader } from "@/components/PageTransition";
+import { ChatBot } from "@/components/ChatBot";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Shop from "@/pages/shop";
@@ -102,6 +103,7 @@ function App() {
           <Toaster />
           <VerticalScrollProgress />
           <Router />
+          <ChatBot />
         </div>
       </TooltipProvider>
     </QueryClientProvider>

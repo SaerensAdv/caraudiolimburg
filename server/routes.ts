@@ -5,6 +5,7 @@ import multer from "multer";
 import Papa from "papaparse";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated, isAdmin } from "./auth";
+import { handleChatMessage } from "./chatbot";
 import {
   insertProductSchema,
   insertCategorySchema,
@@ -1590,6 +1591,23 @@ ${message || 'Geen aanvullende informatie'}`
     } catch (error) {
       console.error('Sitemap generation error:', error);
       res.status(500).setHeader('Content-Type', 'text/plain').send('Error generating sitemap');
+    }
+  });
+
+  // AI Chatbot route
+  app.post('/api/chat', async (req, res) => {
+    try {
+      const { messages, message } = req.body;
+      
+      if (!message || typeof message !== 'string') {
+        return res.status(400).json({ error: 'Message is required' });
+      }
+
+      const response = await handleChatMessage(messages || [], message);
+      res.json({ response });
+    } catch (error) {
+      console.error('Chat API error:', error);
+      res.status(500).json({ error: 'Failed to process chat message' });
     }
   });
 

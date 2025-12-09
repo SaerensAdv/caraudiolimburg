@@ -116,6 +116,51 @@ export default function ProductPage() {
     .filter(p => p.id !== product?.id)
     .slice(0, 4);
 
+  // SEO: Update page title and meta tags - moved before early returns
+  useEffect(() => {
+    if (product) {
+      const currentPrice = parseFloat(product.price);
+      const images = product.images || [];
+      
+      document.title = `${product.name} | Car Audio Limburg`;
+      
+      // Meta description
+      const description = product.shortDescription || product.description?.toString().substring(0, 160) || `Koop ${product.name} bij Car Audio Limburg. Professionele installatie beschikbaar.`;
+      let metaDescription = document.querySelector('meta[name="description"]');
+      if (!metaDescription) {
+        metaDescription = document.createElement('meta');
+        metaDescription.setAttribute('name', 'description');
+        document.head.appendChild(metaDescription);
+      }
+      metaDescription.setAttribute('content', description);
+
+      // OG tags
+      const ogTags = [
+        { property: 'og:title', content: `${product.name} | Car Audio Limburg` },
+        { property: 'og:description', content: description },
+        { property: 'og:type', content: 'product' },
+        { property: 'og:url', content: `${window.location.origin}/product/${product.slug}` },
+        { property: 'og:image', content: images[0] || '' },
+        { property: 'product:price:amount', content: currentPrice.toString() },
+        { property: 'product:price:currency', content: 'EUR' },
+      ];
+      
+      document.querySelectorAll('meta[data-page="product"]').forEach(tag => tag.remove());
+      ogTags.forEach(tag => {
+        const meta = document.createElement('meta');
+        meta.setAttribute('data-page', 'product');
+        meta.setAttribute('property', tag.property);
+        meta.setAttribute('content', tag.content);
+        document.head.appendChild(meta);
+      });
+    }
+    
+    return () => {
+      document.title = 'Car Audio Limburg';
+      document.querySelectorAll('meta[data-page="product"]').forEach(tag => tag.remove());
+    };
+  }, [product]);
+
   const addToCartMutation = useMutation({
     mutationFn: async ({ needsInstallation }: { needsInstallation: boolean }) => {
       if (!product) return;
@@ -207,48 +252,6 @@ export default function ProductPage() {
   const discount = originalPrice ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100) : null;
   const images = product.images || [];
   const installationPrice = product.installationPrice ? parseFloat(product.installationPrice) : null;
-
-  // SEO: Update page title and meta tags
-  useEffect(() => {
-    if (product) {
-      document.title = `${product.name} | Car Audio Limburg`;
-      
-      // Meta description
-      const description = product.shortDescription || product.description?.toString().substring(0, 160) || `Koop ${product.name} bij Car Audio Limburg. Professionele installatie beschikbaar.`;
-      let metaDescription = document.querySelector('meta[name="description"]');
-      if (!metaDescription) {
-        metaDescription = document.createElement('meta');
-        metaDescription.setAttribute('name', 'description');
-        document.head.appendChild(metaDescription);
-      }
-      metaDescription.setAttribute('content', description);
-
-      // OG tags
-      const ogTags = [
-        { property: 'og:title', content: `${product.name} | Car Audio Limburg` },
-        { property: 'og:description', content: description },
-        { property: 'og:type', content: 'product' },
-        { property: 'og:url', content: `${window.location.origin}/product/${product.slug}` },
-        { property: 'og:image', content: images[0] || '' },
-        { property: 'product:price:amount', content: currentPrice.toString() },
-        { property: 'product:price:currency', content: 'EUR' },
-      ];
-      
-      document.querySelectorAll('meta[data-page="product"]').forEach(tag => tag.remove());
-      ogTags.forEach(tag => {
-        const meta = document.createElement('meta');
-        meta.setAttribute('data-page', 'product');
-        meta.setAttribute('property', tag.property);
-        meta.setAttribute('content', tag.content);
-        document.head.appendChild(meta);
-      });
-    }
-    
-    return () => {
-      document.title = 'Car Audio Limburg';
-      document.querySelectorAll('meta[data-page="product"]').forEach(tag => tag.remove());
-    };
-  }, [product, images, currentPrice]);
 
   // JSON-LD Product Schema
   const productJsonLd = {

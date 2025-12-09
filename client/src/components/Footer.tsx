@@ -1,8 +1,8 @@
 import { Link } from "wouter";
 import whiteLogoUrl from "@assets/CAL white_1758369495328.png";
 import saerensLogoUrl from "@assets/Saerens_Advertising_1764900190628.png";
+import iconLogoUrl from "@assets/CAR_1765257768308.png";
 import { Facebook, Instagram, Youtube, MapPin, Phone, Mail, Clock } from "lucide-react";
-import { EqualizerBars } from "@/components/EqualizerBars";
 
 export function Footer() {
   return (
@@ -94,9 +94,9 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-zinc-800 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center gap-3">
-              <EqualizerBars size="xs" animated={false} />
-              <p className="text-sm text-white/40">© 2025 Car Audio Limburg. Alle rechten voorbehouden.</p>
+            <div className="flex items-center gap-2">
+              <img src={iconLogoUrl} alt="" className="w-4 h-4" />
+              <p className="text-sm text-white/40">2025 Car Audio Limburg. Alle rechten voorbehouden.</p>
             </div>
             <div className="flex items-center space-x-6 mt-4 md:mt-0">
               <Link href="/privacy" className="text-sm text-white/40 hover:text-[#d0a760] transition-all duration-300" data-testid="footer-link-privacy">Privacy</Link>

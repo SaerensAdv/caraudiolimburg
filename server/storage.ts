@@ -11,6 +11,7 @@ import {
   bookings,
   quoteRequests,
   productVehicleCompatibility,
+  wishlists,
   type User,
   type UpsertUser,
   type Product,
@@ -36,6 +37,7 @@ import {
   reviews,
   type Review,
   type InsertReview,
+  type Wishlist,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, or, desc, asc, like, inArray } from "drizzle-orm";
@@ -128,6 +130,12 @@ export interface IStorage {
   approveReview(id: string): Promise<Review>;
   publishReview(id: string): Promise<Review>;
   featureReview(id: string, featured: boolean): Promise<Review>;
+
+  // Wishlist operations
+  getWishlistByUserId(userId: string): Promise<(Wishlist & { product: Product })[]>;
+  addToWishlist(userId: string, productId: string): Promise<Wishlist>;
+  removeFromWishlist(userId: string, productId: string): Promise<void>;
+  isInWishlist(userId: string, productId: string): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -606,6 +614,55 @@ export class DatabaseStorage implements IStorage {
       .where(eq(reviews.id, id))
       .returning();
     return updated;
+  }
+
+  // Wishlist operations
+  async getWishlistByUserId(userId: string): Promise<(Wishlist & { product: Product })[]> {
+    const results = await db
+      .select({
+        id: wishlists.id,
+        userId: wishlists.userId,
+        productId: wishlists.productId,
+        createdAt: wishlists.createdAt,
+        product: products,
+      })
+      .from(wishlists)
+      .leftJoin(products, eq(wishlists.productId, products.id))
+      .where(eq(wishlists.userId, userId))
+      .orderBy(desc(wishlists.createdAt));
+    
+    return results.filter(r => r.product !== null) as (Wishlist & { product: Product })[];
+  }
+
+  async addToWishlist(userId: string, productId: string): Promise<Wishlist> {
+    const existing = await db
+      .select()
+      .from(wishlists)
+      .where(and(eq(wishlists.userId, userId), eq(wishlists.productId, productId)));
+    
+    if (existing.length > 0) {
+      return existing[0];
+    }
+    
+    const [newWishlistItem] = await db
+      .insert(wishlists)
+      .values({ userId, productId })
+      .returning();
+    return newWishlistItem;
+  }
+
+  async removeFromWishlist(userId: string, productId: string): Promise<void> {
+    await db
+      .delete(wishlists)
+      .where(and(eq(wishlists.userId, userId), eq(wishlists.productId, productId)));
+  }
+
+  async isInWishlist(userId: string, productId: string): Promise<boolean> {
+    const [result] = await db
+      .select()
+      .from(wishlists)
+      .where(and(eq(wishlists.userId, userId), eq(wishlists.productId, productId)));
+    return !!result;
   }
 }
 

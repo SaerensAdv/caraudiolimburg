@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { MegaMenu } from "@/components/MegaMenu";
+import { SearchAutocomplete } from "@/components/SearchAutocomplete";
 import logoUrl from "@assets/Caraudiolimburg-logo_1757008375383.png";
 import whiteLogoUrl from "@assets/CAL white_1758369495328.png";
 import type { Category, Brand } from "@shared/schema";
@@ -203,6 +204,11 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
 
           {/* Right side actions */}
           <div className="flex items-center space-x-4">
+            {/* Desktop Search */}
+            <div className="hidden md:block">
+              <SearchAutocomplete variant="desktop" />
+            </div>
+
             <Button 
               variant="ghost" 
               size="sm" 
@@ -302,6 +308,11 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
 
         {/* Menu Content */}
         <div className="relative h-full flex flex-col justify-between pt-24 pb-8 px-8 overflow-y-auto">
+          {/* Mobile Search */}
+          <div className="mb-6">
+            <SearchAutocomplete variant="mobile" onNavigate={handleMobileMenuClose} />
+          </div>
+
           {/* Navigation Links */}
           <nav className="flex-1" aria-label="Mobiele navigatie">
             <div className="space-y-1">

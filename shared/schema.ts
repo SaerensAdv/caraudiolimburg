@@ -215,11 +215,34 @@ export const quoteRequests = pgTable("quote_requests", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Wishlists / Favorites
+export const wishlists = pgTable("wishlists", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  productId: varchar("product_id").notNull().references(() => products.id),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("IDX_wishlist_user_product").on(table.userId, table.productId),
+]);
+
+// Wishlist relations
+export const wishlistsRelations = relations(wishlists, ({ one }) => ({
+  user: one(users, {
+    fields: [wishlists.userId],
+    references: [users.id],
+  }),
+  product: one(products, {
+    fields: [wishlists.productId],
+    references: [products.id],
+  }),
+}));
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   cartItems: many(cartItems),
   orders: many(orders),
   bookings: many(bookings),
+  wishlists: many(wishlists),
 }));
 
 export const categoriesRelations = relations(categories, ({ one, many }) => ({
@@ -387,6 +410,11 @@ export const insertReviewSchema = createInsertSchema(reviews).omit({
   updatedAt: true,
 });
 
+export const insertWishlistSchema = createInsertSchema(wishlists).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -424,3 +452,6 @@ export type InsertQuoteRequest = z.infer<typeof insertQuoteRequestSchema>;
 
 export type Review = typeof reviews.$inferSelect;
 export type InsertReview = z.infer<typeof insertReviewSchema>;
+
+export type Wishlist = typeof wishlists.$inferSelect;
+export type InsertWishlist = z.infer<typeof insertWishlistSchema>;

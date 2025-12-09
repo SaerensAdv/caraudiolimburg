@@ -23,7 +23,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Filter, X, ChevronDown, Grid, Car, Volume2, Settings, ChevronRight, LayoutGrid, List, SlidersHorizontal, Sparkles, ArrowLeft, ShoppingCart, Home as HomeIcon } from "lucide-react";
+import { Search, Filter, X, ChevronDown, Grid, Car, Volume2, Settings, ChevronRight, LayoutGrid, List, SlidersHorizontal, Sparkles, ArrowLeft, ShoppingCart, Home as HomeIcon, Package } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+import { Checkbox } from "@/components/ui/checkbox";
 import type { Product, Category, Brand, VehicleMake } from "@shared/schema";
 import { ProductAudioSkeleton } from "@/components/AudioSkeletons";
 import { ScrollReveal, StaggerContainer, StaggerItem, ParallaxSection } from "@/components/ScrollAnimations";
@@ -37,7 +39,8 @@ export default function Shop() {
   const [sortBy, setSortBy] = useState("name");
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 2000]);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
+  const [inStockOnly, setInStockOnly] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
@@ -109,16 +112,20 @@ export default function Shop() {
     setSelectedCategory("all-categories");
     setSelectedBrand("all-brands");
     setSelectedMake("all-makes");
-    setPriceRange([0, 2000]);
+    setPriceRange([0, 5000]);
+    setInStockOnly(false);
     setSortBy("name");
   };
 
+  const isPriceRangeModified = priceRange[0] !== 0 || priceRange[1] !== 5000;
+  
   const activeFiltersCount = [
     search,
     selectedCategory && !selectedCategory.startsWith('all-') ? selectedCategory : '',
     selectedBrand && !selectedBrand.startsWith('all-') ? selectedBrand : '',
     selectedMake && !selectedMake.startsWith('all-') ? selectedMake : '',
-    (priceRange[0] > 0 || priceRange[1] < 2000) ? 'price' : '',
+    isPriceRangeModified ? 'price' : '',
+    inStockOnly ? 'stock' : '',
     sortBy !== 'name' ? 'sort' : ''
   ].filter(Boolean).length;
 
@@ -127,7 +134,9 @@ export default function Shop() {
     
     const filtered = products.filter((product) => {
       const price = parseFloat(product.price);
-      return price >= priceRange[0] && price <= priceRange[1];
+      const priceInRange = price >= priceRange[0] && price <= priceRange[1];
+      const stockOk = !inStockOnly || product.stock === undefined || product.stock === null || product.stock > 0;
+      return priceInRange && stockOk;
     });
 
     return [...filtered].sort((a, b) => {
@@ -658,6 +667,7 @@ export default function Shop() {
 
           {/* Expanded Filters Panel */}
           {showFilters && (
+            <>
             <div className="mt-6 pt-6 border-t border-white/10 grid grid-cols-1 md:grid-cols-4 gap-4">
               {/* Category */}
               <div>
@@ -730,6 +740,50 @@ export default function Shop() {
                 </Select>
               </div>
             </div>
+
+            {/* Second row of filters */}
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Price Range Slider */}
+              <div>
+                <label className="text-sm text-white/40 mb-3 block">
+                  Prijsbereik: €{priceRange[0]} - €{priceRange[1]}
+                </label>
+                <div className="px-2">
+                  <Slider
+                    value={priceRange}
+                    min={0}
+                    max={5000}
+                    step={50}
+                    onValueChange={(value) => setPriceRange(value as [number, number])}
+                    className="w-full"
+                    data-testid="slider-price-range"
+                  />
+                </div>
+                <div className="flex justify-between mt-2 text-xs text-white/30">
+                  <span>€0</span>
+                  <span>€5000</span>
+                </div>
+              </div>
+
+              {/* In Stock Only */}
+              <div className="flex items-center space-x-3">
+                <Checkbox
+                  id="in-stock-only"
+                  checked={inStockOnly}
+                  onCheckedChange={(checked) => setInStockOnly(checked === true)}
+                  className="border-white/30 data-[state=checked]:bg-[#d0a760] data-[state=checked]:border-[#d0a760]"
+                  data-testid="checkbox-in-stock"
+                />
+                <label
+                  htmlFor="in-stock-only"
+                  className="text-sm text-white/60 cursor-pointer flex items-center gap-2"
+                >
+                  <Package className="w-4 h-4" />
+                  Alleen producten op voorraad tonen
+                </label>
+              </div>
+            </div>
+            </>
           )}
         </div>
       </aside>

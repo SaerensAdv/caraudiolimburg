@@ -83,6 +83,106 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Wishlist routes
+  app.get('/api/wishlist', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const wishlistItems = await storage.getWishlistByUserId(userId);
+      res.json(wishlistItems);
+    } catch (error) {
+      console.error("Error fetching wishlist:", error);
+      res.status(500).json({ message: "Failed to fetch wishlist" });
+    }
+  });
+
+  app.post('/api/wishlist', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { productId } = req.body;
+      
+      if (!productId) {
+        return res.status(400).json({ message: "Product ID is required" });
+      }
+      
+      const wishlistItem = await storage.addToWishlist(userId, productId);
+      res.json(wishlistItem);
+    } catch (error) {
+      console.error("Error adding to wishlist:", error);
+      res.status(500).json({ message: "Failed to add to wishlist" });
+    }
+  });
+
+  app.delete('/api/wishlist/:productId', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { productId } = req.params;
+      
+      await storage.removeFromWishlist(userId, productId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error removing from wishlist:", error);
+      res.status(500).json({ message: "Failed to remove from wishlist" });
+    }
+  });
+
+  app.get('/api/wishlist/check/:productId', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { productId } = req.params;
+      
+      const inWishlist = await storage.isInWishlist(userId, productId);
+      res.json({ inWishlist });
+    } catch (error) {
+      console.error("Error checking wishlist:", error);
+      res.status(500).json({ message: "Failed to check wishlist" });
+    }
+  });
+
+  // Search autocomplete route
+  app.get('/api/search/autocomplete', async (req, res) => {
+    try {
+      const query = (req.query.q as string || '').trim();
+      
+      if (query.length < 2) {
+        return res.json({ products: [], categories: [], brands: [] });
+      }
+      
+      const [allProducts, allCategories, allBrands] = await Promise.all([
+        storage.getProducts({ search: query, limit: 5 }),
+        storage.getCategories(),
+        storage.getBrands()
+      ]);
+      
+      const queryLower = query.toLowerCase();
+      const matchingCategories = allCategories
+        .filter(cat => cat.name.toLowerCase().includes(queryLower))
+        .slice(0, 3)
+        .map(cat => ({ id: cat.id, name: cat.name, slug: cat.slug }));
+      
+      const matchingBrands = allBrands
+        .filter(brand => brand.name.toLowerCase().includes(queryLower))
+        .slice(0, 3)
+        .map(brand => ({ id: brand.id, name: brand.name, slug: brand.slug }));
+      
+      const products = allProducts.slice(0, 5).map(p => ({
+        id: p.id,
+        name: p.name,
+        slug: p.slug,
+        imageUrl: p.images?.[0] || null,
+        price: p.price
+      }));
+      
+      res.json({
+        products,
+        categories: matchingCategories,
+        brands: matchingBrands
+      });
+    } catch (error) {
+      console.error("Error in search autocomplete:", error);
+      res.status(500).json({ message: "Failed to fetch autocomplete results" });
+    }
+  });
+
   // Product routes
   app.get('/api/products', async (req, res) => {
     try {

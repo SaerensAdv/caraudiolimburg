@@ -38,9 +38,13 @@ import {
   ExternalLink,
   HelpCircle,
   MessageCircle,
-  ArrowRight
+  ArrowRight,
+  Heart,
+  Trash2
 } from "lucide-react";
-import type { Order, Booking } from "@shared/schema";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import type { Order, Booking, Product, Wishlist } from "@shared/schema";
 
 export default function CustomerPortal() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -73,6 +77,34 @@ export default function CustomerPortal() {
     queryKey: ["/api/my-bookings"],
     enabled: isAuthenticated,
     retry: false,
+  });
+
+  const { data: wishlistItems, isLoading: wishlistLoading } = useQuery<(Wishlist & { product: Product })[]>({
+    queryKey: ["/api/wishlist"],
+    enabled: isAuthenticated,
+    retry: false,
+  });
+
+  const queryClient = useQueryClient();
+
+  const removeFromWishlistMutation = useMutation({
+    mutationFn: async (productId: string) => {
+      await apiRequest("DELETE", `/api/wishlist/${productId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/wishlist"] });
+      toast({
+        title: "Verwijderd uit favorieten",
+        description: "Het product is verwijderd uit je favorieten.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Fout",
+        description: "Kon product niet verwijderen uit favorieten.",
+        variant: "destructive",
+      });
+    },
   });
 
   const toggleOrderExpand = (orderId: number) => {
@@ -231,6 +263,18 @@ export default function CustomerPortal() {
                     <span>Afspraken</span>
                   </button>
                   <button
+                    onClick={() => setActiveTab("favorites")}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-all ${
+                      activeTab === "favorites"
+                        ? "bg-zinc-900 border-l-2 border-[#d0a760] text-white"
+                        : "text-zinc-400 hover:text-white hover:bg-zinc-900/50"
+                    }`}
+                    data-testid="nav-favorites"
+                  >
+                    <Heart className="w-5 h-5" />
+                    <span>Favorieten</span>
+                  </button>
+                  <button
                     onClick={() => setActiveTab("account")}
                     className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-all ${
                       activeTab === "account"
@@ -294,6 +338,18 @@ export default function CustomerPortal() {
                   >
                     <Calendar className="w-4 h-4" />
                     <span className="text-sm">Afspraken</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("favorites")}
+                    className={`flex items-center gap-2 px-4 py-2.5 whitespace-nowrap transition-all ${
+                      activeTab === "favorites"
+                        ? "bg-[#d0a760] text-black"
+                        : "text-zinc-400 hover:text-white"
+                    }`}
+                    data-testid="mobile-nav-favorites"
+                  >
+                    <Heart className="w-4 h-4" />
+                    <span className="text-sm">Favorieten</span>
                   </button>
                   <button
                     onClick={() => setActiveTab("account")}
@@ -638,6 +694,102 @@ export default function CustomerPortal() {
                           >
                             <Calendar className="h-4 w-4 mr-2" />
                             Afspraak maken
+                          </Button>
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Favorites Tab */}
+                {activeTab === "favorites" && (
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl md:text-2xl font-light text-white flex items-center gap-3">
+                        <Heart className="w-6 h-6 text-[#d0a760]" />
+                        Mijn Favorieten
+                      </h2>
+                      <Link href="/shop">
+                        <Button 
+                          className="bg-[#d0a760] text-black hover:bg-[#b8954e] rounded-none text-sm"
+                          data-testid="button-browse-products"
+                        >
+                          <span className="hidden sm:inline">Producten bekijken</span>
+                          <ArrowRight className="w-4 h-4 sm:ml-2" />
+                        </Button>
+                      </Link>
+                    </div>
+
+                    {wishlistLoading ? (
+                      <div className="flex items-center justify-center py-16">
+                        <div className="w-6 h-6 border-2 border-[#d0a760] border-t-transparent animate-spin" />
+                      </div>
+                    ) : wishlistItems && wishlistItems.length > 0 ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {wishlistItems.map((item) => (
+                          <div 
+                            key={item.id} 
+                            className="bg-zinc-950 border border-zinc-800 hover:border-zinc-700 transition-colors group"
+                            data-testid={`wishlist-item-${item.productId}`}
+                          >
+                            <Link href={`/product/${item.product.slug}`}>
+                              <div className="aspect-square bg-zinc-900 flex items-center justify-center p-6 relative overflow-hidden">
+                                <img 
+                                  src={item.product.images?.[item.product.primaryImageIndex || 0] || '/caraudiolimburg-logo.png'} 
+                                  alt={item.product.name}
+                                  className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                                  onError={(e) => {
+                                    e.currentTarget.src = '/caraudiolimburg-logo.png';
+                                  }}
+                                />
+                              </div>
+                            </Link>
+                            <div className="p-4">
+                              <Link href={`/product/${item.product.slug}`}>
+                                <h3 className="text-white font-medium mb-2 group-hover:text-[#d0a760] transition-colors cursor-pointer line-clamp-2" data-testid={`wishlist-product-name-${item.productId}`}>
+                                  {item.product.name}
+                                </h3>
+                              </Link>
+                              <p className="text-white/50 text-sm mb-3 line-clamp-2">
+                                {item.product.shortDescription || '\u00A0'}
+                              </p>
+                              <div className="flex items-center justify-between">
+                                <span className="text-lg font-semibold text-[#d0a760]" data-testid={`wishlist-product-price-${item.productId}`}>
+                                  €{parseFloat(item.product.price).toFixed(0)}
+                                </span>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => removeFromWishlistMutation.mutate(item.productId)}
+                                  disabled={removeFromWishlistMutation.isPending}
+                                  className="text-zinc-400 hover:text-red-400 hover:bg-zinc-800 rounded-none"
+                                  data-testid={`remove-from-wishlist-${item.productId}`}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="bg-zinc-950 border border-zinc-800 py-16 px-8 text-center">
+                        <div className="w-20 h-20 mx-auto mb-6 bg-zinc-900 flex items-center justify-center">
+                          <Heart className="w-10 h-10 text-zinc-600" />
+                        </div>
+                        <h3 className="text-xl font-light text-white mb-2" data-testid="empty-wishlist-message">
+                          Je hebt nog geen favorieten
+                        </h3>
+                        <p className="text-zinc-500 mb-6 max-w-md mx-auto">
+                          Voeg producten toe aan je favorieten om ze later gemakkelijk terug te vinden.
+                        </p>
+                        <Link href="/shop">
+                          <Button
+                            className="bg-[#d0a760] text-black hover:bg-[#b8954e] rounded-none px-8"
+                            data-testid="button-browse-shop"
+                          >
+                            Bekijk producten
+                            <ArrowRight className="w-4 h-4 ml-2" />
                           </Button>
                         </Link>
                       </div>

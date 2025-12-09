@@ -4,11 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
-import { ShoppingCart, Wrench, Eye } from "lucide-react";
+import { ShoppingCart, Wrench, Eye, Heart } from "lucide-react";
 import { ProductQuickView } from "@/components/ProductQuickView";
+import { useAuth } from "@/hooks/useAuth";
 import type { Product } from "@shared/schema";
 import carAudioLogo from "@assets/Caraudiolimburg-logo_1757008375383_1757016657436.png";
 import fordFiestaImage from "@assets/ford-fiesta-real.webp";
@@ -24,6 +25,75 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
+
+  const { data: wishlistStatus } = useQuery<{ inWishlist: boolean }>({
+    queryKey: ["/api/wishlist/check", product.id],
+    enabled: isAuthenticated,
+    retry: false,
+  });
+
+  const addToWishlistMutation = useMutation({
+    mutationFn: async () => {
+      await apiRequest("POST", "/api/wishlist", { productId: product.id });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/wishlist/check", product.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/wishlist"] });
+      toast({
+        title: "Toegevoegd aan favorieten",
+        description: "Het product is toegevoegd aan je favorieten.",
+      });
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Inloggen vereist",
+          description: "Je moet inloggen om favorieten toe te voegen.",
+          variant: "destructive",
+        });
+        return;
+      }
+      toast({
+        title: "Fout",
+        description: "Kon product niet toevoegen aan favorieten.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const removeFromWishlistMutation = useMutation({
+    mutationFn: async () => {
+      await apiRequest("DELETE", `/api/wishlist/${product.id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/wishlist/check", product.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/wishlist"] });
+      toast({
+        title: "Verwijderd uit favorieten",
+        description: "Het product is verwijderd uit je favorieten.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Fout",
+        description: "Kon product niet verwijderen uit favorieten.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleWishlistToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (wishlistStatus?.inWishlist) {
+      removeFromWishlistMutation.mutate();
+    } else {
+      addToWishlistMutation.mutate();
+    }
+  };
+
+  const isWishlistLoading = addToWishlistMutation.isPending || removeFromWishlistMutation.isPending;
 
   const addToCartMutation = useMutation({
     mutationFn: async ({ productId, needsInstallation }: { productId: string; needsInstallation: boolean }) => {
@@ -100,6 +170,26 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
               />
             </div>
             
+            {/* Wishlist Button */}
+            {isAuthenticated && (
+              <button
+                onClick={handleWishlistToggle}
+                disabled={isWishlistLoading}
+                className={`absolute top-3 right-3 p-2.5 transition-all duration-300 ease-out backdrop-blur-sm hover:scale-110 active:scale-95 ${
+                  wishlistStatus?.inWishlist 
+                    ? "bg-[#d0a760] text-black" 
+                    : "bg-black/70 hover:bg-[#d0a760] text-white hover:text-black"
+                } ${isWishlistLoading ? "opacity-50 cursor-wait" : ""}`}
+                title={wishlistStatus?.inWishlist ? "Verwijderen uit favorieten" : "Toevoegen aan favorieten"}
+                data-testid={`wishlist-toggle-${product.id}`}
+              >
+                <Heart 
+                  className={`w-4 h-4 transition-transform duration-300 ${isWishlistLoading ? "animate-pulse" : ""}`} 
+                  fill={wishlistStatus?.inWishlist ? "currentColor" : "none"}
+                />
+              </button>
+            )}
+            
             {/* Quick View Button */}
             <button
               onClick={(e) => {
@@ -107,7 +197,7 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
                 e.stopPropagation();
                 setIsQuickViewOpen(true);
               }}
-              className="absolute top-3 right-3 p-2.5 bg-black/70 hover:bg-[#d0a760] text-white hover:text-black transition-all duration-300 ease-out opacity-0 group-hover:opacity-100 backdrop-blur-sm hover:scale-110 active:scale-95"
+              className={`absolute ${isAuthenticated ? "top-14" : "top-3"} right-3 p-2.5 bg-black/70 hover:bg-[#d0a760] text-white hover:text-black transition-all duration-300 ease-out opacity-0 group-hover:opacity-100 backdrop-blur-sm hover:scale-110 active:scale-95`}
               title="Quick View"
               data-testid={`quick-view-${product.id}`}
             >

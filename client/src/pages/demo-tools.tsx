@@ -16,11 +16,26 @@ import {
   Check,
   Sparkles,
   ExternalLink,
-  Zap
+  Zap,
+  Bell,
+  Gift,
+  Users,
+  Smartphone,
+  Timer,
+  Target,
+  ClipboardList,
+  Video,
+  Scan,
+  ShieldCheck,
+  Heart,
+  GitCompare,
+  Calculator,
+  Percent,
+  Instagram
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { SiTrustpilot, SiGoogle, SiWhatsapp, SiKlarna } from "react-icons/si";
+import { SiTrustpilot, SiGoogle, SiWhatsapp, SiKlarna, SiTwilio, SiInstagram, SiFacebook } from "react-icons/si";
 
 interface Tool {
   id: number;
@@ -188,6 +203,233 @@ const tools: Tool[] = [
     ],
     status: "beschikbaar",
     conversionImpact: "hoog"
+  },
+  {
+    id: 11,
+    name: "SMS Marketing & Notificaties",
+    description: "Verstuur gepersonaliseerde SMS-berichten voor orderupdates, aanbiedingen en herinneringen. 98% open rate.",
+    category: "conversie",
+    icon: <Smartphone className="w-6 h-6" />,
+    brandIcon: <SiTwilio className="w-5 h-5 text-[#F22F46]" />,
+    benefits: [
+      "Hoge open rate (98%)",
+      "Directe levering",
+      "Ordertracking updates",
+      "Flash sale alerts"
+    ],
+    status: "beschikbaar",
+    conversionImpact: "hoog"
+  },
+  {
+    id: 12,
+    name: "Exit-Intent Popup",
+    description: "Vang bezoekers op die de site willen verlaten met een aantrekkelijke aanbieding of nieuwsbrief inschrijving.",
+    category: "conversie",
+    icon: <Target className="w-6 h-6" />,
+    benefits: [
+      "Verloren bezoekers terugwinnen",
+      "E-mail lijst opbouwen",
+      "Korting aanbieden",
+      "A/B test varianten"
+    ],
+    status: "beschikbaar",
+    conversionImpact: "hoog"
+  },
+  {
+    id: 13,
+    name: "Countdown Timer",
+    description: "Creëer urgentie met afteltimers voor aanbiedingen, flash sales en beperkte voorraad. Verhoogt FOMO-effect.",
+    category: "conversie",
+    icon: <Timer className="w-6 h-6" />,
+    benefits: [
+      "Verhoogt urgentie",
+      "Hogere conversie",
+      "Seizoensgebonden acties",
+      "Flash sale ondersteuning"
+    ],
+    status: "beschikbaar",
+    conversionImpact: "medium"
+  },
+  {
+    id: 14,
+    name: "Loyaliteitsprogramma",
+    description: "Beloon terugkerende klanten met punten, kortingen en exclusieve voordelen. Verhoogt klantbehoud.",
+    category: "conversie",
+    icon: <Gift className="w-6 h-6" />,
+    benefits: [
+      "Verhoogt klantbehoud",
+      "Hogere lifetime value",
+      "Exclusieve member deals",
+      "Punten per aankoop"
+    ],
+    status: "beschikbaar",
+    conversionImpact: "hoog"
+  },
+  {
+    id: 15,
+    name: "Referral Programma",
+    description: "Laat tevreden klanten vrienden doorverwijzen met beloningen voor beide partijen. Organische groei.",
+    category: "conversie",
+    icon: <Users className="w-6 h-6" />,
+    benefits: [
+      "Organische klantenwerving",
+      "Vertrouwde aanbevelingen",
+      "Dubbele beloningen",
+      "Virale groei"
+    ],
+    status: "beschikbaar",
+    conversionImpact: "hoog"
+  },
+  {
+    id: 16,
+    name: "Push Notificaties",
+    description: "Bereik bezoekers direct in hun browser met push notificaties voor nieuwe producten, aanbiedingen en updates.",
+    category: "conversie",
+    icon: <Bell className="w-6 h-6" />,
+    benefits: [
+      "Direct bereik",
+      "Geen e-mail nodig",
+      "Hoge click-through rate",
+      "Automatische campagnes"
+    ],
+    status: "beschikbaar",
+    conversionImpact: "medium"
+  },
+  {
+    id: 17,
+    name: "A/B Testing Platform",
+    description: "Test verschillende versies van je pagina's om te ontdekken wat het beste converteert. Data-gedreven optimalisatie.",
+    category: "analytics",
+    icon: <GitCompare className="w-6 h-6" />,
+    benefits: [
+      "Data-gedreven beslissingen",
+      "Continu optimaliseren",
+      "Test headlines & CTA's",
+      "Statistisch significant"
+    ],
+    status: "beschikbaar",
+    conversionImpact: "hoog"
+  },
+  {
+    id: 18,
+    name: "Klanttevredenheid Surveys",
+    description: "Verzamel feedback na aankoop of installatie. Meet NPS scores en verbeter je service continu.",
+    category: "analytics",
+    icon: <ClipboardList className="w-6 h-6" />,
+    benefits: [
+      "NPS score meten",
+      "Feedback verzamelen",
+      "Verbeterpunten ontdekken",
+      "Klantinzichten"
+    ],
+    status: "beschikbaar",
+    conversionImpact: "medium"
+  },
+  {
+    id: 19,
+    name: "Video Product Demo's",
+    description: "Embed installatie video's en productdemonstraties rechtstreeks op productpagina's. Verhoogt engagement.",
+    category: "content",
+    icon: <Video className="w-6 h-6" />,
+    benefits: [
+      "Visuele uitleg",
+      "Installatie tutorials",
+      "Hogere engagement",
+      "Minder retourzendingen"
+    ],
+    status: "beschikbaar",
+    conversionImpact: "medium"
+  },
+  {
+    id: 20,
+    name: "Augmented Reality Preview",
+    description: "Laat klanten zien hoe speakers en systemen er in hun auto uitzien met AR technologie.",
+    category: "content",
+    icon: <Scan className="w-6 h-6" />,
+    benefits: [
+      "Innovatieve ervaring",
+      "Visualiseer in eigen auto",
+      "Wow-factor",
+      "Lagere retouren"
+    ],
+    status: "binnenkort",
+    conversionImpact: "medium"
+  },
+  {
+    id: 21,
+    name: "Prijsmatch Garantie Widget",
+    description: "Toon een prijsmatch garantie badge om vertrouwen te bouwen en klanten gerust te stellen over de prijs.",
+    category: "conversie",
+    icon: <ShieldCheck className="w-6 h-6" />,
+    benefits: [
+      "Vertrouwen opbouwen",
+      "Concurrentievoordeel",
+      "Minder prijsvergelijking",
+      "Hogere conversie"
+    ],
+    status: "beschikbaar",
+    conversionImpact: "medium"
+  },
+  {
+    id: 22,
+    name: "Voorraad Alert Notificaties",
+    description: "Laat klanten zich inschrijven voor alerts wanneer uitverkochte producten weer op voorraad zijn.",
+    category: "conversie",
+    icon: <Bell className="w-6 h-6" />,
+    benefits: [
+      "Verloren sales terugwinnen",
+      "E-mail lijst opbouwen",
+      "Automatische alerts",
+      "Vraag inzicht"
+    ],
+    status: "beschikbaar",
+    conversionImpact: "medium"
+  },
+  {
+    id: 23,
+    name: "Wensenlijst & Favorieten",
+    description: "Laat klanten producten opslaan voor later. Verstuur herinneringen en sale alerts voor opgeslagen items.",
+    category: "conversie",
+    icon: <Heart className="w-6 h-6" />,
+    benefits: [
+      "Producten bewaren",
+      "Herinnerings-mails",
+      "Prijs-alert bij sale",
+      "Hogere terugkeerrate"
+    ],
+    status: "beschikbaar",
+    conversionImpact: "medium"
+  },
+  {
+    id: 24,
+    name: "Installatie Kosten Calculator",
+    description: "Interactieve calculator die installatie kosten berekent op basis van voertuig, producten en complexiteit.",
+    category: "content",
+    icon: <Calculator className="w-6 h-6" />,
+    benefits: [
+      "Transparante prijzen",
+      "Upsell installatie",
+      "Lead generatie",
+      "Verwachtingsmanagement"
+    ],
+    status: "beschikbaar",
+    conversionImpact: "hoog"
+  },
+  {
+    id: 25,
+    name: "Instagram Feed Widget",
+    description: "Toon je Instagram posts en reels direct op de website. Bouw social proof met je installatie portfolio.",
+    category: "content",
+    icon: <Instagram className="w-6 h-6" />,
+    brandIcon: <SiInstagram className="w-5 h-5 text-[#E4405F]" />,
+    benefits: [
+      "Social proof",
+      "Portfolio tonen",
+      "Automatisch bijwerken",
+      "Verhoogde volgers"
+    ],
+    status: "beschikbaar",
+    conversionImpact: "medium"
   }
 ];
 
@@ -242,7 +484,7 @@ export default function DemoTools() {
                 <Zap className="w-6 h-6 text-[#0a0a0a]" />
               </div>
               <Badge className="bg-[#d0a760]/20 text-[#d0a760] border-[#d0a760]/30">
-                10 Integraties
+                25 Integraties
               </Badge>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">

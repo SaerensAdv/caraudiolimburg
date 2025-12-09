@@ -26,6 +26,7 @@ import Privacy from "@/pages/privacy";
 import Voorwaarden from "@/pages/voorwaarden";
 import Blog from "@/pages/blog";
 import BlogPostPage from "@/pages/blog-post";
+import DemoTools from "@/pages/demo-tools";
 import { useState, useEffect } from "react";
 
 function Router() {
@@ -78,6 +79,8 @@ function Router() {
       <Route path="/blog" component={Blog} />
       <Route path="/kenniscentrum" component={Blog} />
       <Route path="/blog/:slug" component={BlogPostPage} />
+      <Route path="/demo-tools" component={DemoTools} />
+      <Route path="/integraties" component={DemoTools} />
       <Route component={NotFound} />
     </Switch>
   );

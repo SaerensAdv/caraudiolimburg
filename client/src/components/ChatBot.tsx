@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Send, Bot, User, Loader2 } from "lucide-react";
+import { MessageCircle, X, Send, Headphones, User, Loader2, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -8,6 +8,28 @@ import { motion, AnimatePresence } from "framer-motion";
 interface Message {
   role: "user" | "assistant";
   content: string;
+}
+
+function AudioBars() {
+  return (
+    <div className="flex items-end gap-[2px] h-4">
+      {[0, 1, 2, 3].map((i) => (
+        <motion.div
+          key={i}
+          className="w-[3px] bg-[#d0a760] rounded-full"
+          animate={{
+            height: ["40%", "100%", "60%", "80%", "40%"],
+          }}
+          transition={{
+            duration: 1,
+            repeat: Infinity,
+            delay: i * 0.15,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+    </div>
+  );
 }
 
 export function ChatBot() {
@@ -85,112 +107,118 @@ export function ChatBot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-24 right-4 z-50 w-[380px] max-w-[calc(100vw-2rem)] bg-zinc-900 border border-zinc-700 rounded-2xl shadow-2xl overflow-hidden"
+            className="fixed bottom-24 right-4 z-50 w-[380px] max-w-[calc(100vw-2rem)] rounded-[var(--radius)] overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4),0_0_0_1px_rgba(208,167,96,0.2)]"
             data-testid="chatbot-window"
           >
-            <div className="bg-gradient-to-r from-[#d0a760] to-[#b8934d] p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                  <Bot className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-white">Car Audio Assistent</h3>
-                  <p className="text-xs text-white/80">Altijd beschikbaar</p>
-                </div>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsOpen(false)}
-                className="text-white hover:bg-white/20"
-                data-testid="chatbot-close"
-              >
-                <X className="w-5 h-5" />
-              </Button>
-            </div>
-
-            <ScrollArea className="h-[350px] p-4">
-              <div className="space-y-4">
-                {messages.map((message, index) => (
-                  <div
-                    key={index}
-                    className={`flex gap-3 ${message.role === "user" ? "flex-row-reverse" : ""}`}
-                  >
-                    <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                        message.role === "user"
-                          ? "bg-[#d0a760]"
-                          : "bg-zinc-700"
-                      }`}
-                    >
-                      {message.role === "user" ? (
-                        <User className="w-4 h-4 text-white" />
-                      ) : (
-                        <Bot className="w-4 h-4 text-white" />
-                      )}
-                    </div>
-                    <div
-                      className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${
-                        message.role === "user"
-                          ? "bg-[#d0a760] text-white"
-                          : "bg-zinc-800 text-zinc-100"
-                      }`}
-                      data-testid={`chat-message-${message.role}-${index}`}
-                    >
-                      <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+            <div className="bg-[#0a0a0a] border border-[#d0a760]/30">
+              <div className="bg-gradient-to-r from-[#0a0a0a] via-[#1a1a1a] to-[#0a0a0a] p-4 flex items-center justify-between border-b border-[#d0a760]/20">
+                <div className="flex items-center gap-3">
+                  <div className="w-11 h-11 bg-gradient-to-br from-[#d0a760] to-[#a88540] rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(208,167,96,0.3)]">
+                    <Headphones className="w-5 h-5 text-[#0a0a0a]" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-white tracking-wide">Car Audio Assistent</h3>
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                      <p className="text-xs text-[#d0a760]/80">Online</p>
                     </div>
                   </div>
-                ))}
-                {isLoading && (
-                  <div className="flex gap-3">
-                    <div className="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center">
-                      <Bot className="w-4 h-4 text-white" />
-                    </div>
-                    <div className="bg-zinc-800 rounded-2xl px-4 py-2.5">
-                      <div className="flex items-center gap-2 text-zinc-400">
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        <span className="text-sm">Aan het typen...</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                <div ref={messagesEndRef} />
-              </div>
-            </ScrollArea>
-
-            <form onSubmit={handleSubmit} className="p-4 border-t border-zinc-700">
-              <div className="flex gap-2">
-                <Input
-                  ref={inputRef}
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder="Stel een vraag..."
-                  className="flex-1 bg-zinc-800 border-zinc-600 text-white placeholder:text-zinc-500"
-                  disabled={isLoading}
-                  data-testid="chatbot-input"
-                />
+                </div>
                 <Button
-                  type="submit"
+                  variant="ghost"
                   size="icon"
-                  disabled={!input.trim() || isLoading}
-                  className="bg-[#d0a760] hover:bg-[#b8934d] text-white"
-                  data-testid="chatbot-send"
+                  onClick={() => setIsOpen(false)}
+                  className="text-zinc-400 hover:text-white hover:bg-white/10 rounded-full"
+                  data-testid="chatbot-close"
                 >
-                  <Send className="w-4 h-4" />
+                  <X className="w-5 h-5" />
                 </Button>
               </div>
-            </form>
+
+              <ScrollArea className="h-[350px] p-4 bg-[#0a0a0a]">
+                <div className="space-y-4">
+                  {messages.map((message, index) => (
+                    <div
+                      key={index}
+                      className={`flex gap-3 ${message.role === "user" ? "flex-row-reverse" : ""}`}
+                    >
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                          message.role === "user"
+                            ? "bg-gradient-to-br from-[#d0a760] to-[#a88540]"
+                            : "bg-zinc-800 border border-[#d0a760]/20"
+                        }`}
+                      >
+                        {message.role === "user" ? (
+                          <User className="w-4 h-4 text-[#0a0a0a]" />
+                        ) : (
+                          <Volume2 className="w-4 h-4 text-[#d0a760]" />
+                        )}
+                      </div>
+                      <div
+                        className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${
+                          message.role === "user"
+                            ? "bg-gradient-to-br from-[#d0a760] to-[#a88540] text-[#0a0a0a] font-medium"
+                            : "bg-zinc-900 text-zinc-100 border border-zinc-800"
+                        }`}
+                        data-testid={`chat-message-${message.role}-${index}`}
+                      >
+                        <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
+                      </div>
+                    </div>
+                  ))}
+                  {isLoading && (
+                    <div className="flex gap-3">
+                      <div className="w-8 h-8 rounded-full bg-zinc-800 border border-[#d0a760]/20 flex items-center justify-center">
+                        <Volume2 className="w-4 h-4 text-[#d0a760]" />
+                      </div>
+                      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <AudioBars />
+                          <span className="text-sm text-zinc-400">Aan het typen...</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  <div ref={messagesEndRef} />
+                </div>
+              </ScrollArea>
+
+              <form onSubmit={handleSubmit} className="p-4 border-t border-zinc-800/50 bg-[#0a0a0a]">
+                <div className="flex gap-2">
+                  <Input
+                    ref={inputRef}
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder="Stel een vraag..."
+                    className="flex-1 bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500 rounded-xl focus:border-[#d0a760]/50 focus:ring-[#d0a760]/20"
+                    disabled={isLoading}
+                    data-testid="chatbot-input"
+                  />
+                  <Button
+                    type="submit"
+                    size="icon"
+                    disabled={!input.trim() || isLoading}
+                    className="bg-gradient-to-br from-[#d0a760] to-[#a88540] hover:from-[#e0b770] hover:to-[#b89550] text-[#0a0a0a] rounded-xl shadow-[0_0_15px_rgba(208,167,96,0.2)] disabled:opacity-50"
+                    data-testid="chatbot-send"
+                  >
+                    <Send className="w-4 h-4" />
+                  </Button>
+                </div>
+              </form>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-r from-[#d0a760] to-[#b8934d] rounded-full shadow-lg flex items-center justify-center hover:scale-105 transition-transform"
-        whileHover={{ scale: 1.1 }}
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-br from-[#d0a760] to-[#a88540] rounded-full shadow-[0_4px_20px_rgba(208,167,96,0.4)] flex items-center justify-center group"
+        whileHover={{ scale: 1.05, boxShadow: "0 6px 30px rgba(208,167,96,0.5)" }}
         whileTap={{ scale: 0.95 }}
         data-testid="chatbot-toggle"
       >
+        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#d0a760] to-[#a88540] animate-subtle-pulse" />
         <AnimatePresence mode="wait">
           {isOpen ? (
             <motion.div
@@ -199,8 +227,9 @@ export function ChatBot() {
               animate={{ rotate: 0, opacity: 1 }}
               exit={{ rotate: 90, opacity: 0 }}
               transition={{ duration: 0.15 }}
+              className="relative z-10"
             >
-              <X className="w-6 h-6 text-white" />
+              <X className="w-6 h-6 text-[#0a0a0a]" />
             </motion.div>
           ) : (
             <motion.div
@@ -209,8 +238,9 @@ export function ChatBot() {
               animate={{ rotate: 0, opacity: 1 }}
               exit={{ rotate: -90, opacity: 0 }}
               transition={{ duration: 0.15 }}
+              className="relative z-10"
             >
-              <MessageCircle className="w-6 h-6 text-white" />
+              <MessageCircle className="w-6 h-6 text-[#0a0a0a]" />
             </motion.div>
           )}
         </AnimatePresence>

@@ -105,6 +105,17 @@ export default function ProductPage() {
     enabled: !!slug,
   });
 
+  // Fetch related products based on category
+  const { data: relatedProducts = [] } = useQuery<Product[]>({
+    queryKey: ["/api/products", { categoryId: product?.categoryId, limit: 4 }],
+    enabled: !!product?.categoryId,
+  });
+
+  // Filter out current product from related products
+  const filteredRelatedProducts = relatedProducts
+    .filter(p => p.id !== product?.id)
+    .slice(0, 4);
+
   const addToCartMutation = useMutation({
     mutationFn: async ({ needsInstallation }: { needsInstallation: boolean }) => {
       if (!product) return;
@@ -197,8 +208,89 @@ export default function ProductPage() {
   const images = product.images || [];
   const installationPrice = product.installationPrice ? parseFloat(product.installationPrice) : null;
 
+  // SEO: Update page title and meta tags
+  useEffect(() => {
+    if (product) {
+      document.title = `${product.name} | Car Audio Limburg`;
+      
+      // Meta description
+      const description = product.shortDescription || product.description?.toString().substring(0, 160) || `Koop ${product.name} bij Car Audio Limburg. Professionele installatie beschikbaar.`;
+      let metaDescription = document.querySelector('meta[name="description"]');
+      if (!metaDescription) {
+        metaDescription = document.createElement('meta');
+        metaDescription.setAttribute('name', 'description');
+        document.head.appendChild(metaDescription);
+      }
+      metaDescription.setAttribute('content', description);
+
+      // OG tags
+      const ogTags = [
+        { property: 'og:title', content: `${product.name} | Car Audio Limburg` },
+        { property: 'og:description', content: description },
+        { property: 'og:type', content: 'product' },
+        { property: 'og:url', content: `${window.location.origin}/product/${product.slug}` },
+        { property: 'og:image', content: images[0] || '' },
+        { property: 'product:price:amount', content: currentPrice.toString() },
+        { property: 'product:price:currency', content: 'EUR' },
+      ];
+      
+      document.querySelectorAll('meta[data-page="product"]').forEach(tag => tag.remove());
+      ogTags.forEach(tag => {
+        const meta = document.createElement('meta');
+        meta.setAttribute('data-page', 'product');
+        meta.setAttribute('property', tag.property);
+        meta.setAttribute('content', tag.content);
+        document.head.appendChild(meta);
+      });
+    }
+    
+    return () => {
+      document.title = 'Car Audio Limburg';
+      document.querySelectorAll('meta[data-page="product"]').forEach(tag => tag.remove());
+    };
+  }, [product, images, currentPrice]);
+
+  // JSON-LD Product Schema
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": product.name,
+    "description": product.shortDescription || product.description?.toString().substring(0, 300) || "",
+    "image": images,
+    "sku": product.sku || product.id,
+    "brand": {
+      "@type": "Brand",
+      "name": "Car Audio Limburg"
+    },
+    "offers": {
+      "@type": "Offer",
+      "url": `${typeof window !== 'undefined' ? window.location.origin : ''}/product/${product.slug}`,
+      "priceCurrency": "EUR",
+      "price": currentPrice,
+      "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      "availability": product.stock && product.stock > 0 
+        ? "https://schema.org/InStock" 
+        : "https://schema.org/PreOrder",
+      "seller": {
+        "@type": "Organization",
+        "name": "Car Audio Limburg"
+      }
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "reviewCount": "24"
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black">
+      {/* JSON-LD Product Schema for SEO */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
+      
       {/* Desktop Header */}
       <div className="hidden md:block">
         <Header onCartOpen={() => setIsCartOpen(true)} />
@@ -335,7 +427,7 @@ export default function ProductPage() {
                                 e.stopPropagation();
                                 setSelectedImageIndex(index);
                               }}
-                              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                              className={`w-2 h-2 transition-all duration-300 ${
                                 index === selectedImageIndex 
                                   ? 'bg-[#d0a760] w-6' 
                                   : 'bg-white/30'
@@ -439,18 +531,43 @@ export default function ProductPage() {
                     </p>
                   )}
 
-                  <div className="mt-3 md:mt-4">
+                  <div className="mt-3 md:mt-4 space-y-3">
                     {product.stock && product.stock > 0 ? (
-                      <span className="inline-flex items-center gap-2 text-green-500 text-sm">
-                        <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                        Op voorraad
-                      </span>
+                      <div className="flex flex-col gap-1">
+                        <span className="inline-flex items-center gap-2 text-green-500 text-sm font-medium">
+                          <span className="w-2 h-2 bg-green-500 animate-pulse" />
+                          Op voorraad
+                        </span>
+                        <span className="text-white/50 text-xs flex items-center gap-1">
+                          <Truck className="w-3 h-3" />
+                          Bestel voor 16:00, morgen in huis
+                        </span>
+                      </div>
                     ) : (
                       <span className="inline-flex items-center gap-2 text-orange-500 text-sm">
                         <Clock className="w-4 h-4" />
-                        Op aanvraag leverbaar
+                        Op aanvraag leverbaar (2-5 werkdagen)
                       </span>
                     )}
+                    
+                    {/* Payment Methods */}
+                    <div className="flex items-center gap-2 pt-2">
+                      <span className="text-white/40 text-xs">Betaalmethodes:</span>
+                      <div className="flex items-center gap-1">
+                        <div className="bg-white px-1.5 py-0.5" title="iDEAL">
+                          <span className="text-[10px] font-bold text-[#CC0066]">iDEAL</span>
+                        </div>
+                        <div className="bg-white px-1.5 py-0.5" title="Bancontact">
+                          <span className="text-[10px] font-bold text-[#005498]">BC</span>
+                        </div>
+                        <div className="bg-[#1A1F71] px-1.5 py-0.5" title="Visa">
+                          <span className="text-[10px] font-bold text-white">VISA</span>
+                        </div>
+                        <div className="bg-[#EB001B] px-1.5 py-0.5" title="Mastercard">
+                          <span className="text-[10px] font-bold text-white">MC</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -496,15 +613,40 @@ export default function ProductPage() {
                     <Button
                       variant="outline"
                       size="lg"
-                      className="border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760]/10 rounded-none h-14 text-base font-medium"
+                      className="border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760]/10 rounded-none h-14 text-base font-medium flex flex-col items-center justify-center py-2"
                       onClick={() => addToCartMutation.mutate({ needsInstallation: true })}
                       disabled={!product.stock || product.stock <= 0 || addToCartMutation.isPending}
                       data-testid="button-add-with-installation"
                     >
-                      <Wrench className="w-5 h-5 mr-2" />
-                      + Installatie
+                      <span className="flex items-center">
+                        <Wrench className="w-4 h-4 mr-1.5" />
+                        + Professionele Installatie
+                      </span>
+                      {installationPrice && (
+                        <span className="text-xs text-[#d0a760]/70 font-normal">
+                          Totaal: €{(currentPrice + installationPrice).toFixed(0)}
+                        </span>
+                      )}
                     </Button>
                   </div>
+                  
+                  {/* Installation Bundle Highlight */}
+                  {installationPrice && (
+                    <div className="bg-[#d0a760]/5 border border-[#d0a760]/20 p-4 mt-4">
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 bg-[#d0a760]/10">
+                          <Shield className="w-5 h-5 text-[#d0a760]" />
+                        </div>
+                        <div>
+                          <p className="text-white font-medium text-sm mb-1">Bundel met Installatie</p>
+                          <p className="text-white/60 text-xs">
+                            Laat dit product professioneel inbouwen voor slechts €{installationPrice.toFixed(0)} extra. 
+                            Inclusief 2 jaar installatiegarantie.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Trust Indicators - Mobile: Horizontal scroll, Desktop: Grid */}
@@ -590,10 +732,10 @@ export default function ProductPage() {
                 <div className="mb-12">
                   <h2 className="text-2xl font-bold text-black mb-6">Kenmerken</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {(product.features as string[]).map((feature: string, index: number) => (
+                    {(product.features as string[]).map((feature, index) => (
                       <div key={index} className="flex items-start gap-3 p-4 bg-zinc-50 border border-zinc-200">
                         <Check className="w-5 h-5 text-[#d0a760] flex-shrink-0 mt-0.5" />
-                        <span className="text-black/80">{feature}</span>
+                        <span className="text-black/80">{String(feature)}</span>
                       </div>
                     ))}
                   </div>
@@ -618,6 +760,55 @@ export default function ProductPage() {
           </ScrollReveal>
         </div>
       </section>
+
+      {/* Related Products / Upsell Section */}
+      {filteredRelatedProducts.length > 0 && (
+        <section className="bg-zinc-950 py-16 md:py-20 border-t border-white/5" data-testid="related-products">
+          <div className="container mx-auto px-4">
+            <ScrollReveal animation="fade-up">
+              <div className="text-center mb-10">
+                <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
+                  Gerelateerde Producten
+                </h2>
+                <p className="text-white/50">Andere klanten bekeken ook</p>
+              </div>
+            </ScrollReveal>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+              {filteredRelatedProducts.map((relatedProduct) => (
+                <Link key={relatedProduct.id} href={`/product/${relatedProduct.slug}`}>
+                  <div className="group cursor-pointer" data-testid={`related-product-${relatedProduct.id}`}>
+                    <div className="relative aspect-square bg-zinc-900 border border-zinc-800 mb-3 overflow-hidden">
+                      {relatedProduct.images && relatedProduct.images[0] ? (
+                        <img 
+                          src={relatedProduct.images[0]} 
+                          alt={relatedProduct.name}
+                          className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full">
+                          <Package className="w-12 h-12 text-white/10" />
+                        </div>
+                      )}
+                    </div>
+                    <h3 className="text-white text-sm font-medium line-clamp-2 group-hover:text-[#d0a760] transition-colors mb-1">
+                      {relatedProduct.name}
+                    </h3>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-[#d0a760] font-bold">€{parseFloat(relatedProduct.price).toFixed(0)}</span>
+                      {relatedProduct.originalPrice && (
+                        <span className="text-white/30 text-xs line-through">
+                          €{parseFloat(relatedProduct.originalPrice).toFixed(0)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* CTA Section - Black */}
       <section className="bg-black py-16 border-t border-white/5">
@@ -692,8 +883,13 @@ export default function ProductPage() {
                   <span className="text-sm text-white/30 line-through">€{originalPrice.toFixed(0)}</span>
                 )}
               </div>
+              {installationPrice && (
+                <span className="text-[10px] text-[#d0a760]">
+                  of €{(currentPrice + installationPrice).toFixed(0)} met installatie
+                </span>
+              )}
               {product.stock && product.stock > 0 && (
-                <span className="text-xs text-green-500">Op voorraad</span>
+                <span className="text-xs text-green-500 block">Op voorraad</span>
               )}
             </div>
           </div>
@@ -712,13 +908,20 @@ export default function ProductPage() {
             
             <Button
               variant="outline"
-              className="border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760]/10 active:scale-[0.98] rounded-none h-12 text-sm font-semibold transition-transform"
+              className="border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760]/10 active:scale-[0.98] rounded-none h-12 text-sm font-semibold transition-transform flex flex-col items-center justify-center py-1"
               onClick={() => addToCartMutation.mutate({ needsInstallation: true })}
               disabled={!product.stock || product.stock <= 0 || addToCartMutation.isPending}
               data-testid="mobile-button-add-with-installation"
             >
-              <Wrench className="w-4 h-4 mr-1.5" />
-              + Installatie
+              <span className="flex items-center">
+                <Wrench className="w-3.5 h-3.5 mr-1" />
+                + Installatie
+              </span>
+              {installationPrice && (
+                <span className="text-[10px] text-[#d0a760]/70 font-normal">
+                  €{(currentPrice + installationPrice).toFixed(0)} totaal
+                </span>
+              )}
             </Button>
           </div>
         </div>

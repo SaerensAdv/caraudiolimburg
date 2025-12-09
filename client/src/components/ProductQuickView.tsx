@@ -134,7 +134,7 @@ export function ProductQuickView({ product, isOpen, onClose }: ProductQuickViewP
                       <button
                         key={idx}
                         onClick={() => setCurrentImageIndex(idx)}
-                        className={`w-2 h-2 rounded-full transition-colors ${
+                        className={`w-2 h-2 transition-colors ${
                           idx === currentImageIndex ? 'bg-[#d0a760]' : 'bg-white/30'
                         }`}
                       />
@@ -183,7 +183,7 @@ export function ProductQuickView({ product, isOpen, onClose }: ProductQuickViewP
                     <ul className="space-y-2">
                       {product.features.slice(0, 4).map((feature, idx) => (
                         <li key={idx} className="text-white/70 text-sm flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 bg-[#d0a760] rounded-full" />
+                          <span className="w-1.5 h-1.5 bg-[#d0a760]" />
                           {feature}
                         </li>
                       ))}

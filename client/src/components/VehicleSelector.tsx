@@ -11,6 +11,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Search } from "lucide-react";
+import type { VehicleMake, VehicleModel } from "@shared/schema";
 
 export function VehicleSelector() {
   const [selectedMake, setSelectedMake] = useState<string>("");
@@ -18,11 +19,11 @@ export function VehicleSelector() {
   const [selectedYear, setSelectedYear] = useState<string>("");
   const [, setLocation] = useLocation();
 
-  const { data: vehicleMakes } = useQuery({
+  const { data: vehicleMakes = [] } = useQuery<VehicleMake[]>({
     queryKey: ["/api/vehicle-makes"],
   });
 
-  const { data: vehicleModels } = useQuery({
+  const { data: vehicleModels = [] } = useQuery<VehicleModel[]>({
     queryKey: ["/api/vehicle-models", selectedMake],
     enabled: !!selectedMake,
   });
@@ -49,7 +50,7 @@ export function VehicleSelector() {
               <SelectValue placeholder="Selecteer merk" />
             </SelectTrigger>
             <SelectContent>
-              {vehicleMakes?.map((make: any) => (
+              {vehicleMakes.map((make) => (
                 <SelectItem key={make.id} value={make.id}>
                   {make.name}
                 </SelectItem>
@@ -62,7 +63,7 @@ export function VehicleSelector() {
               <SelectValue placeholder="Selecteer model" />
             </SelectTrigger>
             <SelectContent>
-              {vehicleModels?.map((model: any) => (
+              {vehicleModels.map((model) => (
                 <SelectItem key={model.id} value={model.id}>
                   {model.name}
                 </SelectItem>

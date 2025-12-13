@@ -317,6 +317,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Product vehicle compatibility routes
+  app.get('/api/products/:id/compatibility', async (req, res) => {
+    try {
+      const productId = req.params.id;
+      const compatibility = await storage.getProductVehicleCompatibility(productId);
+      res.json(compatibility);
+    } catch (error) {
+      console.error("Error fetching product compatibility:", error);
+      res.status(500).json({ message: "Failed to fetch product compatibility" });
+    }
+  });
+
+  app.post('/api/products/:id/compatibility', isAdmin, async (req, res) => {
+    try {
+      const productId = req.params.id;
+      const { compatibility } = req.body;
+      
+      if (!Array.isArray(compatibility)) {
+        return res.status(400).json({ message: "Compatibility must be an array" });
+      }
+      
+      const result = await storage.setProductVehicleCompatibility(productId, compatibility);
+      res.json(result);
+    } catch (error) {
+      console.error("Error saving product compatibility:", error);
+      res.status(500).json({ message: "Failed to save product compatibility" });
+    }
+  });
+
+  app.delete('/api/products/:id/compatibility', isAdmin, async (req, res) => {
+    try {
+      const productId = req.params.id;
+      await storage.clearProductVehicleCompatibility(productId);
+      res.json({ message: "Product compatibility cleared" });
+    } catch (error) {
+      console.error("Error clearing product compatibility:", error);
+      res.status(500).json({ message: "Failed to clear product compatibility" });
+    }
+  });
+
+  // Get all vehicle models (for admin panel)
+  app.get('/api/vehicle-models', async (req, res) => {
+    try {
+      const models = await storage.getAllVehicleModels();
+      res.json(models);
+    } catch (error) {
+      console.error("Error fetching all vehicle models:", error);
+      res.status(500).json({ message: "Failed to fetch vehicle models" });
+    }
+  });
+
   // Category routes
   app.get('/api/categories', async (req, res) => {
     try {

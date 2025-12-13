@@ -462,6 +462,11 @@ export const insertWishlistSchema = createInsertSchema(wishlists).omit({
   createdAt: true,
 });
 
+export const insertProductVehicleCompatibilitySchema = createInsertSchema(productVehicleCompatibility).omit({
+  id: true,
+  createdAt: true,
+});
+
 export const insertBlogCategorySchema = createInsertSchema(blogCategories).omit({
   id: true,
   createdAt: true,
@@ -514,6 +519,9 @@ export type InsertReview = z.infer<typeof insertReviewSchema>;
 
 export type Wishlist = typeof wishlists.$inferSelect;
 export type InsertWishlist = z.infer<typeof insertWishlistSchema>;
+
+export type ProductVehicleCompatibility = typeof productVehicleCompatibility.$inferSelect;
+export type InsertProductVehicleCompatibility = z.infer<typeof insertProductVehicleCompatibilitySchema>;
 
 export type BlogCategory = typeof blogCategories.$inferSelect;
 export type InsertBlogCategory = z.infer<typeof insertBlogCategorySchema>;

@@ -44,6 +44,8 @@ import {
   type InsertBlogPost,
   type BlogCategory,
   type InsertBlogCategory,
+  type ProductVehicleCompatibility,
+  type InsertProductVehicleCompatibility,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, or, desc, asc, like, inArray } from "drizzle-orm";
@@ -167,6 +169,12 @@ export interface IStorage {
   deleteBlogPost(id: string): Promise<void>;
   incrementBlogPostViews(id: string): Promise<void>;
   getPublishedBlogPostsForSitemap(): Promise<{ slug: string; updatedAt: Date | null }[]>;
+
+  // Product vehicle compatibility operations
+  getProductVehicleCompatibility(productId: string): Promise<ProductVehicleCompatibility[]>;
+  setProductVehicleCompatibility(productId: string, compatibility: InsertProductVehicleCompatibility[]): Promise<ProductVehicleCompatibility[]>;
+  clearProductVehicleCompatibility(productId: string): Promise<void>;
+  getAllVehicleModels(): Promise<{ id: string; name: string; makeId: string }[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -820,6 +828,46 @@ export class DatabaseStorage implements IStorage {
       .from(blogPosts)
       .where(eq(blogPosts.status, "published"))
       .orderBy(desc(blogPosts.publishedAt));
+  }
+
+  // Product vehicle compatibility operations
+  async getProductVehicleCompatibility(productId: string): Promise<any[]> {
+    return await db
+      .select()
+      .from(productVehicleCompatibility)
+      .where(eq(productVehicleCompatibility.productId, productId));
+  }
+
+  async setProductVehicleCompatibility(productId: string, compatibility: any[]): Promise<any[]> {
+    // Delete existing compatibility records for this product
+    await db.delete(productVehicleCompatibility).where(eq(productVehicleCompatibility.productId, productId));
+    
+    // Insert new compatibility records
+    if (compatibility.length === 0) {
+      return [];
+    }
+    
+    const records = compatibility.map(c => ({
+      productId,
+      makeId: c.makeId,
+      modelId: c.modelId || null,
+      yearFrom: c.yearFrom || null,
+      yearTo: c.yearTo || null,
+      notes: c.notes || null,
+    }));
+    
+    return await db.insert(productVehicleCompatibility).values(records).returning();
+  }
+
+  async clearProductVehicleCompatibility(productId: string): Promise<void> {
+    await db.delete(productVehicleCompatibility).where(eq(productVehicleCompatibility.productId, productId));
+  }
+
+  async getAllVehicleModels(): Promise<{ id: string; name: string; makeId: string }[]> {
+    return await db
+      .select({ id: vehicleModels.id, name: vehicleModels.name, makeId: vehicleModels.makeId })
+      .from(vehicleModels)
+      .orderBy(asc(vehicleModels.name));
   }
 }
 

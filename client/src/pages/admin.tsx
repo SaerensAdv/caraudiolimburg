@@ -59,13 +59,21 @@ import {
   Menu,
   LogOut,
   ChevronRight,
+  ChevronDown,
   Euro,
   BarChart3,
-  Home
+  Home,
+  Car
 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { format } from "date-fns";
 import { nl } from "date-fns/locale";
-import type { Product, Order, Booking, QuoteRequest, User, BlogPost, BlogCategory } from "@shared/schema";
+import type { Product, Order, Booking, QuoteRequest, User, BlogPost, BlogCategory, VehicleMake, VehicleModel } from "@shared/schema";
 import { Link } from "wouter";
 
 import logoImage from "@assets/CAL white_1758369495328.png";
@@ -189,6 +197,22 @@ export default function Admin() {
   const [blogCategorySlug, setBlogCategorySlug] = useState('');
   const [blogCategoryDescription, setBlogCategoryDescription] = useState('');
 
+  // Vehicle compatibility state
+  const [vehicleCompatibility, setVehicleCompatibility] = useState<{makeId: string, modelId?: string}[]>([]);
+  const [expandedMakes, setExpandedMakes] = useState<Set<string>>(new Set());
+  const [vehicleCompatibilityOpen, setVehicleCompatibilityOpen] = useState(false);
+
+  // Vehicle data queries
+  const { data: vehicleMakes = [] } = useQuery<VehicleMake[]>({
+    queryKey: ["/api/vehicle-makes"],
+    enabled: isAuthenticated && user?.role === 'admin',
+  });
+
+  const { data: vehicleModels = [] } = useQuery<VehicleModel[]>({
+    queryKey: ["/api/vehicle-models"],
+    enabled: isAuthenticated && user?.role === 'admin',
+  });
+
   const createProductMutation = useMutation({
     mutationFn: async (data: ProductFormData) => {
       const payload = {
@@ -200,7 +224,14 @@ export default function Admin() {
         features,
         specifications,
       };
-      await apiRequest("POST", "/api/products", payload);
+      const response = await apiRequest("POST", "/api/products", payload);
+      const newProduct = await response.json();
+      
+      if (vehicleCompatibility.length > 0 && newProduct.id) {
+        await apiRequest("POST", `/api/products/${newProduct.id}/compatibility`, {
+          compatibility: vehicleCompatibility
+        });
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
@@ -215,6 +246,8 @@ export default function Admin() {
       setSpecifications({});
       setPrimaryImageIndex(0);
       setSelectedProduct(null);
+      setVehicleCompatibility([]);
+      setVehicleCompatibilityOpen(false);
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
@@ -252,6 +285,10 @@ export default function Admin() {
         specifications,
       };
       await apiRequest("PUT", `/api/products/${selectedProduct.id}`, payload);
+      
+      await apiRequest("POST", `/api/products/${selectedProduct.id}/compatibility`, {
+        compatibility: vehicleCompatibility
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
@@ -266,6 +303,8 @@ export default function Admin() {
       setSpecifications({});
       setPrimaryImageIndex(0);
       setSelectedProduct(null);
+      setVehicleCompatibility([]);
+      setVehicleCompatibilityOpen(false);
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
@@ -784,7 +823,7 @@ export default function Admin() {
     }
   };
 
-  const handleEditProduct = (product: Product) => {
+  const handleEditProduct = async (product: Product) => {
     setSelectedProduct(product);
     setValue("name", product.name);
     setValue("slug", product.slug);
@@ -806,6 +845,23 @@ export default function Admin() {
     setPrimaryImageIndex(product.primaryImageIndex || 0);
     setFeatures(Array.isArray(product.features) ? [...product.features] : []);
     setSpecifications(product.specifications ? {...product.specifications} : {});
+    
+    try {
+      const response = await fetch(`/api/products/${product.id}/compatibility`, {
+        credentials: 'include'
+      });
+      if (response.ok) {
+        const compatibility = await response.json();
+        setVehicleCompatibility(compatibility.map((c: any) => ({
+          makeId: c.makeId,
+          modelId: c.modelId || undefined
+        })));
+      } else {
+        setVehicleCompatibility([]);
+      }
+    } catch {
+      setVehicleCompatibility([]);
+    }
     
     setIsProductDialogOpen(true);
   };
@@ -1199,6 +1255,8 @@ export default function Admin() {
                       setSpecifications({});
                       setPrimaryImageIndex(0);
                       setSelectedProduct(null);
+                      setVehicleCompatibility([]);
+                      setVehicleCompatibilityOpen(false);
                     }
                   }}>
                     <DialogTrigger asChild>
@@ -1530,6 +1588,142 @@ export default function Admin() {
                               ))}
                             </div>
                           )}
+                        </div>
+
+                        {/* Vehicle Compatibility */}
+                        <div className="space-y-3">
+                          <Collapsible
+                            open={vehicleCompatibilityOpen}
+                            onOpenChange={setVehicleCompatibilityOpen}
+                          >
+                            <CollapsibleTrigger asChild>
+                              <button
+                                type="button"
+                                className="flex items-center justify-between w-full p-4 bg-zinc-800 border border-zinc-700 hover:bg-zinc-700/50 transition-colors"
+                                data-testid="toggle-vehicle-compatibility"
+                              >
+                                <div className="flex items-center gap-3">
+                                  <Car className="w-5 h-5 text-[#d0a760]" />
+                                  <span className="text-white font-medium">Voertuig Compatibiliteit</span>
+                                  {vehicleCompatibility.length > 0 && (
+                                    <Badge className="bg-[#d0a760]/20 text-[#d0a760] rounded-none">
+                                      {vehicleCompatibility.length} geselecteerd
+                                    </Badge>
+                                  )}
+                                </div>
+                                <ChevronDown className={`w-5 h-5 text-zinc-400 transition-transform ${vehicleCompatibilityOpen ? 'rotate-180' : ''}`} />
+                              </button>
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                              <div className="border border-t-0 border-zinc-700 bg-zinc-900 p-4 space-y-3 max-h-96 overflow-y-auto">
+                                {vehicleMakes.length === 0 ? (
+                                  <p className="text-zinc-500 text-sm">Geen voertuigmerken beschikbaar</p>
+                                ) : (
+                                  vehicleMakes.map((make) => {
+                                    const makeModels = vehicleModels.filter(m => m.makeId === make.id);
+                                    const isExpanded = expandedMakes.has(make.id);
+                                    const selectedModelsForMake = vehicleCompatibility.filter(c => c.makeId === make.id && c.modelId);
+                                    const hasAllModelsSelected = makeModels.length > 0 && selectedModelsForMake.length === makeModels.length;
+                                    const hasSomeModelsSelected = selectedModelsForMake.length > 0 && selectedModelsForMake.length < makeModels.length;
+                                    const hasMakeOnlySelected = vehicleCompatibility.some(c => c.makeId === make.id && !c.modelId);
+
+                                    return (
+                                      <div key={make.id} className="border border-zinc-700 bg-zinc-800">
+                                        <div className="flex items-center gap-3 p-3">
+                                          <Checkbox
+                                            id={`make-${make.id}`}
+                                            checked={hasAllModelsSelected || hasMakeOnlySelected}
+                                            className="border-zinc-600 data-[state=checked]:bg-[#d0a760] data-[state=checked]:border-[#d0a760]"
+                                            onCheckedChange={(checked) => {
+                                              if (checked) {
+                                                const newCompatibility = vehicleCompatibility.filter(c => c.makeId !== make.id);
+                                                if (makeModels.length > 0) {
+                                                  makeModels.forEach(model => {
+                                                    newCompatibility.push({ makeId: make.id, modelId: model.id });
+                                                  });
+                                                } else {
+                                                  newCompatibility.push({ makeId: make.id });
+                                                }
+                                                setVehicleCompatibility(newCompatibility);
+                                              } else {
+                                                setVehicleCompatibility(vehicleCompatibility.filter(c => c.makeId !== make.id));
+                                              }
+                                            }}
+                                            data-testid={`checkbox-make-${make.id}`}
+                                          />
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              const newExpanded = new Set(expandedMakes);
+                                              if (isExpanded) {
+                                                newExpanded.delete(make.id);
+                                              } else {
+                                                newExpanded.add(make.id);
+                                              }
+                                              setExpandedMakes(newExpanded);
+                                            }}
+                                            className="flex-1 flex items-center justify-between text-left"
+                                          >
+                                            <span className="text-white font-medium">{make.name}</span>
+                                            <div className="flex items-center gap-2">
+                                              {(hasSomeModelsSelected || hasAllModelsSelected) && (
+                                                <span className="text-xs text-zinc-400">
+                                                  {selectedModelsForMake.length}/{makeModels.length}
+                                                </span>
+                                              )}
+                                              {makeModels.length > 0 && (
+                                                <ChevronRight className={`w-4 h-4 text-zinc-400 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                                              )}
+                                            </div>
+                                          </button>
+                                        </div>
+                                        
+                                        {isExpanded && makeModels.length > 0 && (
+                                          <div className="border-t border-zinc-700 p-3 bg-zinc-900">
+                                            <div className="grid grid-cols-2 gap-2">
+                                              {makeModels.map((model) => {
+                                                const isSelected = vehicleCompatibility.some(
+                                                  c => c.makeId === make.id && c.modelId === model.id
+                                                );
+                                                return (
+                                                  <div key={model.id} className="flex items-center gap-2">
+                                                    <Checkbox
+                                                      id={`model-${model.id}`}
+                                                      checked={isSelected}
+                                                      className="border-zinc-600 data-[state=checked]:bg-[#d0a760] data-[state=checked]:border-[#d0a760]"
+                                                      onCheckedChange={(checked) => {
+                                                        if (checked) {
+                                                          setVehicleCompatibility([
+                                                            ...vehicleCompatibility.filter(c => !(c.makeId === make.id && !c.modelId)),
+                                                            { makeId: make.id, modelId: model.id }
+                                                          ]);
+                                                        } else {
+                                                          setVehicleCompatibility(
+                                                            vehicleCompatibility.filter(c => !(c.makeId === make.id && c.modelId === model.id))
+                                                          );
+                                                        }
+                                                      }}
+                                                      data-testid={`checkbox-model-${model.id}`}
+                                                    />
+                                                    <label
+                                                      htmlFor={`model-${model.id}`}
+                                                      className="text-sm text-zinc-300 cursor-pointer"
+                                                    >
+                                                      {model.name}
+                                                    </label>
+                                                  </div>
+                                                );
+                                              })}
+                                            </div>
+                                          </div>
+                                        )}
+                                      </div>
+                                    );
+                                  })
+                                )}
+                              </div>
+                            </CollapsibleContent>
+                          </Collapsible>
                         </div>
 
                         <Separator className="bg-zinc-700" />

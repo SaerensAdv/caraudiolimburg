@@ -9,6 +9,14 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
@@ -40,11 +48,14 @@ import {
   MessageCircle,
   ArrowRight,
   Heart,
-  Trash2
+  Trash2,
+  X,
+  Edit,
+  Send
 } from "lucide-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import type { Order, Booking, Product, Wishlist } from "@shared/schema";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import type { Order, Booking, Product, Wishlist, OrderItem } from "@shared/schema";
 
 export default function CustomerPortal() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -52,6 +63,26 @@ export default function CustomerPortal() {
   const [expandedOrders, setExpandedOrders] = useState<Set<number>>(new Set());
   const { isAuthenticated, isLoading, user } = useAuth();
   const { toast } = useToast();
+
+  // Order details state
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [isOrderDetailOpen, setIsOrderDetailOpen] = useState(false);
+
+  // Booking modify/cancel state
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [isBookingEditOpen, setIsBookingEditOpen] = useState(false);
+  const [isBookingCancelOpen, setIsBookingCancelOpen] = useState(false);
+  const [bookingEditDate, setBookingEditDate] = useState<Date | undefined>();
+  const [bookingEditNotes, setBookingEditNotes] = useState("");
+
+  // Profile edit state
+  const [isProfileEditOpen, setIsProfileEditOpen] = useState(false);
+  const [profileFirstName, setProfileFirstName] = useState("");
+  const [profileLastName, setProfileLastName] = useState("");
+
+  // Support form state
+  const [supportSubject, setSupportSubject] = useState("");
+  const [supportMessage, setSupportMessage] = useState("");
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -85,8 +116,6 @@ export default function CustomerPortal() {
     retry: false,
   });
 
-  const queryClient = useQueryClient();
-
   const removeFromWishlistMutation = useMutation({
     mutationFn: async (productId: string) => {
       await apiRequest("DELETE", `/api/wishlist/${productId}`);
@@ -106,6 +135,130 @@ export default function CustomerPortal() {
       });
     },
   });
+
+  // Order details query
+  const { data: orderDetails, isLoading: orderDetailsLoading } = useQuery<{
+    order: Order;
+    items: (OrderItem & { product: { id: string; name: string; price: string; images: string[] } })[];
+  }>({
+    queryKey: ['/api/orders', selectedOrderId],
+    queryFn: async () => {
+      const res = await fetch(`/api/orders/${selectedOrderId}`, { credentials: 'include' });
+      if (!res.ok) throw new Error('Failed to fetch order details');
+      return res.json();
+    },
+    enabled: !!selectedOrderId && isOrderDetailOpen,
+  });
+
+  // Booking update mutation
+  const updateBookingMutation = useMutation({
+    mutationFn: async ({ bookingId, updates }: { bookingId: string; updates: { scheduledDate?: string; notes?: string } }) => {
+      await apiRequest("PATCH", `/api/bookings/${bookingId}`, updates);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/my-bookings"] });
+      setIsBookingEditOpen(false);
+      toast({ title: "Afspraak bijgewerkt", description: "Je afspraak is succesvol aangepast." });
+    },
+    onError: () => {
+      toast({ title: "Fout", description: "Kon afspraak niet bijwerken.", variant: "destructive" });
+    },
+  });
+
+  // Booking cancel mutation
+  const cancelBookingMutation = useMutation({
+    mutationFn: async (bookingId: string) => {
+      await apiRequest("PATCH", `/api/bookings/${bookingId}/cancel`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/my-bookings"] });
+      setIsBookingCancelOpen(false);
+      toast({ title: "Afspraak geannuleerd", description: "Je afspraak is geannuleerd." });
+    },
+    onError: () => {
+      toast({ title: "Fout", description: "Kon afspraak niet annuleren.", variant: "destructive" });
+    },
+  });
+
+  // Profile update mutation
+  const updateProfileMutation = useMutation({
+    mutationFn: async (updates: { firstName?: string; lastName?: string }) => {
+      await apiRequest("PATCH", "/api/users/profile", updates);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      setIsProfileEditOpen(false);
+      toast({ title: "Profiel bijgewerkt", description: "Je gegevens zijn opgeslagen." });
+    },
+    onError: () => {
+      toast({ title: "Fout", description: "Kon profiel niet bijwerken.", variant: "destructive" });
+    },
+  });
+
+  // Support contact mutation
+  const submitSupportMutation = useMutation({
+    mutationFn: async (data: { subject: string; message: string }) => {
+      await apiRequest("POST", "/api/support-contact", data);
+    },
+    onSuccess: () => {
+      setSupportSubject("");
+      setSupportMessage("");
+      toast({ title: "Bericht verzonden", description: "We nemen zo snel mogelijk contact met je op." });
+    },
+    onError: () => {
+      toast({ title: "Fout", description: "Kon bericht niet verzenden.", variant: "destructive" });
+    },
+  });
+
+  // Helper functions
+  const openOrderDetails = (orderId: string) => {
+    setSelectedOrderId(orderId);
+    setIsOrderDetailOpen(true);
+  };
+
+  const openBookingEdit = (booking: Booking) => {
+    setSelectedBooking(booking);
+    setBookingEditDate(new Date(booking.scheduledDate));
+    setBookingEditNotes(booking.notes || "");
+    setIsBookingEditOpen(true);
+  };
+
+  const openBookingCancel = (booking: Booking) => {
+    setSelectedBooking(booking);
+    setIsBookingCancelOpen(true);
+  };
+
+  const openProfileEdit = () => {
+    setProfileFirstName(user?.firstName || "");
+    setProfileLastName(user?.lastName || "");
+    setIsProfileEditOpen(true);
+  };
+
+  const handleBookingUpdate = () => {
+    if (!selectedBooking || !bookingEditDate) return;
+    updateBookingMutation.mutate({
+      bookingId: selectedBooking.id,
+      updates: {
+        scheduledDate: bookingEditDate.toISOString(),
+        notes: bookingEditNotes,
+      },
+    });
+  };
+
+  const handleProfileUpdate = () => {
+    updateProfileMutation.mutate({
+      firstName: profileFirstName,
+      lastName: profileLastName,
+    });
+  };
+
+  const handleSupportSubmit = () => {
+    if (!supportSubject || !supportMessage) {
+      toast({ title: "Fout", description: "Vul alle velden in.", variant: "destructive" });
+      return;
+    }
+    submitSupportMutation.mutate({ subject: supportSubject, message: supportMessage });
+  };
 
   const toggleOrderExpand = (orderId: number) => {
     setExpandedOrders(prev => {
@@ -447,19 +600,19 @@ export default function CustomerPortal() {
                                         size="sm"
                                         className="text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-none h-8 px-3"
                                         data-testid={`button-view-order-${order.id}`}
+                                        onClick={() => openOrderDetails(order.id)}
                                       >
                                         <FileText className="h-4 w-4" />
                                       </Button>
-                                      {order.status === "delivered" && (
-                                        <Button
-                                          variant="ghost"
-                                          size="sm"
-                                          className="text-zinc-400 hover:text-[#d0a760] hover:bg-zinc-800 rounded-none h-8 px-3"
-                                          data-testid={`button-download-invoice-${order.id}`}
-                                        >
-                                          <Download className="h-4 w-4" />
-                                        </Button>
-                                      )}
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="text-zinc-400 hover:text-[#d0a760] hover:bg-zinc-800 rounded-none h-8 px-3"
+                                        data-testid={`button-download-invoice-${order.id}`}
+                                        onClick={() => window.open(`/api/orders/${order.id}/invoice`, '_blank')}
+                                      >
+                                        <Download className="h-4 w-4" />
+                                      </Button>
                                     </div>
                                   </td>
                                 </tr>
@@ -518,21 +671,21 @@ export default function CustomerPortal() {
                                         size="sm"
                                         className="flex-1 bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white hover:border-[#d0a760] rounded-none"
                                         data-testid={`button-view-order-mobile-${order.id}`}
+                                        onClick={() => openOrderDetails(order.id)}
                                       >
                                         <FileText className="h-4 w-4 mr-2" />
                                         Details
                                       </Button>
-                                      {order.status === "delivered" && (
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          className="flex-1 bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-[#d0a760] hover:border-[#d0a760] rounded-none"
-                                          data-testid={`button-download-invoice-mobile-${order.id}`}
-                                        >
-                                          <Download className="h-4 w-4 mr-2" />
-                                          Factuur
-                                        </Button>
-                                      )}
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="flex-1 bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-[#d0a760] hover:border-[#d0a760] rounded-none"
+                                        data-testid={`button-download-invoice-mobile-${order.id}`}
+                                        onClick={() => window.open(`/api/orders/${order.id}/invoice`, '_blank')}
+                                      >
+                                        <Download className="h-4 w-4 mr-2" />
+                                        Factuur
+                                      </Button>
                                     </div>
                                   </div>
                                 </CollapsibleContent>
@@ -658,9 +811,22 @@ export default function CustomerPortal() {
                                   size="sm"
                                   className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white hover:border-[#d0a760] rounded-none"
                                   data-testid={`button-reschedule-${booking.id}`}
+                                  onClick={() => openBookingEdit(booking)}
+                                  disabled={booking.status === "cancelled"}
                                 >
                                   <Calendar className="h-4 w-4 mr-2" />
                                   Verzetten
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-red-400 hover:border-red-400 rounded-none"
+                                  data-testid={`button-cancel-booking-${booking.id}`}
+                                  onClick={() => openBookingCancel(booking)}
+                                  disabled={booking.status === "cancelled"}
+                                >
+                                  <X className="h-4 w-4 mr-2" />
+                                  Annuleren
                                 </Button>
                                 <Button
                                   variant="outline"
@@ -818,7 +984,9 @@ export default function CustomerPortal() {
                             size="sm"
                             className="text-[#d0a760] hover:text-[#b8954e] hover:bg-zinc-900 rounded-none"
                             data-testid="button-edit-profile"
+                            onClick={openProfileEdit}
                           >
+                            <Edit className="h-4 w-4 mr-2" />
                             Bewerken
                           </Button>
                         </div>
@@ -995,20 +1163,66 @@ export default function CustomerPortal() {
                             </div>
                           </a>
 
-                          <Link href="/contact">
-                            <div className="flex items-center gap-4 p-4 bg-zinc-900/50 border border-zinc-800 hover:border-[#d0a760] transition-colors group cursor-pointer">
-                              <div className="w-12 h-12 bg-zinc-800 group-hover:bg-[#d0a760]/10 flex items-center justify-center transition-colors">
-                                <MessageCircle className="w-5 h-5 text-[#d0a760]" />
-                              </div>
-                              <div>
-                                <p className="text-white font-medium">Contactformulier</p>
-                                <p className="text-zinc-400">Stuur ons een bericht</p>
-                              </div>
-                            </div>
-                          </Link>
                         </div>
                       </div>
 
+                      {/* Inline Support Form */}
+                      <div className="bg-zinc-950 border border-zinc-800">
+                        <div className="px-6 py-4 border-b border-zinc-800">
+                          <h3 className="text-white font-medium flex items-center gap-2">
+                            <MessageCircle className="w-4 h-4 text-[#d0a760]" />
+                            Stuur een bericht
+                          </h3>
+                        </div>
+                        <div className="p-6 space-y-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="support-subject" className="text-zinc-400">Onderwerp</Label>
+                            <Select value={supportSubject} onValueChange={setSupportSubject}>
+                              <SelectTrigger 
+                                className="bg-zinc-900 border-zinc-700 text-white rounded-none" 
+                                data-testid="select-support-subject"
+                              >
+                                <SelectValue placeholder="Selecteer een onderwerp" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-zinc-900 border-zinc-700">
+                                <SelectItem value="order">Vraag over bestelling</SelectItem>
+                                <SelectItem value="booking">Vraag over afspraak</SelectItem>
+                                <SelectItem value="product">Vraag over product</SelectItem>
+                                <SelectItem value="installation">Installatie vraag</SelectItem>
+                                <SelectItem value="return">Retour verzoek</SelectItem>
+                                <SelectItem value="other">Anders</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="support-message" className="text-zinc-400">Bericht</Label>
+                            <Textarea
+                              id="support-message"
+                              value={supportMessage}
+                              onChange={(e) => setSupportMessage(e.target.value)}
+                              placeholder="Beschrijf je vraag of probleem..."
+                              className="bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-500 rounded-none min-h-[120px]"
+                              data-testid="textarea-support-message"
+                            />
+                          </div>
+                          <Button
+                            onClick={handleSupportSubmit}
+                            disabled={submitSupportMutation.isPending || !supportSubject || !supportMessage}
+                            className="w-full bg-[#d0a760] text-black hover:bg-[#b8954e] rounded-none"
+                            data-testid="button-submit-support"
+                          >
+                            {submitSupportMutation.isPending ? (
+                              <div className="w-4 h-4 border-2 border-black border-t-transparent animate-spin mr-2" />
+                            ) : (
+                              <Send className="h-4 w-4 mr-2" />
+                            )}
+                            Verstuur bericht
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-6">
                       {/* Quick Links */}
                       <div className="bg-zinc-950 border border-zinc-800">
                         <div className="px-6 py-4 border-b border-zinc-800">
@@ -1104,6 +1318,282 @@ export default function CustomerPortal() {
             </div>
           </div>
         </section>
+
+        {/* Order Details Dialog */}
+        <Dialog open={isOrderDetailOpen} onOpenChange={setIsOrderDetailOpen}>
+          <DialogContent className="bg-zinc-950 border-zinc-800 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-light flex items-center gap-2">
+                <Package className="w-5 h-5 text-[#d0a760]" />
+                Bestelgegevens {orderDetails?.order?.orderNumber && `#${orderDetails.order.orderNumber}`}
+              </DialogTitle>
+              <DialogDescription className="text-zinc-400">
+                Bekijk de details van je bestelling
+              </DialogDescription>
+            </DialogHeader>
+            
+            {orderDetailsLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="w-6 h-6 border-2 border-[#d0a760] border-t-transparent animate-spin" />
+              </div>
+            ) : orderDetails ? (
+              <div className="space-y-6">
+                {/* Order Status */}
+                <div className="flex items-center justify-between p-4 bg-zinc-900 border border-zinc-800">
+                  <span className="text-zinc-400">Status</span>
+                  <Badge className={`${getStatusColor(orderDetails.order.status)} border rounded-none px-2 py-1 text-xs font-medium`}>
+                    {getStatusIcon(orderDetails.order.status)}
+                    <span className="ml-1.5">{getStatusLabel(orderDetails.order.status)}</span>
+                  </Badge>
+                </div>
+
+                {/* Products */}
+                <div>
+                  <h4 className="text-white font-medium mb-3 flex items-center gap-2">
+                    <Package className="w-4 h-4 text-[#d0a760]" />
+                    Producten
+                  </h4>
+                  <div className="space-y-2">
+                    {orderDetails.items.map((item, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-zinc-900 border border-zinc-800" data-testid={`order-item-${index}`}>
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 bg-zinc-800 flex items-center justify-center">
+                            {item.product?.images?.[0] ? (
+                              <img src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <Package className="w-6 h-6 text-zinc-600" />
+                            )}
+                          </div>
+                          <div>
+                            <p className="text-white">{item.product?.name || 'Product'}</p>
+                            <p className="text-zinc-500 text-sm">Aantal: {item.quantity}</p>
+                          </div>
+                        </div>
+                        <span className="text-[#d0a760] font-medium">€{parseFloat(item.price).toFixed(2)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Shipping Address */}
+                {orderDetails.order.shippingAddress && (
+                  <div>
+                    <h4 className="text-white font-medium mb-3 flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-[#d0a760]" />
+                      Verzendadres
+                    </h4>
+                    <div className="p-4 bg-zinc-900 border border-zinc-800">
+                      {(() => {
+                        const addr = orderDetails.order.shippingAddress as any;
+                        return (
+                          <>
+                            <p className="text-white">{addr.firstName} {addr.lastName}</p>
+                            <p className="text-zinc-400">{addr.address}</p>
+                            <p className="text-zinc-400">{addr.postalCode} {addr.city}</p>
+                            <p className="text-zinc-400">{addr.country || 'Nederland'}</p>
+                          </>
+                        );
+                      })()}
+                    </div>
+                  </div>
+                )}
+
+                {/* Total */}
+                <div className="flex items-center justify-between p-4 bg-zinc-900 border border-[#d0a760]/30">
+                  <span className="text-white font-medium">Totaal</span>
+                  <span className="text-[#d0a760] text-xl font-medium">€{parseFloat(orderDetails.order.total).toFixed(2)}</span>
+                </div>
+              </div>
+            ) : (
+              <p className="text-zinc-400 text-center py-8">Bestelling niet gevonden</p>
+            )}
+
+            <DialogFooter>
+              <Button
+                onClick={() => setIsOrderDetailOpen(false)}
+                className="bg-zinc-800 text-white hover:bg-zinc-700 rounded-none"
+                data-testid="button-close-order-dialog"
+              >
+                Sluiten
+              </Button>
+              {orderDetails && (
+                <Button
+                  onClick={() => window.open(`/api/orders/${orderDetails.order.id}/invoice`, '_blank')}
+                  className="bg-[#d0a760] text-black hover:bg-[#b8954e] rounded-none"
+                  data-testid="button-download-invoice-dialog"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Download factuur
+                </Button>
+              )}
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Booking Edit Dialog */}
+        <Dialog open={isBookingEditOpen} onOpenChange={setIsBookingEditOpen}>
+          <DialogContent className="bg-zinc-950 border-zinc-800 text-white max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-light flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-[#d0a760]" />
+                Afspraak verzetten
+              </DialogTitle>
+              <DialogDescription className="text-zinc-400">
+                Kies een nieuwe datum voor je afspraak
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label className="text-zinc-400">Nieuwe datum</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start bg-zinc-900 border-zinc-700 text-white hover:bg-zinc-800 rounded-none"
+                      data-testid="button-select-date"
+                    >
+                      <Calendar className="mr-2 h-4 w-4" />
+                      {bookingEditDate ? format(bookingEditDate, "d MMMM yyyy", { locale: nl }) : "Selecteer datum"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-zinc-900 border-zinc-700">
+                    <CalendarComponent
+                      mode="single"
+                      selected={bookingEditDate}
+                      onSelect={setBookingEditDate}
+                      disabled={(date) => date < new Date()}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-zinc-400">Opmerkingen</Label>
+                <Textarea
+                  value={bookingEditNotes}
+                  onChange={(e) => setBookingEditNotes(e.target.value)}
+                  placeholder="Extra opmerkingen..."
+                  className="bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-500 rounded-none"
+                  data-testid="textarea-booking-notes"
+                />
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button
+                onClick={() => setIsBookingEditOpen(false)}
+                variant="outline"
+                className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 rounded-none"
+                data-testid="button-cancel-booking-edit"
+              >
+                Annuleren
+              </Button>
+              <Button
+                onClick={handleBookingUpdate}
+                disabled={updateBookingMutation.isPending || !bookingEditDate}
+                className="bg-[#d0a760] text-black hover:bg-[#b8954e] rounded-none"
+                data-testid="button-save-booking"
+              >
+                {updateBookingMutation.isPending ? (
+                  <div className="w-4 h-4 border-2 border-black border-t-transparent animate-spin mr-2" />
+                ) : null}
+                Opslaan
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Booking Cancel Confirmation */}
+        <AlertDialog open={isBookingCancelOpen} onOpenChange={setIsBookingCancelOpen}>
+          <AlertDialogContent className="bg-zinc-950 border-zinc-800">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-white">Afspraak annuleren</AlertDialogTitle>
+              <AlertDialogDescription className="text-zinc-400">
+                Weet je zeker dat je deze afspraak wilt annuleren? Dit kan niet ongedaan worden gemaakt.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel 
+                className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 rounded-none"
+                data-testid="button-cancel-cancel"
+              >
+                Terug
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => selectedBooking && cancelBookingMutation.mutate(selectedBooking.id)}
+                className="bg-red-600 text-white hover:bg-red-700 rounded-none"
+                data-testid="button-confirm-cancel"
+              >
+                {cancelBookingMutation.isPending ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent animate-spin mr-2" />
+                ) : null}
+                Annuleren
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Profile Edit Dialog */}
+        <Dialog open={isProfileEditOpen} onOpenChange={setIsProfileEditOpen}>
+          <DialogContent className="bg-zinc-950 border-zinc-800 text-white max-w-md">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-light flex items-center gap-2">
+                <User className="w-5 h-5 text-[#d0a760]" />
+                Profiel bewerken
+              </DialogTitle>
+              <DialogDescription className="text-zinc-400">
+                Pas je persoonlijke gegevens aan
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label className="text-zinc-400">Voornaam</Label>
+                <Input
+                  value={profileFirstName}
+                  onChange={(e) => setProfileFirstName(e.target.value)}
+                  placeholder="Voornaam"
+                  className="bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-500 rounded-none"
+                  data-testid="input-first-name"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-zinc-400">Achternaam</Label>
+                <Input
+                  value={profileLastName}
+                  onChange={(e) => setProfileLastName(e.target.value)}
+                  placeholder="Achternaam"
+                  className="bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-500 rounded-none"
+                  data-testid="input-last-name"
+                />
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button
+                onClick={() => setIsProfileEditOpen(false)}
+                variant="outline"
+                className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 rounded-none"
+                data-testid="button-cancel-profile-edit"
+              >
+                Annuleren
+              </Button>
+              <Button
+                onClick={handleProfileUpdate}
+                disabled={updateProfileMutation.isPending}
+                className="bg-[#d0a760] text-black hover:bg-[#b8954e] rounded-none"
+                data-testid="button-save-profile"
+              >
+                {updateProfileMutation.isPending ? (
+                  <div className="w-4 h-4 border-2 border-black border-t-transparent animate-spin mr-2" />
+                ) : null}
+                Opslaan
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </main>
 
       <Footer />

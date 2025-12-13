@@ -142,6 +142,224 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Order details with items (for customer portal)
+  app.get('/api/orders/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const orderId = req.params.id;
+      
+      const result = await storage.getOrderWithItems(orderId);
+      if (!result) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      // Check ownership
+      if (result.order.userId !== userId) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+      
+      res.json(result);
+    } catch (error) {
+      console.error("Error fetching order details:", error);
+      res.status(500).json({ message: "Failed to fetch order details" });
+    }
+  });
+
+  // Invoice download
+  app.get('/api/orders/:id/invoice', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const orderId = req.params.id;
+      
+      const result = await storage.getOrderWithItems(orderId);
+      if (!result) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      if (result.order.userId !== userId) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+
+      const { order, items } = result;
+      const shippingAddress = order.shippingAddress as any || {};
+      
+      const invoiceHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Factuur ${order.orderNumber}</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; color: #333; }
+    .header { display: flex; justify-content: space-between; margin-bottom: 40px; }
+    .logo { font-size: 24px; font-weight: bold; color: #d0a760; }
+    .invoice-info { text-align: right; }
+    .address { margin-bottom: 30px; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+    th { background: #f5f5f5; }
+    .total-row { font-weight: bold; font-size: 16px; }
+    .footer { margin-top: 40px; text-align: center; color: #666; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">Car Audio Limburg</div>
+    <div class="invoice-info">
+      <h2>FACTUUR</h2>
+      <p>Factuurnummer: ${order.orderNumber}</p>
+      <p>Datum: ${new Date(order.createdAt).toLocaleDateString('nl-NL')}</p>
+    </div>
+  </div>
+  
+  <div class="address">
+    <strong>Verzendadres:</strong><br>
+    ${shippingAddress.firstName || ''} ${shippingAddress.lastName || ''}<br>
+    ${shippingAddress.address || ''}<br>
+    ${shippingAddress.postalCode || ''} ${shippingAddress.city || ''}<br>
+    ${shippingAddress.country || 'Nederland'}
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Aantal</th>
+        <th>Prijs</th>
+        <th>Totaal</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${items.map(item => `
+        <tr>
+          <td>${item.product?.name || 'Product'}</td>
+          <td>${item.quantity}</td>
+          <td>€${parseFloat(item.price).toFixed(2)}</td>
+          <td>€${(parseFloat(item.price) * item.quantity).toFixed(2)}</td>
+        </tr>
+      `).join('')}
+      <tr class="total-row">
+        <td colspan="3">Totaal</td>
+        <td>€${parseFloat(order.total).toFixed(2)}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="footer">
+    <p>Car Audio Limburg | Bedankt voor uw bestelling!</p>
+    <p>www.caraudiolimburg.nl</p>
+  </div>
+</body>
+</html>`;
+
+      res.setHeader('Content-Type', 'text/html');
+      res.setHeader('Content-Disposition', `attachment; filename="factuur-${order.orderNumber}.html"`);
+      res.send(invoiceHtml);
+    } catch (error) {
+      console.error("Error generating invoice:", error);
+      res.status(500).json({ message: "Failed to generate invoice" });
+    }
+  });
+
+  // Update booking
+  app.patch('/api/bookings/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const bookingId = req.params.id;
+      
+      const booking = await storage.getBooking(bookingId);
+      if (!booking) {
+        return res.status(404).json({ message: "Booking not found" });
+      }
+      
+      if (booking.userId !== userId) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+
+      const { scheduledDate, notes } = req.body;
+      const updates: any = {};
+      if (scheduledDate) updates.scheduledDate = new Date(scheduledDate);
+      if (notes !== undefined) updates.notes = notes;
+
+      const updated = await storage.updateBooking(bookingId, updates);
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating booking:", error);
+      res.status(500).json({ message: "Failed to update booking" });
+    }
+  });
+
+  // Cancel booking
+  app.patch('/api/bookings/:id/cancel', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const bookingId = req.params.id;
+      
+      const booking = await storage.getBooking(bookingId);
+      if (!booking) {
+        return res.status(404).json({ message: "Booking not found" });
+      }
+      
+      if (booking.userId !== userId) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+
+      const updated = await storage.cancelBooking(bookingId);
+      res.json(updated);
+    } catch (error) {
+      console.error("Error cancelling booking:", error);
+      res.status(500).json({ message: "Failed to cancel booking" });
+    }
+  });
+
+  // Update user profile
+  app.patch('/api/users/profile', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { firstName, lastName } = req.body;
+
+      const updates: any = {};
+      if (firstName !== undefined) updates.firstName = firstName;
+      if (lastName !== undefined) updates.lastName = lastName;
+
+      const updated = await storage.updateUser(userId, updates);
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
+  // Support contact form
+  app.post('/api/support-contact', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+      const { subject, message } = req.body;
+
+      if (!subject || !message) {
+        return res.status(400).json({ message: "Subject and message are required" });
+      }
+
+      // Create a quote request as a support inquiry
+      const supportRequest = await storage.createQuoteRequest({
+        firstName: user?.firstName || 'Klant',
+        lastName: user?.lastName || '',
+        email: user?.email || '',
+        phone: '-',
+        vehicleMake: 'Support',
+        vehicleModel: subject,
+        vehicleYear: new Date().getFullYear(),
+        description: `Support verzoek van ${user?.email}:\n\n${message}`,
+      });
+
+      res.json({ success: true, id: supportRequest.id });
+    } catch (error) {
+      console.error("Error creating support request:", error);
+      res.status(500).json({ message: "Failed to send support request" });
+    }
+  });
+
   // Search autocomplete route
   app.get('/api/search/autocomplete', async (req, res) => {
     try {

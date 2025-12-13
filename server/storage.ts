@@ -108,6 +108,7 @@ export interface IStorage {
   getOrders(userId?: string): Promise<Order[]>;
   getOrdersByUserId(userId: string): Promise<Order[]>;
   getOrder(id: string): Promise<Order | undefined>;
+  getOrderWithItems(id: string): Promise<{ order: Order; items: (OrderItem & { product: Product })[] } | undefined>;
   updateOrderStatus(id: string, status: string): Promise<Order>;
 
   // Booking operations
@@ -115,6 +116,8 @@ export interface IStorage {
   getBookingsByUserId(userId: string): Promise<Booking[]>;
   getBooking(id: string): Promise<Booking | undefined>;
   createBooking(booking: InsertBooking): Promise<Booking>;
+  updateBooking(id: string, updates: Partial<InsertBooking>): Promise<Booking>;
+  cancelBooking(id: string): Promise<Booking>;
   updateBookingStatus(id: string, status: string): Promise<Booking>;
   getAvailableTimeSlots(date: string, serviceType: string): Promise<string[]>;
 
@@ -475,6 +478,31 @@ export class DatabaseStorage implements IStorage {
     return order;
   }
 
+  async getOrderWithItems(id: string): Promise<{ order: Order; items: (OrderItem & { product: Product })[] } | undefined> {
+    const [order] = await db.select().from(orders).where(eq(orders.id, id));
+    if (!order) return undefined;
+
+    const items = await db
+      .select({
+        id: orderItems.id,
+        orderId: orderItems.orderId,
+        productId: orderItems.productId,
+        quantity: orderItems.quantity,
+        price: orderItems.price,
+        needsInstallation: orderItems.needsInstallation,
+        createdAt: orderItems.createdAt,
+        product: products,
+      })
+      .from(orderItems)
+      .leftJoin(products, eq(orderItems.productId, products.id))
+      .where(eq(orderItems.orderId, id));
+
+    return { 
+      order, 
+      items: items.filter(item => item.product !== null) as (OrderItem & { product: Product })[] 
+    };
+  }
+
   async updateOrderStatus(id: string, status: string): Promise<Order> {
     const [updated] = await db
       .update(orders)
@@ -506,6 +534,24 @@ export class DatabaseStorage implements IStorage {
   async createBooking(booking: InsertBooking): Promise<Booking> {
     const [newBooking] = await db.insert(bookings).values(booking).returning();
     return newBooking;
+  }
+
+  async updateBooking(id: string, updates: Partial<InsertBooking>): Promise<Booking> {
+    const [updated] = await db
+      .update(bookings)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(bookings.id, id))
+      .returning();
+    return updated;
+  }
+
+  async cancelBooking(id: string): Promise<Booking> {
+    const [updated] = await db
+      .update(bookings)
+      .set({ status: "cancelled", updatedAt: new Date() })
+      .where(eq(bookings.id, id))
+      .returning();
+    return updated;
   }
 
   async updateBookingStatus(id: string, status: string): Promise<Booking> {

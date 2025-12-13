@@ -871,7 +871,7 @@ export default function Admin() {
   const totalOrders = orders?.length || 0;
   const totalBookings = bookings?.length || 0;
   const pendingQuotes = quoteRequests?.filter((q: QuoteRequest) => q.status === 'pending').length || 0;
-  const totalRevenue = orders?.reduce((sum: number, order: Order) => sum + parseFloat(order.totalAmount || '0'), 0) || 0;
+  const totalRevenue = orders?.reduce((sum: number, order: Order) => sum + parseFloat(order.total || '0'), 0) || 0;
 
   const navItems = [
     { id: 'dashboard' as AdminSection, label: 'Dashboard', icon: LayoutDashboard },
@@ -2003,7 +2003,7 @@ export default function Admin() {
                         <TableRow key={order.id} className="border-zinc-800 hover:bg-zinc-800/50" data-testid={`order-row-${order.id}`}>
                           <TableCell className="font-medium text-white">{order.orderNumber}</TableCell>
                           <TableCell className="text-zinc-300">Klant</TableCell>
-                          <TableCell className="text-[#d0a760] font-semibold">€{parseFloat(order.totalAmount).toFixed(2)}</TableCell>
+                          <TableCell className="text-[#d0a760] font-semibold">€{parseFloat(order.total).toFixed(2)}</TableCell>
                           <TableCell>
                             <Select 
                               value={order.status || 'pending'} 
@@ -2065,7 +2065,7 @@ export default function Admin() {
                             {order.createdAt ? format(new Date(order.createdAt), "dd MMM yyyy", { locale: nl }) : "-"}
                           </p>
                         </div>
-                        <p className="text-[#d0a760] font-bold text-lg">€{parseFloat(order.totalAmount).toFixed(2)}</p>
+                        <p className="text-[#d0a760] font-bold text-lg">€{parseFloat(order.total).toFixed(2)}</p>
                       </div>
                       <Select 
                         value={order.status || 'pending'} 

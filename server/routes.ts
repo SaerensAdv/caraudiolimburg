@@ -686,7 +686,7 @@ ${message || 'Geen aanvullende informatie'}`
             userId,
             orderNumber,
             status: "confirmed",
-            totalAmount: expectedTotal.toString(),
+            total: expectedTotal.toString(),
             stripePaymentIntentId: paymentIntentId,
             shippingAddress: {}, // Default empty shipping for 3DS return
           });
@@ -786,7 +786,7 @@ ${message || 'Geen aanvullende informatie'}`
         userId,
         orderNumber,
         status: "confirmed",
-        totalAmount: total.toString(),
+        total: total.toString(),
         stripePaymentIntentId: paymentIntentId,
         shippingAddress: shippingDetails,
       });
@@ -910,7 +910,7 @@ ${message || 'Geen aanvullende informatie'}`
         userId,
         orderNumber,
         status: "confirmed",
-        totalAmount: expectedTotal.toString(),
+        total: expectedTotal.toString(),
         stripePaymentIntentId: paymentIntentId,
         shippingAddress: shippingDetails || {},
       });

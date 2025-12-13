@@ -235,7 +235,7 @@ export default function OrderConfirmationPage() {
                       <div>
                         <span className="text-white/60 text-sm block mb-1">Totaal bedrag</span>
                         <p className="font-semibold text-[#d0a760] text-2xl">
-                          €{parseFloat(orderData.totalAmount).toFixed(2)}
+                          €{parseFloat(orderData.total).toFixed(2)}
                         </p>
                       </div>
                       <div>

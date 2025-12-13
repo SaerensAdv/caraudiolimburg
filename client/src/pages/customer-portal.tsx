@@ -438,7 +438,7 @@ export default function CustomerPortal() {
                                     </Badge>
                                   </td>
                                   <td className="px-6 py-4 text-right">
-                                    <span className="text-[#d0a760] font-medium">€{order.totalAmount}</span>
+                                    <span className="text-[#d0a760] font-medium">€{order.total}</span>
                                   </td>
                                   <td className="px-6 py-4 text-right">
                                     <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -490,7 +490,7 @@ export default function CustomerPortal() {
                                     </div>
                                   </div>
                                   <div className="flex items-center gap-3">
-                                    <span className="text-[#d0a760] font-medium">€{order.totalAmount}</span>
+                                    <span className="text-[#d0a760] font-medium">€{order.total}</span>
                                     <ChevronDown className={`w-5 h-5 text-zinc-500 transition-transform ${expandedOrders.has(order.id) ? 'rotate-180' : ''}`} />
                                   </div>
                                 </CollapsibleTrigger>

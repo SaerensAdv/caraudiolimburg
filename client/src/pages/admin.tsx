@@ -1,4 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -105,6 +114,9 @@ export default function Admin() {
   const [specifications, setSpecifications] = useState<Record<string, any>>({});
   const [newSpecKey, setNewSpecKey] = useState('');
   const [newSpecValue, setNewSpecValue] = useState('');
+  const [productSearch, setProductSearch] = useState('');
+  const [productCategoryFilter, setProductCategoryFilter] = useState('');
+  const [productBrandFilter, setProductBrandFilter] = useState('');
   const { isAuthenticated, user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -212,6 +224,41 @@ export default function Admin() {
     queryKey: ["/api/vehicle-models"],
     enabled: isAuthenticated && user?.role === 'admin',
   });
+
+  const filteredProducts = useMemo(() => {
+    return products.filter((product: Product) => {
+      const matchesSearch = productSearch === '' || 
+        product.name.toLowerCase().includes(productSearch.toLowerCase());
+      const matchesCategory = productCategoryFilter === '' || 
+        product.categoryId === productCategoryFilter;
+      const matchesBrand = productBrandFilter === '' || 
+        product.brandId === productBrandFilter;
+      return matchesSearch && matchesCategory && matchesBrand;
+    });
+  }, [products, productSearch, productCategoryFilter, productBrandFilter]);
+
+  const orderStatusData = useMemo(() => {
+    const statusCounts: Record<string, number> = {
+      pending: 0,
+      processing: 0,
+      shipped: 0,
+      delivered: 0,
+      cancelled: 0,
+    };
+    orders.forEach((order: Order) => {
+      const status = order.status || 'pending';
+      if (statusCounts.hasOwnProperty(status)) {
+        statusCounts[status]++;
+      }
+    });
+    return [
+      { name: 'In afwachting', value: statusCounts.pending, status: 'pending' },
+      { name: 'Verwerking', value: statusCounts.processing, status: 'processing' },
+      { name: 'Verzonden', value: statusCounts.shipped, status: 'shipped' },
+      { name: 'Geleverd', value: statusCounts.delivered, status: 'delivered' },
+      { name: 'Geannuleerd', value: statusCounts.cancelled, status: 'cancelled' },
+    ];
+  }, [orders]);
 
   const createProductMutation = useMutation({
     mutationFn: async (data: ProductFormData) => {
@@ -1150,6 +1197,81 @@ export default function Admin() {
                 </div>
               </div>
 
+              {/* Statistics Charts */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4" data-testid="dashboard-charts-section">
+                {/* Orders by Status Chart */}
+                <div className="bg-zinc-900 border border-zinc-800 p-6" data-testid="chart-orders-status">
+                  <h3 className="text-lg font-semibold text-white mb-4">Bestellingen per Status</h3>
+                  <div className="h-64">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={orderStatusData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#3f3f46" />
+                        <XAxis 
+                          dataKey="name" 
+                          tick={{ fill: '#a1a1aa', fontSize: 12 }}
+                          axisLine={{ stroke: '#3f3f46' }}
+                          tickLine={{ stroke: '#3f3f46' }}
+                        />
+                        <YAxis 
+                          tick={{ fill: '#a1a1aa', fontSize: 12 }}
+                          axisLine={{ stroke: '#3f3f46' }}
+                          tickLine={{ stroke: '#3f3f46' }}
+                          allowDecimals={false}
+                        />
+                        <Tooltip 
+                          contentStyle={{ 
+                            backgroundColor: '#18181b', 
+                            border: '1px solid #3f3f46',
+                            borderRadius: 0,
+                            color: '#fff'
+                          }}
+                          labelStyle={{ color: '#d0a760' }}
+                        />
+                        <Bar dataKey="value" fill="#d0a760" radius={[2, 2, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                {/* Revenue Overview Card */}
+                <div className="bg-zinc-900 border border-zinc-800 p-6" data-testid="chart-revenue-overview">
+                  <h3 className="text-lg font-semibold text-white mb-4">Omzet Overzicht</h3>
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between p-4 bg-zinc-800 border border-zinc-700">
+                      <div>
+                        <p className="text-sm text-zinc-400">Totale Omzet</p>
+                        <p className="text-2xl font-bold text-[#d0a760]">
+                          €{totalRevenue.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </p>
+                      </div>
+                      <div className="w-12 h-12 bg-[#d0a760]/10 border border-[#d0a760]/30 flex items-center justify-center">
+                        <Euro className="w-6 h-6 text-[#d0a760]" />
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-zinc-800 border border-zinc-700">
+                      <div>
+                        <p className="text-sm text-zinc-400">Gemiddelde Orderwaarde</p>
+                        <p className="text-2xl font-bold text-white">
+                          €{totalOrders > 0 ? (totalRevenue / totalOrders).toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00'}
+                        </p>
+                      </div>
+                      <div className="w-12 h-12 bg-zinc-700 border border-zinc-600 flex items-center justify-center">
+                        <TrendingUp className="w-6 h-6 text-zinc-400" />
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-zinc-800 border border-zinc-700">
+                      <div>
+                        <p className="text-sm text-zinc-400">Totaal Bestellingen</p>
+                        <p className="text-2xl font-bold text-white">{totalOrders}</p>
+                      </div>
+                      <div className="w-12 h-12 bg-zinc-700 border border-zinc-600 flex items-center justify-center">
+                        <ShoppingCart className="w-6 h-6 text-zinc-400" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Quick Actions */}
               <div className="bg-zinc-900 border border-zinc-800 p-6">
                 <h3 className="text-lg font-semibold text-white mb-4">Snelle Acties</h3>
@@ -1802,6 +1924,76 @@ export default function Admin() {
                 </div>
               </div>
 
+              {/* Product Search and Filters */}
+              <div className="bg-zinc-900 border border-zinc-800 p-4" data-testid="product-filters-section">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <Label className="text-zinc-400 text-sm mb-2 block">Zoeken</Label>
+                    <Input
+                      type="text"
+                      placeholder="Zoek op productnaam..."
+                      value={productSearch}
+                      onChange={(e) => setProductSearch(e.target.value)}
+                      className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500 rounded-none focus:border-[#d0a760]"
+                      data-testid="input-product-search"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-zinc-400 text-sm mb-2 block">Categorie</Label>
+                    <Select value={productCategoryFilter || "all"} onValueChange={(val) => setProductCategoryFilter(val === "all" ? "" : val)}>
+                      <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]" data-testid="select-product-category">
+                        <SelectValue placeholder="Alle categorieën" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-zinc-800 border-zinc-700 rounded-none">
+                        <SelectItem value="all" className="text-white hover:bg-zinc-700">Alle categorieën</SelectItem>
+                        {categories.filter((c: any) => c.id).map((category: any) => (
+                          <SelectItem key={category.id} value={category.id} className="text-white hover:bg-zinc-700">
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-zinc-400 text-sm mb-2 block">Merk</Label>
+                    <Select value={productBrandFilter || "all"} onValueChange={(val) => setProductBrandFilter(val === "all" ? "" : val)}>
+                      <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]" data-testid="select-product-brand">
+                        <SelectValue placeholder="Alle merken" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-zinc-800 border-zinc-700 rounded-none">
+                        <SelectItem value="all" className="text-white hover:bg-zinc-700">Alle merken</SelectItem>
+                        {brands.filter((b: any) => b.id).map((brand: any) => (
+                          <SelectItem key={brand.id} value={brand.id} className="text-white hover:bg-zinc-700">
+                            {brand.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                {(productSearch || productCategoryFilter || productBrandFilter) && (
+                  <div className="mt-3 flex items-center justify-between">
+                    <p className="text-sm text-zinc-400">
+                      {filteredProducts.length} van {products.length} producten gevonden
+                    </p>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setProductSearch('');
+                        setProductCategoryFilter('');
+                        setProductBrandFilter('');
+                      }}
+                      className="text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-none"
+                      data-testid="button-clear-filters"
+                    >
+                      <X className="w-4 h-4 mr-1" />
+                      Filters wissen
+                    </Button>
+                  </div>
+                )}
+              </div>
+
               {/* Products Table - Desktop */}
               <div className="hidden md:block bg-zinc-900 border border-zinc-800 overflow-hidden">
                 <Table>
@@ -1825,15 +2017,15 @@ export default function Admin() {
                           <TableCell><div className="h-4 bg-zinc-800 animate-pulse w-24"></div></TableCell>
                         </TableRow>
                       ))
-                    ) : products?.length === 0 ? (
+                    ) : filteredProducts?.length === 0 ? (
                       <TableRow className="border-zinc-800">
                         <TableCell colSpan={5} className="text-center text-zinc-500 py-12">
                           <Package className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                          <p>Nog geen producten toegevoegd</p>
+                          <p>{products.length === 0 ? 'Nog geen producten toegevoegd' : 'Geen producten gevonden'}</p>
                         </TableCell>
                       </TableRow>
                     ) : (
-                      products?.map((product: Product) => (
+                      filteredProducts?.map((product: Product) => (
                         <TableRow key={product.id} className="border-zinc-800 hover:bg-zinc-800/50" data-testid={`product-row-${product.id}`}>
                           <TableCell>
                             <div className="flex items-center gap-3">
@@ -1903,13 +2095,13 @@ export default function Admin() {
                       <div className="h-4 bg-zinc-800 w-1/2"></div>
                     </div>
                   ))
-                ) : products?.length === 0 ? (
+                ) : filteredProducts?.length === 0 ? (
                   <div className="bg-zinc-900 border border-zinc-800 p-8 text-center">
                     <Package className="w-12 h-12 mx-auto mb-4 text-zinc-600" />
-                    <p className="text-zinc-500">Nog geen producten</p>
+                    <p className="text-zinc-500">{products.length === 0 ? 'Nog geen producten' : 'Geen producten gevonden'}</p>
                   </div>
                 ) : (
-                  products?.map((product: Product) => (
+                  filteredProducts?.map((product: Product) => (
                     <div key={product.id} className="bg-zinc-900 border border-zinc-800 p-4" data-testid={`product-card-${product.id}`}>
                       <div className="flex gap-3">
                         {product.images?.[0] && (

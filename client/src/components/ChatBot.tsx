@@ -107,13 +107,13 @@ export function ChatBot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-24 right-4 z-50 w-[380px] max-w-[calc(100vw-2rem)] rounded-[var(--radius)] overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4),0_0_0_1px_rgba(208,167,96,0.2)]"
+            className="fixed bottom-24 right-4 z-50 w-[380px] max-w-[calc(100vw-2rem)] overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4),0_0_0_1px_rgba(208,167,96,0.2)]"
             data-testid="chatbot-window"
           >
             <div className="bg-[#0a0a0a] border border-[#d0a760]/30">
               <div className="bg-gradient-to-r from-[#0a0a0a] via-[#1a1a1a] to-[#0a0a0a] p-4 flex items-center justify-between border-b border-[#d0a760]/20">
                 <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 bg-gradient-to-br from-[#d0a760] to-[#a88540] rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(208,167,96,0.3)]">
+                  <div className="w-11 h-11 bg-gradient-to-br from-[#d0a760] to-[#a88540] flex items-center justify-center shadow-[0_0_20px_rgba(208,167,96,0.3)]">
                     <Headphones className="w-5 h-5 text-[#0a0a0a]" />
                   </div>
                   <div>
@@ -128,7 +128,7 @@ export function ChatBot() {
                   variant="ghost"
                   size="icon"
                   onClick={() => setIsOpen(false)}
-                  className="text-zinc-400 hover:text-white hover:bg-white/10 rounded-full"
+                  className="text-zinc-400 hover:text-white hover:bg-white/10 rounded-none"
                   data-testid="chatbot-close"
                 >
                   <X className="w-5 h-5" />
@@ -143,7 +143,7 @@ export function ChatBot() {
                       className={`flex gap-3 ${message.role === "user" ? "flex-row-reverse" : ""}`}
                     >
                       <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                        className={`w-8 h-8 flex items-center justify-center flex-shrink-0 ${
                           message.role === "user"
                             ? "bg-gradient-to-br from-[#d0a760] to-[#a88540]"
                             : "bg-zinc-800 border border-[#d0a760]/20"
@@ -156,7 +156,7 @@ export function ChatBot() {
                         )}
                       </div>
                       <div
-                        className={`max-w-[75%] rounded-2xl px-4 py-2.5 ${
+                        className={`max-w-[75%] px-4 py-2.5 ${
                           message.role === "user"
                             ? "bg-gradient-to-br from-[#d0a760] to-[#a88540] text-[#0a0a0a] font-medium"
                             : "bg-zinc-900 text-zinc-100 border border-zinc-800"
@@ -169,10 +169,10 @@ export function ChatBot() {
                   ))}
                   {isLoading && (
                     <div className="flex gap-3">
-                      <div className="w-8 h-8 rounded-full bg-zinc-800 border border-[#d0a760]/20 flex items-center justify-center">
+                      <div className="w-8 h-8 bg-zinc-800 border border-[#d0a760]/20 flex items-center justify-center">
                         <Volume2 className="w-4 h-4 text-[#d0a760]" />
                       </div>
-                      <div className="bg-zinc-900 border border-zinc-800 rounded-2xl px-4 py-3">
+                      <div className="bg-zinc-900 border border-zinc-800 px-4 py-3">
                         <div className="flex items-center gap-3">
                           <AudioBars />
                           <span className="text-sm text-zinc-400">Aan het typen...</span>
@@ -191,7 +191,7 @@ export function ChatBot() {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Stel een vraag..."
-                    className="flex-1 bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500 rounded-xl focus:border-[#d0a760]/50 focus:ring-[#d0a760]/20"
+                    className="flex-1 bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500 rounded-none focus:border-[#d0a760]/50 focus:ring-[#d0a760]/20"
                     disabled={isLoading}
                     data-testid="chatbot-input"
                   />
@@ -199,7 +199,7 @@ export function ChatBot() {
                     type="submit"
                     size="icon"
                     disabled={!input.trim() || isLoading}
-                    className="bg-gradient-to-br from-[#d0a760] to-[#a88540] hover:from-[#e0b770] hover:to-[#b89550] text-[#0a0a0a] rounded-xl shadow-[0_0_15px_rgba(208,167,96,0.2)] disabled:opacity-50"
+                    className="bg-gradient-to-br from-[#d0a760] to-[#a88540] hover:from-[#e0b770] hover:to-[#b89550] text-[#0a0a0a] rounded-none shadow-[0_0_15px_rgba(208,167,96,0.2)] disabled:opacity-50"
                     data-testid="chatbot-send"
                   >
                     <Send className="w-4 h-4" />
@@ -213,12 +213,12 @@ export function ChatBot() {
 
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-br from-[#d0a760] to-[#a88540] rounded-full shadow-[0_4px_20px_rgba(208,167,96,0.4)] flex items-center justify-center group"
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-br from-[#d0a760] to-[#a88540] shadow-[0_4px_20px_rgba(208,167,96,0.4)] flex items-center justify-center group"
         whileHover={{ scale: 1.05, boxShadow: "0 6px 30px rgba(208,167,96,0.5)" }}
         whileTap={{ scale: 0.95 }}
         data-testid="chatbot-toggle"
       >
-        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#d0a760] to-[#a88540] animate-subtle-pulse" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#d0a760] to-[#a88540] animate-subtle-pulse" />
         <AnimatePresence mode="wait">
           {isOpen ? (
             <motion.div

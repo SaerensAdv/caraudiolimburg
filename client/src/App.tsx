@@ -7,7 +7,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { VerticalScrollProgress } from "@/components/ScrollProgress";
 import { PageLoader } from "@/components/PageTransition";
 import { ChatBot } from "@/components/ChatBot";
-import { ThemeProvider } from "@/components/ThemeProvider";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import Shop from "@/pages/shop";
@@ -101,17 +100,15 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <TooltipProvider>
-          {showInitialLoader && <PageLoader />}
-          <div className="min-h-screen bg-background text-foreground">
-            <Toaster />
-            <VerticalScrollProgress />
-            <Router />
-            <ChatBot />
-          </div>
-        </TooltipProvider>
-      </ThemeProvider>
+      <TooltipProvider>
+        {showInitialLoader && <PageLoader />}
+        <div className="min-h-screen bg-background text-foreground">
+          <Toaster />
+          <VerticalScrollProgress />
+          <Router />
+          <ChatBot />
+        </div>
+      </TooltipProvider>
     </QueryClientProvider>
   );
 }

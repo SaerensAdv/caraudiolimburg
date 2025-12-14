@@ -103,14 +103,14 @@ export default function Cart() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-black flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col">
         <Header onCartOpen={() => setIsCartOpen(true)} />
         <div className="flex-1 flex items-center justify-center px-4 py-16">
           <ScrollReveal>
-            <Card className="bg-zinc-900 border-zinc-800 p-8 md:p-12 text-center max-w-md mx-auto rounded-none">
+            <Card className="bg-card dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 p-8 md:p-12 text-center max-w-md mx-auto rounded-none">
               <ShoppingBag className="w-16 h-16 text-[#d0a760] mx-auto mb-6" />
-              <h1 className="text-2xl font-bold text-white mb-4">Inloggen vereist</h1>
-              <p className="text-white/60 mb-8">
+              <h1 className="text-2xl font-bold text-foreground mb-4">Inloggen vereist</h1>
+              <p className="text-muted-foreground mb-8">
                 Je moet ingelogd zijn om je winkelwagen te bekijken.
               </p>
               <Button 
@@ -131,20 +131,20 @@ export default function Cart() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-black flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col">
         <Header onCartOpen={() => setIsCartOpen(true)} />
         <div className="container px-4 md:px-8 mx-auto py-8 flex-1">
           <div className="animate-pulse space-y-6">
-            <div className="h-10 bg-zinc-800 w-64 rounded-none"></div>
+            <div className="h-10 bg-zinc-200 dark:bg-zinc-800 w-64 rounded-none"></div>
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="bg-zinc-900 p-6 border border-zinc-800">
+              <div key={i} className="bg-card dark:bg-zinc-900 p-6 border border-zinc-200 dark:border-zinc-800">
                 <div className="flex items-center space-x-4">
-                  <div className="w-24 h-24 bg-zinc-800"></div>
+                  <div className="w-24 h-24 bg-zinc-200 dark:bg-zinc-800"></div>
                   <div className="flex-1 space-y-3">
-                    <div className="h-5 bg-zinc-800 w-48"></div>
-                    <div className="h-4 bg-zinc-800 w-32"></div>
+                    <div className="h-5 bg-zinc-200 dark:bg-zinc-800 w-48"></div>
+                    <div className="h-4 bg-zinc-200 dark:bg-zinc-800 w-32"></div>
                   </div>
-                  <div className="h-8 bg-zinc-800 w-24"></div>
+                  <div className="h-8 bg-zinc-200 dark:bg-zinc-800 w-24"></div>
                 </div>
               </div>
             ))}
@@ -168,14 +168,14 @@ export default function Cart() {
 
   if (!cartItems || cartItems.length === 0) {
     return (
-      <div className="min-h-screen bg-black flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col">
         <Header onCartOpen={() => setIsCartOpen(true)} />
         <div className="flex-1 flex items-center justify-center px-4 py-16">
           <ScrollReveal>
-            <Card className="bg-zinc-900 border-zinc-800 p-8 md:p-12 text-center max-w-md mx-auto rounded-none" data-testid="empty-cart">
-              <ShoppingBag className="w-16 h-16 text-white/40 mx-auto mb-6" />
-              <h1 className="text-2xl font-bold text-white mb-4">Je winkelwagen is leeg</h1>
-              <p className="text-white/60 mb-8">
+            <Card className="bg-card dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 p-8 md:p-12 text-center max-w-md mx-auto rounded-none" data-testid="empty-cart">
+              <ShoppingBag className="w-16 h-16 text-muted-foreground mx-auto mb-6" />
+              <h1 className="text-2xl font-bold text-foreground mb-4">Je winkelwagen is leeg</h1>
+              <p className="text-muted-foreground mb-8">
                 Voeg wat geweldige car audio producten toe om te beginnen!
               </p>
               <Link href="/shop">
@@ -197,7 +197,7 @@ export default function Cart() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header onCartOpen={() => setIsCartOpen(true)} />
       
       <div className="container px-4 md:px-8 lg:px-16 mx-auto py-8 md:py-12 flex-1">
@@ -206,14 +206,14 @@ export default function Cart() {
             <Link href="/shop">
               <Button 
                 variant="ghost" 
-                className="text-white/60 hover:text-white hover:bg-transparent p-0 mb-4"
+                className="text-muted-foreground hover:text-foreground hover:bg-transparent p-0 mb-4"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Terug naar shop
               </Button>
             </Link>
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Winkelwagen</h1>
-            <p className="text-white/60">
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">Winkelwagen</h1>
+            <p className="text-muted-foreground">
               {totalItems} {totalItems === 1 ? 'product' : 'producten'} in je winkelwagen
             </p>
           </div>
@@ -228,11 +228,11 @@ export default function Cart() {
                 const originalPrice = product?.originalPrice ? parseFloat(product.originalPrice) : null;
                 
                 return (
-                  <Card key={item.id} className="bg-zinc-900 border-zinc-800 rounded-none" data-testid={`cart-item-${item.id}`}>
+                  <Card key={item.id} className="bg-card dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 rounded-none" data-testid={`cart-item-${item.id}`}>
                     <CardContent className="p-4 md:p-6">
                       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                         <Link href={`/product/${product?.id}`}>
-                          <div className="w-full sm:w-24 h-32 sm:h-24 bg-zinc-800 flex-shrink-0 cursor-pointer">
+                          <div className="w-full sm:w-24 h-32 sm:h-24 bg-zinc-200 dark:bg-zinc-800 flex-shrink-0 cursor-pointer">
                             <img 
                               src={product?.images?.[product.primaryImageIndex || 0] || carAudioLogo}
                               alt={product?.name || "Product"}
@@ -246,12 +246,12 @@ export default function Cart() {
 
                         <div className="flex-1 min-w-0 w-full">
                           <Link href={`/product/${product?.id}`}>
-                            <h3 className="font-semibold text-white mb-1 hover:text-[#d0a760] transition-colors cursor-pointer" data-testid={`product-name-${item.id}`}>
+                            <h3 className="font-semibold text-foreground mb-1 hover:text-[#d0a760] transition-colors cursor-pointer" data-testid={`product-name-${item.id}`}>
                               {product?.name || "Onbekend product"}
                             </h3>
                           </Link>
                           {product?.shortDescription && (
-                            <p className="text-sm text-white/60 mb-2 line-clamp-1">
+                            <p className="text-sm text-muted-foreground mb-2 line-clamp-1">
                               {product.shortDescription}
                             </p>
                           )}
@@ -261,7 +261,7 @@ export default function Cart() {
                               €{price.toFixed(2)}
                             </span>
                             {originalPrice && (
-                              <span className="text-sm text-white/40 line-through">
+                              <span className="text-sm text-muted-foreground line-through">
                                 €{originalPrice.toFixed(2)}
                               </span>
                             )}
@@ -282,12 +282,12 @@ export default function Cart() {
                               size="sm"
                               onClick={() => updateQuantityMutation.mutate({ id: item.id, quantity: item.quantity - 1 })}
                               disabled={item.quantity <= 1 || updateQuantityMutation.isPending}
-                              className="w-8 h-8 p-0 border-zinc-700 text-white hover:bg-zinc-800 hover:text-white rounded-none"
+                              className="w-8 h-8 p-0 border-zinc-300 dark:border-zinc-700 text-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-foreground rounded-none"
                               data-testid={`button-decrease-${item.id}`}
                             >
                               <Minus className="w-4 h-4" />
                             </Button>
-                            <span className="w-10 text-center font-medium text-white" data-testid={`quantity-${item.id}`}>
+                            <span className="w-10 text-center font-medium text-foreground" data-testid={`quantity-${item.id}`}>
                               {item.quantity}
                             </span>
                             <Button
@@ -295,14 +295,14 @@ export default function Cart() {
                               size="sm"
                               onClick={() => updateQuantityMutation.mutate({ id: item.id, quantity: item.quantity + 1 })}
                               disabled={updateQuantityMutation.isPending}
-                              className="w-8 h-8 p-0 border-zinc-700 text-white hover:bg-zinc-800 hover:text-white rounded-none"
+                              className="w-8 h-8 p-0 border-zinc-300 dark:border-zinc-700 text-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-foreground rounded-none"
                               data-testid={`button-increase-${item.id}`}
                             >
                               <Plus className="w-4 h-4" />
                             </Button>
                           </div>
 
-                          <p className="font-bold text-white min-w-[80px] text-right" data-testid={`item-total-${item.id}`}>
+                          <p className="font-bold text-foreground min-w-[80px] text-right" data-testid={`item-total-${item.id}`}>
                             €{(price * item.quantity).toFixed(2)}
                           </p>
 
@@ -327,26 +327,26 @@ export default function Cart() {
 
           <div className="space-y-6">
             <ScrollReveal delay={200}>
-              <Card className="bg-zinc-900 border-zinc-800 rounded-none sticky top-24" data-testid="order-summary">
+              <Card className="bg-card dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 rounded-none sticky top-24" data-testid="order-summary">
                 <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold text-white mb-6">Bestelling overzicht</h3>
+                  <h3 className="text-lg font-semibold text-foreground mb-6">Bestelling overzicht</h3>
                   
                   <div className="space-y-4">
                     <div className="flex justify-between text-sm">
-                      <span className="text-white/60">Subtotaal</span>
-                      <span className="text-white" data-testid="subtotal">€{subtotal.toFixed(2)}</span>
+                      <span className="text-muted-foreground">Subtotaal</span>
+                      <span className="text-foreground" data-testid="subtotal">€{subtotal.toFixed(2)}</span>
                     </div>
                     
                     {installationFee > 0 && (
                       <div className="flex justify-between text-sm">
-                        <span className="text-white/60">Installatie</span>
-                        <span className="text-white" data-testid="installation-fee">€{installationFee.toFixed(2)}</span>
+                        <span className="text-muted-foreground">Installatie</span>
+                        <span className="text-foreground" data-testid="installation-fee">€{installationFee.toFixed(2)}</span>
                       </div>
                     )}
                     
                     <div className="flex justify-between text-sm">
-                      <span className="text-white/60">Verzending</span>
-                      <span className="text-white" data-testid="shipping-cost">
+                      <span className="text-muted-foreground">Verzending</span>
+                      <span className="text-foreground" data-testid="shipping-cost">
                         {shipping === 0 ? (
                           <span className="text-green-400">Gratis</span>
                         ) : (
@@ -355,10 +355,10 @@ export default function Cart() {
                       </span>
                     </div>
                     
-                    <Separator className="bg-zinc-800" />
+                    <Separator className="bg-zinc-200 dark:bg-zinc-800" />
                     
                     <div className="flex justify-between text-lg font-semibold">
-                      <span className="text-white">Totaal</span>
+                      <span className="text-foreground">Totaal</span>
                       <span className="text-[#d0a760]" data-testid="total">€{total.toFixed(2)}</span>
                     </div>
                   </div>
@@ -386,27 +386,27 @@ export default function Cart() {
             </ScrollReveal>
 
             <ScrollReveal delay={300}>
-              <Card className="bg-zinc-900 border-zinc-800 rounded-none">
+              <Card className="bg-card dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 rounded-none">
                 <CardContent className="p-6">
-                  <h4 className="font-semibold text-white mb-4">Waarom bij ons kopen?</h4>
+                  <h4 className="font-semibold text-foreground mb-4">Waarom bij ons kopen?</h4>
                   <div className="space-y-4">
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-[#d0a760]/20 flex items-center justify-center">
                         <Truck className="w-5 h-5 text-[#d0a760]" />
                       </div>
-                      <span className="text-sm text-white">Gratis verzending vanaf €50</span>
+                      <span className="text-sm text-foreground">Gratis verzending vanaf €50</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-[#d0a760]/20 flex items-center justify-center">
                         <Shield className="w-5 h-5 text-[#d0a760]" />
                       </div>
-                      <span className="text-sm text-white">2 jaar garantie op alle producten</span>
+                      <span className="text-sm text-foreground">2 jaar garantie op alle producten</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-[#d0a760]/20 flex items-center justify-center">
                         <Wrench className="w-5 h-5 text-[#d0a760]" />
                       </div>
-                      <span className="text-sm text-white">Professionele installatie service</span>
+                      <span className="text-sm text-foreground">Professionele installatie service</span>
                     </div>
                   </div>
                 </CardContent>
@@ -417,7 +417,7 @@ export default function Cart() {
               <Link href="/shop">
                 <Button 
                   variant="outline" 
-                  className="w-full border-zinc-700 text-white hover:bg-zinc-800 hover:text-white rounded-none py-6" 
+                  className="w-full border-zinc-300 dark:border-zinc-700 text-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-foreground rounded-none py-6" 
                   data-testid="button-continue-shopping"
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />

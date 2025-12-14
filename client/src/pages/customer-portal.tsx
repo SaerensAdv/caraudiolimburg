@@ -274,7 +274,7 @@ export default function CustomerPortal() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-4 border-[#d0a760] border-t-transparent rounded-none" style={{ borderRadius: 0 }} />
       </div>
     );
@@ -343,41 +343,41 @@ export default function CustomerPortal() {
   };
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-background">
       <Header onCartOpen={() => setIsCartOpen(true)} />
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
 
       <main className="pt-20">
         {/* Account Header */}
-        <section className="bg-zinc-950 border-b border-zinc-800">
+        <section className="bg-zinc-50 dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="flex items-center gap-4 md:gap-6">
-                <div className="w-16 h-16 md:w-20 md:h-20 bg-zinc-900 border border-zinc-700 flex items-center justify-center">
+                <div className="w-16 h-16 md:w-20 md:h-20 bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 flex items-center justify-center">
                   <User className="w-8 h-8 md:w-10 md:h-10 text-[#d0a760]" />
                 </div>
                 <div>
-                  <h1 className="text-2xl md:text-3xl font-light text-white mb-1">
+                  <h1 className="text-2xl md:text-3xl font-light text-foreground mb-1">
                     Welkom, <span className="text-[#d0a760]">{user?.firstName || 'klant'}</span>
                   </h1>
-                  <p className="text-zinc-400 text-sm md:text-base">
+                  <p className="text-muted-foreground text-sm md:text-base">
                     {user?.email}
                   </p>
                 </div>
               </div>
 
               <div className="flex flex-wrap gap-4 md:gap-6">
-                <div className="bg-zinc-900/50 border border-zinc-800 px-4 py-3 min-w-[100px]">
+                <div className="bg-zinc-100/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 px-4 py-3 min-w-[100px]">
                   <p className="text-[#d0a760] text-2xl font-light">{accountStats.totalOrders}</p>
-                  <p className="text-zinc-500 text-xs uppercase tracking-wider">Bestellingen</p>
+                  <p className="text-muted-foreground text-xs uppercase tracking-wider">Bestellingen</p>
                 </div>
-                <div className="bg-zinc-900/50 border border-zinc-800 px-4 py-3 min-w-[100px]">
+                <div className="bg-zinc-100/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 px-4 py-3 min-w-[100px]">
                   <p className="text-[#d0a760] text-2xl font-light">{accountStats.totalBookings}</p>
-                  <p className="text-zinc-500 text-xs uppercase tracking-wider">Afspraken</p>
+                  <p className="text-muted-foreground text-xs uppercase tracking-wider">Afspraken</p>
                 </div>
-                <div className="bg-zinc-900/50 border border-zinc-800 px-4 py-3 min-w-[100px] hidden sm:block">
-                  <p className="text-white text-sm font-light">{accountStats.memberSince}</p>
-                  <p className="text-zinc-500 text-xs uppercase tracking-wider">Klant sinds</p>
+                <div className="bg-zinc-100/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 px-4 py-3 min-w-[100px] hidden sm:block">
+                  <p className="text-foreground text-sm font-light">{accountStats.memberSince}</p>
+                  <p className="text-muted-foreground text-xs uppercase tracking-wider">Klant sinds</p>
                 </div>
               </div>
             </div>
@@ -385,7 +385,7 @@ export default function CustomerPortal() {
         </section>
 
         {/* Navigation & Content */}
-        <section className="bg-black">
+        <section className="bg-background">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
             <div className="flex flex-col lg:flex-row gap-8">
               {/* Sidebar Navigation - Desktop */}
@@ -395,8 +395,8 @@ export default function CustomerPortal() {
                     onClick={() => setActiveTab("orders")}
                     className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-all ${
                       activeTab === "orders"
-                        ? "bg-zinc-900 border-l-2 border-[#d0a760] text-white"
-                        : "text-zinc-400 hover:text-white hover:bg-zinc-900/50"
+                        ? "bg-zinc-100 dark:bg-zinc-900 border-l-2 border-[#d0a760] text-foreground"
+                        : "text-muted-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-zinc-900/50"
                     }`}
                     data-testid="nav-orders"
                   >
@@ -407,8 +407,8 @@ export default function CustomerPortal() {
                     onClick={() => setActiveTab("bookings")}
                     className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-all ${
                       activeTab === "bookings"
-                        ? "bg-zinc-900 border-l-2 border-[#d0a760] text-white"
-                        : "text-zinc-400 hover:text-white hover:bg-zinc-900/50"
+                        ? "bg-zinc-100 dark:bg-zinc-900 border-l-2 border-[#d0a760] text-foreground"
+                        : "text-muted-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-zinc-900/50"
                     }`}
                     data-testid="nav-bookings"
                   >
@@ -419,8 +419,8 @@ export default function CustomerPortal() {
                     onClick={() => setActiveTab("favorites")}
                     className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-all ${
                       activeTab === "favorites"
-                        ? "bg-zinc-900 border-l-2 border-[#d0a760] text-white"
-                        : "text-zinc-400 hover:text-white hover:bg-zinc-900/50"
+                        ? "bg-zinc-100 dark:bg-zinc-900 border-l-2 border-[#d0a760] text-foreground"
+                        : "text-muted-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-zinc-900/50"
                     }`}
                     data-testid="nav-favorites"
                   >
@@ -431,8 +431,8 @@ export default function CustomerPortal() {
                     onClick={() => setActiveTab("account")}
                     className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-all ${
                       activeTab === "account"
-                        ? "bg-zinc-900 border-l-2 border-[#d0a760] text-white"
-                        : "text-zinc-400 hover:text-white hover:bg-zinc-900/50"
+                        ? "bg-zinc-100 dark:bg-zinc-900 border-l-2 border-[#d0a760] text-foreground"
+                        : "text-muted-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-zinc-900/50"
                     }`}
                     data-testid="nav-account"
                   >
@@ -443,8 +443,8 @@ export default function CustomerPortal() {
                     onClick={() => setActiveTab("support")}
                     className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-all ${
                       activeTab === "support"
-                        ? "bg-zinc-900 border-l-2 border-[#d0a760] text-white"
-                        : "text-zinc-400 hover:text-white hover:bg-zinc-900/50"
+                        ? "bg-zinc-100 dark:bg-zinc-900 border-l-2 border-[#d0a760] text-foreground"
+                        : "text-muted-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-zinc-900/50"
                     }`}
                     data-testid="nav-support"
                   >
@@ -452,11 +452,11 @@ export default function CustomerPortal() {
                     <span>Support</span>
                   </button>
 
-                  <Separator className="bg-zinc-800 my-4" />
+                  <Separator className="bg-zinc-200 dark:bg-zinc-800 my-4" />
 
                   <a
                     href="/api/logout"
-                    className="w-full flex items-center gap-3 px-4 py-3 text-left text-zinc-500 hover:text-red-400 hover:bg-zinc-900/50 transition-all"
+                    className="w-full flex items-center gap-3 px-4 py-3 text-left text-muted-foreground hover:text-red-400 hover:bg-zinc-100 dark:hover:bg-zinc-900/50 transition-all"
                     data-testid="nav-logout"
                   >
                     <LogOut className="w-5 h-5" />
@@ -467,13 +467,13 @@ export default function CustomerPortal() {
 
               {/* Mobile Tabs */}
               <div className="lg:hidden">
-                <div className="flex overflow-x-auto gap-1 bg-zinc-900 p-1 -mx-4 px-4 scrollbar-hide">
+                <div className="flex overflow-x-auto gap-1 bg-zinc-100 dark:bg-zinc-900 p-1 -mx-4 px-4 scrollbar-hide">
                   <button
                     onClick={() => setActiveTab("orders")}
                     className={`flex items-center gap-2 px-4 py-2.5 whitespace-nowrap transition-all ${
                       activeTab === "orders"
                         ? "bg-[#d0a760] text-black"
-                        : "text-zinc-400 hover:text-white"
+                        : "text-muted-foreground hover:text-foreground"
                     }`}
                     data-testid="mobile-nav-orders"
                   >
@@ -485,7 +485,7 @@ export default function CustomerPortal() {
                     className={`flex items-center gap-2 px-4 py-2.5 whitespace-nowrap transition-all ${
                       activeTab === "bookings"
                         ? "bg-[#d0a760] text-black"
-                        : "text-zinc-400 hover:text-white"
+                        : "text-muted-foreground hover:text-foreground"
                     }`}
                     data-testid="mobile-nav-bookings"
                   >
@@ -497,7 +497,7 @@ export default function CustomerPortal() {
                     className={`flex items-center gap-2 px-4 py-2.5 whitespace-nowrap transition-all ${
                       activeTab === "favorites"
                         ? "bg-[#d0a760] text-black"
-                        : "text-zinc-400 hover:text-white"
+                        : "text-muted-foreground hover:text-foreground"
                     }`}
                     data-testid="mobile-nav-favorites"
                   >
@@ -509,7 +509,7 @@ export default function CustomerPortal() {
                     className={`flex items-center gap-2 px-4 py-2.5 whitespace-nowrap transition-all ${
                       activeTab === "account"
                         ? "bg-[#d0a760] text-black"
-                        : "text-zinc-400 hover:text-white"
+                        : "text-muted-foreground hover:text-foreground"
                     }`}
                     data-testid="mobile-nav-account"
                   >
@@ -521,7 +521,7 @@ export default function CustomerPortal() {
                     className={`flex items-center gap-2 px-4 py-2.5 whitespace-nowrap transition-all ${
                       activeTab === "support"
                         ? "bg-[#d0a760] text-black"
-                        : "text-zinc-400 hover:text-white"
+                        : "text-muted-foreground hover:text-foreground"
                     }`}
                     data-testid="mobile-nav-support"
                   >
@@ -537,7 +537,7 @@ export default function CustomerPortal() {
                 {activeTab === "orders" && (
                   <div className="space-y-6">
                     <div className="flex items-center justify-between">
-                      <h2 className="text-xl md:text-2xl font-light text-white flex items-center gap-3">
+                      <h2 className="text-xl md:text-2xl font-light text-foreground flex items-center gap-3">
                         <Package className="w-6 h-6 text-[#d0a760]" />
                         Mijn Bestellingen
                       </h2>
@@ -559,28 +559,28 @@ export default function CustomerPortal() {
                     ) : orders && orders.length > 0 ? (
                       <>
                         {/* Desktop Table View */}
-                        <div className="hidden md:block bg-zinc-950 border border-zinc-800 overflow-hidden">
+                        <div className="hidden md:block bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 overflow-hidden">
                           <table className="w-full">
                             <thead>
-                              <tr className="border-b border-zinc-800 bg-zinc-900/50">
-                                <th className="text-left px-6 py-4 text-xs font-medium text-zinc-500 uppercase tracking-wider">Bestelling</th>
-                                <th className="text-left px-6 py-4 text-xs font-medium text-zinc-500 uppercase tracking-wider">Datum</th>
-                                <th className="text-left px-6 py-4 text-xs font-medium text-zinc-500 uppercase tracking-wider">Status</th>
-                                <th className="text-right px-6 py-4 text-xs font-medium text-zinc-500 uppercase tracking-wider">Totaal</th>
-                                <th className="text-right px-6 py-4 text-xs font-medium text-zinc-500 uppercase tracking-wider">Acties</th>
+                              <tr className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-100/50 dark:bg-zinc-900/50">
+                                <th className="text-left px-6 py-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Bestelling</th>
+                                <th className="text-left px-6 py-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Datum</th>
+                                <th className="text-left px-6 py-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+                                <th className="text-right px-6 py-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Totaal</th>
+                                <th className="text-right px-6 py-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Acties</th>
                               </tr>
                             </thead>
                             <tbody>
                               {orders.map((order: Order) => (
                                 <tr 
                                   key={order.id} 
-                                  className="border-b border-zinc-800 hover:bg-zinc-900/50 transition-colors group"
+                                  className="border-b border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100/50 dark:hover:bg-zinc-900/50 transition-colors group"
                                 >
                                   <td className="px-6 py-4">
-                                    <span className="text-white font-medium">#{order.orderNumber}</span>
+                                    <span className="text-foreground font-medium">#{order.orderNumber}</span>
                                   </td>
                                   <td className="px-6 py-4">
-                                    <span className="text-zinc-400">
+                                    <span className="text-muted-foreground">
                                       {format(new Date(order.createdAt), "d MMM yyyy", { locale: nl })}
                                     </span>
                                   </td>
@@ -598,7 +598,7 @@ export default function CustomerPortal() {
                                       <Button
                                         variant="ghost"
                                         size="sm"
-                                        className="text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-none h-8 px-3"
+                                        className="text-muted-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-none h-8 px-3"
                                         data-testid={`button-view-order-${order.id}`}
                                         onClick={() => openOrderDetails(order.id)}
                                       >
@@ -607,7 +607,7 @@ export default function CustomerPortal() {
                                       <Button
                                         variant="ghost"
                                         size="sm"
-                                        className="text-zinc-400 hover:text-[#d0a760] hover:bg-zinc-800 rounded-none h-8 px-3"
+                                        className="text-muted-foreground hover:text-[#d0a760] hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-none h-8 px-3"
                                         data-testid={`button-download-invoice-${order.id}`}
                                         onClick={() => window.open(`/api/orders/${order.id}/invoice`, '_blank')}
                                       >
@@ -629,29 +629,29 @@ export default function CustomerPortal() {
                               open={expandedOrders.has(order.id)}
                               onOpenChange={() => toggleOrderExpand(order.id)}
                             >
-                              <div className="bg-zinc-950 border border-zinc-800">
+                              <div className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800">
                                 <CollapsibleTrigger className="w-full p-4 flex items-center justify-between">
                                   <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 bg-zinc-900 flex items-center justify-center">
+                                    <div className="w-10 h-10 bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center">
                                       <Package className="w-5 h-5 text-[#d0a760]" />
                                     </div>
                                     <div className="text-left">
-                                      <p className="text-white font-medium">#{order.orderNumber}</p>
-                                      <p className="text-zinc-500 text-sm">
+                                      <p className="text-foreground font-medium">#{order.orderNumber}</p>
+                                      <p className="text-muted-foreground text-sm">
                                         {format(new Date(order.createdAt), "d MMM yyyy", { locale: nl })}
                                       </p>
                                     </div>
                                   </div>
                                   <div className="flex items-center gap-3">
                                     <span className="text-[#d0a760] font-medium">€{order.total}</span>
-                                    <ChevronDown className={`w-5 h-5 text-zinc-500 transition-transform ${expandedOrders.has(order.id) ? 'rotate-180' : ''}`} />
+                                    <ChevronDown className={`w-5 h-5 text-muted-foreground transition-transform ${expandedOrders.has(order.id) ? 'rotate-180' : ''}`} />
                                   </div>
                                 </CollapsibleTrigger>
                                 
                                 <CollapsibleContent>
-                                  <div className="px-4 pb-4 pt-0 space-y-4 border-t border-zinc-800">
+                                  <div className="px-4 pb-4 pt-0 space-y-4 border-t border-zinc-200 dark:border-zinc-800">
                                     <div className="flex items-center justify-between pt-4">
-                                      <span className="text-zinc-500 text-sm">Status</span>
+                                      <span className="text-muted-foreground text-sm">Status</span>
                                       <Badge className={`${getStatusColor(order.status)} border rounded-none px-2 py-1 text-xs font-medium`}>
                                         {getStatusIcon(order.status)}
                                         <span className="ml-1.5">{getStatusLabel(order.status)}</span>
@@ -660,8 +660,8 @@ export default function CustomerPortal() {
 
                                     {order.notes && (
                                       <div>
-                                        <span className="text-zinc-500 text-sm">Opmerkingen</span>
-                                        <p className="text-zinc-300 text-sm mt-1">{order.notes}</p>
+                                        <span className="text-muted-foreground text-sm">Opmerkingen</span>
+                                        <p className="text-muted-foreground text-sm mt-1">{order.notes}</p>
                                       </div>
                                     )}
 
@@ -669,7 +669,7 @@ export default function CustomerPortal() {
                                       <Button
                                         variant="outline"
                                         size="sm"
-                                        className="flex-1 bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white hover:border-[#d0a760] rounded-none"
+                                        className="flex-1 bg-transparent border-zinc-300 dark:border-zinc-700 text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-foreground hover:border-[#d0a760] rounded-none"
                                         data-testid={`button-view-order-mobile-${order.id}`}
                                         onClick={() => openOrderDetails(order.id)}
                                       >
@@ -679,7 +679,7 @@ export default function CustomerPortal() {
                                       <Button
                                         variant="outline"
                                         size="sm"
-                                        className="flex-1 bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-[#d0a760] hover:border-[#d0a760] rounded-none"
+                                        className="flex-1 bg-transparent border-zinc-300 dark:border-zinc-700 text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-[#d0a760] hover:border-[#d0a760] rounded-none"
                                         data-testid={`button-download-invoice-mobile-${order.id}`}
                                         onClick={() => window.open(`/api/orders/${order.id}/invoice`, '_blank')}
                                       >
@@ -695,14 +695,14 @@ export default function CustomerPortal() {
                         </div>
                       </>
                     ) : (
-                      <div className="bg-zinc-950 border border-zinc-800 py-16 px-8 text-center">
-                        <div className="w-20 h-20 mx-auto mb-6 bg-zinc-900 flex items-center justify-center">
-                          <Package className="w-10 h-10 text-zinc-600" />
+                      <div className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 py-16 px-8 text-center">
+                        <div className="w-20 h-20 mx-auto mb-6 bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center">
+                          <Package className="w-10 h-10 text-zinc-400 dark:text-zinc-600" />
                         </div>
-                        <h3 className="text-xl font-light text-white mb-2">
+                        <h3 className="text-xl font-light text-foreground mb-2">
                           Nog geen bestellingen
                         </h3>
-                        <p className="text-zinc-500 mb-6 max-w-md mx-auto">
+                        <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                           Ontdek onze premium car audio producten en plaats uw eerste bestelling.
                         </p>
                         <Link href="/shop">
@@ -723,7 +723,7 @@ export default function CustomerPortal() {
                 {activeTab === "bookings" && (
                   <div className="space-y-6">
                     <div className="flex items-center justify-between">
-                      <h2 className="text-xl md:text-2xl font-light text-white flex items-center gap-3">
+                      <h2 className="text-xl md:text-2xl font-light text-foreground flex items-center gap-3">
                         <Calendar className="w-6 h-6 text-[#d0a760]" />
                         Mijn Afspraken
                       </h2>
@@ -747,19 +747,19 @@ export default function CustomerPortal() {
                         {bookings.map((booking: Booking) => (
                           <div 
                             key={booking.id} 
-                            className="bg-zinc-950 border border-zinc-800 hover:border-zinc-700 transition-colors"
+                            className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors"
                           >
                             <div className="p-4 md:p-6">
                               <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4">
                                 <div className="flex items-start gap-4">
-                                  <div className="w-12 h-12 bg-zinc-900 flex items-center justify-center flex-shrink-0">
+                                  <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center flex-shrink-0">
                                     <Car className="w-6 h-6 text-[#d0a760]" />
                                   </div>
                                   <div>
-                                    <h3 className="text-white font-medium text-lg">
+                                    <h3 className="text-foreground font-medium text-lg">
                                       {booking.serviceType === "installation" ? "Installatie" : booking.serviceType}
                                     </h3>
-                                    <p className="text-zinc-400 mt-0.5">
+                                    <p className="text-muted-foreground mt-0.5">
                                       {booking.vehicleMake} {booking.vehicleModel} ({booking.vehicleYear})
                                     </p>
                                   </div>
@@ -775,41 +775,41 @@ export default function CustomerPortal() {
                                 </div>
                               </div>
 
-                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-4 border-t border-zinc-800">
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-4 border-t border-zinc-200 dark:border-zinc-800">
                                 <div>
-                                  <p className="text-zinc-500 text-xs uppercase tracking-wider mb-1">Datum</p>
-                                  <p className="text-white">
+                                  <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Datum</p>
+                                  <p className="text-foreground">
                                     {format(new Date(booking.scheduledDate), "d MMM yyyy", { locale: nl })}
                                   </p>
                                 </div>
                                 <div>
-                                  <p className="text-zinc-500 text-xs uppercase tracking-wider mb-1">Tijd</p>
-                                  <p className="text-white">
+                                  <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Tijd</p>
+                                  <p className="text-foreground">
                                     {format(new Date(booking.scheduledDate), "HH:mm", { locale: nl })}
                                   </p>
                                 </div>
                                 <div>
-                                  <p className="text-zinc-500 text-xs uppercase tracking-wider mb-1">Duur</p>
-                                  <p className="text-white">{booking.duration} uur</p>
+                                  <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Duur</p>
+                                  <p className="text-foreground">{booking.duration} uur</p>
                                 </div>
                                 <div className="col-span-2 md:col-span-1">
-                                  <p className="text-zinc-500 text-xs uppercase tracking-wider mb-1">Kenteken</p>
-                                  <p className="text-white">{booking.vehiclePlate || "-"}</p>
+                                  <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Kenteken</p>
+                                  <p className="text-foreground">{booking.vehiclePlate || "-"}</p>
                                 </div>
                               </div>
 
                               {booking.notes && (
-                                <div className="pt-4 border-t border-zinc-800">
-                                  <p className="text-zinc-500 text-xs uppercase tracking-wider mb-1">Opmerkingen</p>
-                                  <p className="text-zinc-300 text-sm">{booking.notes}</p>
+                                <div className="pt-4 border-t border-zinc-200 dark:border-zinc-800">
+                                  <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Opmerkingen</p>
+                                  <p className="text-muted-foreground text-sm">{booking.notes}</p>
                                 </div>
                               )}
 
-                              <div className="flex flex-wrap gap-2 pt-4 border-t border-zinc-800 mt-4">
+                              <div className="flex flex-wrap gap-2 pt-4 border-t border-zinc-200 dark:border-zinc-800 mt-4">
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white hover:border-[#d0a760] rounded-none"
+                                  className="bg-transparent border-zinc-300 dark:border-zinc-700 text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-foreground hover:border-[#d0a760] rounded-none"
                                   data-testid={`button-reschedule-${booking.id}`}
                                   onClick={() => openBookingEdit(booking)}
                                   disabled={booking.status === "cancelled"}
@@ -820,7 +820,7 @@ export default function CustomerPortal() {
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-red-400 hover:border-red-400 rounded-none"
+                                  className="bg-transparent border-zinc-300 dark:border-zinc-700 text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-red-400 hover:border-red-400 rounded-none"
                                   data-testid={`button-cancel-booking-${booking.id}`}
                                   onClick={() => openBookingCancel(booking)}
                                   disabled={booking.status === "cancelled"}
@@ -831,7 +831,7 @@ export default function CustomerPortal() {
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white hover:border-[#d0a760] rounded-none"
+                                  className="bg-transparent border-zinc-300 dark:border-zinc-700 text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-foreground hover:border-[#d0a760] rounded-none"
                                   data-testid={`button-contact-about-${booking.id}`}
                                 >
                                   <Phone className="h-4 w-4 mr-2" />
@@ -843,14 +843,14 @@ export default function CustomerPortal() {
                         ))}
                       </div>
                     ) : (
-                      <div className="bg-zinc-950 border border-zinc-800 py-16 px-8 text-center">
-                        <div className="w-20 h-20 mx-auto mb-6 bg-zinc-900 flex items-center justify-center">
-                          <Calendar className="w-10 h-10 text-zinc-600" />
+                      <div className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 py-16 px-8 text-center">
+                        <div className="w-20 h-20 mx-auto mb-6 bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center">
+                          <Calendar className="w-10 h-10 text-zinc-400 dark:text-zinc-600" />
                         </div>
-                        <h3 className="text-xl font-light text-white mb-2">
+                        <h3 className="text-xl font-light text-foreground mb-2">
                           Nog geen afspraken
                         </h3>
-                        <p className="text-zinc-500 mb-6 max-w-md mx-auto">
+                        <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                           Boek een installatie-afspraak voor professionele montage van uw audio systeem.
                         </p>
                         <Link href="/booking">
@@ -871,7 +871,7 @@ export default function CustomerPortal() {
                 {activeTab === "favorites" && (
                   <div className="space-y-6">
                     <div className="flex items-center justify-between">
-                      <h2 className="text-xl md:text-2xl font-light text-white flex items-center gap-3">
+                      <h2 className="text-xl md:text-2xl font-light text-foreground flex items-center gap-3">
                         <Heart className="w-6 h-6 text-[#d0a760]" />
                         Mijn Favorieten
                       </h2>
@@ -895,11 +895,11 @@ export default function CustomerPortal() {
                         {wishlistItems.map((item) => (
                           <div 
                             key={item.id} 
-                            className="bg-zinc-950 border border-zinc-800 hover:border-zinc-700 transition-colors group"
+                            className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-colors group"
                             data-testid={`wishlist-item-${item.productId}`}
                           >
                             <Link href={`/product/${item.product.slug}`}>
-                              <div className="aspect-square bg-zinc-900 flex items-center justify-center p-6 relative overflow-hidden">
+                              <div className="aspect-square bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center p-6 relative overflow-hidden">
                                 <img 
                                   src={item.product.images?.[item.product.primaryImageIndex || 0] || '/caraudiolimburg-logo.png'} 
                                   alt={item.product.name}
@@ -912,11 +912,11 @@ export default function CustomerPortal() {
                             </Link>
                             <div className="p-4">
                               <Link href={`/product/${item.product.slug}`}>
-                                <h3 className="text-white font-medium mb-2 group-hover:text-[#d0a760] transition-colors cursor-pointer line-clamp-2" data-testid={`wishlist-product-name-${item.productId}`}>
+                                <h3 className="text-foreground font-medium mb-2 group-hover:text-[#d0a760] transition-colors cursor-pointer line-clamp-2" data-testid={`wishlist-product-name-${item.productId}`}>
                                   {item.product.name}
                                 </h3>
                               </Link>
-                              <p className="text-white/50 text-sm mb-3 line-clamp-2">
+                              <p className="text-muted-foreground text-sm mb-3 line-clamp-2">
                                 {item.product.shortDescription || '\u00A0'}
                               </p>
                               <div className="flex items-center justify-between">
@@ -928,7 +928,7 @@ export default function CustomerPortal() {
                                   size="sm"
                                   onClick={() => removeFromWishlistMutation.mutate(item.productId)}
                                   disabled={removeFromWishlistMutation.isPending}
-                                  className="text-zinc-400 hover:text-red-400 hover:bg-zinc-800 rounded-none"
+                                  className="text-muted-foreground hover:text-red-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-none"
                                   data-testid={`remove-from-wishlist-${item.productId}`}
                                 >
                                   <Trash2 className="h-4 w-4" />
@@ -939,14 +939,14 @@ export default function CustomerPortal() {
                         ))}
                       </div>
                     ) : (
-                      <div className="bg-zinc-950 border border-zinc-800 py-16 px-8 text-center">
-                        <div className="w-20 h-20 mx-auto mb-6 bg-zinc-900 flex items-center justify-center">
-                          <Heart className="w-10 h-10 text-zinc-600" />
+                      <div className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 py-16 px-8 text-center">
+                        <div className="w-20 h-20 mx-auto mb-6 bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center">
+                          <Heart className="w-10 h-10 text-zinc-400 dark:text-zinc-600" />
                         </div>
-                        <h3 className="text-xl font-light text-white mb-2" data-testid="empty-wishlist-message">
+                        <h3 className="text-xl font-light text-foreground mb-2" data-testid="empty-wishlist-message">
                           Je hebt nog geen favorieten
                         </h3>
-                        <p className="text-zinc-500 mb-6 max-w-md mx-auto">
+                        <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                           Voeg producten toe aan je favorieten om ze later gemakkelijk terug te vinden.
                         </p>
                         <Link href="/shop">
@@ -966,23 +966,23 @@ export default function CustomerPortal() {
                 {/* Account Tab */}
                 {activeTab === "account" && (
                   <div className="space-y-6">
-                    <h2 className="text-xl md:text-2xl font-light text-white flex items-center gap-3">
+                    <h2 className="text-xl md:text-2xl font-light text-foreground flex items-center gap-3">
                       <Settings className="w-6 h-6 text-[#d0a760]" />
                       Account Instellingen
                     </h2>
 
                     <div className="grid gap-6">
                       {/* Personal Info */}
-                      <div className="bg-zinc-950 border border-zinc-800">
-                        <div className="px-6 py-4 border-b border-zinc-800 flex items-center justify-between">
-                          <h3 className="text-white font-medium flex items-center gap-2">
+                      <div className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800">
+                        <div className="px-6 py-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+                          <h3 className="text-foreground font-medium flex items-center gap-2">
                             <User className="w-4 h-4 text-[#d0a760]" />
                             Persoonlijke Gegevens
                           </h3>
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="text-[#d0a760] hover:text-[#b8954e] hover:bg-zinc-900 rounded-none"
+                            className="text-[#d0a760] hover:text-[#b8954e] hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-none"
                             data-testid="button-edit-profile"
                             onClick={openProfileEdit}
                           >
@@ -993,35 +993,35 @@ export default function CustomerPortal() {
                         <div className="p-6 space-y-4">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                              <p className="text-zinc-500 text-xs uppercase tracking-wider mb-1">Naam</p>
-                              <p className="text-white">{user?.firstName} {user?.lastName}</p>
+                              <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">Naam</p>
+                              <p className="text-foreground">{user?.firstName} {user?.lastName}</p>
                             </div>
                             <div>
-                              <p className="text-zinc-500 text-xs uppercase tracking-wider mb-1">E-mail</p>
-                              <p className="text-white">{user?.email}</p>
+                              <p className="text-muted-foreground text-xs uppercase tracking-wider mb-1">E-mail</p>
+                              <p className="text-foreground">{user?.email}</p>
                             </div>
                           </div>
                         </div>
                       </div>
 
                       {/* Security */}
-                      <div className="bg-zinc-950 border border-zinc-800">
-                        <div className="px-6 py-4 border-b border-zinc-800">
-                          <h3 className="text-white font-medium flex items-center gap-2">
+                      <div className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800">
+                        <div className="px-6 py-4 border-b border-zinc-200 dark:border-zinc-800">
+                          <h3 className="text-foreground font-medium flex items-center gap-2">
                             <Shield className="w-4 h-4 text-[#d0a760]" />
                             Beveiliging
                           </h3>
                         </div>
                         <div className="p-6 space-y-4">
-                          <div className="flex items-center justify-between py-3 border-b border-zinc-800">
+                          <div className="flex items-center justify-between py-3 border-b border-zinc-200 dark:border-zinc-800">
                             <div>
-                              <p className="text-white">Wachtwoord</p>
-                              <p className="text-zinc-500 text-sm">Laatst gewijzigd: onbekend</p>
+                              <p className="text-foreground">Wachtwoord</p>
+                              <p className="text-muted-foreground text-sm">Laatst gewijzigd: onbekend</p>
                             </div>
                             <Button
                               variant="outline"
                               size="sm"
-                              className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white hover:border-[#d0a760] rounded-none"
+                              className="bg-transparent border-zinc-300 dark:border-zinc-700 text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-foreground hover:border-[#d0a760] rounded-none"
                               data-testid="button-change-password"
                             >
                               Wijzigen
@@ -1029,13 +1029,13 @@ export default function CustomerPortal() {
                           </div>
                           <div className="flex items-center justify-between py-3">
                             <div>
-                              <p className="text-white">Twee-factor authenticatie</p>
-                              <p className="text-zinc-500 text-sm">Verhoog de beveiliging van uw account</p>
+                              <p className="text-foreground">Twee-factor authenticatie</p>
+                              <p className="text-muted-foreground text-sm">Verhoog de beveiliging van uw account</p>
                             </div>
                             <Button
                               variant="outline"
                               size="sm"
-                              className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white hover:border-[#d0a760] rounded-none"
+                              className="bg-transparent border-zinc-300 dark:border-zinc-700 text-muted-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-foreground hover:border-[#d0a760] rounded-none"
                               data-testid="button-enable-2fa"
                             >
                               Inschakelen
@@ -1045,16 +1045,16 @@ export default function CustomerPortal() {
                       </div>
 
                       {/* Saved Addresses */}
-                      <div className="bg-zinc-950 border border-zinc-800">
-                        <div className="px-6 py-4 border-b border-zinc-800 flex items-center justify-between">
-                          <h3 className="text-white font-medium flex items-center gap-2">
+                      <div className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800">
+                        <div className="px-6 py-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+                          <h3 className="text-foreground font-medium flex items-center gap-2">
                             <MapPin className="w-4 h-4 text-[#d0a760]" />
                             Opgeslagen Adressen
                           </h3>
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="text-[#d0a760] hover:text-[#b8954e] hover:bg-zinc-900 rounded-none"
+                            className="text-[#d0a760] hover:text-[#b8954e] hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-none"
                             data-testid="button-add-address"
                           >
                             + Toevoegen
@@ -1062,24 +1062,24 @@ export default function CustomerPortal() {
                         </div>
                         <div className="p-6">
                           <div className="text-center py-8">
-                            <MapPin className="w-10 h-10 text-zinc-600 mx-auto mb-3" />
-                            <p className="text-zinc-500">Geen opgeslagen adressen</p>
-                            <p className="text-zinc-600 text-sm">Voeg een adres toe voor sneller afrekenen</p>
+                            <MapPin className="w-10 h-10 text-zinc-400 dark:text-zinc-600 mx-auto mb-3" />
+                            <p className="text-muted-foreground">Geen opgeslagen adressen</p>
+                            <p className="text-muted-foreground text-sm">Voeg een adres toe voor sneller afrekenen</p>
                           </div>
                         </div>
                       </div>
 
                       {/* Payment Methods */}
-                      <div className="bg-zinc-950 border border-zinc-800">
-                        <div className="px-6 py-4 border-b border-zinc-800 flex items-center justify-between">
-                          <h3 className="text-white font-medium flex items-center gap-2">
+                      <div className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800">
+                        <div className="px-6 py-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+                          <h3 className="text-foreground font-medium flex items-center gap-2">
                             <CreditCard className="w-4 h-4 text-[#d0a760]" />
                             Betaalmethoden
                           </h3>
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="text-[#d0a760] hover:text-[#b8954e] hover:bg-zinc-900 rounded-none"
+                            className="text-[#d0a760] hover:text-[#b8954e] hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-none"
                             data-testid="button-add-payment"
                           >
                             + Toevoegen
@@ -1087,23 +1087,23 @@ export default function CustomerPortal() {
                         </div>
                         <div className="p-6">
                           <div className="text-center py-8">
-                            <CreditCard className="w-10 h-10 text-zinc-600 mx-auto mb-3" />
-                            <p className="text-zinc-500">Geen opgeslagen betaalmethoden</p>
-                            <p className="text-zinc-600 text-sm">Betaalmethoden worden veilig opgeslagen</p>
+                            <CreditCard className="w-10 h-10 text-zinc-400 dark:text-zinc-600 mx-auto mb-3" />
+                            <p className="text-muted-foreground">Geen opgeslagen betaalmethoden</p>
+                            <p className="text-muted-foreground text-sm">Betaalmethoden worden veilig opgeslagen</p>
                           </div>
                         </div>
                       </div>
 
                       {/* Danger Zone */}
-                      <div className="bg-zinc-950 border border-red-900/50">
+                      <div className="bg-zinc-50 dark:bg-zinc-950 border border-red-900/50">
                         <div className="px-6 py-4 border-b border-red-900/50">
                           <h3 className="text-red-400 font-medium">Gevarenzone</h3>
                         </div>
                         <div className="p-6">
                           <div className="flex items-center justify-between">
                             <div>
-                              <p className="text-white">Account verwijderen</p>
-                              <p className="text-zinc-500 text-sm">Verwijder uw account en alle bijbehorende gegevens permanent</p>
+                              <p className="text-foreground">Account verwijderen</p>
+                              <p className="text-muted-foreground text-sm">Verwijder uw account en alle bijbehorende gegevens permanent</p>
                             </div>
                             <Button
                               variant="outline"
@@ -1123,42 +1123,42 @@ export default function CustomerPortal() {
                 {/* Support Tab */}
                 {activeTab === "support" && (
                   <div className="space-y-6">
-                    <h2 className="text-xl md:text-2xl font-light text-white flex items-center gap-3">
+                    <h2 className="text-xl md:text-2xl font-light text-foreground flex items-center gap-3">
                       <HelpCircle className="w-6 h-6 text-[#d0a760]" />
                       Hulp & Support
                     </h2>
 
                     <div className="grid md:grid-cols-2 gap-6">
                       {/* Contact Options */}
-                      <div className="bg-zinc-950 border border-zinc-800">
-                        <div className="px-6 py-4 border-b border-zinc-800">
-                          <h3 className="text-white font-medium">Neem contact op</h3>
+                      <div className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800">
+                        <div className="px-6 py-4 border-b border-zinc-200 dark:border-zinc-800">
+                          <h3 className="text-foreground font-medium">Neem contact op</h3>
                         </div>
                         <div className="p-6 space-y-4">
                           <a 
                             href="tel:+32475636363"
-                            className="flex items-center gap-4 p-4 bg-zinc-900/50 border border-zinc-800 hover:border-[#d0a760] transition-colors group"
+                            className="flex items-center gap-4 p-4 bg-zinc-100/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 hover:border-[#d0a760] transition-colors group"
                             data-testid="link-call-support"
                           >
-                            <div className="w-12 h-12 bg-zinc-800 group-hover:bg-[#d0a760]/10 flex items-center justify-center transition-colors">
+                            <div className="w-12 h-12 bg-zinc-200 dark:bg-zinc-800 group-hover:bg-[#d0a760]/10 flex items-center justify-center transition-colors">
                               <Phone className="w-5 h-5 text-[#d0a760]" />
                             </div>
                             <div>
-                              <p className="text-white font-medium">Bel ons</p>
+                              <p className="text-foreground font-medium">Bel ons</p>
                               <p className="text-[#d0a760]">047 563 63 63</p>
                             </div>
                           </a>
 
                           <a 
                             href="mailto:info@caraudiolimburg.shop"
-                            className="flex items-center gap-4 p-4 bg-zinc-900/50 border border-zinc-800 hover:border-[#d0a760] transition-colors group"
+                            className="flex items-center gap-4 p-4 bg-zinc-100/50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 hover:border-[#d0a760] transition-colors group"
                             data-testid="link-email-support"
                           >
-                            <div className="w-12 h-12 bg-zinc-800 group-hover:bg-[#d0a760]/10 flex items-center justify-center transition-colors">
+                            <div className="w-12 h-12 bg-zinc-200 dark:bg-zinc-800 group-hover:bg-[#d0a760]/10 flex items-center justify-center transition-colors">
                               <Mail className="w-5 h-5 text-[#d0a760]" />
                             </div>
                             <div>
-                              <p className="text-white font-medium">E-mail</p>
+                              <p className="text-foreground font-medium">E-mail</p>
                               <p className="text-[#d0a760]">info@caraudiolimburg.shop</p>
                             </div>
                           </a>
@@ -1167,24 +1167,24 @@ export default function CustomerPortal() {
                       </div>
 
                       {/* Inline Support Form */}
-                      <div className="bg-zinc-950 border border-zinc-800">
-                        <div className="px-6 py-4 border-b border-zinc-800">
-                          <h3 className="text-white font-medium flex items-center gap-2">
+                      <div className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800">
+                        <div className="px-6 py-4 border-b border-zinc-200 dark:border-zinc-800">
+                          <h3 className="text-foreground font-medium flex items-center gap-2">
                             <MessageCircle className="w-4 h-4 text-[#d0a760]" />
                             Stuur een bericht
                           </h3>
                         </div>
                         <div className="p-6 space-y-4">
                           <div className="space-y-2">
-                            <Label htmlFor="support-subject" className="text-zinc-400">Onderwerp</Label>
+                            <Label htmlFor="support-subject" className="text-muted-foreground">Onderwerp</Label>
                             <Select value={supportSubject} onValueChange={setSupportSubject}>
                               <SelectTrigger 
-                                className="bg-zinc-900 border-zinc-700 text-white rounded-none" 
+                                className="bg-zinc-100 dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 text-foreground rounded-none" 
                                 data-testid="select-support-subject"
                               >
                                 <SelectValue placeholder="Selecteer een onderwerp" />
                               </SelectTrigger>
-                              <SelectContent className="bg-zinc-900 border-zinc-700">
+                              <SelectContent className="bg-zinc-100 dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700">
                                 <SelectItem value="order">Vraag over bestelling</SelectItem>
                                 <SelectItem value="booking">Vraag over afspraak</SelectItem>
                                 <SelectItem value="product">Vraag over product</SelectItem>
@@ -1195,13 +1195,13 @@ export default function CustomerPortal() {
                             </Select>
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="support-message" className="text-zinc-400">Bericht</Label>
+                            <Label htmlFor="support-message" className="text-muted-foreground">Bericht</Label>
                             <Textarea
                               id="support-message"
                               value={supportMessage}
                               onChange={(e) => setSupportMessage(e.target.value)}
                               placeholder="Beschrijf je vraag of probleem..."
-                              className="bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-500 rounded-none min-h-[120px]"
+                              className="bg-zinc-100 dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 text-foreground placeholder:text-muted-foreground rounded-none min-h-[120px]"
                               data-testid="textarea-support-message"
                             />
                           </div>
@@ -1224,75 +1224,75 @@ export default function CustomerPortal() {
 
                     <div className="grid md:grid-cols-2 gap-6">
                       {/* Quick Links */}
-                      <div className="bg-zinc-950 border border-zinc-800">
-                        <div className="px-6 py-4 border-b border-zinc-800">
-                          <h3 className="text-white font-medium">Snelle links</h3>
+                      <div className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800">
+                        <div className="px-6 py-4 border-b border-zinc-200 dark:border-zinc-800">
+                          <h3 className="text-foreground font-medium">Snelle links</h3>
                         </div>
                         <div className="p-6 space-y-2">
                           <Link href="/faq">
                             <div 
-                              className="flex items-center justify-between p-4 hover:bg-zinc-900 transition-colors group cursor-pointer"
+                              className="flex items-center justify-between p-4 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors group cursor-pointer"
                               data-testid="link-faq"
                             >
                               <div className="flex items-center gap-3">
-                                <FileText className="w-5 h-5 text-zinc-500 group-hover:text-[#d0a760] transition-colors" />
-                                <span className="text-zinc-300 group-hover:text-white transition-colors">Veelgestelde vragen</span>
+                                <FileText className="w-5 h-5 text-muted-foreground group-hover:text-[#d0a760] transition-colors" />
+                                <span className="text-muted-foreground group-hover:text-foreground transition-colors">Veelgestelde vragen</span>
                               </div>
-                              <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-[#d0a760] transition-colors" />
+                              <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-[#d0a760] transition-colors" />
                             </div>
                           </Link>
 
                           <div 
-                            className="flex items-center justify-between p-4 hover:bg-zinc-900 transition-colors group cursor-pointer"
+                            className="flex items-center justify-between p-4 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors group cursor-pointer"
                             data-testid="link-warranty"
                           >
                             <div className="flex items-center gap-3">
-                              <CheckCircle className="w-5 h-5 text-zinc-500 group-hover:text-[#d0a760] transition-colors" />
-                              <span className="text-zinc-300 group-hover:text-white transition-colors">Garantie informatie</span>
+                              <CheckCircle className="w-5 h-5 text-muted-foreground group-hover:text-[#d0a760] transition-colors" />
+                              <span className="text-muted-foreground group-hover:text-foreground transition-colors">Garantie informatie</span>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-[#d0a760] transition-colors" />
+                            <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-[#d0a760] transition-colors" />
                           </div>
 
                           <div 
-                            className="flex items-center justify-between p-4 hover:bg-zinc-900 transition-colors group cursor-pointer"
+                            className="flex items-center justify-between p-4 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors group cursor-pointer"
                             data-testid="link-returns"
                           >
                             <div className="flex items-center gap-3">
-                              <Package className="w-5 h-5 text-zinc-500 group-hover:text-[#d0a760] transition-colors" />
-                              <span className="text-zinc-300 group-hover:text-white transition-colors">Retourneren</span>
+                              <Package className="w-5 h-5 text-muted-foreground group-hover:text-[#d0a760] transition-colors" />
+                              <span className="text-muted-foreground group-hover:text-foreground transition-colors">Retourneren</span>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-[#d0a760] transition-colors" />
+                            <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-[#d0a760] transition-colors" />
                           </div>
 
                           <div 
-                            className="flex items-center justify-between p-4 hover:bg-zinc-900 transition-colors group cursor-pointer"
+                            className="flex items-center justify-between p-4 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors group cursor-pointer"
                             data-testid="link-terms"
                           >
                             <div className="flex items-center gap-3">
-                              <FileText className="w-5 h-5 text-zinc-500 group-hover:text-[#d0a760] transition-colors" />
-                              <span className="text-zinc-300 group-hover:text-white transition-colors">Algemene voorwaarden</span>
+                              <FileText className="w-5 h-5 text-muted-foreground group-hover:text-[#d0a760] transition-colors" />
+                              <span className="text-muted-foreground group-hover:text-foreground transition-colors">Algemene voorwaarden</span>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-[#d0a760] transition-colors" />
+                            <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-[#d0a760] transition-colors" />
                           </div>
 
                           <div 
-                            className="flex items-center justify-between p-4 hover:bg-zinc-900 transition-colors group cursor-pointer"
+                            className="flex items-center justify-between p-4 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors group cursor-pointer"
                             data-testid="link-privacy"
                           >
                             <div className="flex items-center gap-3">
-                              <Shield className="w-5 h-5 text-zinc-500 group-hover:text-[#d0a760] transition-colors" />
-                              <span className="text-zinc-300 group-hover:text-white transition-colors">Privacy beleid</span>
+                              <Shield className="w-5 h-5 text-muted-foreground group-hover:text-[#d0a760] transition-colors" />
+                              <span className="text-muted-foreground group-hover:text-foreground transition-colors">Privacy beleid</span>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-[#d0a760] transition-colors" />
+                            <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-[#d0a760] transition-colors" />
                           </div>
                         </div>
                       </div>
                     </div>
 
                     {/* Visit Us */}
-                    <div className="bg-zinc-950 border border-zinc-800">
-                      <div className="px-6 py-4 border-b border-zinc-800">
-                        <h3 className="text-white font-medium flex items-center gap-2">
+                    <div className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800">
+                      <div className="px-6 py-4 border-b border-zinc-200 dark:border-zinc-800">
+                        <h3 className="text-foreground font-medium flex items-center gap-2">
                           <MapPin className="w-4 h-4 text-[#d0a760]" />
                           Bezoek onze showroom
                         </h3>
@@ -1300,14 +1300,14 @@ export default function CustomerPortal() {
                       <div className="p-6">
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                           <div>
-                            <p className="text-white">Car Audio Limburg</p>
-                            <p className="text-zinc-400">Rijksweg Zuid 320-A</p>
-                            <p className="text-zinc-400">6161 BT Geleen, Nederland</p>
+                            <p className="text-foreground">Car Audio Limburg</p>
+                            <p className="text-muted-foreground">Rijksweg Zuid 320-A</p>
+                            <p className="text-muted-foreground">6161 BT Geleen, Nederland</p>
                           </div>
                           <div className="text-left md:text-right">
-                            <p className="text-zinc-500 text-sm">Openingstijden</p>
-                            <p className="text-white">Ma-Vr: 09:00 - 18:00</p>
-                            <p className="text-white">Za: 09:00 - 17:00</p>
+                            <p className="text-muted-foreground text-sm">Openingstijden</p>
+                            <p className="text-foreground">Ma-Vr: 09:00 - 18:00</p>
+                            <p className="text-foreground">Za: 09:00 - 17:00</p>
                           </div>
                         </div>
                       </div>
@@ -1321,13 +1321,13 @@ export default function CustomerPortal() {
 
         {/* Order Details Dialog */}
         <Dialog open={isOrderDetailOpen} onOpenChange={setIsOrderDetailOpen}>
-          <DialogContent className="bg-zinc-950 border-zinc-800 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 text-foreground max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-xl font-light flex items-center gap-2">
                 <Package className="w-5 h-5 text-[#d0a760]" />
                 Bestelgegevens {orderDetails?.order?.orderNumber && `#${orderDetails.order.orderNumber}`}
               </DialogTitle>
-              <DialogDescription className="text-zinc-400">
+              <DialogDescription className="text-muted-foreground">
                 Bekijk de details van je bestelling
               </DialogDescription>
             </DialogHeader>
@@ -1339,8 +1339,8 @@ export default function CustomerPortal() {
             ) : orderDetails ? (
               <div className="space-y-6">
                 {/* Order Status */}
-                <div className="flex items-center justify-between p-4 bg-zinc-900 border border-zinc-800">
-                  <span className="text-zinc-400">Status</span>
+                <div className="flex items-center justify-between p-4 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
+                  <span className="text-muted-foreground">Status</span>
                   <Badge className={`${getStatusColor(orderDetails.order.status)} border rounded-none px-2 py-1 text-xs font-medium`}>
                     {getStatusIcon(orderDetails.order.status)}
                     <span className="ml-1.5">{getStatusLabel(orderDetails.order.status)}</span>
@@ -1349,24 +1349,24 @@ export default function CustomerPortal() {
 
                 {/* Products */}
                 <div>
-                  <h4 className="text-white font-medium mb-3 flex items-center gap-2">
+                  <h4 className="text-foreground font-medium mb-3 flex items-center gap-2">
                     <Package className="w-4 h-4 text-[#d0a760]" />
                     Producten
                   </h4>
                   <div className="space-y-2">
                     {orderDetails.items.map((item, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-zinc-900 border border-zinc-800" data-testid={`order-item-${index}`}>
+                      <div key={index} className="flex items-center justify-between p-3 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800" data-testid={`order-item-${index}`}>
                         <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 bg-zinc-800 flex items-center justify-center">
+                          <div className="w-12 h-12 bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center">
                             {item.product?.images?.[0] ? (
                               <img src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-cover" />
                             ) : (
-                              <Package className="w-6 h-6 text-zinc-600" />
+                              <Package className="w-6 h-6 text-muted-foreground" />
                             )}
                           </div>
                           <div>
-                            <p className="text-white">{item.product?.name || 'Product'}</p>
-                            <p className="text-zinc-500 text-sm">Aantal: {item.quantity}</p>
+                            <p className="text-foreground">{item.product?.name || 'Product'}</p>
+                            <p className="text-muted-foreground text-sm">Aantal: {item.quantity}</p>
                           </div>
                         </div>
                         <span className="text-[#d0a760] font-medium">€{parseFloat(item.price).toFixed(2)}</span>
@@ -1378,19 +1378,19 @@ export default function CustomerPortal() {
                 {/* Shipping Address */}
                 {orderDetails.order.shippingAddress && (
                   <div>
-                    <h4 className="text-white font-medium mb-3 flex items-center gap-2">
+                    <h4 className="text-foreground font-medium mb-3 flex items-center gap-2">
                       <MapPin className="w-4 h-4 text-[#d0a760]" />
                       Verzendadres
                     </h4>
-                    <div className="p-4 bg-zinc-900 border border-zinc-800">
+                    <div className="p-4 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
                       {(() => {
                         const addr = orderDetails.order.shippingAddress as any;
                         return (
                           <>
-                            <p className="text-white">{addr.firstName} {addr.lastName}</p>
-                            <p className="text-zinc-400">{addr.address}</p>
-                            <p className="text-zinc-400">{addr.postalCode} {addr.city}</p>
-                            <p className="text-zinc-400">{addr.country || 'Nederland'}</p>
+                            <p className="text-foreground">{addr.firstName} {addr.lastName}</p>
+                            <p className="text-muted-foreground">{addr.address}</p>
+                            <p className="text-muted-foreground">{addr.postalCode} {addr.city}</p>
+                            <p className="text-muted-foreground">{addr.country || 'Nederland'}</p>
                           </>
                         );
                       })()}
@@ -1399,19 +1399,19 @@ export default function CustomerPortal() {
                 )}
 
                 {/* Total */}
-                <div className="flex items-center justify-between p-4 bg-zinc-900 border border-[#d0a760]/30">
-                  <span className="text-white font-medium">Totaal</span>
+                <div className="flex items-center justify-between p-4 bg-zinc-100 dark:bg-zinc-900 border border-[#d0a760]/30">
+                  <span className="text-foreground font-medium">Totaal</span>
                   <span className="text-[#d0a760] text-xl font-medium">€{parseFloat(orderDetails.order.total).toFixed(2)}</span>
                 </div>
               </div>
             ) : (
-              <p className="text-zinc-400 text-center py-8">Bestelling niet gevonden</p>
+              <p className="text-muted-foreground text-center py-8">Bestelling niet gevonden</p>
             )}
 
             <DialogFooter>
               <Button
                 onClick={() => setIsOrderDetailOpen(false)}
-                className="bg-zinc-800 text-white hover:bg-zinc-700 rounded-none"
+                className="bg-zinc-200 dark:bg-zinc-800 text-foreground hover:bg-zinc-300 dark:hover:bg-zinc-700 rounded-none"
                 data-testid="button-close-order-dialog"
               >
                 Sluiten
@@ -1432,32 +1432,32 @@ export default function CustomerPortal() {
 
         {/* Booking Edit Dialog */}
         <Dialog open={isBookingEditOpen} onOpenChange={setIsBookingEditOpen}>
-          <DialogContent className="bg-zinc-950 border-zinc-800 text-white max-w-md">
+          <DialogContent className="bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 text-foreground max-w-md">
             <DialogHeader>
               <DialogTitle className="text-xl font-light flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-[#d0a760]" />
                 Afspraak verzetten
               </DialogTitle>
-              <DialogDescription className="text-zinc-400">
+              <DialogDescription className="text-muted-foreground">
                 Kies een nieuwe datum voor je afspraak
               </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-zinc-400">Nieuwe datum</Label>
+                <Label className="text-muted-foreground">Nieuwe datum</Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
-                      className="w-full justify-start bg-zinc-900 border-zinc-700 text-white hover:bg-zinc-800 rounded-none"
+                      className="w-full justify-start bg-zinc-100 dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 text-foreground hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-none"
                       data-testid="button-select-date"
                     >
                       <Calendar className="mr-2 h-4 w-4" />
                       {bookingEditDate ? format(bookingEditDate, "d MMMM yyyy", { locale: nl }) : "Selecteer datum"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-zinc-900 border-zinc-700">
+                  <PopoverContent className="w-auto p-0 bg-zinc-100 dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700">
                     <CalendarComponent
                       mode="single"
                       selected={bookingEditDate}
@@ -1470,12 +1470,12 @@ export default function CustomerPortal() {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-zinc-400">Opmerkingen</Label>
+                <Label className="text-muted-foreground">Opmerkingen</Label>
                 <Textarea
                   value={bookingEditNotes}
                   onChange={(e) => setBookingEditNotes(e.target.value)}
                   placeholder="Extra opmerkingen..."
-                  className="bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-500 rounded-none"
+                  className="bg-zinc-100 dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 text-foreground placeholder:text-muted-foreground rounded-none"
                   data-testid="textarea-booking-notes"
                 />
               </div>
@@ -1485,7 +1485,7 @@ export default function CustomerPortal() {
               <Button
                 onClick={() => setIsBookingEditOpen(false)}
                 variant="outline"
-                className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 rounded-none"
+                className="bg-transparent border-zinc-300 dark:border-zinc-700 text-muted-foreground hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-none"
                 data-testid="button-cancel-booking-edit"
               >
                 Annuleren
@@ -1507,16 +1507,16 @@ export default function CustomerPortal() {
 
         {/* Booking Cancel Confirmation */}
         <AlertDialog open={isBookingCancelOpen} onOpenChange={setIsBookingCancelOpen}>
-          <AlertDialogContent className="bg-zinc-950 border-zinc-800">
+          <AlertDialogContent className="bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800">
             <AlertDialogHeader>
-              <AlertDialogTitle className="text-white">Afspraak annuleren</AlertDialogTitle>
-              <AlertDialogDescription className="text-zinc-400">
+              <AlertDialogTitle className="text-foreground">Afspraak annuleren</AlertDialogTitle>
+              <AlertDialogDescription className="text-muted-foreground">
                 Weet je zeker dat je deze afspraak wilt annuleren? Dit kan niet ongedaan worden gemaakt.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel 
-                className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 rounded-none"
+                className="bg-transparent border-zinc-300 dark:border-zinc-700 text-muted-foreground hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-none"
                 data-testid="button-cancel-cancel"
               >
                 Terug
@@ -1537,35 +1537,35 @@ export default function CustomerPortal() {
 
         {/* Profile Edit Dialog */}
         <Dialog open={isProfileEditOpen} onOpenChange={setIsProfileEditOpen}>
-          <DialogContent className="bg-zinc-950 border-zinc-800 text-white max-w-md">
+          <DialogContent className="bg-zinc-50 dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 text-foreground max-w-md">
             <DialogHeader>
               <DialogTitle className="text-xl font-light flex items-center gap-2">
                 <User className="w-5 h-5 text-[#d0a760]" />
                 Profiel bewerken
               </DialogTitle>
-              <DialogDescription className="text-zinc-400">
+              <DialogDescription className="text-muted-foreground">
                 Pas je persoonlijke gegevens aan
               </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-zinc-400">Voornaam</Label>
+                <Label className="text-muted-foreground">Voornaam</Label>
                 <Input
                   value={profileFirstName}
                   onChange={(e) => setProfileFirstName(e.target.value)}
                   placeholder="Voornaam"
-                  className="bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-500 rounded-none"
+                  className="bg-zinc-100 dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 text-foreground placeholder:text-muted-foreground rounded-none"
                   data-testid="input-first-name"
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-zinc-400">Achternaam</Label>
+                <Label className="text-muted-foreground">Achternaam</Label>
                 <Input
                   value={profileLastName}
                   onChange={(e) => setProfileLastName(e.target.value)}
                   placeholder="Achternaam"
-                  className="bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-500 rounded-none"
+                  className="bg-zinc-100 dark:bg-zinc-900 border-zinc-300 dark:border-zinc-700 text-foreground placeholder:text-muted-foreground rounded-none"
                   data-testid="input-last-name"
                 />
               </div>
@@ -1575,7 +1575,7 @@ export default function CustomerPortal() {
               <Button
                 onClick={() => setIsProfileEditOpen(false)}
                 variant="outline"
-                className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 rounded-none"
+                className="bg-transparent border-zinc-300 dark:border-zinc-700 text-muted-foreground hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-none"
                 data-testid="button-cancel-profile-edit"
               >
                 Annuleren

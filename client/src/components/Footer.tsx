@@ -1,10 +1,14 @@
 import { Link } from "wouter";
+import { useTheme } from "@/components/ThemeProvider";
 import whiteLogoUrl from "@assets/CAL white_1758369495328.png";
+import logoUrl from "@assets/Caraudiolimburg-logo_1757008375383.png";
 import saerensLogoUrl from "@assets/Saerens_Advertising_1764900190628.png";
 import iconLogoUrl from "@assets/CAR_1765257768308.png";
 import { Facebook, Instagram, Youtube, MapPin, Phone, Mail, Clock } from "lucide-react";
 
 export function Footer() {
+  const { theme } = useTheme();
+  
   return (
     <footer className="bg-white dark:bg-black border-t border-zinc-200 dark:border-zinc-800 pt-20 pb-10">
       <div className="container px-8 md:px-16 lg:px-24 mx-auto">
@@ -13,7 +17,7 @@ export function Footer() {
           <div data-testid="footer-company-info">
             <div className="mb-6">
               <img 
-                src={whiteLogoUrl} 
+                src={theme === 'dark' ? whiteLogoUrl : logoUrl} 
                 alt="Car Audio Limburg" 
                 className="h-10 w-auto"
               />

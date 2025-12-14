@@ -199,17 +199,17 @@ export default function ProductPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-black">
+      <div className="min-h-screen bg-background">
         <Header onCartOpen={() => setIsCartOpen(true)} />
         <div className="pt-24 pb-16">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-              <div className="aspect-square bg-zinc-900 animate-pulse" />
+              <div className="aspect-square bg-zinc-100 dark:bg-zinc-900 animate-pulse" />
               <div className="space-y-4">
-                <div className="h-8 bg-zinc-900 animate-pulse w-3/4" />
-                <div className="h-4 bg-zinc-900 animate-pulse w-1/2" />
-                <div className="h-12 bg-zinc-900 animate-pulse w-1/4" />
-                <div className="h-24 bg-zinc-900 animate-pulse" />
+                <div className="h-8 bg-zinc-100 dark:bg-zinc-900 animate-pulse w-3/4" />
+                <div className="h-4 bg-zinc-100 dark:bg-zinc-900 animate-pulse w-1/2" />
+                <div className="h-12 bg-zinc-100 dark:bg-zinc-900 animate-pulse w-1/4" />
+                <div className="h-24 bg-zinc-100 dark:bg-zinc-900 animate-pulse" />
               </div>
             </div>
           </div>
@@ -220,16 +220,16 @@ export default function ProductPage() {
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-black">
+      <div className="min-h-screen bg-background">
         <Header onCartOpen={() => setIsCartOpen(true)} />
         <div className="pt-24 pb-16">
           <div className="container mx-auto px-4 text-center py-20">
             <div className="mb-8">
-              <div className="w-24 h-24 mx-auto bg-zinc-900 flex items-center justify-center mb-6">
-                <Package className="w-12 h-12 text-white/20" />
+              <div className="w-24 h-24 mx-auto bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center mb-6">
+                <Package className="w-12 h-12 text-muted-foreground/50" />
               </div>
-              <h1 className="text-3xl font-bold text-white mb-4">Product niet gevonden</h1>
-              <p className="text-white/50 mb-8">
+              <h1 className="text-3xl font-bold text-foreground mb-4">Product niet gevonden</h1>
+              <p className="text-muted-foreground mb-8">
                 Het product dat je zoekt bestaat niet of is niet meer beschikbaar.
               </p>
               <Button 
@@ -287,7 +287,7 @@ export default function ProductPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-background">
       {/* JSON-LD Product Schema for SEO */}
       <script
         type="application/ld+json"
@@ -300,61 +300,61 @@ export default function ProductPage() {
       </div>
       
       {/* Mobile App Header */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-lg border-b border-white/10 safe-area-top">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-zinc-100/95 dark:bg-black/95 backdrop-blur-lg border-b border-zinc-200 dark:border-white/10 safe-area-top">
         <div className="flex items-center justify-between px-4 h-14">
           <button 
             onClick={() => navigate("/shop")}
-            className="p-2 -ml-2 hover:bg-white/10 transition-colors active:scale-95"
+            className="p-2 -ml-2 hover:bg-zinc-200 dark:hover:bg-white/10 transition-colors active:scale-95"
             data-testid="mobile-back-button"
             aria-label="Terug naar shop"
           >
-            <ArrowLeft className="w-6 h-6 text-white" />
+            <ArrowLeft className="w-6 h-6 text-foreground" />
           </button>
           
           <div className="flex items-center gap-1">
             <button 
               onClick={handleShare}
-              className="p-2 hover:bg-white/10 transition-colors active:scale-95"
+              className="p-2 hover:bg-zinc-200 dark:hover:bg-white/10 transition-colors active:scale-95"
               data-testid="mobile-share-button"
               aria-label="Deel dit product"
             >
-              <Share2 className="w-5 h-5 text-white" />
+              <Share2 className="w-5 h-5 text-foreground" />
             </button>
             <button 
               onClick={() => setIsWishlisted(!isWishlisted)}
-              className="p-2 hover:bg-white/10 transition-colors active:scale-95"
+              className="p-2 hover:bg-zinc-200 dark:hover:bg-white/10 transition-colors active:scale-95"
               data-testid="mobile-wishlist-button"
               aria-label={isWishlisted ? "Verwijder uit favorieten" : "Voeg toe aan favorieten"}
               aria-pressed={isWishlisted}
             >
-              <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-white'}`} />
+              <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-foreground'}`} />
             </button>
             <button 
               onClick={() => setIsCartOpen(true)}
-              className="p-2 -mr-2 hover:bg-white/10 transition-colors active:scale-95"
+              className="p-2 -mr-2 hover:bg-zinc-200 dark:hover:bg-white/10 transition-colors active:scale-95"
               data-testid="mobile-cart-button"
               aria-label="Open winkelwagen"
             >
-              <ShoppingCart className="w-5 h-5 text-white" />
+              <ShoppingCart className="w-5 h-5 text-foreground" />
             </button>
           </div>
         </div>
       </div>
       
       {/* Desktop Breadcrumb */}
-      <div className="hidden md:block bg-zinc-950 border-b border-white/5">
+      <div className="hidden md:block bg-zinc-50 dark:bg-zinc-950 border-b border-zinc-200 dark:border-white/5">
         <div className="container mx-auto px-4 py-4">
           <nav className="flex items-center gap-2 text-sm" data-testid="breadcrumb">
-            <Link href="/" className="text-white/40 hover:text-[#d0a760] transition-colors">Home</Link>
-            <span className="text-white/20">/</span>
-            <Link href="/shop" className="text-white/40 hover:text-[#d0a760] transition-colors">Shop</Link>
-            <span className="text-white/20">/</span>
-            <span className="text-white">{product.name}</span>
+            <Link href="/" className="text-muted-foreground hover:text-[#d0a760] transition-colors">Home</Link>
+            <span className="text-muted-foreground/50">/</span>
+            <Link href="/shop" className="text-muted-foreground hover:text-[#d0a760] transition-colors">Shop</Link>
+            <span className="text-muted-foreground/50">/</span>
+            <span className="text-foreground">{product.name}</span>
           </nav>
         </div>
       </div>
 
-      {/* Product Section - Black */}
+      {/* Product Section */}
       <section className="pt-14 md:pt-0 py-6 md:py-20 pb-32 md:pb-20">
         <div className="container mx-auto px-0 md:px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 lg:gap-16">
@@ -366,7 +366,7 @@ export default function ProductPage() {
                     {/* Main Image - Swipeable on Mobile */}
                     <div 
                       ref={imageContainerRef}
-                      className="relative aspect-square bg-zinc-900 md:border md:border-zinc-800 md:cursor-zoom-in group overflow-hidden touch-pan-y"
+                      className="relative aspect-square bg-zinc-100 dark:bg-zinc-900 md:border md:border-zinc-200 dark:md:border-zinc-800 md:cursor-zoom-in group overflow-hidden touch-pan-y"
                       onClick={() => setIsLightboxOpen(true)}
                       onTouchStart={images.length > 1 ? onTouchStart : undefined}
                       onTouchMove={images.length > 1 ? onTouchMove : undefined}
@@ -402,7 +402,7 @@ export default function ProductPage() {
                               e.stopPropagation();
                               setSelectedImageIndex((prev) => (prev - 1 + images.length) % images.length);
                             }}
-                            className="hidden md:block absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-black/60 hover:bg-[#d0a760] text-white hover:text-black transition-all"
+                            className="hidden md:block absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-zinc-100/60 dark:bg-black/60 hover:bg-[#d0a760] text-foreground hover:text-black transition-all"
                             data-testid="button-previous-image"
                           >
                             <ChevronLeft className="w-5 h-5" />
@@ -412,7 +412,7 @@ export default function ProductPage() {
                               e.stopPropagation();
                               setSelectedImageIndex((prev) => (prev + 1) % images.length);
                             }}
-                            className="hidden md:block absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-black/60 hover:bg-[#d0a760] text-white hover:text-black transition-all"
+                            className="hidden md:block absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-zinc-100/60 dark:bg-black/60 hover:bg-[#d0a760] text-foreground hover:text-black transition-all"
                             data-testid="button-next-image"
                           >
                             <ChevronRight className="w-5 h-5" />
@@ -433,7 +433,7 @@ export default function ProductPage() {
                               className={`w-2 h-2 transition-all duration-300 ${
                                 index === selectedImageIndex 
                                   ? 'bg-[#d0a760] w-6' 
-                                  : 'bg-white/30'
+                                  : 'bg-zinc-400 dark:bg-white/30'
                               }`}
                               data-testid={`mobile-dot-${index}`}
                             />
@@ -448,10 +448,10 @@ export default function ProductPage() {
                         {images.map((image, index) => (
                           <button
                             key={index}
-                            className={`aspect-square bg-zinc-900 border-2 transition-all duration-300 overflow-hidden ${
+                            className={`aspect-square bg-zinc-100 dark:bg-zinc-900 border-2 transition-all duration-300 overflow-hidden ${
                               index === selectedImageIndex 
                                 ? 'border-[#d0a760]' 
-                                : 'border-zinc-800 hover:border-white/30'
+                                : 'border-zinc-200 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-white/30'
                             }`}
                             onClick={() => setSelectedImageIndex(index)}
                             data-testid={`thumbnail-${index}`}
@@ -467,9 +467,9 @@ export default function ProductPage() {
                     )}
                   </>
                 ) : (
-                  <div className="aspect-square bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center">
-                    <Package className="w-16 h-16 text-white/10 mb-4" />
-                    <p className="text-white/30 text-sm">Geen afbeelding beschikbaar</p>
+                  <div className="aspect-square bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 flex flex-col items-center justify-center">
+                    <Package className="w-16 h-16 text-muted-foreground/50 mb-4" />
+                    <p className="text-muted-foreground/50 text-sm">Geen afbeelding beschikbaar</p>
                   </div>
                 )}
               </div>
@@ -487,19 +487,19 @@ export default function ProductPage() {
                     {/* Desktop wishlist button */}
                     <button
                       onClick={() => setIsWishlisted(!isWishlisted)}
-                      className="hidden md:block p-2 hover:bg-white/5 transition-colors"
+                      className="hidden md:block p-2 hover:bg-zinc-100 dark:hover:bg-white/5 transition-colors"
                       data-testid="button-wishlist"
                     >
-                      <Heart className={`w-6 h-6 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-white/40'}`} />
+                      <Heart className={`w-6 h-6 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-muted-foreground'}`} />
                     </button>
                   </div>
                   
-                  <h1 className="text-2xl md:text-4xl font-bold text-white mb-2 md:mb-3" data-testid="product-title">
+                  <h1 className="text-2xl md:text-4xl font-bold text-foreground mb-2 md:mb-3" data-testid="product-title">
                     {product.name}
                   </h1>
                   
                   {product.shortDescription && (
-                    <p className="text-base md:text-lg text-white/50" data-testid="product-short-description">
+                    <p className="text-base md:text-lg text-muted-foreground" data-testid="product-short-description">
                       {product.shortDescription}
                     </p>
                   )}
@@ -512,17 +512,17 @@ export default function ProductPage() {
                       <Star key={i} className="w-4 h-4 md:w-5 md:h-5 text-[#d0a760] fill-current" />
                     ))}
                   </div>
-                  <span className="text-white/40 text-sm">4.8 (24 reviews)</span>
+                  <span className="text-muted-foreground text-sm">4.8 (24 reviews)</span>
                 </div>
 
                 {/* Price - Mobile compact, Desktop full */}
-                <div className="py-4 md:py-6 border-y border-white/10" data-testid="product-pricing">
+                <div className="py-4 md:py-6 border-y border-zinc-200 dark:border-white/10" data-testid="product-pricing">
                   <div className="flex items-baseline gap-3 md:gap-4 mb-2 md:mb-3">
-                    <span className="text-3xl md:text-4xl font-bold text-white">
+                    <span className="text-3xl md:text-4xl font-bold text-foreground">
                       €{currentPrice.toFixed(0)}
                     </span>
                     {originalPrice && (
-                      <span className="text-lg md:text-xl text-white/30 line-through">
+                      <span className="text-lg md:text-xl text-muted-foreground/50 line-through">
                         €{originalPrice.toFixed(0)}
                       </span>
                     )}
@@ -541,7 +541,7 @@ export default function ProductPage() {
                           <span className="w-2 h-2 bg-green-500 animate-pulse" />
                           Op voorraad
                         </span>
-                        <span className="text-white/50 text-xs flex items-center gap-1">
+                        <span className="text-muted-foreground text-xs flex items-center gap-1">
                           <Truck className="w-3 h-3" />
                           Bestel voor 16:00, morgen in huis
                         </span>
@@ -555,7 +555,7 @@ export default function ProductPage() {
                     
                     {/* Payment Methods */}
                     <div className="flex items-center gap-2 pt-2">
-                      <span className="text-white/40 text-xs">Betaalmethodes:</span>
+                      <span className="text-muted-foreground text-xs">Betaalmethodes:</span>
                       <div className="flex items-center gap-1">
                         <div className="bg-white px-1.5 py-0.5" title="iDEAL">
                           <span className="text-[10px] font-bold text-[#CC0066]">iDEAL</span>
@@ -577,23 +577,23 @@ export default function ProductPage() {
                 {/* Quantity and Add to Cart - Desktop only */}
                 <div className="hidden md:block space-y-4" data-testid="add-to-cart-section">
                   <div className="flex items-center gap-4">
-                    <span className="text-white/60 text-sm">Aantal:</span>
-                    <div className="flex items-center border border-white/10">
+                    <span className="text-muted-foreground text-sm">Aantal:</span>
+                    <div className="flex items-center border border-zinc-200 dark:border-white/10">
                       <button
                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
                         disabled={quantity <= 1}
-                        className="p-3 text-white/60 hover:text-white hover:bg-white/5 disabled:opacity-30 transition-colors"
+                        className="p-3 text-muted-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-white/5 disabled:opacity-30 transition-colors"
                         data-testid="button-decrease-quantity"
                       >
                         -
                       </button>
-                      <span className="w-12 text-center text-white font-medium" data-testid="quantity-display">
+                      <span className="w-12 text-center text-foreground font-medium" data-testid="quantity-display">
                         {quantity}
                       </span>
                       <button
                         onClick={() => setQuantity(quantity + 1)}
                         disabled={!product.stock || quantity >= product.stock}
-                        className="p-3 text-white/60 hover:text-white hover:bg-white/5 disabled:opacity-30 transition-colors"
+                        className="p-3 text-muted-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-white/5 disabled:opacity-30 transition-colors"
                         data-testid="button-increase-quantity"
                       >
                         +
@@ -641,8 +641,8 @@ export default function ProductPage() {
                           <Shield className="w-5 h-5 text-[#d0a760]" />
                         </div>
                         <div>
-                          <p className="text-white font-medium text-sm mb-1">Bundel met Installatie</p>
-                          <p className="text-white/60 text-xs">
+                          <p className="text-foreground font-medium text-sm mb-1">Bundel met Installatie</p>
+                          <p className="text-muted-foreground text-xs">
                             Laat dit product professioneel inbouwen voor slechts €{installationPrice.toFixed(0)} extra. 
                             Inclusief 2 jaar installatiegarantie.
                           </p>
@@ -656,54 +656,54 @@ export default function ProductPage() {
                 <div className="pt-4 md:pt-6" data-testid="product-benefits">
                   {/* Mobile: Compact horizontal badges */}
                   <div className="flex md:hidden gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
-                    <div className="flex items-center gap-2 px-3 py-2 bg-zinc-900 border border-zinc-800 whitespace-nowrap flex-shrink-0">
+                    <div className="flex items-center gap-2 px-3 py-2 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 whitespace-nowrap flex-shrink-0">
                       <Truck className="w-4 h-4 text-[#d0a760]" />
-                      <span className="text-white text-xs font-medium">Gratis Verzending</span>
+                      <span className="text-foreground text-xs font-medium">Gratis Verzending</span>
                     </div>
-                    <div className="flex items-center gap-2 px-3 py-2 bg-zinc-900 border border-zinc-800 whitespace-nowrap flex-shrink-0">
+                    <div className="flex items-center gap-2 px-3 py-2 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 whitespace-nowrap flex-shrink-0">
                       <Shield className="w-4 h-4 text-[#d0a760]" />
-                      <span className="text-white text-xs font-medium">2 Jaar Garantie</span>
+                      <span className="text-foreground text-xs font-medium">2 Jaar Garantie</span>
                     </div>
-                    <div className="flex items-center gap-2 px-3 py-2 bg-zinc-900 border border-zinc-800 whitespace-nowrap flex-shrink-0">
+                    <div className="flex items-center gap-2 px-3 py-2 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 whitespace-nowrap flex-shrink-0">
                       <Award className="w-4 h-4 text-[#d0a760]" />
-                      <span className="text-white text-xs font-medium">Prof. Installatie</span>
+                      <span className="text-foreground text-xs font-medium">Prof. Installatie</span>
                     </div>
                   </div>
                   
                   {/* Desktop: Full grid with stagger */}
                   <StaggerContainer className="hidden md:grid grid-cols-1 gap-3">
                     <StaggerItem>
-                      <div className="flex items-center gap-4 p-4 bg-zinc-900 border border-zinc-800">
+                      <div className="flex items-center gap-4 p-4 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
                         <div className="p-2 bg-[#d0a760]/10">
                           <Truck className="w-5 h-5 text-[#d0a760]" />
                         </div>
                         <div>
-                          <p className="text-white font-medium text-sm">Gratis Verzending</p>
-                          <p className="text-white/40 text-xs">Bij bestellingen vanaf €50</p>
+                          <p className="text-foreground font-medium text-sm">Gratis Verzending</p>
+                          <p className="text-muted-foreground text-xs">Bij bestellingen vanaf €50</p>
                         </div>
                       </div>
                     </StaggerItem>
                     
                     <StaggerItem>
-                      <div className="flex items-center gap-4 p-4 bg-zinc-900 border border-zinc-800">
+                      <div className="flex items-center gap-4 p-4 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
                         <div className="p-2 bg-[#d0a760]/10">
                           <Shield className="w-5 h-5 text-[#d0a760]" />
                         </div>
                         <div>
-                          <p className="text-white font-medium text-sm">2 Jaar Garantie</p>
-                          <p className="text-white/40 text-xs">Volledige fabrieksgarantie</p>
+                          <p className="text-foreground font-medium text-sm">2 Jaar Garantie</p>
+                          <p className="text-muted-foreground text-xs">Volledige fabrieksgarantie</p>
                         </div>
                       </div>
                     </StaggerItem>
                     
                     <StaggerItem>
-                      <div className="flex items-center gap-4 p-4 bg-zinc-900 border border-zinc-800">
+                      <div className="flex items-center gap-4 p-4 bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
                         <div className="p-2 bg-[#d0a760]/10">
                           <Award className="w-5 h-5 text-[#d0a760]" />
                         </div>
                         <div>
-                          <p className="text-white font-medium text-sm">Professionele Installatie</p>
-                          <p className="text-white/40 text-xs">Door gecertificeerde monteurs</p>
+                          <p className="text-foreground font-medium text-sm">Professionele Installatie</p>
+                          <p className="text-muted-foreground text-xs">Door gecertificeerde monteurs</p>
                         </div>
                       </div>
                     </StaggerItem>
@@ -716,15 +716,15 @@ export default function ProductPage() {
       </section>
 
       {/* Product Information - White Section */}
-      <section className="bg-white py-16 md:py-24" data-testid="product-information">
+      <section className="bg-white dark:bg-zinc-900 py-16 md:py-24" data-testid="product-information">
         <div className="container mx-auto px-4">
           <ScrollReveal animation="fade-up">
             <div className="max-w-4xl mx-auto">
               {/* Description */}
               {product.description && (
                 <div className="mb-12">
-                  <h2 className="text-2xl font-bold text-black mb-6">Beschrijving</h2>
-                  <div className="text-black/70 leading-relaxed text-lg">
+                  <h2 className="text-2xl font-bold text-foreground mb-6">Beschrijving</h2>
+                  <div className="text-muted-foreground leading-relaxed text-lg">
                     <p>{String(product.description)}</p>
                   </div>
                 </div>
@@ -733,12 +733,12 @@ export default function ProductPage() {
               {/* Features */}
               {product.features && Array.isArray(product.features) && product.features.length > 0 && (
                 <div className="mb-12">
-                  <h2 className="text-2xl font-bold text-black mb-6">Kenmerken</h2>
+                  <h2 className="text-2xl font-bold text-foreground mb-6">Kenmerken</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {(product.features as string[]).map((feature, index) => (
-                      <div key={index} className="flex items-start gap-3 p-4 bg-zinc-50 border border-zinc-200">
+                      <div key={index} className="flex items-start gap-3 p-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">
                         <Check className="w-5 h-5 text-[#d0a760] flex-shrink-0 mt-0.5" />
-                        <span className="text-black/80">{String(feature)}</span>
+                        <span className="text-muted-foreground">{String(feature)}</span>
                       </div>
                     ))}
                   </div>
@@ -748,12 +748,12 @@ export default function ProductPage() {
               {/* Specifications */}
               {product.specifications && (
                 <div>
-                  <h2 className="text-2xl font-bold text-black mb-6">Specificaties</h2>
+                  <h2 className="text-2xl font-bold text-foreground mb-6">Specificaties</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {Object.entries(product.specifications as Record<string, string | number | boolean>).map(([key, value]) => (
-                      <div key={key} className="p-4 bg-zinc-50 border border-zinc-200">
-                        <p className="text-xs text-black/40 uppercase tracking-wider mb-1">{key}</p>
-                        <p className="text-lg font-medium text-black">{String(value)}</p>
+                      <div key={key} className="p-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700">
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">{key}</p>
+                        <p className="text-lg font-medium text-foreground">{String(value)}</p>
                       </div>
                     ))}
                   </div>
@@ -766,14 +766,14 @@ export default function ProductPage() {
 
       {/* Related Products / Upsell Section */}
       {filteredRelatedProducts.length > 0 && (
-        <section className="bg-zinc-950 py-16 md:py-20 border-t border-white/5" data-testid="related-products">
+        <section className="bg-zinc-50 dark:bg-zinc-950 py-16 md:py-20 border-t border-zinc-200 dark:border-white/5" data-testid="related-products">
           <div className="container mx-auto px-4">
             <ScrollReveal animation="fade-up">
               <div className="text-center mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
+                <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
                   Gerelateerde Producten
                 </h2>
-                <p className="text-white/50">Andere klanten bekeken ook</p>
+                <p className="text-muted-foreground">Andere klanten bekeken ook</p>
               </div>
             </ScrollReveal>
             
@@ -781,7 +781,7 @@ export default function ProductPage() {
               {filteredRelatedProducts.map((relatedProduct) => (
                 <Link key={relatedProduct.id} href={`/product/${relatedProduct.slug}`}>
                   <div className="group cursor-pointer" data-testid={`related-product-${relatedProduct.id}`}>
-                    <div className="relative aspect-square bg-zinc-900 border border-zinc-800 mb-3 overflow-hidden">
+                    <div className="relative aspect-square bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 mb-3 overflow-hidden">
                       {relatedProduct.images && relatedProduct.images[0] ? (
                         <img 
                           src={relatedProduct.images[0]} 
@@ -790,17 +790,17 @@ export default function ProductPage() {
                         />
                       ) : (
                         <div className="flex items-center justify-center h-full">
-                          <Package className="w-12 h-12 text-white/10" />
+                          <Package className="w-12 h-12 text-muted-foreground/50" />
                         </div>
                       )}
                     </div>
-                    <h3 className="text-white text-sm font-medium line-clamp-2 group-hover:text-[#d0a760] transition-colors mb-1">
+                    <h3 className="text-foreground text-sm font-medium line-clamp-2 group-hover:text-[#d0a760] transition-colors mb-1">
                       {relatedProduct.name}
                     </h3>
                     <div className="flex items-baseline gap-2">
                       <span className="text-[#d0a760] font-bold">€{parseFloat(relatedProduct.price).toFixed(0)}</span>
                       {relatedProduct.originalPrice && (
-                        <span className="text-white/30 text-xs line-through">
+                        <span className="text-muted-foreground/50 text-xs line-through">
                           €{parseFloat(relatedProduct.originalPrice).toFixed(0)}
                         </span>
                       )}
@@ -813,18 +813,18 @@ export default function ProductPage() {
         </section>
       )}
 
-      {/* CTA Section - Black */}
-      <section className="bg-black py-16 border-t border-white/5">
+      {/* CTA Section */}
+      <section className="bg-background py-16 border-t border-zinc-200 dark:border-white/5">
         <div className="container mx-auto px-4">
           <ScrollReveal animation="fade-up">
             <div className="max-w-3xl mx-auto text-center">
               <div className="inline-flex items-center justify-center p-3 bg-[#d0a760]/10 mb-6">
                 <Headphones className="w-8 h-8 text-[#d0a760]" />
               </div>
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
                 Vragen over dit product?
               </h2>
-              <p className="text-white/50 mb-8">
+              <p className="text-muted-foreground mb-8">
                 Onze experts staan klaar om al je vragen te beantwoorden en je te helpen met de beste keuze.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -837,7 +837,7 @@ export default function ProductPage() {
                 <Button 
                   asChild
                   variant="outline"
-                  className="border-white/20 text-white hover:bg-white/10 rounded-none px-8 py-6"
+                  className="border-zinc-300 dark:border-white/20 text-foreground hover:bg-zinc-100 dark:hover:bg-white/10 rounded-none px-8 py-6"
                 >
                   <a href="/booking">Plan Installatie</a>
                 </Button>
@@ -853,26 +853,26 @@ export default function ProductPage() {
       </div>
 
       {/* Mobile Sticky Bottom Action Bar */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-zinc-950/98 backdrop-blur-xl border-t border-white/10 safe-area-bottom">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-zinc-100/98 dark:bg-zinc-950/98 backdrop-blur-xl border-t border-zinc-200 dark:border-white/10 safe-area-bottom">
         <div className="p-4">
           {/* Quantity selector row */}
           <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center border border-white/10 bg-black/50">
+            <div className="flex items-center border border-zinc-200 dark:border-white/10 bg-white/50 dark:bg-black/50">
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
                 disabled={quantity <= 1}
-                className="p-2.5 text-white/60 hover:text-white active:bg-white/10 disabled:opacity-30 transition-colors"
+                className="p-2.5 text-muted-foreground hover:text-foreground active:bg-zinc-100 dark:active:bg-white/10 disabled:opacity-30 transition-colors"
                 data-testid="mobile-button-decrease-quantity"
               >
                 <Minus className="w-4 h-4" />
               </button>
-              <span className="w-10 text-center text-white font-medium text-sm" data-testid="mobile-quantity-display">
+              <span className="w-10 text-center text-foreground font-medium text-sm" data-testid="mobile-quantity-display">
                 {quantity}
               </span>
               <button
                 onClick={() => setQuantity(quantity + 1)}
                 disabled={!product.stock || quantity >= product.stock}
-                className="p-2.5 text-white/60 hover:text-white active:bg-white/10 disabled:opacity-30 transition-colors"
+                className="p-2.5 text-muted-foreground hover:text-foreground active:bg-zinc-100 dark:active:bg-white/10 disabled:opacity-30 transition-colors"
                 data-testid="mobile-button-increase-quantity"
               >
                 <Plus className="w-4 h-4" />
@@ -881,9 +881,9 @@ export default function ProductPage() {
             
             <div className="text-right">
               <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-white">€{currentPrice.toFixed(0)}</span>
+                <span className="text-2xl font-bold text-foreground">€{currentPrice.toFixed(0)}</span>
                 {originalPrice && (
-                  <span className="text-sm text-white/30 line-through">€{originalPrice.toFixed(0)}</span>
+                  <span className="text-sm text-muted-foreground/50 line-through">€{originalPrice.toFixed(0)}</span>
                 )}
               </div>
               {installationPrice && (

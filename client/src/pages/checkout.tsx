@@ -67,7 +67,7 @@ const CheckoutProgress = ({ currentStep }: { currentStep: number }) => {
                 className={`w-10 h-10 flex items-center justify-center border-2 transition-all ${
                   isActive 
                     ? 'bg-[#d0a760] border-[#d0a760] text-black' 
-                    : 'bg-transparent border-zinc-700 text-zinc-500'
+                    : 'bg-transparent border-zinc-300 dark:border-zinc-700 text-muted-foreground'
                 }`}
                 data-testid={`progress-step-${step.id}`}
               >
@@ -78,14 +78,14 @@ const CheckoutProgress = ({ currentStep }: { currentStep: number }) => {
                 )}
               </div>
               <span className={`hidden md:block text-sm font-medium ${
-                isActive ? 'text-white' : 'text-zinc-500'
+                isActive ? 'text-foreground' : 'text-muted-foreground'
               }`}>
                 {step.label}
               </span>
             </div>
             {index < steps.length - 1 && (
               <ChevronRight className={`w-5 h-5 mx-2 md:mx-4 ${
-                step.id < currentStep ? 'text-[#d0a760]' : 'text-zinc-700'
+                step.id < currentStep ? 'text-[#d0a760]' : 'text-zinc-300 dark:text-zinc-700'
               }`} />
             )}
           </div>
@@ -205,21 +205,21 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems }: { clientSecret: s
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
       <div className="lg:col-span-7 order-2 lg:order-1">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8" data-testid="checkout-form">
-          <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8" data-testid="section-contact">
+          <div className="bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 md:p-8" data-testid="section-contact">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-8 h-8 bg-[#d0a760] flex items-center justify-center">
                 <User className="w-4 h-4 text-black" />
               </div>
-              <h3 className="text-lg font-semibold text-white">Contact informatie</h3>
+              <h3 className="text-lg font-semibold text-foreground">Contact informatie</h3>
             </div>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="email" className="text-zinc-400 text-sm mb-2 block">E-mailadres</Label>
+                <Label htmlFor="email" className="text-muted-foreground text-sm mb-2 block">E-mailadres</Label>
                 <Input
                   {...register("email")}
                   type="email"
                   placeholder="jouw@email.nl"
-                  className="bg-black border-zinc-700 text-white placeholder:text-zinc-600 h-12 rounded-none focus:ring-2 focus:ring-[#d0a760] focus:border-[#d0a760]"
+                  className="bg-background border-zinc-300 dark:border-zinc-700 text-foreground placeholder:text-muted-foreground h-12 rounded-none focus:ring-2 focus:ring-[#d0a760] focus:border-[#d0a760]"
                   data-testid="input-email"
                 />
                 {errors.email && (
@@ -229,20 +229,20 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems }: { clientSecret: s
             </div>
           </div>
 
-          <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8" data-testid="section-shipping">
+          <div className="bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 md:p-8" data-testid="section-shipping">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-8 h-8 bg-[#d0a760] flex items-center justify-center">
                 <MapPin className="w-4 h-4 text-black" />
               </div>
-              <h3 className="text-lg font-semibold text-white">Bezorgadres</h3>
+              <h3 className="text-lg font-semibold text-foreground">Bezorgadres</h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="firstName" className="text-zinc-400 text-sm mb-2 block">Voornaam</Label>
+                <Label htmlFor="firstName" className="text-muted-foreground text-sm mb-2 block">Voornaam</Label>
                 <Input
                   {...register("firstName")}
                   placeholder="Jan"
-                  className="bg-black border-zinc-700 text-white placeholder:text-zinc-600 h-12 rounded-none focus:ring-2 focus:ring-[#d0a760] focus:border-[#d0a760]"
+                  className="bg-background border-zinc-300 dark:border-zinc-700 text-foreground placeholder:text-muted-foreground h-12 rounded-none focus:ring-2 focus:ring-[#d0a760] focus:border-[#d0a760]"
                   data-testid="input-first-name"
                 />
                 {errors.firstName && (
@@ -250,11 +250,11 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems }: { clientSecret: s
                 )}
               </div>
               <div>
-                <Label htmlFor="lastName" className="text-zinc-400 text-sm mb-2 block">Achternaam</Label>
+                <Label htmlFor="lastName" className="text-muted-foreground text-sm mb-2 block">Achternaam</Label>
                 <Input
                   {...register("lastName")}
                   placeholder="Jansen"
-                  className="bg-black border-zinc-700 text-white placeholder:text-zinc-600 h-12 rounded-none focus:ring-2 focus:ring-[#d0a760] focus:border-[#d0a760]"
+                  className="bg-background border-zinc-300 dark:border-zinc-700 text-foreground placeholder:text-muted-foreground h-12 rounded-none focus:ring-2 focus:ring-[#d0a760] focus:border-[#d0a760]"
                   data-testid="input-last-name"
                 />
                 {errors.lastName && (
@@ -262,11 +262,11 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems }: { clientSecret: s
                 )}
               </div>
               <div className="md:col-span-2">
-                <Label htmlFor="address" className="text-zinc-400 text-sm mb-2 block">Straat en huisnummer</Label>
+                <Label htmlFor="address" className="text-muted-foreground text-sm mb-2 block">Straat en huisnummer</Label>
                 <Input
                   {...register("address")}
                   placeholder="Hoofdstraat 123"
-                  className="bg-black border-zinc-700 text-white placeholder:text-zinc-600 h-12 rounded-none focus:ring-2 focus:ring-[#d0a760] focus:border-[#d0a760]"
+                  className="bg-background border-zinc-300 dark:border-zinc-700 text-foreground placeholder:text-muted-foreground h-12 rounded-none focus:ring-2 focus:ring-[#d0a760] focus:border-[#d0a760]"
                   data-testid="input-address"
                 />
                 {errors.address && (
@@ -274,11 +274,11 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems }: { clientSecret: s
                 )}
               </div>
               <div>
-                <Label htmlFor="postalCode" className="text-zinc-400 text-sm mb-2 block">Postcode</Label>
+                <Label htmlFor="postalCode" className="text-muted-foreground text-sm mb-2 block">Postcode</Label>
                 <Input
                   {...register("postalCode")}
                   placeholder="1234 AB"
-                  className="bg-black border-zinc-700 text-white placeholder:text-zinc-600 h-12 rounded-none focus:ring-2 focus:ring-[#d0a760] focus:border-[#d0a760]"
+                  className="bg-background border-zinc-300 dark:border-zinc-700 text-foreground placeholder:text-muted-foreground h-12 rounded-none focus:ring-2 focus:ring-[#d0a760] focus:border-[#d0a760]"
                   data-testid="input-postal-code"
                 />
                 {errors.postalCode && (
@@ -286,11 +286,11 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems }: { clientSecret: s
                 )}
               </div>
               <div>
-                <Label htmlFor="city" className="text-zinc-400 text-sm mb-2 block">Stad</Label>
+                <Label htmlFor="city" className="text-muted-foreground text-sm mb-2 block">Stad</Label>
                 <Input
                   {...register("city")}
                   placeholder="Sittard"
-                  className="bg-black border-zinc-700 text-white placeholder:text-zinc-600 h-12 rounded-none focus:ring-2 focus:ring-[#d0a760] focus:border-[#d0a760]"
+                  className="bg-background border-zinc-300 dark:border-zinc-700 text-foreground placeholder:text-muted-foreground h-12 rounded-none focus:ring-2 focus:ring-[#d0a760] focus:border-[#d0a760]"
                   data-testid="input-city"
                 />
                 {errors.city && (
@@ -298,10 +298,10 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems }: { clientSecret: s
                 )}
               </div>
               <div className="md:col-span-2">
-                <Label htmlFor="country" className="text-zinc-400 text-sm mb-2 block">Land</Label>
+                <Label htmlFor="country" className="text-muted-foreground text-sm mb-2 block">Land</Label>
                 <Input
                   {...register("country")}
-                  className="bg-black border-zinc-700 text-white h-12 rounded-none focus:ring-2 focus:ring-[#d0a760] focus:border-[#d0a760]"
+                  className="bg-background border-zinc-300 dark:border-zinc-700 text-foreground h-12 rounded-none focus:ring-2 focus:ring-[#d0a760] focus:border-[#d0a760]"
                   data-testid="input-country"
                   disabled
                 />
@@ -309,12 +309,12 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems }: { clientSecret: s
             </div>
           </div>
 
-          <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8" data-testid="section-payment">
+          <div className="bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 md:p-8" data-testid="section-payment">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-8 h-8 bg-[#d0a760] flex items-center justify-center">
                 <CreditCard className="w-4 h-4 text-black" />
               </div>
-              <h3 className="text-lg font-semibold text-white">Betaalmethode</h3>
+              <h3 className="text-lg font-semibold text-foreground">Betaalmethode</h3>
             </div>
             <div className="mb-6">
               <PaymentElement 
@@ -323,7 +323,7 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems }: { clientSecret: s
                 }}
               />
             </div>
-            <div className="flex items-center gap-2 text-sm text-zinc-500 bg-black/50 p-3 border border-zinc-800">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground bg-zinc-200/50 dark:bg-black/50 p-3 border border-zinc-200 dark:border-zinc-800">
               <Lock className="w-4 h-4 text-[#d0a760]" />
               <span>Je betaalgegevens zijn veilig versleuteld met 256-bit SSL</span>
             </div>
@@ -355,21 +355,21 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems }: { clientSecret: s
 
       <div className="lg:col-span-5 order-1 lg:order-2">
         <div className="lg:sticky lg:top-24">
-          <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8" data-testid="order-summary">
+          <div className="bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 md:p-8" data-testid="order-summary">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-8 h-8 bg-[#d0a760] flex items-center justify-center">
                 <ShoppingBag className="w-4 h-4 text-black" />
               </div>
-              <h3 className="text-lg font-semibold text-white">Bestelling overzicht</h3>
-              <Badge className="ml-auto bg-zinc-800 text-zinc-400 rounded-none">
+              <h3 className="text-lg font-semibold text-foreground">Bestelling overzicht</h3>
+              <Badge className="ml-auto bg-zinc-200 dark:bg-zinc-800 text-muted-foreground rounded-none">
                 {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'}
               </Badge>
             </div>
             
             <div className="space-y-4 mb-6 max-h-64 overflow-y-auto">
               {cartItems.map((item: any) => (
-                <div key={item.id} className="flex items-start gap-4 pb-4 border-b border-zinc-800 last:border-0" data-testid={`summary-item-${item.id}`}>
-                  <div className="w-16 h-16 bg-black flex-shrink-0 border border-zinc-800">
+                <div key={item.id} className="flex items-start gap-4 pb-4 border-b border-zinc-200 dark:border-zinc-800 last:border-0" data-testid={`summary-item-${item.id}`}>
+                  <div className="w-16 h-16 bg-background flex-shrink-0 border border-zinc-200 dark:border-zinc-800">
                     <img 
                       src={item.product?.images?.[item.product.primaryImageIndex || 0] || carAudioLogo}
                       alt={item.product?.name || "Product"}
@@ -380,10 +380,10 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems }: { clientSecret: s
                     />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-white truncate">
+                    <p className="text-sm font-medium text-foreground truncate">
                       {item.product?.name}
                     </p>
-                    <p className="text-xs text-zinc-500 mt-1">
+                    <p className="text-xs text-muted-foreground mt-1">
                       Aantal: {item.quantity}
                     </p>
                     {item.needsInstallation && (
@@ -400,48 +400,48 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems }: { clientSecret: s
               ))}
             </div>
 
-            <Separator className="bg-zinc-800 my-6" />
+            <Separator className="bg-zinc-200 dark:bg-zinc-800 my-6" />
             
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
-                <span className="text-zinc-400">Subtotaal</span>
-                <span className="text-white">€{subtotal.toFixed(2)}</span>
+                <span className="text-muted-foreground">Subtotaal</span>
+                <span className="text-foreground">€{subtotal.toFixed(2)}</span>
               </div>
               
               {installationFee > 0 && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-zinc-400 flex items-center gap-2">
+                  <span className="text-muted-foreground flex items-center gap-2">
                     <Wrench className="w-4 h-4 text-[#d0a760]" />
                     Installatie
                   </span>
-                  <span className="text-white">€{installationFee.toFixed(2)}</span>
+                  <span className="text-foreground">€{installationFee.toFixed(2)}</span>
                 </div>
               )}
               
               <div className="flex justify-between text-sm">
-                <span className="text-zinc-400 flex items-center gap-2">
+                <span className="text-muted-foreground flex items-center gap-2">
                   <Truck className="w-4 h-4 text-[#d0a760]" />
                   Verzending
                 </span>
-                <span className={shipping === 0 ? "text-[#d0a760]" : "text-white"}>
+                <span className={shipping === 0 ? "text-[#d0a760]" : "text-foreground"}>
                   {shipping === 0 ? "Gratis" : `€${shipping.toFixed(2)}`}
                 </span>
               </div>
               
-              <Separator className="bg-zinc-800" />
+              <Separator className="bg-zinc-200 dark:bg-zinc-800" />
               
               <div className="flex justify-between items-center pt-2">
-                <span className="text-lg font-semibold text-white">Totaal</span>
+                <span className="text-lg font-semibold text-foreground">Totaal</span>
                 <span className="text-2xl font-bold text-[#d0a760]">€{orderTotal.toFixed(2)}</span>
               </div>
             </div>
 
-            <div className="mt-6 p-4 bg-black/50 border border-zinc-800">
+            <div className="mt-6 p-4 bg-zinc-200/50 dark:bg-black/50 border border-zinc-200 dark:border-zinc-800">
               <div className="flex items-start gap-3">
                 <ShieldCheck className="w-5 h-5 text-[#d0a760] flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium text-white">Veilig & Betrouwbaar</p>
-                  <p className="text-xs text-zinc-500 mt-1">
+                  <p className="text-sm font-medium text-foreground">Veilig & Betrouwbaar</p>
+                  <p className="text-xs text-muted-foreground mt-1">
                     30 dagen retourgarantie • Gratis verzending vanaf €50
                   </p>
                 </div>
@@ -451,7 +451,7 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems }: { clientSecret: s
         </div>
       </div>
 
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-black border-t border-zinc-800 z-40">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-background border-t border-zinc-200 dark:border-zinc-800 z-40">
         <Button
           type="submit"
           form="checkout-form"
@@ -519,17 +519,17 @@ export default function Checkout() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-black">
+      <div className="min-h-screen bg-background">
         <Header onCartOpen={() => setIsCartOpen(true)} />
         <div className="pt-24 pb-16">
           <div className="container px-4 mx-auto">
             <div className="max-w-md mx-auto">
-              <div className="bg-zinc-900 border border-zinc-800 p-8 md:p-12 text-center">
+              <div className="bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-8 md:p-12 text-center">
                 <div className="w-16 h-16 bg-[#d0a760] flex items-center justify-center mx-auto mb-6">
                   <User className="w-8 h-8 text-black" />
                 </div>
-                <h1 className="text-2xl font-bold text-white mb-4">Inloggen vereist</h1>
-                <p className="text-zinc-400 mb-8">
+                <h1 className="text-2xl font-bold text-foreground mb-4">Inloggen vereist</h1>
+                <p className="text-muted-foreground mb-8">
                   Je moet ingelogd zijn om een bestelling te plaatsen.
                 </p>
                 <Button 
@@ -550,17 +550,17 @@ export default function Checkout() {
 
   if (!cartItems || cartItemsArray.length === 0) {
     return (
-      <div className="min-h-screen bg-black">
+      <div className="min-h-screen bg-background">
         <Header onCartOpen={() => setIsCartOpen(true)} />
         <div className="pt-24 pb-16">
           <div className="container px-4 mx-auto">
             <div className="max-w-md mx-auto">
-              <div className="bg-zinc-900 border border-zinc-800 p-8 md:p-12 text-center">
-                <div className="w-16 h-16 bg-zinc-800 flex items-center justify-center mx-auto mb-6">
-                  <ShoppingBag className="w-8 h-8 text-zinc-500" />
+              <div className="bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-8 md:p-12 text-center">
+                <div className="w-16 h-16 bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center mx-auto mb-6">
+                  <ShoppingBag className="w-8 h-8 text-muted-foreground" />
                 </div>
-                <h1 className="text-2xl font-bold text-white mb-4">Winkelwagen is leeg</h1>
-                <p className="text-zinc-400 mb-8">
+                <h1 className="text-2xl font-bold text-foreground mb-4">Winkelwagen is leeg</h1>
+                <p className="text-muted-foreground mb-8">
                   Voeg producten toe aan je winkelwagen om door te gaan.
                 </p>
                 <Button 
@@ -581,13 +581,13 @@ export default function Checkout() {
 
   if (!clientSecret) {
     return (
-      <div className="min-h-screen bg-black">
+      <div className="min-h-screen bg-background">
         <Header onCartOpen={() => setIsCartOpen(true)} />
         <div className="pt-24 pb-16">
           <div className="container px-4 mx-auto">
             <div className="flex flex-col items-center justify-center min-h-[50vh]">
               <div className="w-12 h-12 border-2 border-[#d0a760] border-t-transparent animate-spin mb-4" />
-              <p className="text-zinc-400">Betaling laden...</p>
+              <p className="text-muted-foreground">Betaling laden...</p>
             </div>
           </div>
         </div>
@@ -597,14 +597,14 @@ export default function Checkout() {
   }
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-background">
       <Header onCartOpen={() => setIsCartOpen(true)} />
       
-      <div className="pt-20 bg-zinc-950 border-b border-zinc-800">
+      <div className="pt-20 bg-zinc-100 dark:bg-zinc-950 border-b border-zinc-200 dark:border-zinc-800">
         <div className="container px-4 mx-auto py-8 md:py-12">
           <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-light text-white mb-2">Checkout</h1>
-            <p className="text-zinc-500">Voltooi je bestelling veilig en eenvoudig</p>
+            <h1 className="text-3xl md:text-4xl font-light text-foreground mb-2">Checkout</h1>
+            <p className="text-muted-foreground">Voltooi je bestelling veilig en eenvoudig</p>
           </div>
           <CheckoutProgress currentStep={3} />
         </div>
@@ -662,12 +662,12 @@ export default function Checkout() {
           </Elements>
         ) : (
           <div className="max-w-lg mx-auto">
-            <div className="bg-zinc-900 border border-zinc-800 p-8 md:p-12 text-center">
-              <div className="w-16 h-16 bg-zinc-800 flex items-center justify-center mx-auto mb-6">
-                <CreditCard className="w-8 h-8 text-zinc-500" />
+            <div className="bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-8 md:p-12 text-center">
+              <div className="w-16 h-16 bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center mx-auto mb-6">
+                <CreditCard className="w-8 h-8 text-muted-foreground" />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-4">Betaling tijdelijk niet beschikbaar</h3>
-              <p className="text-zinc-400 mb-8">
+              <h3 className="text-xl font-semibold text-foreground mb-4">Betaling tijdelijk niet beschikbaar</h3>
+              <p className="text-muted-foreground mb-8">
                 De betaalfunctionaliteit wordt momenteel geconfigureerd. Neem contact met ons op om je bestelling te plaatsen.
               </p>
               <Button 

@@ -256,7 +256,7 @@ export default function Shop() {
   };
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-background">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
@@ -268,36 +268,36 @@ export default function Shop() {
       </div>
       
       {/* Mobile App Header */}
-      <header className="md:hidden fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-lg border-b border-white/10 safe-area-top">
+      <header className="md:hidden fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-b border-zinc-200 dark:border-white/10 safe-area-top">
         <div className="flex items-center justify-between px-4 h-14">
           <button 
             onClick={() => navigate("/")}
-            className="p-2 -ml-2 hover:bg-white/10 transition-colors active:scale-95"
+            className="p-2 -ml-2 hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors active:scale-95"
             data-testid="mobile-home-button"
             aria-label="Ga naar homepage"
           >
-            <HomeIcon className="w-5 h-5 text-white" />
+            <HomeIcon className="w-5 h-5 text-foreground" />
           </button>
           
-          <h1 className="text-white font-semibold">Shop</h1>
+          <h1 className="text-foreground font-semibold">Shop</h1>
           
           <div className="flex items-center gap-1">
             <button 
               onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
-              className="p-2 hover:bg-white/10 transition-colors active:scale-95"
+              className="p-2 hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors active:scale-95"
               data-testid="mobile-search-toggle"
               aria-label={mobileSearchOpen ? "Sluit zoeken" : "Open zoeken"}
               aria-expanded={mobileSearchOpen}
             >
-              <Search className={`w-5 h-5 ${mobileSearchOpen ? 'text-[#d0a760]' : 'text-white'}`} />
+              <Search className={`w-5 h-5 ${mobileSearchOpen ? 'text-[#d0a760]' : 'text-foreground'}`} />
             </button>
             <button 
               onClick={() => setIsCartOpen(true)}
-              className="p-2 -mr-2 hover:bg-white/10 transition-colors active:scale-95"
+              className="p-2 -mr-2 hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors active:scale-95"
               data-testid="mobile-cart-button"
               aria-label="Open winkelwagen"
             >
-              <ShoppingCart className="w-5 h-5 text-white" />
+              <ShoppingCart className="w-5 h-5 text-foreground" />
             </button>
           </div>
         </div>
@@ -306,13 +306,13 @@ export default function Shop() {
         {mobileSearchOpen && (
           <div className="px-4 pb-3 animate-in slide-in-from-top-2 duration-200">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" aria-hidden="true" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
               <Input
                 type="text"
                 placeholder="Wat zoek je voor jouw auto?"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-10 pl-10 pr-4 bg-white/5 border-white/10 text-white placeholder:text-white/40 rounded-none text-sm"
+                className="w-full h-10 pl-10 pr-4 bg-zinc-100 dark:bg-white/5 border-zinc-200 dark:border-white/10 text-foreground placeholder:text-muted-foreground rounded-none text-sm"
                 data-testid="mobile-search-input"
                 aria-label="Zoek producten voor jouw auto"
                 autoFocus
@@ -323,7 +323,7 @@ export default function Shop() {
                   className="absolute right-3 top-1/2 -translate-y-1/2 p-1"
                   aria-label="Wis zoekopdracht"
                 >
-                  <X className="w-4 h-4 text-white/40" />
+                  <X className="w-4 h-4 text-muted-foreground" />
                 </button>
               )}
             </div>
@@ -332,10 +332,10 @@ export default function Shop() {
       </header>
       
       {/* Breadcrumb Navigation */}
-      <nav className="bg-black pt-16 md:pt-20 pb-4" aria-label="Breadcrumb" data-testid="breadcrumb-nav">
+      <nav className="bg-background pt-16 md:pt-20 pb-4" aria-label="Breadcrumb" data-testid="breadcrumb-nav">
         <div className="container mx-auto px-4">
           <Breadcrumb>
-            <BreadcrumbList className="text-white/60">
+            <BreadcrumbList className="text-muted-foreground">
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
                   <Link href="/" className="hover:text-[#d0a760] transition-colors" data-testid="breadcrumb-home">
@@ -343,7 +343,7 @@ export default function Shop() {
                   </Link>
                 </BreadcrumbLink>
               </BreadcrumbItem>
-              <BreadcrumbSeparator className="text-white/40" />
+              <BreadcrumbSeparator className="text-muted-foreground/60" />
               <BreadcrumbItem>
                 {activeCategoryName || activeBrandName ? (
                   <BreadcrumbLink asChild>
@@ -352,12 +352,12 @@ export default function Shop() {
                     </Link>
                   </BreadcrumbLink>
                 ) : (
-                  <BreadcrumbPage className="text-white" data-testid="breadcrumb-products-current">Producten</BreadcrumbPage>
+                  <BreadcrumbPage className="text-foreground" data-testid="breadcrumb-products-current">Producten</BreadcrumbPage>
                 )}
               </BreadcrumbItem>
               {activeCategoryName && (
                 <>
-                  <BreadcrumbSeparator className="text-white/40" />
+                  <BreadcrumbSeparator className="text-muted-foreground/60" />
                   <BreadcrumbItem>
                     {activeBrandName ? (
                       <BreadcrumbLink asChild>
@@ -370,7 +370,7 @@ export default function Shop() {
                         </Link>
                       </BreadcrumbLink>
                     ) : (
-                      <BreadcrumbPage className="text-white" data-testid="breadcrumb-category-current">
+                      <BreadcrumbPage className="text-foreground" data-testid="breadcrumb-category-current">
                         {activeCategoryName}
                       </BreadcrumbPage>
                     )}
@@ -379,9 +379,9 @@ export default function Shop() {
               )}
               {activeBrandName && (
                 <>
-                  <BreadcrumbSeparator className="text-white/40" />
+                  <BreadcrumbSeparator className="text-muted-foreground/60" />
                   <BreadcrumbItem>
-                    <BreadcrumbPage className="text-white" data-testid="breadcrumb-brand-current">
+                    <BreadcrumbPage className="text-foreground" data-testid="breadcrumb-brand-current">
                       {activeBrandName}
                     </BreadcrumbPage>
                   </BreadcrumbItem>
@@ -393,7 +393,7 @@ export default function Shop() {
       </nav>
 
       {/* Premium Hero Section */}
-      <section className="relative bg-black pt-14 md:pt-24 pb-12 md:pb-20 overflow-hidden">
+      <section className="relative bg-background pt-14 md:pt-24 pb-12 md:pb-20 overflow-hidden">
         {/* Background effects */}
         <div className="absolute inset-0">
           <div className="absolute top-1/2 left-1/4 w-[600px] h-[600px] bg-[#d0a760]/5 rounded-full blur-[120px] -translate-y-1/2" />
@@ -435,24 +435,24 @@ export default function Shop() {
                 Met passie geselecteerd voor jou
               </Badge>
               
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 tracking-tight">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-foreground mb-6 tracking-tight">
                 Vind de perfecte upgrade{" "}
                 <span className="text-[#d0a760]">voor jouw auto</span>
               </h1>
               
-              <p className="text-lg md:text-xl text-white/60 max-w-2xl mx-auto mb-10">
+              <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
                 Wij nemen je graag mee in ons vakkundig geselecteerde assortiment. Van premium speakers tot complete audiosystemen — altijd met oog voor kwaliteit.
               </p>
 
               {/* Search Bar */}
               <div className="max-w-xl mx-auto relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
                   type="text"
                   placeholder="Wat zoek je voor jouw auto?"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full h-14 pl-12 pr-4 bg-white/5 border-white/10 text-white placeholder:text-white/40 rounded-none focus:border-[#d0a760] focus:ring-[#d0a760]/20"
+                  className="w-full h-14 pl-12 pr-4 bg-zinc-100 dark:bg-white/5 border-zinc-200 dark:border-white/10 text-foreground placeholder:text-muted-foreground rounded-none focus:border-[#d0a760] focus:ring-[#d0a760]/20"
                   data-testid="input-product-search"
                 />
               </div>
@@ -460,10 +460,10 @@ export default function Shop() {
             
             {/* Mobile Hero Content - Compact */}
             <div className="md:hidden text-center pt-4">
-              <h1 className="text-2xl font-bold text-white mb-2">
+              <h1 className="text-2xl font-bold text-foreground mb-2">
                 Voor jouw <span className="text-[#d0a760]">auto</span>
               </h1>
-              <p className="text-sm text-white/50">
+              <p className="text-sm text-muted-foreground">
                 {sortedProducts.length} producten met passie geselecteerd
               </p>
             </div>
@@ -472,7 +472,7 @@ export default function Shop() {
       </section>
 
       {/* Filters Bar - Black Section */}
-      <aside className="bg-black py-4 md:py-6 border-y border-white/10 sticky top-14 md:top-16 z-40" aria-label="Product filters">
+      <aside className="bg-background py-4 md:py-6 border-y border-zinc-200 dark:border-white/10 sticky top-14 md:top-16 z-40" aria-label="Product filters">
         <div className="container mx-auto px-4">
           <div className="flex flex-wrap items-center justify-between gap-4">
             {/* Left side - Filter controls */}
@@ -480,7 +480,7 @@ export default function Shop() {
               <Button
                 variant="outline"
                 onClick={() => setShowFilters(!showFilters)}
-                className="bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white rounded-none"
+                className="bg-transparent border-zinc-300 dark:border-white/20 text-foreground hover:bg-zinc-100 dark:hover:bg-white/10 hover:text-foreground rounded-none"
                 data-testid="button-toggle-filters"
               >
                 <SlidersHorizontal className="w-4 h-4 mr-2" />
@@ -499,7 +499,7 @@ export default function Shop() {
                   className={`cursor-pointer rounded-none transition-colors ${
                     sortBy === "featured" 
                       ? 'bg-[#d0a760] text-black' 
-                      : 'border-white/20 text-white/60 hover:text-white hover:border-[#d0a760]'
+                      : 'border-zinc-300 dark:border-white/20 text-muted-foreground hover:text-foreground hover:border-[#d0a760]'
                   }`}
                   onClick={() => setSortBy(sortBy === "featured" ? "name" : "featured")}
                   data-testid="badge-filter-featured"
@@ -511,7 +511,7 @@ export default function Shop() {
                   className={`cursor-pointer rounded-none transition-colors ${
                     sortBy === "newest" 
                       ? 'bg-[#d0a760] text-black' 
-                      : 'border-white/20 text-white/60 hover:text-white hover:border-[#d0a760]'
+                      : 'border-zinc-300 dark:border-white/20 text-muted-foreground hover:text-foreground hover:border-[#d0a760]'
                   }`}
                   onClick={() => setSortBy(sortBy === "newest" ? "name" : "newest")}
                   data-testid="badge-filter-newest"
@@ -523,7 +523,7 @@ export default function Shop() {
                   className={`cursor-pointer rounded-none transition-colors ${
                     sortBy === "price-low" 
                       ? 'bg-[#d0a760] text-black' 
-                      : 'border-white/20 text-white/60 hover:text-white hover:border-[#d0a760]'
+                      : 'border-zinc-300 dark:border-white/20 text-muted-foreground hover:text-foreground hover:border-[#d0a760]'
                   }`}
                   onClick={() => setSortBy(sortBy === "price-low" ? "name" : "price-low")}
                   data-testid="badge-filter-price"
@@ -536,7 +536,7 @@ export default function Shop() {
                 <Button 
                   variant="ghost" 
                   onClick={clearFilters} 
-                  className="text-white/40 hover:text-white hover:bg-white/10 rounded-none"
+                  className="text-muted-foreground hover:text-foreground hover:bg-zinc-100 dark:hover:bg-white/10 rounded-none"
                   data-testid="button-clear-filters"
                 >
                   <X className="w-4 h-4 mr-1" />
@@ -547,21 +547,21 @@ export default function Shop() {
 
             {/* Right side - View mode and results */}
             <div className="flex items-center gap-4">
-              <span className="text-white/40 text-sm hidden sm:block" data-testid="results-count">
+              <span className="text-muted-foreground text-sm hidden sm:block" data-testid="results-count">
                 {sortedProducts.length} producten
               </span>
               
-              <div className="flex bg-white/5 border border-white/10">
+              <div className="flex bg-zinc-100 dark:bg-white/5 border border-zinc-200 dark:border-white/10">
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`p-2 transition-colors ${viewMode === 'grid' ? 'bg-[#d0a760] text-black' : 'text-white/60 hover:text-white'}`}
+                  className={`p-2 transition-colors ${viewMode === 'grid' ? 'bg-[#d0a760] text-black' : 'text-muted-foreground hover:text-foreground'}`}
                   data-testid="button-view-grid"
                 >
                   <LayoutGrid className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`p-2 transition-colors ${viewMode === 'list' ? 'bg-[#d0a760] text-black' : 'text-white/60 hover:text-white'}`}
+                  className={`p-2 transition-colors ${viewMode === 'list' ? 'bg-[#d0a760] text-black' : 'text-muted-foreground hover:text-foreground'}`}
                   data-testid="button-view-list"
                 >
                   <List className="w-4 h-4" />
@@ -573,18 +573,18 @@ export default function Shop() {
           {/* Expanded Filters Panel */}
           {showFilters && (
             <>
-            <div className="mt-6 pt-6 border-t border-white/10 grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="mt-6 pt-6 border-t border-zinc-200 dark:border-white/10 grid grid-cols-1 md:grid-cols-4 gap-4">
               {/* Category */}
               <div>
-                <label className="text-sm text-white/40 mb-2 block">Waar ben je naar op zoek?</label>
+                <label className="text-sm text-muted-foreground mb-2 block">Waar ben je naar op zoek?</label>
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="bg-white/5 border-white/10 text-white rounded-none" data-testid="select-category">
+                  <SelectTrigger className="bg-zinc-100 dark:bg-white/5 border-zinc-200 dark:border-white/10 text-foreground rounded-none" data-testid="select-category">
                     <SelectValue placeholder="Alle categorieën" />
                   </SelectTrigger>
-                  <SelectContent className="bg-zinc-900 border-zinc-800">
-                    <SelectItem value="all-categories" className="text-white">Alle categorieën</SelectItem>
+                  <SelectContent className="bg-background border-border">
+                    <SelectItem value="all-categories" className="text-foreground">Alle categorieën</SelectItem>
                     {categories && Array.isArray(categories) && (categories as Category[]).map((category: Category) => (
-                      <SelectItem key={category.id} value={category.id} className="text-white">
+                      <SelectItem key={category.id} value={category.id} className="text-foreground">
                         {category.name}
                       </SelectItem>
                     ))}
@@ -594,15 +594,15 @@ export default function Shop() {
 
               {/* Brand */}
               <div>
-                <label className="text-sm text-white/40 mb-2 block">Voorkeursmerk</label>
+                <label className="text-sm text-muted-foreground mb-2 block">Voorkeursmerk</label>
                 <Select value={selectedBrand} onValueChange={setSelectedBrand}>
-                  <SelectTrigger className="bg-white/5 border-white/10 text-white rounded-none" data-testid="select-brand">
+                  <SelectTrigger className="bg-zinc-100 dark:bg-white/5 border-zinc-200 dark:border-white/10 text-foreground rounded-none" data-testid="select-brand">
                     <SelectValue placeholder="Alle merken" />
                   </SelectTrigger>
-                  <SelectContent className="bg-zinc-900 border-zinc-800">
-                    <SelectItem value="all-brands" className="text-white">Alle merken</SelectItem>
+                  <SelectContent className="bg-background border-border">
+                    <SelectItem value="all-brands" className="text-foreground">Alle merken</SelectItem>
                     {brands && Array.isArray(brands) && (brands as Brand[]).map((brand: Brand) => (
-                      <SelectItem key={brand.id} value={brand.id} className="text-white">
+                      <SelectItem key={brand.id} value={brand.id} className="text-foreground">
                         {brand.name}
                       </SelectItem>
                     ))}
@@ -612,15 +612,15 @@ export default function Shop() {
 
               {/* Vehicle Make */}
               <div>
-                <label className="text-sm text-white/40 mb-2 block">Jouw automerk</label>
+                <label className="text-sm text-muted-foreground mb-2 block">Jouw automerk</label>
                 <Select value={selectedMake} onValueChange={setSelectedMake}>
-                  <SelectTrigger className="bg-white/5 border-white/10 text-white rounded-none" data-testid="select-vehicle-make">
+                  <SelectTrigger className="bg-zinc-100 dark:bg-white/5 border-zinc-200 dark:border-white/10 text-foreground rounded-none" data-testid="select-vehicle-make">
                     <SelectValue placeholder="Alle merken" />
                   </SelectTrigger>
-                  <SelectContent className="bg-zinc-900 border-zinc-800">
-                    <SelectItem value="all-makes" className="text-white">Alle merken</SelectItem>
+                  <SelectContent className="bg-background border-border">
+                    <SelectItem value="all-makes" className="text-foreground">Alle merken</SelectItem>
                     {vehicleMakes && Array.isArray(vehicleMakes) && (vehicleMakes as VehicleMake[]).map((make: VehicleMake) => (
-                      <SelectItem key={make.id} value={make.id} className="text-white">
+                      <SelectItem key={make.id} value={make.id} className="text-foreground">
                         {make.name}
                       </SelectItem>
                     ))}
@@ -630,17 +630,17 @@ export default function Shop() {
 
               {/* Sort */}
               <div>
-                <label className="text-sm text-white/40 mb-2 block">Rangschikken op</label>
+                <label className="text-sm text-muted-foreground mb-2 block">Rangschikken op</label>
                 <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="bg-white/5 border-white/10 text-white rounded-none" data-testid="select-sort">
+                  <SelectTrigger className="bg-zinc-100 dark:bg-white/5 border-zinc-200 dark:border-white/10 text-foreground rounded-none" data-testid="select-sort">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-zinc-900 border-zinc-800">
-                    <SelectItem value="name" className="text-white">Naam A-Z</SelectItem>
-                    <SelectItem value="price-low" className="text-white">Prijs laag-hoog</SelectItem>
-                    <SelectItem value="price-high" className="text-white">Prijs hoog-laag</SelectItem>
-                    <SelectItem value="newest" className="text-white">Nieuwste eerst</SelectItem>
-                    <SelectItem value="featured" className="text-white">Uitgelicht eerst</SelectItem>
+                  <SelectContent className="bg-background border-border">
+                    <SelectItem value="name" className="text-foreground">Naam A-Z</SelectItem>
+                    <SelectItem value="price-low" className="text-foreground">Prijs laag-hoog</SelectItem>
+                    <SelectItem value="price-high" className="text-foreground">Prijs hoog-laag</SelectItem>
+                    <SelectItem value="newest" className="text-foreground">Nieuwste eerst</SelectItem>
+                    <SelectItem value="featured" className="text-foreground">Uitgelicht eerst</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -650,7 +650,7 @@ export default function Shop() {
             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Price Range Slider */}
               <div>
-                <label className="text-sm text-white/40 mb-3 block">
+                <label className="text-sm text-muted-foreground mb-3 block">
                   Prijsbereik: €{priceRange[0]} - €{priceRange[1]}
                 </label>
                 <div className="px-2">
@@ -664,7 +664,7 @@ export default function Shop() {
                     data-testid="slider-price-range"
                   />
                 </div>
-                <div className="flex justify-between mt-2 text-xs text-white/30">
+                <div className="flex justify-between mt-2 text-xs text-muted-foreground/60">
                   <span>€0</span>
                   <span>€5000</span>
                 </div>
@@ -676,12 +676,12 @@ export default function Shop() {
                   id="in-stock-only"
                   checked={inStockOnly}
                   onCheckedChange={(checked) => setInStockOnly(checked === true)}
-                  className="border-white/30 data-[state=checked]:bg-[#d0a760] data-[state=checked]:border-[#d0a760]"
+                  className="border-zinc-400 dark:border-white/30 data-[state=checked]:bg-[#d0a760] data-[state=checked]:border-[#d0a760]"
                   data-testid="checkbox-in-stock"
                 />
                 <label
                   htmlFor="in-stock-only"
-                  className="text-sm text-white/60 cursor-pointer flex items-center gap-2"
+                  className="text-sm text-muted-foreground cursor-pointer flex items-center gap-2"
                 >
                   <Package className="w-4 h-4" />
                   Alleen producten op voorraad tonen
@@ -694,7 +694,7 @@ export default function Shop() {
       </aside>
 
       {/* Products Grid - Dark Section */}
-      <main className="bg-zinc-950 py-16" role="main">
+      <main className="bg-zinc-50 dark:bg-zinc-950 py-16" role="main">
         <div className="container mx-auto px-4">
           {isLoadingProducts ? (
             <div className={viewMode === 'grid' 
@@ -719,12 +719,12 @@ export default function Shop() {
                 {sortedProducts.map((product: Product) => (
                   <ScrollReveal key={product.id} animation="fade-up">
                     <article 
-                      className="bg-zinc-900 border border-zinc-800 hover:border-[#d0a760]/30 transition-all duration-300 group"
+                      className="bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-[#d0a760]/30 transition-all duration-300 group"
                       data-testid={`product-article-${product.id}`}
                     >
                       <div className="flex flex-col sm:flex-row">
                         {/* Product Image */}
-                        <div className="w-full sm:w-56 h-56 sm:h-auto bg-zinc-800 flex-shrink-0 relative overflow-hidden">
+                        <div className="w-full sm:w-56 h-56 sm:h-auto bg-zinc-200 dark:bg-zinc-800 flex-shrink-0 relative overflow-hidden">
                           <img 
                             src={product.images?.[0] || '/placeholder.png'} 
                             alt={product.name}
@@ -741,21 +741,21 @@ export default function Shop() {
                         <div className="flex-1 p-6">
                           <div className="flex justify-between items-start mb-4">
                             <div>
-                              <h2 className="text-xl font-semibold text-white mb-2 group-hover:text-[#d0a760] transition-colors">
+                              <h2 className="text-xl font-semibold text-foreground mb-2 group-hover:text-[#d0a760] transition-colors">
                                 <a href={`/product/${product.slug}`}>{product.name}</a>
                               </h2>
                               {product.shortDescription && (
-                                <p className="text-white/50 mb-3 line-clamp-2">
+                                <p className="text-muted-foreground mb-3 line-clamp-2">
                                   {product.shortDescription}
                                 </p>
                               )}
                             </div>
                             <div className="text-right">
-                              <div className="text-2xl font-bold text-white mb-1">
+                              <div className="text-2xl font-bold text-foreground mb-1">
                                 €{parseFloat(product.price).toFixed(0)}
                               </div>
                               {product.originalPrice && (
-                                <div className="text-sm text-white/40 line-through">
+                                <div className="text-sm text-muted-foreground line-through">
                                   €{parseFloat(product.originalPrice).toFixed(0)}
                                 </div>
                               )}
@@ -775,7 +775,7 @@ export default function Shop() {
                             </div>
                             <Button 
                               asChild 
-                              className="bg-white text-black hover:bg-[#d0a760] rounded-none"
+                              className="bg-foreground text-background hover:bg-[#d0a760] hover:text-black rounded-none"
                             >
                               <a href={`/product/${product.slug}`}>
                                 Bekijk Product
@@ -807,8 +807,8 @@ export default function Shop() {
                   ))}
                 </div>
               </div>
-              <h3 className="text-2xl font-semibold text-white mb-3">We hebben nog geen match gevonden</h3>
-              <p className="text-white/50 mb-6 max-w-md mx-auto">
+              <h3 className="text-2xl font-semibold text-foreground mb-3">We hebben nog geen match gevonden</h3>
+              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                 Geen probleem! Probeer andere zoekwoorden of pas je filters aan. Wij helpen je graag bij het vinden van de perfecte audio voor jouw auto.
               </p>
               <Button 

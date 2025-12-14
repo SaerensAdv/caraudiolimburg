@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { MegaMenu } from "@/components/MegaMenu";
 import { SearchAutocomplete } from "@/components/SearchAutocomplete";
+import { useTheme } from "@/components/ThemeProvider";
 import logoUrl from "@assets/Caraudiolimburg-logo_1757008375383.png";
 import whiteLogoUrl from "@assets/CAL white_1758369495328.png";
 import type { Category, Brand } from "@shared/schema";
@@ -20,7 +21,9 @@ import {
   ArrowRight,
   ChevronDown,
   Grid3X3,
-  Tag
+  Tag,
+  Sun,
+  Moon
 } from "lucide-react";
 
 interface HeaderProps {
@@ -36,6 +39,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
   const [brandsExpanded, setBrandsExpanded] = useState(false);
   const megaMenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { isAuthenticated, user } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const { data: categories = [], isLoading: isLoadingCategories } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
@@ -210,6 +214,21 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
             <div className="hidden md:block">
               <SearchAutocomplete variant="desktop" />
             </div>
+
+            {/* Theme Toggle */}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className={`p-2 rounded-none group/theme ${isTransparent ? 'text-white hover:text-white hover:bg-white/10' : ''}`}
+              onClick={toggleTheme}
+              data-testid="theme-toggle"
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-5 h-5 transition-transform duration-300 group-hover/theme:rotate-12" />
+              ) : (
+                <Moon className="w-5 h-5 transition-transform duration-300 group-hover/theme:-rotate-12" />
+              )}
+            </Button>
 
             <Button 
               variant="ghost" 

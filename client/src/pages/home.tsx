@@ -145,7 +145,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-black scroll-smooth">
+    <div className="min-h-screen bg-white dark:bg-black scroll-smooth">
       {/* LocalBusiness JSON-LD for Local SEO */}
       <script
         type="application/ld+json"
@@ -214,7 +214,7 @@ export default function Home() {
         <section 
           ref={recommendationsRef}
           id="vehicle-recommendations" 
-          className="py-24 md:py-32 bg-zinc-950 relative overflow-hidden"
+          className="py-24 md:py-32 bg-zinc-50 dark:bg-zinc-950 relative overflow-hidden"
         >
           <BassPulse className="opacity-50" />
           <div className="container px-8 md:px-16 lg:px-24 mx-auto relative z-10">
@@ -223,10 +223,10 @@ export default function Home() {
                 <Sparkles className="w-5 h-5 text-[#d0a760]" />
                 <span className="text-[#d0a760] text-sm font-medium tracking-wider uppercase">Speciaal voor jou geselecteerd</span>
               </div>
-              <h2 className="text-3xl md:text-4xl font-light text-white mb-4">
+              <h2 className="text-3xl md:text-4xl font-light text-zinc-900 dark:text-white mb-4">
                 Upgrades voor jouw {selectedVehicle.make} {selectedVehicle.model}
               </h2>
-              <p className="text-white/60 text-lg mb-12">
+              <p className="text-zinc-600 dark:text-white/60 text-lg mb-12">
                 Op basis van jouw {selectedVehicle.year} {selectedVehicle.make} {selectedVehicle.model} hebben wij deze producten voor je uitgezocht
               </p>
             </ScrollReveal>
@@ -294,7 +294,7 @@ export default function Home() {
       <SectionDivider variant="curve" fromColor="white" toColor="black" />
 
       {/* About Section - BLACK with Bass Pulse */}
-      <section className="py-24 md:py-32 bg-black relative overflow-hidden">
+      <section className="py-24 md:py-32 bg-white dark:bg-black relative overflow-hidden">
         {/* Dot Grid Pattern */}
         <div 
           className="absolute inset-0 opacity-[0.08]"
@@ -308,12 +308,12 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <ScrollReveal direction="left">
               <div>
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-white mb-8 leading-tight">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-light text-zinc-900 dark:text-white mb-8 leading-tight">
                   Jouw rijbeleving,
                   <br />
                   <span className="text-[#d0a760]">onze passie</span>
                 </h2>
-                <p className="text-white/60 text-lg leading-relaxed mb-8">
+                <p className="text-zinc-600 dark:text-white/60 text-lg leading-relaxed mb-8">
                   Bij Car Audio Limburg delen we onze liefde voor auto's en muziek graag met jou. 
                   Met vakkundige installatie zorgen we ervoor dat elke upgrade eruitziet alsof hij 
                   rechtstreeks van de fabriek komt. Jouw tevredenheid is waar wij voor gaan.
@@ -330,7 +330,7 @@ export default function Home() {
                   </Link>
                   <Link href="/contact" className="w-full sm:w-auto">
                     <Button 
-                      className="w-full bg-transparent text-white/70 hover:text-white rounded-none px-8 py-6"
+                      className="w-full bg-transparent text-zinc-500 dark:text-white/70 hover:text-zinc-900 dark:hover:text-white rounded-none px-8 py-6"
                       data-testid="button-contact-us"
                     >
                       Stel Je Vraag
@@ -400,7 +400,7 @@ export default function Home() {
       <SectionDivider variant="wave" fromColor="white" toColor="black" />
 
       {/* Video Section - BLACK */}
-      <section className="py-24 md:py-32 bg-black relative overflow-hidden">
+      <section className="py-24 md:py-32 bg-zinc-100 dark:bg-black relative overflow-hidden">
         {/* Electric Circuit Background */}
         <div className="absolute inset-0 overflow-hidden">
           {/* Horizontal pulse lines */}
@@ -418,10 +418,10 @@ export default function Home() {
         <div className="container px-8 md:px-16 lg:px-24 mx-auto relative z-10">
           <ScrollReveal>
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-light text-white mb-4">
+              <h2 className="text-3xl md:text-4xl font-light text-zinc-900 dark:text-white mb-4">
                 Welkom in Onze Wereld
               </h2>
-              <p className="text-white/60 text-lg max-w-2xl mx-auto">
+              <p className="text-zinc-600 dark:text-white/60 text-lg max-w-2xl mx-auto">
                 Neem een kijkje in onze studio en ontdek waar onze passie voor car audio tot leven komt
               </p>
             </div>

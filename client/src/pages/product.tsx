@@ -396,8 +396,8 @@ export default function ProductPage() {
       </div>
 
       {/* Product Section - Black */}
-      <section className="pt-14 md:pt-0 py-6 md:py-20 pb-32 md:pb-20">
-        <div className="container mx-auto px-0 md:px-4">
+      <section className="pt-16 md:pt-0 py-6 md:py-20 pb-36 md:pb-20">
+        <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 lg:gap-16">
             {/* Product Images - Mobile Swipeable Gallery */}
             <ScrollReveal animation="fade-right">
@@ -560,7 +560,7 @@ export default function ProductPage() {
                 {product.hasVariations && product.variations && product.variations.length > 0 && (
                   <div className="py-4 border-b border-white/10" data-testid="variation-selector">
                     <p className="text-white/60 text-sm mb-3">Kies een optie:</p>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2 gap-y-3">
                       {product.variations
                         .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
                         .map((variation) => {
@@ -625,6 +625,11 @@ export default function ProductPage() {
                         <span className="inline-flex items-center gap-2 text-green-500 text-sm font-medium">
                           <span className="w-2 h-2 bg-green-500 animate-pulse" />
                           Op voorraad
+                          {effectiveStock !== null && effectiveStock <= 5 && effectiveStock > 0 && (
+                            <span className="text-orange-400 text-xs font-normal ml-1">
+                              - Nog {effectiveStock} beschikbaar!
+                            </span>
+                          )}
                         </span>
                         <span className="text-white/50 text-xs flex items-center gap-1">
                           <Truck className="w-3 h-3" />
@@ -669,10 +674,10 @@ export default function ProductPage() {
                       <button
                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
                         disabled={quantity <= 1}
-                        className="p-3 text-white/60 hover:text-white hover:bg-white/5 disabled:opacity-30 transition-colors"
+                        className="w-11 h-11 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/5 disabled:opacity-30 transition-colors text-lg"
                         data-testid="button-decrease-quantity"
                       >
-                        -
+                        <Minus className="w-4 h-4" />
                       </button>
                       <span className="w-12 text-center text-white font-medium" data-testid="quantity-display">
                         {quantity}
@@ -680,10 +685,10 @@ export default function ProductPage() {
                       <button
                         onClick={() => setQuantity(quantity + 1)}
                         disabled={effectiveStock === null || quantity >= effectiveStock}
-                        className="p-3 text-white/60 hover:text-white hover:bg-white/5 disabled:opacity-30 transition-colors"
+                        className="w-11 h-11 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/5 disabled:opacity-30 transition-colors text-lg"
                         data-testid="button-increase-quantity"
                       >
-                        +
+                        <Plus className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
@@ -948,7 +953,7 @@ export default function ProductPage() {
               <button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
                 disabled={quantity <= 1}
-                className="p-2.5 text-white/60 hover:text-white active:bg-white/10 disabled:opacity-30 transition-colors"
+                className="w-11 h-11 flex items-center justify-center text-white/60 hover:text-white active:bg-white/10 disabled:opacity-30 transition-colors"
                 data-testid="mobile-button-decrease-quantity"
               >
                 <Minus className="w-4 h-4" />
@@ -959,7 +964,7 @@ export default function ProductPage() {
               <button
                 onClick={() => setQuantity(quantity + 1)}
                 disabled={effectiveStock === null || quantity >= effectiveStock}
-                className="p-2.5 text-white/60 hover:text-white active:bg-white/10 disabled:opacity-30 transition-colors"
+                className="w-11 h-11 flex items-center justify-center text-white/60 hover:text-white active:bg-white/10 disabled:opacity-30 transition-colors"
                 data-testid="mobile-button-increase-quantity"
               >
                 <Plus className="w-4 h-4" />
@@ -979,7 +984,12 @@ export default function ProductPage() {
                 </span>
               )}
               {isInStock ? (
-                <span className="text-xs text-green-500 block">Op voorraad</span>
+                <span className="text-xs text-green-500 block">
+                  Op voorraad
+                  {effectiveStock !== null && effectiveStock <= 5 && effectiveStock > 0 && (
+                    <span className="text-orange-400"> - Nog {effectiveStock}!</span>
+                  )}
+                </span>
               ) : (
                 <span className="text-xs text-orange-500 block">
                   {product.hasVariations && !selectedVariation ? "Kies optie" : "Niet op voorraad"}

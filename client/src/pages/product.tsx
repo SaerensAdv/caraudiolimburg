@@ -831,19 +831,19 @@ export default function ProductPage() {
               )}
 
               {/* Features */}
-              {product.features && Array.isArray(product.features) && product.features.length > 0 && (
+              {product.features && Array.isArray(product.features) && product.features.length > 0 ? (
                 <div className="mb-12">
                   <h2 className="text-2xl font-bold text-black mb-6">Kenmerken</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {(product.features as string[]).map((feature: string, index: number) => (
+                    {(product.features as unknown[]).map((feature, index) => (
                       <div key={index} className="flex items-start gap-3 p-4 bg-zinc-50 border border-zinc-200">
                         <Check className="w-5 h-5 text-[#d0a760] flex-shrink-0 mt-0.5" />
-                        <span className="text-black/80">{feature}</span>
+                        <span className="text-black/80">{String(feature)}</span>
                       </div>
                     ))}
                   </div>
                 </div>
-              )}
+              ) : null}
 
               {/* Specifications */}
               {product.specifications && (
@@ -997,7 +997,7 @@ export default function ProductPage() {
         <Footer />
       </div>
       {/* Mobile Sticky Bottom Action Bar */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-zinc-950/98 backdrop-blur-xl border-t border-white/10 safe-area-bottom">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-zinc-950 border-t border-white/10 safe-area-bottom">
         <div className="p-4">
           {/* Quantity selector row */}
           <div className="flex items-center justify-between mb-3">

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star, User, Shield, ExternalLink } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface ETrustedReview {
   id: string;
@@ -171,8 +171,21 @@ export function Trustbadge() {
     queryKey: ["/api/etrusted/config"],
   });
 
+  const [introComplete, setIntroComplete] = useState(false);
+
   useEffect(() => {
-    if (!data?.enabled || !data?.channelId) return;
+    const checkIntro = () => {
+      const seen = localStorage.getItem("cal_intro_seen");
+      setIntroComplete(!!seen);
+    };
+    
+    checkIntro();
+    const interval = setInterval(checkIntro, 500);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (!data?.enabled || !data?.channelId || !introComplete) return;
 
     const existingScript = document.getElementById('trustedshops-badge-script');
     if (existingScript) return;
@@ -189,9 +202,9 @@ export function Trustbadge() {
         scriptToRemove.remove();
       }
     };
-  }, [data?.channelId, data?.enabled]);
+  }, [data?.channelId, data?.enabled, introComplete]);
 
-  if (!data?.enabled) return null;
+  if (!data?.enabled || !introComplete) return null;
 
   return (
     <div 

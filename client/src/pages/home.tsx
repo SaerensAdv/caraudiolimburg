@@ -6,7 +6,7 @@ import { QuoteForm } from "@/components/QuoteForm";
 import { CartSidebar } from "@/components/CartSidebar";
 import { VehicleHeroSelector } from "@/components/VehicleHeroSelector";
 import { AudioWaveBackground, BassPulse } from "@/components/AudioPulseEffects";
-import { ScrollReveal, StaggerContainer, Parallax, SectionDivider, GoldAccentLine, ImageReveal, CountUp } from "@/components/ScrollAnimations";
+import { ScrollReveal, StaggerContainer, Parallax, GoldAccentLine, ImageReveal, CountUp } from "@/components/ScrollAnimations";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -290,8 +290,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Transition: White to Black */}
-      <SectionDivider variant="curve" fromColor="white" toColor="black" />
 
       {/* About Section - BLACK with Bass Pulse */}
       <section className="py-24 md:py-32 bg-black relative overflow-hidden">
@@ -393,8 +391,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Transition: White to Black */}
-      <SectionDivider variant="wave" fromColor="white" toColor="black" />
 
       {/* Video Section - BLACK */}
       <section className="py-24 md:py-32 bg-black relative overflow-hidden">
@@ -479,8 +475,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Transition: Black to White */}
-      <SectionDivider variant="curve" fromColor="black" toColor="white" />
 
       {/* Categories Section - WHITE */}
       <section className="py-24 md:py-32 bg-white">
@@ -574,8 +568,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Transition: Black to White */}
-      <SectionDivider variant="wave" fromColor="black" toColor="white" />
 
       {/* Stats Section - WHITE */}
       <section className="py-16 bg-white">
@@ -698,8 +690,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Transition: White to Black */}
-      <SectionDivider variant="curve" fromColor="white" toColor="black" />
 
       {/* Quote Section - BLACK */}
       <section className="py-24 md:py-32 bg-black relative overflow-hidden">
@@ -755,8 +745,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Transition: Black to White */}
-      <SectionDivider variant="wave" fromColor="black" toColor="white" />
 
       {/* Testimonials - WHITE */}
       <section className="py-24 md:py-32 bg-white">
@@ -809,8 +797,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Transition: White to Black */}
-      <SectionDivider variant="angle" fromColor="white" toColor="black" />
 
       {/* Showroom CTA - BLACK */}
       <section className="py-24 md:py-32 bg-black relative overflow-hidden">

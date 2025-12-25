@@ -33,7 +33,10 @@ function AudioBars() {
 }
 
 export function ChatBot() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(() => {
+    const stored = localStorage.getItem("cal_chat_open");
+    return stored === "true";
+  });
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
@@ -58,6 +61,11 @@ export function ChatBot() {
       inputRef.current.focus();
     }
   }, [isOpen]);
+
+  const handleToggle = (open: boolean) => {
+    setIsOpen(open);
+    localStorage.setItem("cal_chat_open", String(open));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -127,7 +135,7 @@ export function ChatBot() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => handleToggle(false)}
                   className="text-zinc-400 hover:text-white hover:bg-white/10 rounded-none"
                   data-testid="chatbot-close"
                 >
@@ -212,7 +220,7 @@ export function ChatBot() {
       </AnimatePresence>
 
       <motion.button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => handleToggle(!isOpen)}
         className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-br from-[#d0a760] to-[#a88540] shadow-[0_4px_20px_rgba(208,167,96,0.4)] flex items-center justify-center group"
         whileHover={{ scale: 1.05, boxShadow: "0 6px 30px rgba(208,167,96,0.5)" }}
         whileTap={{ scale: 0.95 }}

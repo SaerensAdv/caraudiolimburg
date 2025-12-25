@@ -751,3 +751,12 @@
     transform: rotateX(-10deg) rotateY(-22deg) scaleY(0.4);
   }
 }
+
+/* Trusted Shops Badge - Force Right Position */
+#trustbadge-container-98add9a730774c6e8c0bfb5b84be17ce,
+[id^="trustbadge-container"],
+.etrusted-widget,
+div[data-widget="trustbadge"] {
+  left: auto !important;
+  right: 20px !important;
+}

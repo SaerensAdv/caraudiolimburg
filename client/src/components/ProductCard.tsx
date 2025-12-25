@@ -25,7 +25,11 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const { isAuthenticated } = useAuth();
+  
+  // Check if product has a valid image
+  const hasValidImage = product.images && product.images.length > 0 && product.images[product.primaryImageIndex || 0] && !imageError;
 
   const { data: wishlistStatus } = useQuery<{ inWishlist: boolean }>({
     queryKey: ["/api/wishlist/check", product.id],
@@ -159,14 +163,12 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
       <Card className={`bg-zinc-900 border-zinc-800 hover:border-[#d0a760]/50 transition-all duration-300 ease-out group overflow-hidden rounded-none hover:-translate-y-1 hover:shadow-xl hover:shadow-black/50 h-full flex flex-col ${featured ? 'animated-gold-border' : ''}`} data-testid={`product-card-${product.id}`}>
         <Link href={`/product/${product.slug}`}>
           <div className="relative overflow-hidden">
-            <div className="aspect-square bg-white flex items-center justify-center">
+            <div className={`aspect-square flex items-center justify-center ${hasValidImage ? 'bg-white' : 'bg-zinc-800 p-8'}`}>
               <img 
-                src={product.images?.[product.primaryImageIndex || 0] ? getImageSrc(product.images[product.primaryImageIndex || 0]) : carAudioLogo} 
+                src={hasValidImage ? getImageSrc(product.images![product.primaryImageIndex || 0]) : carAudioLogo} 
                 alt={product.name}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                onError={(e) => {
-                  e.currentTarget.src = carAudioLogo;
-                }}
+                className={`group-hover:scale-105 transition-transform duration-500 ${hasValidImage ? 'w-full h-full object-cover' : 'max-w-full max-h-full object-contain'}`}
+                onError={() => setImageError(true)}
               />
             </div>
             

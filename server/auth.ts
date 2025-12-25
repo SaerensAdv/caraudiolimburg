@@ -220,11 +220,19 @@ export function setupAuth(app: Express) {
     })(req, res, next);
   });
 
-  // Logout
+  // Logout (POST for API calls)
   app.post('/api/auth/logout', (req, res, next) => {
     req.logout((err) => {
       if (err) return next(err);
       res.json({ message: "Uitgelogd" });
+    });
+  });
+
+  // Logout (GET for direct navigation/links)
+  app.get('/api/auth/logout', (req, res, next) => {
+    req.logout((err) => {
+      if (err) return next(err);
+      res.redirect('/');
     });
   });
 

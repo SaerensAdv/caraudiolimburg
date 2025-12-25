@@ -148,11 +148,11 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
       <header className={`fixed top-0 z-50 w-full transition-all duration-300 ${showSolidHeader ? `bg-black/60 backdrop-blur-xl ${isMegaMenuOpen ? '' : 'border-b border-white/10'}` : 'bg-transparent border-transparent'}`}>
         <div className="container flex h-16 items-center justify-between px-4 mx-auto">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3 relative z-[60]" data-testid="link-home">
+          <Link href="/" className="flex items-center flex-shrink-0 relative z-[60]" data-testid="link-home">
             <img 
               src={logoSrc || (isTransparent && !scrolled ? whiteLogoUrl : (showSolidHeader ? whiteLogoUrl : logoUrl))} 
               alt="Car Audio Limburg" 
-              className="h-12 w-auto"
+              className="h-8 sm:h-10 md:h-12 w-auto max-w-[160px] sm:max-w-[200px] md:max-w-none object-contain"
             />
           </Link>
 

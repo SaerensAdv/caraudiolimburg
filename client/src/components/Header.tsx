@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { MegaMenu } from "@/components/MegaMenu";
 import { SearchAutocomplete } from "@/components/SearchAutocomplete";
+import { useGuestCart } from "@/lib/guestCart";
 import logoUrl from "@assets/Caraudiolimburg-logo_1757008375383.png";
 import whiteLogoUrl from "@assets/CAL white_1758369495328.png";
 import type { Category, Brand } from "@shared/schema";
@@ -86,9 +87,11 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
     staleTime: 2 * 60 * 1000,
   });
 
-  const cartItemCount = Array.isArray(cartItems) 
-    ? cartItems.reduce((sum: number, item: any) => sum + item.quantity, 0) 
-    : 0;
+  const { getItemCount: getGuestCartCount } = useGuestCart();
+
+  const cartItemCount = isAuthenticated
+    ? (Array.isArray(cartItems) ? cartItems.reduce((sum: number, item: any) => sum + item.quantity, 0) : 0)
+    : getGuestCartCount();
 
   const isTransparent = variant === 'transparent';
   const [scrolled, setScrolled] = useState(false);
@@ -214,7 +217,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
             <Button 
               variant="ghost" 
               size="sm" 
-              className={`p-2 relative rounded-none group/cart ${isTransparent ? 'text-white hover:text-white hover:bg-white/10' : ''}`}
+              className="p-2 relative rounded-none group/cart text-white hover:text-white hover:bg-white/10"
               onClick={onCartOpen}
               data-testid="button-cart"
             >
@@ -229,14 +232,14 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
             {isAuthenticated ? (
               <div className="hidden md:flex items-center space-x-2">
                 <Link href="/my-account">
-                  <Button variant="ghost" size="sm" className={`rounded-none group/account ${isTransparent ? 'text-white hover:text-white hover:bg-white/10' : ''}`} data-testid="button-my-account">
+                  <Button variant="ghost" size="sm" className="rounded-none group/account text-white hover:text-white hover:bg-white/10" data-testid="button-my-account">
                     <User className="w-4 h-4 mr-2 transition-transform duration-300 group-hover/account:scale-110" />
                     Account
                   </Button>
                 </Link>
                 {user?.role === 'admin' && (
                   <Link href="/admin">
-                    <Button variant="ghost" size="sm" className={`rounded-none ${isTransparent ? 'text-white hover:text-white hover:bg-white/10' : ''}`} data-testid="button-admin">
+                    <Button variant="ghost" size="sm" className="rounded-none text-white hover:text-white hover:bg-white/10" data-testid="button-admin">
                       Admin
                     </Button>
                   </Link>
@@ -244,7 +247,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className={`p-2 rounded-none group/logout ${isTransparent ? 'text-white hover:text-white hover:bg-white/10' : ''}`}
+                  className="p-2 rounded-none group/logout text-white hover:text-white hover:bg-white/10"
                   onClick={() => window.location.href = '/api/auth/logout'}
                   data-testid="button-logout"
                 >
@@ -253,9 +256,9 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
               </div>
             ) : (
               <Button 
-                variant={isTransparent ? "ghost" : "outline"}
+                variant="outline"
                 size="sm"
-                className={`hidden md:flex rounded-none ${isTransparent ? 'text-white hover:text-white hover:bg-white/10 border border-white/30' : ''}`}
+                className="hidden md:flex rounded-none text-white hover:text-white hover:bg-white/10 border border-white/30"
                 onClick={() => window.location.href = '/login'}
                 data-testid="button-login"
               >
@@ -267,7 +270,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
             <Button 
               variant="ghost" 
               size="sm" 
-              className={`md:hidden p-2 rounded-none relative z-[60] ${isTransparent || isMenuOpen ? 'text-white hover:text-white hover:bg-white/10' : ''}`}
+              className="md:hidden p-2 rounded-none relative z-[60] text-white hover:text-white hover:bg-white/10"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               data-testid="button-mobile-menu"
             >

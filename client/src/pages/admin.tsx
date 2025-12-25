@@ -118,6 +118,12 @@ export default function Admin() {
   const [productCategoryFilter, setProductCategoryFilter] = useState('');
   const [productBrandFilter, setProductBrandFilter] = useState('');
   const [isOptimizing, setIsOptimizing] = useState(false);
+  const [hasVariations, setHasVariations] = useState(false);
+  const [productVariations, setProductVariations] = useState<Array<{id?: string; label: string; price: string; originalPrice?: string; stock: number; sku?: string; sortOrder: number;}>>([]);
+  const [newVariationLabel, setNewVariationLabel] = useState('');
+  const [newVariationPrice, setNewVariationPrice] = useState('');
+  const [newVariationStock, setNewVariationStock] = useState(0);
+  const [newVariationSku, setNewVariationSku] = useState('');
   const { isAuthenticated, user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -262,7 +268,7 @@ export default function Admin() {
   }, [orders]);
 
   const createProductMutation = useMutation({
-    mutationFn: async (data: ProductFormData) => {
+    mutationFn: async (data: ProductFormData & { hasVariations?: boolean }) => {
       const payload = {
         ...data,
         price: data.price,
@@ -271,6 +277,7 @@ export default function Admin() {
         images: productImages,
         features,
         specifications,
+        hasVariations: data.hasVariations || false,
       };
       const response = await apiRequest("POST", "/api/products", payload);
       const newProduct = await response.json();
@@ -279,6 +286,19 @@ export default function Admin() {
         await apiRequest("POST", `/api/products/${newProduct.id}/compatibility`, {
           compatibility: vehicleCompatibility
         });
+      }
+      
+      if (data.hasVariations && productVariations.length > 0 && newProduct.id) {
+        for (const variation of productVariations) {
+          await apiRequest("POST", `/api/products/${newProduct.id}/variations`, {
+            label: variation.label,
+            price: variation.price,
+            originalPrice: variation.originalPrice || null,
+            stock: variation.stock,
+            sku: variation.sku || null,
+            sortOrder: variation.sortOrder
+          });
+        }
       }
     },
     onSuccess: () => {
@@ -296,6 +316,8 @@ export default function Admin() {
       setSelectedProduct(null);
       setVehicleCompatibility([]);
       setVehicleCompatibilityOpen(false);
+      setHasVariations(false);
+      setProductVariations([]);
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
@@ -315,7 +337,7 @@ export default function Admin() {
   });
 
   const updateProductMutation = useMutation({
-    mutationFn: async (data: ProductFormData) => {
+    mutationFn: async (data: ProductFormData & { hasVariations?: boolean }) => {
       if (!selectedProduct) return;
       
       const imagesToUse = productImages.length > 0 ? productImages : (selectedProduct.images || []);
@@ -331,12 +353,61 @@ export default function Admin() {
         primaryImageIndex: validPrimaryImageIndex,
         features,
         specifications,
+        hasVariations: data.hasVariations || false,
       };
       await apiRequest("PUT", `/api/products/${selectedProduct.id}`, payload);
       
       await apiRequest("POST", `/api/products/${selectedProduct.id}/compatibility`, {
         compatibility: vehicleCompatibility
       });
+      
+      if (data.hasVariations) {
+        const existingVariationIds = productVariations.filter(v => v.id).map(v => v.id);
+        
+        const existingVariationsResponse = await fetch(`/api/products/${selectedProduct.id}/variations`, {
+          credentials: 'include'
+        });
+        if (existingVariationsResponse.ok) {
+          const existingVariations = await existingVariationsResponse.json();
+          for (const existingVar of existingVariations) {
+            if (!existingVariationIds.includes(existingVar.id)) {
+              await apiRequest("DELETE", `/api/products/${selectedProduct.id}/variations/${existingVar.id}`);
+            }
+          }
+        }
+        
+        for (const variation of productVariations) {
+          if (variation.id) {
+            await apiRequest("PUT", `/api/products/${selectedProduct.id}/variations/${variation.id}`, {
+              label: variation.label,
+              price: variation.price,
+              originalPrice: variation.originalPrice || null,
+              stock: variation.stock,
+              sku: variation.sku || null,
+              sortOrder: variation.sortOrder
+            });
+          } else {
+            await apiRequest("POST", `/api/products/${selectedProduct.id}/variations`, {
+              label: variation.label,
+              price: variation.price,
+              originalPrice: variation.originalPrice || null,
+              stock: variation.stock,
+              sku: variation.sku || null,
+              sortOrder: variation.sortOrder
+            });
+          }
+        }
+      } else {
+        const existingVariationsResponse = await fetch(`/api/products/${selectedProduct.id}/variations`, {
+          credentials: 'include'
+        });
+        if (existingVariationsResponse.ok) {
+          const existingVariations = await existingVariationsResponse.json();
+          for (const existingVar of existingVariations) {
+            await apiRequest("DELETE", `/api/products/${selectedProduct.id}/variations/${existingVar.id}`);
+          }
+        }
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
@@ -353,6 +424,8 @@ export default function Admin() {
       setSelectedProduct(null);
       setVehicleCompatibility([]);
       setVehicleCompatibilityOpen(false);
+      setHasVariations(false);
+      setProductVariations([]);
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
@@ -890,6 +963,7 @@ export default function Admin() {
       price: data.price,
       originalPrice: data.originalPrice || undefined,
       installationPrice: data.installationPrice || undefined,
+      hasVariations,
     };
     
     if (selectedProduct) {
@@ -927,6 +1001,34 @@ export default function Admin() {
     setPrimaryImageIndex(product.primaryImageIndex || 0);
     setFeatures(Array.isArray(product.features) ? [...product.features] : []);
     setSpecifications(product.specifications ? {...product.specifications} : {});
+    
+    setHasVariations(product.hasVariations || false);
+    
+    if (product.hasVariations) {
+      try {
+        const variationsResponse = await fetch(`/api/products/${product.id}/variations`, {
+          credentials: 'include'
+        });
+        if (variationsResponse.ok) {
+          const variations = await variationsResponse.json();
+          setProductVariations(variations.map((v: any) => ({
+            id: v.id,
+            label: v.label,
+            price: v.price?.toString() || '0',
+            originalPrice: v.originalPrice?.toString() || undefined,
+            stock: v.stock || 0,
+            sku: v.sku || undefined,
+            sortOrder: v.sortOrder || 0
+          })));
+        } else {
+          setProductVariations([]);
+        }
+      } catch {
+        setProductVariations([]);
+      }
+    } else {
+      setProductVariations([]);
+    }
     
     try {
       const response = await fetch(`/api/products/${product.id}/compatibility`, {
@@ -1425,6 +1527,8 @@ export default function Admin() {
                       setSelectedProduct(null);
                       setVehicleCompatibility([]);
                       setVehicleCompatibilityOpen(false);
+                      setHasVariations(false);
+                      setProductVariations([]);
                     }
                   }}>
                     <DialogTrigger asChild>
@@ -1938,6 +2042,143 @@ export default function Admin() {
                                 className="mt-2 bg-zinc-700 border-zinc-600 text-white rounded-none focus:border-[#d0a760]"
                                 data-testid="input-installation-price"
                               />
+                            </div>
+                          )}
+
+                          <div className="flex items-center justify-between p-4 bg-zinc-800">
+                            <div>
+                              <Label className="text-white">Heeft variaties (bijv. opslagcapaciteit)</Label>
+                              <p className="text-sm text-zinc-400">Bied verschillende opties aan</p>
+                            </div>
+                            <Switch
+                              checked={hasVariations || false}
+                              onCheckedChange={(checked) => {
+                                setHasVariations(checked);
+                                if (!checked) setProductVariations([]);
+                              }}
+                              data-testid="switch-has-variations"
+                            />
+                          </div>
+
+                          {hasVariations && (
+                            <div className="p-4 bg-zinc-800 space-y-4">
+                              <Label className="text-zinc-300 font-semibold">Productvariaties</Label>
+                              
+                              {productVariations.length > 0 && (
+                                <div className="border border-zinc-700 overflow-hidden">
+                                  <Table>
+                                    <TableHeader>
+                                      <TableRow className="border-zinc-700 hover:bg-transparent">
+                                        <TableHead className="text-[#d0a760] font-semibold">Label</TableHead>
+                                        <TableHead className="text-[#d0a760] font-semibold">Prijs</TableHead>
+                                        <TableHead className="text-[#d0a760] font-semibold">Voorraad</TableHead>
+                                        <TableHead className="text-[#d0a760] font-semibold">SKU</TableHead>
+                                        <TableHead className="text-[#d0a760] font-semibold text-right">Acties</TableHead>
+                                      </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                      {productVariations.map((variation, index) => (
+                                        <TableRow key={index} className="border-zinc-700">
+                                          <TableCell className="text-white">{variation.label}</TableCell>
+                                          <TableCell className="text-white">€{variation.price}</TableCell>
+                                          <TableCell className="text-white">{variation.stock}</TableCell>
+                                          <TableCell className="text-zinc-400">{variation.sku || '-'}</TableCell>
+                                          <TableCell className="text-right">
+                                            <Button
+                                              type="button"
+                                              variant="ghost"
+                                              size="sm"
+                                              onClick={() => {
+                                                setProductVariations(productVariations.filter((_, i) => i !== index));
+                                              }}
+                                              className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                                              data-testid={`button-delete-variation-${index}`}
+                                            >
+                                              <Trash2 className="w-4 h-4" />
+                                            </Button>
+                                          </TableCell>
+                                        </TableRow>
+                                      ))}
+                                    </TableBody>
+                                  </Table>
+                                </div>
+                              )}
+                              
+                              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                                <div>
+                                  <Label className="text-zinc-400 text-sm">Label</Label>
+                                  <Input
+                                    type="text"
+                                    value={newVariationLabel}
+                                    onChange={(e) => setNewVariationLabel(e.target.value)}
+                                    placeholder="bijv. 128GB"
+                                    className="bg-zinc-700 border-zinc-600 text-white rounded-none focus:border-[#d0a760]"
+                                    data-testid="input-variation-label"
+                                  />
+                                </div>
+                                <div>
+                                  <Label className="text-zinc-400 text-sm">Prijs (€)</Label>
+                                  <Input
+                                    type="number"
+                                    step="0.01"
+                                    value={newVariationPrice}
+                                    onChange={(e) => setNewVariationPrice(e.target.value)}
+                                    placeholder="0.00"
+                                    className="bg-zinc-700 border-zinc-600 text-white rounded-none focus:border-[#d0a760]"
+                                    data-testid="input-variation-price"
+                                  />
+                                </div>
+                                <div>
+                                  <Label className="text-zinc-400 text-sm">Voorraad</Label>
+                                  <Input
+                                    type="number"
+                                    value={newVariationStock}
+                                    onChange={(e) => setNewVariationStock(parseInt(e.target.value) || 0)}
+                                    placeholder="0"
+                                    className="bg-zinc-700 border-zinc-600 text-white rounded-none focus:border-[#d0a760]"
+                                    data-testid="input-variation-stock"
+                                  />
+                                </div>
+                                <div>
+                                  <Label className="text-zinc-400 text-sm">SKU</Label>
+                                  <Input
+                                    type="text"
+                                    value={newVariationSku}
+                                    onChange={(e) => setNewVariationSku(e.target.value)}
+                                    placeholder="SKU-001"
+                                    className="bg-zinc-700 border-zinc-600 text-white rounded-none focus:border-[#d0a760]"
+                                    data-testid="input-variation-sku"
+                                  />
+                                </div>
+                                <div className="flex items-end">
+                                  <Button
+                                    type="button"
+                                    onClick={() => {
+                                      if (newVariationLabel && newVariationPrice) {
+                                        setProductVariations([
+                                          ...productVariations,
+                                          {
+                                            label: newVariationLabel,
+                                            price: newVariationPrice,
+                                            stock: newVariationStock,
+                                            sku: newVariationSku || undefined,
+                                            sortOrder: productVariations.length
+                                          }
+                                        ]);
+                                        setNewVariationLabel('');
+                                        setNewVariationPrice('');
+                                        setNewVariationStock(0);
+                                        setNewVariationSku('');
+                                      }
+                                    }}
+                                    className="w-full bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"
+                                    data-testid="button-add-variation"
+                                  >
+                                    <Plus className="w-4 h-4 mr-1" />
+                                    Variatie Toevoegen
+                                  </Button>
+                                </div>
+                              </div>
                             </div>
                           )}
                         </div>

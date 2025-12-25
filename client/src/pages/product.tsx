@@ -10,10 +10,11 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import { useAuth } from "@/hooks/useAuth";
+import { useGuestCart } from "@/lib/guestCart";
 import { ScrollReveal, StaggerContainer, StaggerItem } from "@/components/ScrollAnimations";
 import { 
   Heart, 
-  Star, 
   ShoppingCart, 
   Wrench, 
   Truck, 
@@ -67,6 +68,8 @@ export default function ProductPage() {
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const { addItem: addToGuestCart } = useGuestCart();
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -196,19 +199,32 @@ export default function ProductPage() {
       if (product.hasVariations && !selectedVariation) {
         throw new Error("Selecteer eerst een variatie");
       }
-      await apiRequest("POST", "/api/cart", {
-        productId: product.id,
-        quantity,
-        needsInstallation,
-        variationId: selectedVariation?.id || null,
-      });
+      
+      if (user) {
+        await apiRequest("POST", "/api/cart", {
+          productId: product.id,
+          quantity,
+          needsInstallation,
+          variationId: selectedVariation?.id || null,
+        });
+      } else {
+        addToGuestCart({
+          productId: product.id,
+          quantity,
+          needsInstallation,
+          variationId: selectedVariation?.id || null,
+        });
+      }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
+      if (user) {
+        queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
+      }
       toast({
         title: "Product toegevoegd",
         description: `${product?.name} is toegevoegd aan je winkelwagen.`,
       });
+      setIsCartOpen(true);
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
@@ -546,15 +562,6 @@ export default function ProductPage() {
                   )}
                 </div>
 
-                {/* Rating */}
-                <div className="flex items-center gap-3" data-testid="product-rating">
-                  <div className="flex items-center gap-0.5">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 md:w-5 md:h-5 text-[#d0a760] fill-current" />
-                    ))}
-                  </div>
-                  <span className="text-white/40 text-sm">4.8 (24 reviews)</span>
-                </div>
 
                 {/* Variation Selector */}
                 {product.hasVariations && product.variations && product.variations.length > 0 && (

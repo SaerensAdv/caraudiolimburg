@@ -1,6 +1,6 @@
 import { useStripe, Elements, PaymentElement, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -16,6 +16,8 @@ import { apiRequest } from '@/lib/queryClient';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useGuestCart, clearGuestCart } from '@/lib/guestCart';
+import type { Product } from '@shared/schema';
 import { 
   Wrench, 
   Lock, 
@@ -95,7 +97,7 @@ const CheckoutProgress = ({ currentStep }: { currentStep: number }) => {
   );
 };
 
-const CheckoutForm = ({ clientSecret, orderTotal, cartItems }: { clientSecret: string; orderTotal: number; cartItems: any[] }) => {
+const CheckoutForm = ({ clientSecret, orderTotal, cartItems, isGuest = false }: { clientSecret: string; orderTotal: number; cartItems: any[]; isGuest?: boolean }) => {
   const stripe = useStripe();
   const elements = useElements();
   const { toast } = useToast();
@@ -136,12 +138,13 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems }: { clientSecret: s
 
     // Store shipping details in localStorage for redirect-based payments (iDEAL, Bancontact, etc.)
     localStorage.setItem('checkout_shipping_details', JSON.stringify(data));
+    localStorage.setItem('checkout_is_guest', isGuest ? 'true' : 'false');
 
     const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       redirect: 'if_required',
       confirmParams: {
-        return_url: `${window.location.origin}/order-confirmation`,
+        return_url: `${window.location.origin}/order-confirmation${isGuest ? '?guest=true' : ''}`,
         payment_method_data: {
           billing_details: {
             name: `${data.firstName} ${data.lastName}`,
@@ -169,9 +172,11 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems }: { clientSecret: s
 
     if (paymentIntent && paymentIntent.status === 'succeeded') {
       try {
-        await apiRequest("POST", "/api/orders/confirm", {
+        const confirmEndpoint = isGuest ? "/api/guest-orders/confirm" : "/api/orders/confirm";
+        await apiRequest("POST", confirmEndpoint, {
           paymentIntentId: paymentIntent.id,
           shippingDetails: data,
+          guestEmail: isGuest ? data.email : undefined,
         });
 
         toast({
@@ -179,7 +184,12 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems }: { clientSecret: s
           description: "Je bestelling wordt verwerkt!",
         });
 
-        window.location.href = `/order-confirmation?payment_intent=${paymentIntent.id}&redirect_status=succeeded`;
+        // Clear guest cart on successful checkout
+        if (isGuest) {
+          clearGuestCart();
+        }
+
+        window.location.href = `/order-confirmation?payment_intent=${paymentIntent.id}&redirect_status=succeeded${isGuest ? '&guest=true' : ''}`;
       } catch (confirmError) {
         console.error("Order confirmation error:", confirmError);
         toast({
@@ -481,15 +491,38 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems }: { clientSecret: s
 export default function Checkout() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [clientSecret, setClientSecret] = useState("");
+  const [guestEmail, setGuestEmail] = useState("");
   const { isAuthenticated } = useAuth();
   const { toast } = useToast();
+  const { items: guestCartItems } = useGuestCart();
 
   const { data: cartItems = [] } = useQuery({
     queryKey: ["/api/cart"],
     enabled: isAuthenticated,
   });
 
-  const cartItemsArray = Array.isArray(cartItems) ? cartItems : [];
+  const { data: allProducts } = useQuery<Product[]>({
+    queryKey: ["/api/products"],
+    enabled: !isAuthenticated && guestCartItems.length > 0,
+  });
+
+  const guestCartWithProducts = useMemo(() => {
+    if (isAuthenticated || !allProducts) return [];
+    return guestCartItems.map(item => {
+      const product = allProducts.find(p => p.id === item.productId);
+      return {
+        ...item,
+        id: `guest-${item.productId}-${item.variationId || 'default'}`,
+        product,
+      };
+    }).filter(item => item.product);
+  }, [isAuthenticated, allProducts, guestCartItems]);
+
+  const cartItemsArray = isAuthenticated 
+    ? (Array.isArray(cartItems) ? cartItems : [])
+    : guestCartWithProducts;
+
+  const isGuest = !isAuthenticated;
 
   const subtotal = cartItemsArray.reduce((sum: number, item: any) => {
     const price = parseFloat(item.product?.price || "0");
@@ -501,54 +534,42 @@ export default function Checkout() {
   const total = subtotal + installationFee + shipping;
 
   useEffect(() => {
-    if (isAuthenticated && total > 0) {
-      apiRequest("POST", "/api/create-payment-intent", { amount: total })
-        .then((res) => res.json())
-        .then((data) => {
-          setClientSecret(data.clientSecret);
-        })
-        .catch((error) => {
-          toast({
-            title: "Fout bij laden van betaling",
-            description: "Probeer de pagina te verversen.",
-            variant: "destructive",
+    if (total > 0) {
+      if (isAuthenticated) {
+        apiRequest("POST", "/api/create-payment-intent", { amount: total })
+          .then((res) => res.json())
+          .then((data) => {
+            setClientSecret(data.clientSecret);
+          })
+          .catch((error) => {
+            toast({
+              title: "Fout bij laden van betaling",
+              description: "Probeer de pagina te verversen.",
+              variant: "destructive",
+            });
           });
-        });
+      } else if (guestCartItems.length > 0 && guestEmail && guestEmail.includes('@')) {
+        apiRequest("POST", "/api/guest-checkout/create-payment-intent", { 
+          cartItems: guestCartItems,
+          guestEmail 
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            setClientSecret(data.clientSecret);
+          })
+          .catch((error) => {
+            console.error("Guest payment intent error:", error);
+            toast({
+              title: "Fout bij laden van betaling",
+              description: "Probeer de pagina te verversen.",
+              variant: "destructive",
+            });
+          });
+      }
     }
-  }, [isAuthenticated, total, toast]);
+  }, [isAuthenticated, total, toast, guestCartItems, guestEmail]);
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-black">
-        <Header onCartOpen={() => setIsCartOpen(true)} />
-        <div className="pt-24 pb-16">
-          <div className="container px-4 mx-auto">
-            <div className="max-w-md mx-auto">
-              <div className="bg-zinc-900 border border-zinc-800 p-8 md:p-12 text-center">
-                <div className="w-16 h-16 bg-[#d0a760] flex items-center justify-center mx-auto mb-6">
-                  <User className="w-8 h-8 text-black" />
-                </div>
-                <h1 className="text-2xl font-bold text-white mb-4">Inloggen vereist</h1>
-                <p className="text-zinc-400 mb-8">
-                  Je moet ingelogd zijn om een bestelling te plaatsen.
-                </p>
-                <Button 
-                  onClick={() => window.location.href = '/api/login'}
-                  className="bg-[#d0a760] hover:bg-[#b8954e] text-black font-semibold h-12 px-8 rounded-none"
-                  data-testid="button-login"
-                >
-                  Inloggen
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
-      </div>
-    );
-  }
-
-  if (!cartItems || cartItemsArray.length === 0) {
+  if (cartItemsArray.length === 0) {
     return (
       <div className="min-h-screen bg-black">
         <Header onCartOpen={() => setIsCartOpen(true)} />
@@ -580,6 +601,65 @@ export default function Checkout() {
   }
 
   if (!clientSecret) {
+    if (isGuest && !guestEmail) {
+      return (
+        <div className="min-h-screen bg-black">
+          <Header onCartOpen={() => setIsCartOpen(true)} />
+          <div className="pt-24 pb-16">
+            <div className="container px-4 mx-auto">
+              <div className="max-w-md mx-auto">
+                <div className="bg-zinc-900 border border-zinc-800 p-8 md:p-12 text-center">
+                  <div className="w-16 h-16 bg-[#d0a760] flex items-center justify-center mx-auto mb-6">
+                    <User className="w-8 h-8 text-black" />
+                  </div>
+                  <h1 className="text-2xl font-bold text-white mb-4">Afrekenen als gast</h1>
+                  <p className="text-zinc-400 mb-6">
+                    Voer je e-mailadres in om door te gaan met afrekenen.
+                  </p>
+                  <form onSubmit={(e) => {
+                    e.preventDefault();
+                    const form = e.target as HTMLFormElement;
+                    const emailInput = form.elements.namedItem('guestEmailInput') as HTMLInputElement;
+                    if (emailInput.value && emailInput.value.includes('@')) {
+                      setGuestEmail(emailInput.value);
+                    }
+                  }}>
+                    <Input
+                      name="guestEmailInput"
+                      type="email"
+                      placeholder="jouw@email.nl"
+                      className="bg-black border-zinc-700 text-white placeholder:text-zinc-600 h-12 rounded-none focus:ring-2 focus:ring-[#d0a760] focus:border-[#d0a760] mb-4"
+                      data-testid="input-guest-email"
+                      required
+                    />
+                    <Button 
+                      type="submit"
+                      className="w-full bg-[#d0a760] hover:bg-[#b8954e] text-black font-semibold h-12 rounded-none"
+                      data-testid="button-continue-guest"
+                    >
+                      Doorgaan met afrekenen
+                    </Button>
+                  </form>
+                  <div className="mt-6 pt-6 border-t border-zinc-800">
+                    <p className="text-zinc-500 text-sm mb-3">Heb je al een account?</p>
+                    <Button 
+                      variant="outline"
+                      onClick={() => window.location.href = '/api/login'}
+                      className="border-zinc-700 text-white hover:bg-zinc-800 h-10 rounded-none"
+                      data-testid="button-login-instead"
+                    >
+                      Inloggen
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+        </div>
+      );
+    }
+
     return (
       <div className="min-h-screen bg-black">
         <Header onCartOpen={() => setIsCartOpen(true)} />
@@ -658,7 +738,7 @@ export default function Checkout() {
               },
             }}
           >
-            <CheckoutForm clientSecret={clientSecret} orderTotal={total} cartItems={cartItemsArray} />
+            <CheckoutForm clientSecret={clientSecret} orderTotal={total} cartItems={cartItemsArray} isGuest={isGuest} />
           </Elements>
         ) : (
           <div className="max-w-lg mx-auto">

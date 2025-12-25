@@ -170,7 +170,8 @@ export const orderStatusEnum = pgEnum("order_status", ["pending", "confirmed", "
 // Orders
 export const orders = pgTable("orders", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  userId: varchar("user_id").notNull().references(() => users.id),
+  userId: varchar("user_id").references(() => users.id),
+  guestEmail: varchar("guest_email"),
   orderNumber: varchar("order_number").notNull().unique(),
   status: orderStatusEnum("status").default("pending"),
   total: decimal("total", { precision: 10, scale: 2 }).notNull(),

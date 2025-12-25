@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import { useGuestCart, type GuestCartItem } from "@/lib/guestCart";
 import { 
   X, 
   Minus, 
@@ -45,11 +46,32 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   const { isAuthenticated } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { items: guestCartItems, updateQuantity: updateGuestQuantity, removeItem: removeGuestItem } = useGuestCart();
 
-  const { data: cartItems, isLoading } = useQuery<CartItemWithProduct[]>({
+  const { data: cartItems, isLoading: cartLoading } = useQuery<CartItemWithProduct[]>({
     queryKey: ["/api/cart"],
     enabled: isAuthenticated && isOpen,
   });
+
+  const { data: allProducts } = useQuery<{ id: string; name: string; price: string; originalPrice?: string; images?: string[]; primaryImageIndex?: number; stock?: number }[]>({
+    queryKey: ["/api/products"],
+    enabled: !isAuthenticated && isOpen && guestCartItems.length > 0,
+  });
+
+  const guestCartWithProducts = useMemo(() => {
+    if (isAuthenticated || !allProducts) return [];
+    return guestCartItems.map(item => {
+      const product = allProducts.find(p => p.id === item.productId);
+      return {
+        ...item,
+        id: `guest-${item.productId}-${item.variationId || 'default'}`,
+        product,
+      };
+    }).filter(item => item.product);
+  }, [isAuthenticated, allProducts, guestCartItems]);
+
+  const isLoading = isAuthenticated ? cartLoading : !allProducts && guestCartItems.length > 0;
+  const displayItems = isAuthenticated ? (cartItems || []) : guestCartWithProducts;
 
   const updateQuantityMutation = useMutation({
     mutationFn: async ({ id, quantity }: { id: string; quantity: number }) => {
@@ -109,28 +131,48 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     },
   });
 
-  const handleUpdateQuantity = (id: string, newQuantity: number) => {
-    if (newQuantity <= 0) {
-      removeItemMutation.mutate(id);
+  const handleUpdateQuantity = (item: any, newQuantity: number) => {
+    if (isAuthenticated) {
+      if (newQuantity <= 0) {
+        removeItemMutation.mutate(item.id);
+      } else {
+        updateQuantityMutation.mutate({ id: item.id, quantity: newQuantity });
+      }
     } else {
-      updateQuantityMutation.mutate({ id, quantity: newQuantity });
+      if (newQuantity <= 0) {
+        removeGuestItem(item.productId, item.variationId);
+        toast({
+          title: "Product verwijderd",
+          description: "Het product is uit je winkelwagen verwijderd.",
+        });
+      } else {
+        updateGuestQuantity(item.productId, newQuantity, item.variationId);
+      }
     }
   };
 
-  const handleRemoveItem = (id: string) => {
-    removeItemMutation.mutate(id);
+  const handleRemoveItem = (item: any) => {
+    if (isAuthenticated) {
+      removeItemMutation.mutate(item.id);
+    } else {
+      removeGuestItem(item.productId, item.variationId);
+      toast({
+        title: "Product verwijderd",
+        description: "Het product is uit je winkelwagen verwijderd.",
+      });
+    }
   };
 
   // Calculate totals
-  const subtotal = cartItems?.reduce((sum: number, item: CartItemWithProduct) => {
+  const subtotal = displayItems.reduce((sum: number, item: any) => {
     const price = parseFloat(item.product?.price || "0");
     return sum + (price * item.quantity);
   }, 0) || 0;
 
-  const installationFee = cartItems?.some((item: CartItem) => item.needsInstallation) ? 89 : 0;
+  const installationFee = displayItems.some((item: any) => item.needsInstallation) ? 89 : 0;
   const shipping = subtotal >= 50 ? 0 : 5.95;
   const total = subtotal + installationFee + shipping;
-  const itemCount = cartItems?.reduce((sum: number, item: CartItem) => sum + item.quantity, 0) || 0;
+  const itemCount = displayItems.reduce((sum: number, item: any) => sum + item.quantity, 0) || 0;
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
@@ -161,26 +203,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
           </SheetHeader>
 
           {/* Content */}
-          {!isAuthenticated ? (
-            <div className="flex-1 flex items-center justify-center p-6">
-              <div className="text-center space-y-4" data-testid="cart-login-required">
-                <ShoppingBag className="w-12 h-12 text-white/40 mx-auto" />
-                <div>
-                  <h3 className="font-semibold text-white mb-2">Inloggen vereist</h3>
-                  <p className="text-sm text-white/60 mb-4">
-                    Log in om je winkelwagen te bekijken
-                  </p>
-                  <Button 
-                    onClick={() => window.location.href = '/api/login'}
-                    className="bg-[#d0a760] text-black hover:bg-[#b8954e]"
-                    data-testid="button-login-cart"
-                  >
-                    Inloggen
-                  </Button>
-                </div>
-              </div>
-            </div>
-          ) : isLoading ? (
+          {isLoading ? (
             <div className="flex-1 p-6">
               <div className="space-y-4">
                 {[...Array(3)].map((_, i) => (
@@ -196,7 +219,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                 ))}
               </div>
             </div>
-          ) : !cartItems || cartItems.length === 0 ? (
+          ) : displayItems.length === 0 ? (
             <div className="flex-1 flex items-center justify-center p-6">
               <div className="text-center space-y-4" data-testid="cart-empty">
                 <ShoppingBag className="w-12 h-12 text-white/40 mx-auto" />
@@ -218,7 +241,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
               {/* Cart Items */}
               <ScrollArea className="flex-1 px-6">
                 <div className="space-y-4 py-4" data-testid="cart-items-list">
-                  {cartItems.map((item: CartItemWithProduct) => {
+                  {displayItems.map((item: any) => {
                     const product = item.product;
                     const price = parseFloat(product?.price || "0");
                     const originalPrice = product?.originalPrice ? parseFloat(product.originalPrice) : null;
@@ -269,7 +292,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+                                    onClick={() => handleUpdateQuantity(item, item.quantity - 1)}
                                     disabled={updateQuantityMutation.isPending}
                                     className="w-8 h-8 p-0 border-zinc-700 text-white hover:bg-zinc-800 hover:text-white"
                                     data-testid={`button-decrease-cart-${item.id}`}
@@ -282,7 +305,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+                                    onClick={() => handleUpdateQuantity(item, item.quantity + 1)}
                                     disabled={updateQuantityMutation.isPending || !!(product?.stock && item.quantity >= product.stock)}
                                     className="w-8 h-8 p-0 border-zinc-700 text-white hover:bg-zinc-800 hover:text-white"
                                     data-testid={`button-increase-cart-${item.id}`}
@@ -294,7 +317,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  onClick={() => handleRemoveItem(item.id)}
+                                  onClick={() => handleRemoveItem(item)}
                                   disabled={removeItemMutation.isPending}
                                   className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-1"
                                   data-testid={`button-remove-cart-${item.id}`}
@@ -349,7 +372,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                       className="w-full bg-[#d0a760] text-black hover:bg-[#b8954e]" 
                       size="lg"
                       onClick={onClose}
-                      disabled={!cartItems || cartItems.length === 0}
+                      disabled={displayItems.length === 0}
                       data-testid="button-cart-checkout"
                     >
                       Naar Checkout

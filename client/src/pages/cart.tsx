@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Header } from "@/components/Header";
@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import { useGuestCart, type GuestCartItem } from "@/lib/guestCart";
 import { 
   Minus, 
   Plus, 
@@ -34,14 +35,35 @@ interface CartItemWithProduct extends CartItem {
 
 export default function Cart() {
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { items: guestCartItems, updateQuantity: updateGuestQuantity, removeItem: removeGuestItem } = useGuestCart();
 
-  const { data: cartItems, isLoading } = useQuery<CartItemWithProduct[]>({
+  const { data: cartItems, isLoading: cartLoading } = useQuery<CartItemWithProduct[]>({
     queryKey: ["/api/cart"],
     enabled: isAuthenticated,
   });
+
+  const { data: allProducts } = useQuery<Product[]>({
+    queryKey: ["/api/products"],
+    enabled: !isAuthenticated && guestCartItems.length > 0,
+  });
+
+  const guestCartWithProducts = useMemo(() => {
+    if (isAuthenticated || !allProducts) return [];
+    return guestCartItems.map(item => {
+      const product = allProducts.find(p => p.id === item.productId);
+      return {
+        ...item,
+        id: `guest-${item.productId}-${item.variationId || 'default'}`,
+        product,
+      };
+    }).filter(item => item.product);
+  }, [isAuthenticated, allProducts, guestCartItems]);
+
+  const isLoading = isAuthenticated ? cartLoading : !allProducts && guestCartItems.length > 0;
+  const displayItems = isAuthenticated ? (cartItems || []) : guestCartWithProducts;
 
   const updateQuantityMutation = useMutation({
     mutationFn: async ({ id, quantity }: { id: string; quantity: number }) => {
@@ -101,33 +123,37 @@ export default function Cart() {
     },
   });
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-black flex flex-col">
-        <Header onCartOpen={() => setIsCartOpen(true)} />
-        <div className="flex-1 flex items-center justify-center px-4 py-16">
-          <ScrollReveal>
-            <Card className="bg-zinc-900 border-zinc-800 p-8 md:p-12 text-center max-w-md mx-auto rounded-none">
-              <ShoppingBag className="w-16 h-16 text-[#d0a760] mx-auto mb-6" />
-              <h1 className="text-2xl font-bold text-white mb-4">Inloggen vereist</h1>
-              <p className="text-white/60 mb-8">
-                Je moet ingelogd zijn om je winkelwagen te bekijken.
-              </p>
-              <Button 
-                onClick={() => window.location.href = '/api/login'} 
-                className="bg-[#d0a760] text-black hover:bg-[#b8954e] rounded-none px-8 py-6 text-lg font-semibold"
-                data-testid="button-login"
-              >
-                Inloggen
-              </Button>
-            </Card>
-          </ScrollReveal>
-        </div>
-        <Footer />
-        <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
-      </div>
-    );
-  }
+  const handleUpdateQuantity = (item: any, newQuantity: number) => {
+    if (isAuthenticated) {
+      if (newQuantity <= 0) {
+        removeItemMutation.mutate(item.id);
+      } else {
+        updateQuantityMutation.mutate({ id: item.id, quantity: newQuantity });
+      }
+    } else {
+      if (newQuantity <= 0) {
+        removeGuestItem(item.productId, item.variationId);
+        toast({
+          title: "Product verwijderd",
+          description: "Het product is uit je winkelwagen verwijderd.",
+        });
+      } else {
+        updateGuestQuantity(item.productId, newQuantity, item.variationId);
+      }
+    }
+  };
+
+  const handleRemoveItem = (item: any) => {
+    if (isAuthenticated) {
+      removeItemMutation.mutate(item.id);
+    } else {
+      removeGuestItem(item.productId, item.variationId);
+      toast({
+        title: "Product verwijderd",
+        description: "Het product is uit je winkelwagen verwijderd.",
+      });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -156,17 +182,17 @@ export default function Cart() {
     );
   }
 
-  const totalItems = cartItems?.reduce((sum: number, item: CartItem) => sum + item.quantity, 0) || 0;
-  const subtotal = cartItems?.reduce((sum: number, item: any) => {
+  const totalItems = displayItems.reduce((sum: number, item: any) => sum + item.quantity, 0) || 0;
+  const subtotal = displayItems.reduce((sum: number, item: any) => {
     const price = parseFloat(item.product?.price || "0");
     return sum + (price * item.quantity);
   }, 0) || 0;
   
-  const installationFee = cartItems?.some((item: CartItem) => item.needsInstallation) ? 89 : 0;
+  const installationFee = displayItems.some((item: any) => item.needsInstallation) ? 89 : 0;
   const shipping = subtotal >= 50 ? 0 : 5.95;
   const total = subtotal + installationFee + shipping;
 
-  if (!cartItems || cartItems.length === 0) {
+  if (displayItems.length === 0) {
     return (
       <div className="min-h-screen bg-black flex flex-col">
         <Header onCartOpen={() => setIsCartOpen(true)} />
@@ -222,7 +248,7 @@ export default function Cart() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-4" data-testid="cart-items">
             <StaggerContainer staggerDelay={100}>
-              {cartItems.map((item: any) => {
+              {displayItems.map((item: any) => {
                 const product = item.product;
                 const price = parseFloat(product?.price || "0");
                 const originalPrice = product?.originalPrice ? parseFloat(product.originalPrice) : null;
@@ -231,7 +257,7 @@ export default function Cart() {
                   <Card key={item.id} className="bg-zinc-900 border-zinc-800 rounded-none" data-testid={`cart-item-${item.id}`}>
                     <CardContent className="p-4 md:p-6">
                       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                        <Link href={`/product/${product?.id}`}>
+                        <Link href={`/product/${product?.slug || product?.id}`}>
                           <div className="w-full sm:w-24 h-32 sm:h-24 bg-zinc-800 flex-shrink-0 cursor-pointer">
                             <img 
                               src={product?.images?.[product.primaryImageIndex || 0] || carAudioLogo}
@@ -245,7 +271,7 @@ export default function Cart() {
                         </Link>
 
                         <div className="flex-1 min-w-0 w-full">
-                          <Link href={`/product/${product?.id}`}>
+                          <Link href={`/product/${product?.slug || product?.id}`}>
                             <h3 className="font-semibold text-white mb-1 hover:text-[#d0a760] transition-colors cursor-pointer" data-testid={`product-name-${item.id}`}>
                               {product?.name || "Onbekend product"}
                             </h3>
@@ -280,7 +306,7 @@ export default function Cart() {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => updateQuantityMutation.mutate({ id: item.id, quantity: item.quantity - 1 })}
+                              onClick={() => handleUpdateQuantity(item, item.quantity - 1)}
                               disabled={item.quantity <= 1 || updateQuantityMutation.isPending}
                               className="w-8 h-8 p-0 border-zinc-700 text-white hover:bg-zinc-800 hover:text-white rounded-none"
                               data-testid={`button-decrease-${item.id}`}
@@ -293,7 +319,7 @@ export default function Cart() {
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => updateQuantityMutation.mutate({ id: item.id, quantity: item.quantity + 1 })}
+                              onClick={() => handleUpdateQuantity(item, item.quantity + 1)}
                               disabled={updateQuantityMutation.isPending}
                               className="w-8 h-8 p-0 border-zinc-700 text-white hover:bg-zinc-800 hover:text-white rounded-none"
                               data-testid={`button-increase-${item.id}`}
@@ -309,7 +335,7 @@ export default function Cart() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => removeItemMutation.mutate(item.id)}
+                            onClick={() => handleRemoveItem(item)}
                             disabled={removeItemMutation.isPending}
                             className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-2"
                             data-testid={`button-remove-${item.id}`}

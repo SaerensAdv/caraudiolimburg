@@ -972,6 +972,186 @@ ${message || 'Geen aanvullende informatie'}`
     }
   });
 
+  // Guest checkout - create payment intent with server-side price validation
+  app.post("/api/guest-checkout/create-payment-intent", async (req, res) => {
+    if (!stripe) {
+      return res.status(500).json({ message: "Payment system not configured. Please set up Stripe API keys." });
+    }
+    
+    try {
+      const { cartItems, guestEmail } = req.body;
+      
+      if (!cartItems || !Array.isArray(cartItems) || cartItems.length === 0) {
+        return res.status(400).json({ message: "Cart items are required" });
+      }
+
+      if (!guestEmail || !guestEmail.includes('@')) {
+        return res.status(400).json({ message: "Valid email address is required" });
+      }
+      
+      // Server-side price validation - NEVER trust client prices
+      let subtotal = 0;
+      const validatedItems = [];
+      
+      for (const item of cartItems) {
+        const product = await storage.getProduct(item.productId);
+        if (!product) {
+          return res.status(400).json({ message: `Product not found: ${item.productId}` });
+        }
+        
+        let price = parseFloat(product.price);
+        
+        // Handle variations if present
+        if (item.variationId) {
+          const variation = await storage.getProductVariation(item.variationId);
+          if (variation) {
+            price = parseFloat(variation.price);
+          }
+        }
+        
+        subtotal += price * item.quantity;
+        validatedItems.push({
+          productId: item.productId,
+          quantity: item.quantity,
+          needsInstallation: item.needsInstallation || false,
+          variationId: item.variationId || null,
+          price: price.toString(),
+        });
+      }
+      
+      const installationFee = validatedItems.some(item => item.needsInstallation) ? 89 : 0;
+      const shipping = subtotal >= 50 ? 0 : 5.95;
+      const total = subtotal + installationFee + shipping;
+      
+      console.log("Guest checkout - Creating payment intent with validated amount:", total);
+      
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(total * 100), // Convert to cents
+        currency: "eur",
+        automatic_payment_methods: {
+          enabled: true,
+        },
+        metadata: {
+          guestEmail,
+          isGuest: "true",
+          cartItems: JSON.stringify(validatedItems.map(i => ({ 
+            productId: i.productId, 
+            quantity: i.quantity, 
+            needsInstallation: i.needsInstallation,
+            variationId: i.variationId,
+            price: i.price 
+          }))),
+        },
+      });
+      
+      res.json({ 
+        clientSecret: paymentIntent.client_secret,
+        calculatedTotal: total,
+        subtotal,
+        installationFee,
+        shipping,
+      });
+    } catch (error: any) {
+      console.error("Guest checkout payment intent error:", error);
+      res.status(500).json({ message: "Error creating payment intent: " + error.message });
+    }
+  });
+
+  // Guest order confirmation after successful payment
+  app.post("/api/guest-orders/confirm", async (req, res) => {
+    if (!stripe) {
+      return res.status(500).json({ message: "Payment system not configured" });
+    }
+
+    try {
+      const { paymentIntentId, shippingDetails, guestEmail } = req.body;
+
+      if (!paymentIntentId) {
+        return res.status(400).json({ message: "Payment intent ID required" });
+      }
+
+      // Verify payment was successful with Stripe
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      
+      if (paymentIntent.status !== 'succeeded') {
+        return res.status(400).json({ message: "Payment not successful" });
+      }
+
+      // Verify this is a guest checkout
+      if (paymentIntent.metadata?.isGuest !== "true") {
+        return res.status(400).json({ message: "Not a guest checkout" });
+      }
+
+      // Check if order already exists (idempotency)
+      const existingOrder = await storage.getOrderByPaymentIntentId(paymentIntentId);
+      if (existingOrder) {
+        return res.json({ orderId: existingOrder.id, orderNumber: existingOrder.orderNumber });
+      }
+
+      // Parse cart items from payment intent metadata
+      let cartItems: any[] = [];
+      try {
+        cartItems = JSON.parse(paymentIntent.metadata?.cartItems || "[]");
+      } catch (e) {
+        return res.status(400).json({ message: "Invalid cart data in payment" });
+      }
+
+      if (cartItems.length === 0) {
+        return res.status(400).json({ message: "No cart items found" });
+      }
+
+      // Recalculate total from stored prices
+      let subtotal = 0;
+      for (const item of cartItems) {
+        subtotal += parseFloat(item.price) * item.quantity;
+      }
+      
+      const installationFee = cartItems.some(item => item.needsInstallation) ? 89 : 0;
+      const shipping = subtotal >= 50 ? 0 : 5.95;
+      const total = subtotal + installationFee + shipping;
+
+      // Verify amount matches (security check)
+      const expectedAmountInCents = Math.round(total * 100);
+      if (paymentIntent.amount !== expectedAmountInCents) {
+        console.error("Guest payment amount mismatch:", { expected: expectedAmountInCents, received: paymentIntent.amount });
+      }
+
+      // Generate unique order number
+      const orderNumber = `CAL-G-${Date.now()}`;
+
+      // Create guest order
+      const order = await storage.createOrder({
+        userId: null,
+        guestEmail: guestEmail || paymentIntent.metadata?.guestEmail,
+        orderNumber,
+        status: "confirmed",
+        total: total.toString(),
+        subtotal: subtotal.toString(),
+        installationTotal: installationFee.toString(),
+        stripePaymentIntentId: paymentIntentId,
+        shippingAddress: shippingDetails,
+      });
+
+      // Create order items
+      for (const cartItem of cartItems) {
+        await storage.createOrderItem({
+          orderId: order.id,
+          productId: cartItem.productId,
+          quantity: cartItem.quantity,
+          price: cartItem.price,
+          needsInstallation: cartItem.needsInstallation,
+          variationId: cartItem.variationId || null,
+          variationLabel: null,
+        });
+      }
+
+      res.json({ orderId: order.id, orderNumber: order.orderNumber, order });
+    } catch (error) {
+      console.error("Error confirming guest order:", error);
+      res.status(500).json({ message: "Failed to confirm order" });
+    }
+  });
+
   // Get order by payment intent ID (idempotent - creates order if missing for successful payments)
   app.get("/api/orders/by-payment-intent/:paymentIntentId", isAuthenticated, async (req, res) => {
     try {

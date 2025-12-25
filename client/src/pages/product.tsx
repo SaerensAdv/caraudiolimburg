@@ -417,7 +417,7 @@ export default function ProductPage() {
                       <img 
                         src={images[selectedImageIndex]} 
                         alt={product.name}
-                        className="w-full h-full object-contain p-4 md:p-8 group-hover:scale-105 transition-transform duration-500 select-none"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 select-none"
                         draggable={false}
                       />
                       
@@ -500,7 +500,7 @@ export default function ProductPage() {
                             <img 
                               src={image} 
                               alt={`${product.name} ${index + 1}`}
-                              className="w-full h-full object-contain p-2"
+                              className="w-full h-full object-cover"
                             />
                           </button>
                         ))}
@@ -873,7 +873,7 @@ export default function ProductPage() {
                         <img 
                           src={relatedProduct.images[0]} 
                           alt={relatedProduct.name}
-                          className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-300"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       ) : (
                         <div className="flex items-center justify-center h-full">

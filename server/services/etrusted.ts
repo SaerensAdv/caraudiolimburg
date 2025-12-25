@@ -157,8 +157,8 @@ class ETrustedService {
   }
 
   async sendReviewInvitation(data: ReviewInvitationRequest): Promise<boolean> {
-    if (!this.clientId || !this.clientSecret) {
-      console.warn('[eTrusted] Cannot send invitation - missing credentials');
+    if (!this.isConfigured()) {
+      console.warn('[eTrusted] Cannot send invitation - service not fully configured');
       return false;
     }
 

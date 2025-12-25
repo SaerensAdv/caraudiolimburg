@@ -8,6 +8,7 @@ import { z } from "zod";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated, isAdmin } from "./auth";
 import { handleChatMessage } from "./chatbot";
+import { etrustedService } from "./services/etrusted";
 import {
   insertProductSchema,
   insertCategorySchema,
@@ -1145,6 +1146,27 @@ ${message || 'Geen aanvullende informatie'}`
         });
       }
 
+      // Send eTrusted review invitation (non-blocking)
+      const customerEmail = guestEmail || paymentIntent.metadata?.guestEmail;
+      if (customerEmail) {
+        const productDetails = await Promise.all(
+          cartItems.slice(0, 5).map(async (item: any) => {
+            const product = await storage.getProduct(item.productId);
+            return product ? {
+              name: product.name,
+              sku: product.id,
+            } : null;
+          })
+        );
+
+        etrustedService.sendReviewInvitation({
+          customerEmail,
+          orderReference: orderNumber,
+          orderDate: new Date().toISOString(),
+          products: productDetails.filter(Boolean) as any[],
+        }).catch(err => console.error('[eTrusted] Failed to send invitation:', err));
+      }
+
       res.json({ orderId: order.id, orderNumber: order.orderNumber, order });
     } catch (error) {
       console.error("Error confirming guest order:", error);
@@ -1340,6 +1362,28 @@ ${message || 'Geen aanvullende informatie'}`
 
       // Clear cart
       await storage.clearCart(userId);
+
+      // Send eTrusted review invitation (non-blocking)
+      if (shippingDetails?.email) {
+        const productDetails = await Promise.all(
+          cartItems.slice(0, 5).map(async (item: any) => {
+            const product = await storage.getProduct(item.productId);
+            return product ? {
+              name: product.name,
+              sku: product.id,
+            } : null;
+          })
+        );
+
+        etrustedService.sendReviewInvitation({
+          customerEmail: shippingDetails.email,
+          customerFirstName: shippingDetails.firstName,
+          customerLastName: shippingDetails.lastName,
+          orderReference: orderNumber,
+          orderDate: new Date().toISOString(),
+          products: productDetails.filter(Boolean) as any[],
+        }).catch(err => console.error('[eTrusted] Failed to send invitation:', err));
+      }
 
       res.json({ orderId: order.id, order });
     } catch (error) {
@@ -2293,6 +2337,76 @@ ${message || 'Geen aanvullende informatie'}`
     } catch (error) {
       console.error('Chat API error:', error);
       res.status(500).json({ error: 'Er is een fout opgetreden. Probeer het later opnieuw.' });
+    }
+  });
+
+  // eTrusted/Trusted Shops API routes
+  app.get('/api/etrusted/service-reviews', async (req, res) => {
+    try {
+      if (!etrustedService.isConfigured()) {
+        return res.json({ reviews: [], enabled: false });
+      }
+      const limit = parseInt(req.query.limit as string) || 10;
+      const reviews = await etrustedService.getServiceReviews(limit);
+      res.json({ reviews, enabled: true });
+    } catch (error) {
+      console.error("Error fetching eTrusted reviews:", error);
+      res.json({ reviews: [], enabled: false, error: true });
+    }
+  });
+
+  app.get('/api/etrusted/aggregate', async (req, res) => {
+    try {
+      if (!etrustedService.isConfigured()) {
+        return res.json({ rating: null, count: 0, enabled: false });
+      }
+      const aggregate = await etrustedService.getAggregatedRating();
+      res.json({ ...aggregate, enabled: true });
+    } catch (error) {
+      console.error("Error fetching eTrusted aggregate:", error);
+      res.json({ rating: null, count: 0, enabled: false, error: true });
+    }
+  });
+
+  app.get('/api/etrusted/config', (req, res) => {
+    const config = etrustedService.getTrustbadgeConfig();
+    res.json(config);
+  });
+
+  app.post('/api/etrusted/invite', isAdmin, async (req, res) => {
+    try {
+      if (!etrustedService.isConfigured()) {
+        return res.status(400).json({ message: "eTrusted service not configured", success: false });
+      }
+
+      const schema = z.object({
+        customerEmail: z.string().email(),
+        customerFirstName: z.string().optional(),
+        customerLastName: z.string().optional(),
+        orderReference: z.string().min(1),
+        orderDate: z.string(),
+        products: z.array(z.object({
+          name: z.string(),
+          sku: z.string().optional(),
+          url: z.string().optional(),
+          imageUrl: z.string().optional(),
+        })).optional(),
+      });
+
+      const parseResult = schema.safeParse(req.body);
+      if (!parseResult.success) {
+        return res.status(400).json({ 
+          message: "Invalid request data", 
+          errors: parseResult.error.flatten().fieldErrors,
+          success: false 
+        });
+      }
+
+      const success = await etrustedService.sendReviewInvitation(parseResult.data);
+      res.json({ success });
+    } catch (error) {
+      console.error("Error sending review invitation:", error);
+      res.status(500).json({ message: "Failed to send review invitation", success: false });
     }
   });
 

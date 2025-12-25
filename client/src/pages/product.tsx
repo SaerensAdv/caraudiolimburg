@@ -31,7 +31,9 @@ import {
   X,
   Plus,
   Minus,
-  CreditCard
+  CreditCard,
+  FileText,
+  Download
 } from "lucide-react";
 import { SiApplepay, SiGooglepay, SiRevolut, SiKlarna } from "react-icons/si";
 import type { Product } from "@shared/schema";
@@ -845,15 +847,63 @@ export default function ProductPage() {
 
               {/* Specifications */}
               {product.specifications && (
-                <div>
+                <div className="mb-12">
                   <h2 className="text-2xl font-bold text-black mb-6">Specificaties</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {Object.entries(product.specifications as Record<string, string | number | boolean>).map(([key, value]) => (
+                    {Object.entries(product.specifications as Record<string, string | number | boolean>)
+                      .filter(([key]) => !['manualUrl', 'techSheetUrl'].includes(key))
+                      .map(([key, value]) => (
                       <div key={key} className="p-4 bg-zinc-50 border border-zinc-200">
                         <p className="text-xs text-black/40 uppercase tracking-wider mb-1">{key}</p>
                         <p className="text-lg font-medium text-black">{String(value)}</p>
                       </div>
                     ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Documentation Downloads */}
+              {product.specifications && (
+                (product.specifications as Record<string, string>).manualUrl || 
+                (product.specifications as Record<string, string>).techSheetUrl
+              ) && (
+                <div>
+                  <h2 className="text-2xl font-bold text-black mb-6">Documentatie</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {(product.specifications as Record<string, string>).manualUrl && (
+                      <a 
+                        href={(product.specifications as Record<string, string>).manualUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-4 p-4 bg-zinc-50 border border-zinc-200 hover:border-[#d0a760] hover:bg-zinc-100 transition-colors group"
+                      >
+                        <div className="p-3 bg-[#d0a760]/10 group-hover:bg-[#d0a760]/20 transition-colors">
+                          <FileText className="w-6 h-6 text-[#d0a760]" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-black group-hover:text-[#d0a760] transition-colors">Handleiding</p>
+                          <p className="text-sm text-black/50">Installatie & gebruikershandleiding (PDF)</p>
+                        </div>
+                        <Download className="w-5 h-5 text-black/30 group-hover:text-[#d0a760] transition-colors" />
+                      </a>
+                    )}
+                    {(product.specifications as Record<string, string>).techSheetUrl && (
+                      <a 
+                        href={(product.specifications as Record<string, string>).techSheetUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-4 p-4 bg-zinc-50 border border-zinc-200 hover:border-[#d0a760] hover:bg-zinc-100 transition-colors group"
+                      >
+                        <div className="p-3 bg-[#d0a760]/10 group-hover:bg-[#d0a760]/20 transition-colors">
+                          <FileText className="w-6 h-6 text-[#d0a760]" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-medium text-black group-hover:text-[#d0a760] transition-colors">Technische Specificaties</p>
+                          <p className="text-sm text-black/50">Gedetailleerde tech sheet (PDF)</p>
+                        </div>
+                        <Download className="w-5 h-5 text-black/30 group-hover:text-[#d0a760] transition-colors" />
+                      </a>
+                    )}
                   </div>
                 </div>
               )}

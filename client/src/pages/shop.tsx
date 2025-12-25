@@ -707,17 +707,15 @@ export default function Shop() {
             </div>
           ) : sortedProducts && sortedProducts.length > 0 ? (
             viewMode === 'grid' ? (
-              <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {sortedProducts.map((product: Product, idx: number) => (
-                  <StaggerItem key={product.id}>
-                    <ProductCard product={product} />
-                  </StaggerItem>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {sortedProducts.map((product: Product) => (
+                  <ProductCard key={product.id} product={product} />
                 ))}
-              </StaggerContainer>
+              </div>
             ) : (
               <div className="space-y-4">
                 {sortedProducts.map((product: Product) => (
-                  <ScrollReveal key={product.id} animation="fade-up">
+                  <div key={product.id}>
                     <article 
                       className="bg-zinc-900 border border-zinc-800 hover:border-[#d0a760]/30 transition-all duration-300 group"
                       data-testid={`product-article-${product.id}`}
@@ -786,7 +784,7 @@ export default function Shop() {
                         </div>
                       </div>
                     </article>
-                  </ScrollReveal>
+                  </div>
                 ))}
               </div>
             )

@@ -839,7 +839,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/bookings', async (req, res) => {
     try {
-      const bookingData = insertBookingSchema.parse(req.body);
+      const body = {
+        ...req.body,
+        scheduledDate: req.body.scheduledDate ? new Date(req.body.scheduledDate) : undefined,
+      };
+      const bookingData = insertBookingSchema.parse(body);
       const booking = await storage.createBooking(bookingData);
       res.json(booking);
     } catch (error) {

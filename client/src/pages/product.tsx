@@ -642,20 +642,29 @@ export default function ProductPage() {
                     )}
                     
                     {/* Payment Methods */}
-                    <div className="flex items-center gap-2 pt-2">
+                    <div className="flex flex-wrap items-center gap-2 pt-2">
                       <span className="text-white/40 text-xs">Betaalmethodes:</span>
-                      <div className="flex items-center gap-1">
-                        <div className="bg-white px-1.5 py-0.5" title="iDEAL">
-                          <span className="text-[10px] font-bold text-[#CC0066]">iDEAL</span>
+                      <div className="flex flex-wrap items-center gap-1">
+                        <div className="bg-white px-1.5 py-0.5 rounded-sm" title="Kaarten (Visa, Mastercard)">
+                          <span className="text-[9px] font-bold text-zinc-700">CARDS</span>
                         </div>
-                        <div className="bg-white px-1.5 py-0.5" title="Bancontact">
-                          <span className="text-[10px] font-bold text-[#005498]">BC</span>
+                        <div className="bg-black px-1.5 py-0.5 rounded-sm" title="Apple Pay">
+                          <span className="text-[9px] font-bold text-white"> Pay</span>
                         </div>
-                        <div className="bg-[#1A1F71] px-1.5 py-0.5" title="Visa">
-                          <span className="text-[10px] font-bold text-white">VISA</span>
+                        <div className="bg-white px-1.5 py-0.5 rounded-sm" title="Google Pay">
+                          <span className="text-[9px] font-bold text-zinc-700">G Pay</span>
                         </div>
-                        <div className="bg-[#EB001B] px-1.5 py-0.5" title="Mastercard">
-                          <span className="text-[10px] font-bold text-white">MC</span>
+                        <div className="bg-[#0075EB] px-1.5 py-0.5 rounded-sm" title="Revolut Pay">
+                          <span className="text-[9px] font-bold text-white">Revolut</span>
+                        </div>
+                        <div className="bg-[#005498] px-1.5 py-0.5 rounded-sm" title="Bancontact">
+                          <span className="text-[9px] font-bold text-white">BC</span>
+                        </div>
+                        <div className="bg-[#CC0066] px-1.5 py-0.5 rounded-sm" title="iDEAL">
+                          <span className="text-[9px] font-bold text-white">iDEAL</span>
+                        </div>
+                        <div className="bg-[#FFB3C7] px-1.5 py-0.5 rounded-sm" title="Klarna">
+                          <span className="text-[9px] font-bold text-[#0A0B09]">Klarna</span>
                         </div>
                       </div>
                     </div>

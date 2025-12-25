@@ -334,12 +334,10 @@ export default function ProductPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
       />
-      
       {/* Desktop Header */}
       <div className="hidden md:block">
         <Header onCartOpen={() => setIsCartOpen(true)} />
       </div>
-      
       {/* Mobile App Header */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-lg border-b border-white/10 safe-area-top">
         <div className="flex items-center justify-between px-4 h-14">
@@ -381,7 +379,6 @@ export default function ProductPage() {
           </div>
         </div>
       </div>
-      
       {/* Desktop Breadcrumb */}
       <div className="hidden md:block bg-zinc-950 border-b border-white/5">
         <div className="container mx-auto px-4 py-4">
@@ -394,10 +391,9 @@ export default function ProductPage() {
           </nav>
         </div>
       </div>
-
       {/* Product Section - Black */}
       <section className="pt-16 md:pt-0 py-6 md:py-20 pb-36 md:pb-20">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 mt-[32px] mb-[32px]">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 lg:gap-16">
             {/* Product Images - Mobile Swipeable Gallery */}
             <ScrollReveal animation="fade-right">
@@ -806,7 +802,6 @@ export default function ProductPage() {
           </div>
         </div>
       </section>
-
       {/* Product Information - White Section */}
       <section className="bg-white py-16 md:py-24" data-testid="product-information">
         <div className="container mx-auto px-4">
@@ -855,7 +850,6 @@ export default function ProductPage() {
           </ScrollReveal>
         </div>
       </section>
-
       {/* Related Products / Upsell Section */}
       {filteredRelatedProducts.length > 0 && (
         <section className="bg-zinc-950 py-16 md:py-20 border-t border-white/5" data-testid="related-products">
@@ -904,7 +898,6 @@ export default function ProductPage() {
           </div>
         </section>
       )}
-
       {/* CTA Section - Black */}
       <section className="bg-black py-16 border-t border-white/5">
         <div className="container mx-auto px-4">
@@ -938,12 +931,10 @@ export default function ProductPage() {
           </ScrollReveal>
         </div>
       </section>
-
       {/* Footer - Desktop only */}
       <div className="hidden md:block">
         <Footer />
       </div>
-
       {/* Mobile Sticky Bottom Action Bar */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-zinc-950/98 backdrop-blur-xl border-t border-white/10 safe-area-bottom">
         <div className="p-4">
@@ -1030,7 +1021,6 @@ export default function ProductPage() {
           </div>
         </div>
       </div>
-
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
       <ImageLightbox 
         images={images}

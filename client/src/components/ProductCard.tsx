@@ -10,6 +10,7 @@ import { isUnauthorizedError } from "@/lib/authUtils";
 import { ShoppingCart, Wrench, Eye, Heart } from "lucide-react";
 import { ProductQuickView } from "@/components/ProductQuickView";
 import { useAuth } from "@/hooks/useAuth";
+import { useGuestCart } from "@/lib/guestCart";
 import type { Product } from "@shared/schema";
 import carAudioLogo from "@assets/Caraudiolimburg-logo_1757008375383_1757016657436.png";
 import fordFiestaImage from "@assets/ford-fiesta-real.webp";
@@ -27,6 +28,7 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
   const [imageError, setImageError] = useState(false);
   const { isAuthenticated } = useAuth();
+  const { addItem: addToGuestCart } = useGuestCart();
   
   // Check if product has a valid image
   const hasValidImage = product.images && product.images.length > 0 && product.images[product.primaryImageIndex || 0] && !imageError;
@@ -100,15 +102,26 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
   const isWishlistLoading = addToWishlistMutation.isPending || removeFromWishlistMutation.isPending;
 
   const addToCartMutation = useMutation({
-    mutationFn: async ({ productId, needsInstallation }: { productId: string; needsInstallation: boolean }) => {
-      await apiRequest("POST", "/api/cart", {
-        productId,
-        quantity: 1,
-        needsInstallation,
-      });
+    mutationFn: async ({ productId, needsInstallation, authenticated }: { productId: string; needsInstallation: boolean; authenticated: boolean }) => {
+      if (authenticated) {
+        await apiRequest("POST", "/api/cart", {
+          productId,
+          quantity: 1,
+          needsInstallation,
+        });
+      } else {
+        addToGuestCart({
+          productId,
+          quantity: 1,
+          needsInstallation,
+          variationId: null,
+        });
+      }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
+    onSuccess: (_, variables) => {
+      if (variables.authenticated) {
+        queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
+      }
       toast({
         title: "Product toegevoegd",
         description: "Het product is toegevoegd aan je winkelwagen.",
@@ -135,7 +148,7 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
   });
 
   const handleAddToCart = (needsInstallation: boolean = false) => {
-    addToCartMutation.mutate({ productId: product.id, needsInstallation });
+    addToCartMutation.mutate({ productId: product.id, needsInstallation, authenticated: isAuthenticated });
   };
 
   const originalPrice = product.originalPrice ? parseFloat(product.originalPrice) : null;

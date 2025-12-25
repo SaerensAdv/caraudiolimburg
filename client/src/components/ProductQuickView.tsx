@@ -7,6 +7,8 @@ import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { X, ShoppingCart, Wrench, ChevronLeft, ChevronRight, Eye } from "lucide-react";
 import { Link } from "wouter";
+import { useAuth } from "@/hooks/useAuth";
+import { useGuestCart } from "@/lib/guestCart";
 import type { Product } from "@shared/schema";
 
 interface ProductQuickViewProps {
@@ -19,17 +21,30 @@ export function ProductQuickView({ product, isOpen, onClose }: ProductQuickViewP
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const { isAuthenticated } = useAuth();
+  const { addItem: addToGuestCart } = useGuestCart();
 
   const addToCartMutation = useMutation({
-    mutationFn: async ({ productId, needsInstallation }: { productId: string; needsInstallation: boolean }) => {
-      await apiRequest("POST", "/api/cart", {
-        productId,
-        quantity: 1,
-        needsInstallation,
-      });
+    mutationFn: async ({ productId, needsInstallation, authenticated }: { productId: string; needsInstallation: boolean; authenticated: boolean }) => {
+      if (authenticated) {
+        await apiRequest("POST", "/api/cart", {
+          productId,
+          quantity: 1,
+          needsInstallation,
+        });
+      } else {
+        addToGuestCart({
+          productId,
+          quantity: 1,
+          needsInstallation,
+          variationId: null,
+        });
+      }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
+    onSuccess: (_, variables) => {
+      if (variables.authenticated) {
+        queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
+      }
       toast({
         title: "Product toegevoegd",
         description: "Het product is toegevoegd aan je winkelwagen.",
@@ -55,6 +70,10 @@ export function ProductQuickView({ product, isOpen, onClose }: ProductQuickViewP
       });
     },
   });
+
+  const handleAddToCart = (needsInstallation: boolean = false) => {
+    addToCartMutation.mutate({ productId: product.id, needsInstallation, authenticated: isAuthenticated });
+  };
 
   if (!isOpen) return null;
 
@@ -214,7 +233,7 @@ export function ProductQuickView({ product, isOpen, onClose }: ProductQuickViewP
               <div className="space-y-3 pt-4 border-t border-zinc-800">
                 <div className="grid grid-cols-2 gap-3">
                   <Button
-                    onClick={() => addToCartMutation.mutate({ productId: product.id, needsInstallation: false })}
+                    onClick={() => handleAddToCart(false)}
                     disabled={addToCartMutation.isPending}
                     className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"
                   >
@@ -224,7 +243,7 @@ export function ProductQuickView({ product, isOpen, onClose }: ProductQuickViewP
 
                   {product.installationPrice && (
                     <Button
-                      onClick={() => addToCartMutation.mutate({ productId: product.id, needsInstallation: true })}
+                      onClick={() => handleAddToCart(true)}
                       disabled={addToCartMutation.isPending}
                       variant="outline"
                       className="border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760]/10 rounded-none"

@@ -195,15 +195,12 @@ export default function ProductPage() {
 
   const addToCartMutation = useMutation({
     mutationFn: async ({ needsInstallation, authenticated }: { needsInstallation: boolean; authenticated: boolean }) => {
-      console.log('[addToCart] Called with authenticated:', authenticated, 'current isAuthenticated:', isAuthenticated);
-      
       if (!product) return;
       if (product.hasVariations && !selectedVariation) {
         throw new Error("Selecteer eerst een variatie");
       }
       
       if (authenticated) {
-        console.log('[addToCart] Using API (authenticated user)');
         await apiRequest("POST", "/api/cart", {
           productId: product.id,
           quantity,
@@ -211,7 +208,6 @@ export default function ProductPage() {
           variationId: selectedVariation?.id || null,
         });
       } else {
-        console.log('[addToCart] Using guest cart');
         addToGuestCart({
           productId: product.id,
           quantity,

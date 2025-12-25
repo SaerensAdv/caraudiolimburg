@@ -3,7 +3,7 @@ import whiteLogoUrl from "@assets/CAL white_1758369495328.png";
 import saerensLogoUrl from "@assets/Saerens_Advertising_1764900190628.png";
 import iconLogoUrl from "@assets/CAR_1765257768308.png";
 import { Facebook, Instagram, Youtube, MapPin, Phone, Mail, Clock } from "lucide-react";
-import { Trustbadge, TrustedShopsBadgeLink } from "@/components/TrustedShops";
+import { TrustedShopsBadgeLink } from "@/components/TrustedShops";
 
 export function Footer() {
   return (
@@ -95,8 +95,6 @@ export function Footer() {
             </div>
           </div>
         </div>
-        
-        <Trustbadge />
 
         {/* Bottom Bar */}
         <div className="border-t border-zinc-800 pt-8">

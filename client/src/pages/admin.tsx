@@ -117,6 +117,7 @@ export default function Admin() {
   const [productSearch, setProductSearch] = useState('');
   const [productCategoryFilter, setProductCategoryFilter] = useState('');
   const [productBrandFilter, setProductBrandFilter] = useState('');
+  const [isOptimizing, setIsOptimizing] = useState(false);
   const { isAuthenticated, user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -436,6 +437,40 @@ export default function Admin() {
       });
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  const handleOptimizeImages = async () => {
+    setIsOptimizing(true);
+    try {
+      const response = await fetch('/api/admin/products/optimize-images', {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        toast({
+          title: "Afbeeldingen geoptimaliseerd",
+          description: `${result.processed} producten geoptimaliseerd, ${result.skipped} overgeslagen.`,
+        });
+        queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
+      } else {
+        toast({
+          title: "Optimalisatie mislukt",
+          description: result.message || "Er is een fout opgetreden.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Optimalisatie fout",
+        description: "Er is een onbekende fout opgetreden.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsOptimizing(false);
     }
   };
 
@@ -1367,6 +1402,17 @@ export default function Admin() {
                       {isUploading ? "Uploaden..." : "Start Import"}
                     </Button>
                   )}
+
+                  <Button
+                    variant="outline"
+                    onClick={handleOptimizeImages}
+                    disabled={isOptimizing}
+                    className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white rounded-none"
+                    data-testid="button-optimize-images"
+                  >
+                    <Image className="w-4 h-4 mr-2" />
+                    {isOptimizing ? "Optimaliseren..." : "Optimaliseer Afbeeldingen"}
+                  </Button>
 
                   <Dialog open={isProductDialogOpen} onOpenChange={(open) => {
                     setIsProductDialogOpen(open);

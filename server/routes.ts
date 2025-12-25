@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import multer from "multer";
 import Papa from "papaparse";
+import sharp from "sharp";
 import { z } from "zod";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated, isAdmin } from "./auth";
@@ -1332,82 +1333,65 @@ ${message || 'Geen aanvullende informatie'}`
   });
 
   // Image upload endpoint using Object Storage for production persistence  
+  // Automatically resizes to 1000x1000 and converts to WebP format
   app.post('/api/upload/image', isAdmin, imageUpload.single('file'), async (req: any, res) => {
-    console.log("🔍 [UPLOAD DEBUG] Starting image upload...");
-    console.log("🔍 [UPLOAD DEBUG] NODE_ENV:", process.env.NODE_ENV);
-    console.log("🔍 [UPLOAD DEBUG] User authenticated:", !!req.user);
+    console.log("🔍 [UPLOAD] Starting image upload with optimization...");
     
     try {
-      console.log("🔍 [UPLOAD DEBUG] Checking file...");
       if (!req.file) {
-        console.log("❌ [UPLOAD DEBUG] No file provided");
         return res.status(400).json({ message: "No file uploaded" });
       }
-      console.log("✅ [UPLOAD DEBUG] File received:", req.file.originalname, req.file.size, "bytes");
+      console.log("✅ [UPLOAD] File received:", req.file.originalname, req.file.size, "bytes");
 
       const fs = await import('fs');
       const path = await import('path');
 
-      // Generate unique filename
-      const fileExtension = req.file.originalname.split('.').pop();
-      const fileName = `product-${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExtension}`;
-      console.log("🔍 [UPLOAD DEBUG] Generated filename:", fileName);
+      // Process image: resize to 1000x1000 and convert to WebP
+      const processedImage = await sharp(req.file.buffer)
+        .resize(1000, 1000, {
+          fit: 'contain',
+          background: { r: 255, g: 255, b: 255, alpha: 1 }
+        })
+        .webp({ quality: 85 })
+        .toBuffer();
       
-      // Object Storage configuration - use the mounted bucket path
-      // Get the mounted Object Storage path from environment
+      console.log("✅ [UPLOAD] Image optimized: 1000x1000 WebP, size:", processedImage.length, "bytes");
+
+      // Generate unique filename with .webp extension
+      const fileName = `product-${Date.now()}-${Math.random().toString(36).substring(7)}.webp`;
+      
+      // Object Storage configuration
       const publicSearchPaths = process.env.PUBLIC_OBJECT_SEARCH_PATHS;
       const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
       
-      console.log("🔍 [UPLOAD DEBUG] Environment vars:");
-      console.log("   - PUBLIC_OBJECT_SEARCH_PATHS:", publicSearchPaths);
-      console.log("   - DEFAULT_OBJECT_STORAGE_BUCKET_ID:", bucketId);
-      
       if (!publicSearchPaths) {
-        console.error("❌ [UPLOAD DEBUG] PUBLIC_OBJECT_SEARCH_PATHS not found");
         throw new Error("Object Storage not configured properly");
       }
       
       if (!bucketId) {
-        console.error("❌ [UPLOAD DEBUG] DEFAULT_OBJECT_STORAGE_BUCKET_ID not found");
         throw new Error("Object Storage not configured");
       }
       
-      // Object Storage fix: use proper working directory approach
-      // The issue is that Object Storage is mounted differently in prod vs dev
       const objectStorageDir = path.join('public', 'products');
       const objectStoragePath = path.join(objectStorageDir, fileName);
       
-      
       try {
-        // Ensure Object Storage directory exists
         await fs.promises.mkdir(objectStorageDir, { recursive: true });
+        await fs.promises.writeFile(objectStoragePath, processedImage);
+        console.log(`✅ [UPLOAD] Optimized image saved: ${objectStoragePath}`);
         
-        // Save to Object Storage
-        await fs.promises.writeFile(objectStoragePath, req.file.buffer);
-        console.log(`✅ [UPLOAD DEBUG] File written successfully: ${objectStoragePath}`);
-        
-        // Always return consistent public URL format for production
         const publicUrl = `/products/${fileName}`;
-        console.log("✅ [UPLOAD DEBUG] Returning success response with URL:", publicUrl);
         
         res.json({
           url: publicUrl,
           fileName: fileName,
-          size: req.file.size,
-          mimeType: req.file.mimetype
+          size: processedImage.length,
+          mimeType: 'image/webp'
         });
       } catch (objectStorageError: any) {
-        console.error("❌ [UPLOAD DEBUG] Object Storage upload failed:", objectStorageError);
-        console.error("❌ [UPLOAD DEBUG] Error details:", {
-          message: objectStorageError?.message,
-          code: objectStorageError?.code,
-          errno: objectStorageError?.errno,
-          path: objectStorageError?.path
-        });
+        console.error("❌ [UPLOAD] Object Storage upload failed:", objectStorageError);
         
-        // Only fallback to local in development, fail in production
         if (process.env.NODE_ENV === 'production') {
-          console.error("❌ [UPLOAD DEBUG] Production mode - failing without fallback");
           return res.status(500).json({ 
             message: "Image upload failed - Object Storage not available in production",
             error: objectStorageError?.message || "Unknown error"
@@ -1415,38 +1399,24 @@ ${message || 'Geen aanvullende informatie'}`
         }
         
         // Development fallback to local directory
-        console.log("🔄 [UPLOAD DEBUG] Falling back to local storage (development only)");
-        try {
-          const localDir = path.join(process.cwd(), 'public', 'products');
-          const localPath = path.join(localDir, fileName);
-          console.log("🔍 [UPLOAD DEBUG] Local fallback paths:", { localDir, localPath });
-          
-          // Ensure local directory exists
-          await fs.promises.mkdir(localDir, { recursive: true });
-          console.log("✅ [UPLOAD DEBUG] Local directory created");
-          
-          // Save file locally
-          await fs.promises.writeFile(localPath, req.file.buffer);
-          console.log("✅ [UPLOAD DEBUG] File saved locally");
-          
-          // Return consistent public URL format even for local fallback
-          const publicUrl = `/products/${fileName}`;
-          console.log("✅ [UPLOAD DEBUG] Local fallback success, returning URL:", publicUrl);
-          
-          res.json({
-            url: publicUrl,
-            fileName: fileName,
-            size: req.file.size,
-            mimeType: req.file.mimetype
-          });
-        } catch (localError) {
-          console.error("❌ [UPLOAD DEBUG] Local fallback also failed:", localError);
-          throw localError;
-        }
+        console.log("🔄 [UPLOAD] Falling back to local storage (development only)");
+        const localDir = path.join(process.cwd(), 'public', 'products');
+        const localPath = path.join(localDir, fileName);
+        
+        await fs.promises.mkdir(localDir, { recursive: true });
+        await fs.promises.writeFile(localPath, processedImage);
+        
+        const publicUrl = `/products/${fileName}`;
+        
+        res.json({
+          url: publicUrl,
+          fileName: fileName,
+          size: processedImage.length,
+          mimeType: 'image/webp'
+        });
       }
     } catch (error: any) {
-      console.error("❌ [UPLOAD DEBUG] Outer catch - Final error:", error);
-      console.error("❌ [UPLOAD DEBUG] Error stack:", error?.stack);
+      console.error("❌ [UPLOAD] Error:", error);
       res.status(500).json({ 
         message: "Failed to upload image",
         error: error?.message || "Unknown error"
@@ -1840,6 +1810,123 @@ ${message || 'Geen aanvullende informatie'}`
     } catch (error) {
       console.error("Error deleting blog category:", error);
       res.status(500).json({ message: "Failed to delete blog category" });
+    }
+  });
+
+  // Batch optimize product images - downloads external images, resizes to 1000x1000, converts to WebP
+  app.post('/api/admin/products/optimize-images', isAdmin, async (req: any, res) => {
+    console.log("🔍 [OPTIMIZE] Starting batch image optimization...");
+    
+    try {
+      const fs = await import('fs');
+      const path = await import('path');
+      
+      // Get all products
+      const products = await storage.getProducts();
+      const results = {
+        processed: 0,
+        skipped: 0,
+        failed: 0,
+        details: [] as { productId: string; name: string; status: string; newImages?: string[] }[]
+      };
+      
+      const publicSearchPaths = process.env.PUBLIC_OBJECT_SEARCH_PATHS;
+      const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
+      
+      if (!publicSearchPaths || !bucketId) {
+        return res.status(500).json({ message: "Object Storage not configured" });
+      }
+      
+      const objectStorageDir = path.join('public', 'products');
+      await fs.promises.mkdir(objectStorageDir, { recursive: true });
+      
+      for (const product of products) {
+        const images = product.images || [];
+        if (images.length === 0) {
+          results.skipped++;
+          results.details.push({ productId: product.id, name: product.name, status: 'skipped - no images' });
+          continue;
+        }
+        
+        const newImages: string[] = [];
+        let hasChanges = false;
+        
+        for (let i = 0; i < images.length; i++) {
+          const imageUrl = images[i];
+          
+          // Skip if already a local WebP file
+          if (imageUrl.startsWith('/products/') && imageUrl.endsWith('.webp')) {
+            newImages.push(imageUrl);
+            continue;
+          }
+          
+          try {
+            let imageBuffer: Buffer;
+            
+            // Download external images
+            if (imageUrl.startsWith('http')) {
+              console.log(`📥 [OPTIMIZE] Downloading: ${imageUrl}`);
+              const response = await fetch(imageUrl);
+              if (!response.ok) {
+                console.error(`❌ [OPTIMIZE] Failed to download: ${imageUrl}`);
+                newImages.push(imageUrl); // Keep original
+                continue;
+              }
+              imageBuffer = Buffer.from(await response.arrayBuffer());
+            } else if (imageUrl.startsWith('/products/')) {
+              // Local non-WebP file
+              const localPath = path.join('public', imageUrl);
+              try {
+                imageBuffer = await fs.promises.readFile(localPath);
+              } catch {
+                newImages.push(imageUrl); // Keep original if can't read
+                continue;
+              }
+            } else {
+              newImages.push(imageUrl); // Keep unknown format
+              continue;
+            }
+            
+            // Process image: resize to 1000x1000 and convert to WebP
+            const processedImage = await sharp(imageBuffer)
+              .resize(1000, 1000, {
+                fit: 'contain',
+                background: { r: 255, g: 255, b: 255, alpha: 1 }
+              })
+              .webp({ quality: 85 })
+              .toBuffer();
+            
+            // Save to Object Storage
+            const fileName = `product-${product.id}-${i}-${Date.now()}.webp`;
+            const objectStoragePath = path.join(objectStorageDir, fileName);
+            await fs.promises.writeFile(objectStoragePath, processedImage);
+            
+            const newUrl = `/products/${fileName}`;
+            newImages.push(newUrl);
+            hasChanges = true;
+            console.log(`✅ [OPTIMIZE] Processed: ${product.name} image ${i + 1}`);
+          } catch (imgError) {
+            console.error(`❌ [OPTIMIZE] Error processing image for ${product.name}:`, imgError);
+            newImages.push(imageUrl); // Keep original on error
+          }
+        }
+        
+        if (hasChanges) {
+          // Update product with new images
+          await storage.updateProduct(product.id, { images: newImages });
+          results.processed++;
+          results.details.push({ productId: product.id, name: product.name, status: 'optimized', newImages });
+        } else {
+          results.skipped++;
+          results.details.push({ productId: product.id, name: product.name, status: 'no changes needed' });
+        }
+      }
+      
+      console.log(`✅ [OPTIMIZE] Batch complete: ${results.processed} processed, ${results.skipped} skipped, ${results.failed} failed`);
+      res.json(results);
+    } catch (error: any) {
+      console.error("❌ [OPTIMIZE] Batch optimization failed:", error);
+      res.status(500).json({ message: "Failed to optimize images", error: error?.message });
     }
   });
 

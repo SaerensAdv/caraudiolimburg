@@ -51,7 +51,7 @@ export default function Home() {
   });
 
   const { data: etrustedReviews } = useQuery<{ reviews: Array<{ id: string; rating: number; title: string; comment: string; createdAt: string; customer: { firstName: string; lastName: string } }> }>({
-    queryKey: ["/api/etrusted/service-reviews?limit=6"],
+    queryKey: ["/api/etrusted/service-reviews", { limit: 6 }],
   });
 
   const handleVehicleSelect = (make: string, model: string, year: number) => {

@@ -225,7 +225,7 @@ export function TrustedShopsBadgeLink({ className = '' }: { className?: string }
       </div>
       <div className="flex-1">
         <div className="flex items-center gap-2">
-          <span className="font-semibold text-[#d0a760]">Trusted Shops</span>
+          <span className="font-semibold text-zinc-900">Trusted Shops</span>
           <span className="text-sm text-zinc-600">
             {rating.toFixed(2)}/5
           </span>

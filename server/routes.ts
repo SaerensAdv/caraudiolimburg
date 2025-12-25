@@ -211,7 +211,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     <div class="invoice-info">
       <h2>FACTUUR</h2>
       <p>Factuurnummer: ${order.orderNumber}</p>
-      <p>Datum: ${new Date(order.createdAt).toLocaleDateString('nl-NL')}</p>
+      <p>Datum: ${order.createdAt ? new Date(order.createdAt).toLocaleDateString('nl-NL') : 'N/A'}</p>
     </div>
   </div>
   
@@ -863,6 +863,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.patch('/api/bookings/:id/status', isAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+      const booking = await storage.updateBookingStatus(id, status);
+      res.json(booking);
+    } catch (error) {
+      console.error("Error updating booking status:", error);
+      res.status(500).json({ message: "Failed to update booking status" });
+    }
+  });
+
+  app.patch('/api/orders/:id/status', isAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+      const order = await storage.updateOrderStatus(id, status);
+      res.json(order);
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      res.status(500).json({ message: "Failed to update order status" });
+    }
+  });
+
   // Quote request routes
   app.post('/api/quote-requests', async (req, res) => {
     try {
@@ -882,6 +906,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching quote requests:", error);
       res.status(500).json({ message: "Failed to fetch quote requests" });
+    }
+  });
+
+  app.patch('/api/quote-requests/:id/status', isAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status, responseNotes } = req.body;
+      const quote = await storage.updateQuoteRequest(id, { status, responseNotes });
+      res.json(quote);
+    } catch (error) {
+      console.error("Error updating quote request status:", error);
+      res.status(500).json({ message: "Failed to update quote request status" });
     }
   });
 

@@ -68,7 +68,7 @@ export default function ProductPage() {
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const { isAuthenticated } = useAuth();
   const { addItem: addToGuestCart } = useGuestCart();
 
   useEffect(() => {
@@ -200,7 +200,7 @@ export default function ProductPage() {
         throw new Error("Selecteer eerst een variatie");
       }
       
-      if (user) {
+      if (isAuthenticated) {
         await apiRequest("POST", "/api/cart", {
           productId: product.id,
           quantity,
@@ -217,7 +217,7 @@ export default function ProductPage() {
       }
     },
     onSuccess: () => {
-      if (user) {
+      if (isAuthenticated) {
         queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
       }
       toast({

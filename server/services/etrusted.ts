@@ -131,27 +131,20 @@ class ETrustedService {
     }
 
     try {
-      const token = await this.getAccessToken();
-      
-      const response = await fetch(
-        `${this.API_BASE}/channels/${this.channelId}/aggregate`,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/json',
-          },
-        }
-      );
-
-      if (!response.ok) {
-        console.error('[eTrusted] Failed to fetch aggregate:', response.status);
+      const reviews = await this.getServiceReviews(100);
+      if (reviews.length === 0) {
         return null;
       }
-
-      const data = await response.json() as { rating: number; count: number };
-      return data;
+      
+      const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+      const avgRating = totalRating / reviews.length;
+      
+      return {
+        rating: Math.round(avgRating * 100) / 100,
+        count: reviews.length,
+      };
     } catch (error) {
-      console.error('[eTrusted] Error fetching aggregate:', error);
+      console.error('[eTrusted] Error calculating aggregate:', error);
       return null;
     }
   }

@@ -102,9 +102,24 @@ export const products = pgTable("products", {
   isActive: boolean("is_active").default(true),
   isFeatured: boolean("is_featured").default(false),
   canHaveInstallation: boolean("can_have_installation").default(false),
+  hasVariations: boolean("has_variations").default(false),
   upsellCategoryId: varchar("upsell_category_id").references(() => categories.id),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Product variations (e.g., different storage capacities with different prices)
+export const productVariations = pgTable("product_variations", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  productId: varchar("product_id").notNull().references(() => products.id, { onDelete: 'cascade' }),
+  label: varchar("label").notNull(),
+  sku: varchar("sku"),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  originalPrice: decimal("original_price", { precision: 10, scale: 2 }),
+  stock: integer("stock").default(0),
+  sortOrder: integer("sort_order").default(0),
+  isDefault: boolean("is_default").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 // Product vehicle compatibility
@@ -126,6 +141,7 @@ export const cartItems = pgTable("cart_items", {
   productId: varchar("product_id").notNull().references(() => products.id),
   quantity: integer("quantity").notNull().default(1),
   needsInstallation: boolean("needs_installation").default(false),
+  variationId: varchar("variation_id").references(() => productVariations.id),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -178,6 +194,8 @@ export const orderItems = pgTable("order_items", {
   quantity: integer("quantity").notNull(),
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   needsInstallation: boolean("needs_installation").default(false),
+  variationId: varchar("variation_id").references(() => productVariations.id),
+  variationLabel: varchar("variation_label"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -286,6 +304,7 @@ export const productsRelations = relations(products, ({ one, many }) => ({
     references: [categories.id],
   }),
   compatibility: many(productVehicleCompatibility),
+  variations: many(productVariations),
   cartItems: many(cartItems),
   orderItems: many(orderItems),
 }));
@@ -305,6 +324,13 @@ export const productVehicleCompatibilityRelations = relations(productVehicleComp
   }),
 }));
 
+export const productVariationsRelations = relations(productVariations, ({ one }) => ({
+  product: one(products, {
+    fields: [productVariations.productId],
+    references: [products.id],
+  }),
+}));
+
 export const cartItemsRelations = relations(cartItems, ({ one }) => ({
   user: one(users, {
     fields: [cartItems.userId],
@@ -313,6 +339,10 @@ export const cartItemsRelations = relations(cartItems, ({ one }) => ({
   product: one(products, {
     fields: [cartItems.productId],
     references: [products.id],
+  }),
+  variation: one(productVariations, {
+    fields: [cartItems.variationId],
+    references: [productVariations.id],
   }),
 }));
 
@@ -333,6 +363,10 @@ export const orderItemsRelations = relations(orderItems, ({ one }) => ({
   product: one(products, {
     fields: [orderItems.productId],
     references: [products.id],
+  }),
+  variation: one(productVariations, {
+    fields: [orderItems.variationId],
+    references: [productVariations.id],
   }),
 }));
 
@@ -471,6 +505,11 @@ export const insertProductVehicleCompatibilitySchema = createInsertSchema(produc
   createdAt: true,
 });
 
+export const insertProductVariationSchema = createInsertSchema(productVariations).omit({
+  id: true,
+  createdAt: true,
+});
+
 export const insertBlogCategorySchema = createInsertSchema(blogCategories).omit({
   id: true,
   createdAt: true,
@@ -526,6 +565,9 @@ export type InsertWishlist = z.infer<typeof insertWishlistSchema>;
 
 export type ProductVehicleCompatibility = typeof productVehicleCompatibility.$inferSelect;
 export type InsertProductVehicleCompatibility = z.infer<typeof insertProductVehicleCompatibilitySchema>;
+
+export type ProductVariation = typeof productVariations.$inferSelect;
+export type InsertProductVariation = z.infer<typeof insertProductVariationSchema>;
 
 export type BlogCategory = typeof blogCategories.$inferSelect;
 export type InsertBlogCategory = z.infer<typeof insertBlogCategorySchema>;

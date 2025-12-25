@@ -30,8 +30,10 @@ import {
   Share2,
   X,
   Plus,
-  Minus
+  Minus,
+  CreditCard
 } from "lucide-react";
+import { SiApplepay, SiGooglepay, SiRevolut, SiKlarna } from "react-icons/si";
 import type { Product } from "@shared/schema";
 
 type ProductVariation = {
@@ -644,27 +646,27 @@ export default function ProductPage() {
                     {/* Payment Methods */}
                     <div className="flex flex-wrap items-center gap-2 pt-2">
                       <span className="text-white/40 text-xs">Betaalmethodes:</span>
-                      <div className="flex flex-wrap items-center gap-1">
-                        <div className="bg-white px-1.5 py-0.5 rounded-sm" title="Kaarten (Visa, Mastercard)">
-                          <span className="text-[9px] font-bold text-zinc-700">CARDS</span>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <div className="bg-zinc-800 p-1.5 rounded" title="Kaarten (Visa, Mastercard)">
+                          <CreditCard className="w-4 h-4 text-white" />
                         </div>
-                        <div className="bg-black px-1.5 py-0.5 rounded-sm" title="Apple Pay">
-                          <span className="text-[9px] font-bold text-white"> Pay</span>
+                        <div className="bg-black p-1 rounded" title="Apple Pay">
+                          <SiApplepay className="w-6 h-5 text-white" />
                         </div>
-                        <div className="bg-white px-1.5 py-0.5 rounded-sm" title="Google Pay">
-                          <span className="text-[9px] font-bold text-zinc-700">G Pay</span>
+                        <div className="bg-white p-1 rounded" title="Google Pay">
+                          <SiGooglepay className="w-6 h-5" />
                         </div>
-                        <div className="bg-[#0075EB] px-1.5 py-0.5 rounded-sm" title="Revolut Pay">
-                          <span className="text-[9px] font-bold text-white">Revolut</span>
+                        <div className="bg-black p-1.5 rounded" title="Revolut Pay">
+                          <SiRevolut className="w-4 h-4 text-white" />
                         </div>
-                        <div className="bg-[#005498] px-1.5 py-0.5 rounded-sm" title="Bancontact">
-                          <span className="text-[9px] font-bold text-white">BC</span>
+                        <div className="bg-[#005498] px-1.5 py-1 rounded" title="Bancontact">
+                          <span className="text-[10px] font-bold text-white">BC</span>
                         </div>
-                        <div className="bg-[#CC0066] px-1.5 py-0.5 rounded-sm" title="iDEAL">
-                          <span className="text-[9px] font-bold text-white">iDEAL</span>
+                        <div className="bg-[#CC0066] px-1.5 py-1 rounded" title="iDEAL">
+                          <span className="text-[10px] font-bold text-white">iDEAL</span>
                         </div>
-                        <div className="bg-[#FFB3C7] px-1.5 py-0.5 rounded-sm" title="Klarna">
-                          <span className="text-[9px] font-bold text-[#0A0B09]">Klarna</span>
+                        <div className="bg-[#FFB3C7] p-1 rounded" title="Klarna">
+                          <SiKlarna className="w-5 h-4 text-[#0A0B09]" />
                         </div>
                       </div>
                     </div>

@@ -27,7 +27,7 @@ import {
   Sparkles
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
-import type { Product, Category, Review } from "@shared/schema";
+import type { Product, Category } from "@shared/schema";
 import { ProductAudioSkeleton } from "@/components/AudioSkeletons";
 import { Link } from "wouter";
 
@@ -50,8 +50,8 @@ export default function Home() {
     queryKey: ["/api/categories"],
   });
 
-  const { data: reviews } = useQuery({
-    queryKey: ["/api/reviews", { isPublished: true, isFeatured: true, limit: 6 }],
+  const { data: etrustedReviews } = useQuery<{ reviews: Array<{ id: string; rating: number; title: string; comment: string; createdAt: string; customer: { firstName: string; lastName: string } }> }>({
+    queryKey: ["/api/etrusted/reviews", { limit: 6 }],
   });
 
   const handleVehicleSelect = (make: string, model: string, year: number) => {
@@ -776,26 +776,29 @@ export default function Home() {
           </ScrollReveal>
 
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8" staggerDelay={150}>
-            {(reviews as Review[])?.slice(0, 3).map((review: Review) => (
+            {etrustedReviews?.reviews?.slice(0, 3).map((review) => (
               <Card key={review.id} className="bg-zinc-100 border-zinc-200 rounded-none hover:-translate-y-1 transition-transform duration-300" data-testid={`testimonial-${review.id}`}>
                 <CardContent className="p-6">
                   <div className="flex items-center mb-4">
-                    {[...Array(review.rating)].map((_, i) => (
+                    {[...Array(Math.round(review.rating))].map((_, i) => (
                       <Star key={i} className="w-4 h-4 text-[#d0a760] fill-current" />
                     ))}
                   </div>
-                  <p className="text-zinc-700 mb-6 leading-relaxed">
-                    "{review.content}"
+                  {review.title && (
+                    <p className="text-zinc-900 font-medium mb-2">{review.title}</p>
+                  )}
+                  <p className="text-zinc-700 mb-6 leading-relaxed line-clamp-4">
+                    "{review.comment}"
                   </p>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-[#d0a760]/20 flex items-center justify-center">
                       <User className="w-5 h-5 text-[#d0a760]" />
                     </div>
                     <div>
-                      <p className="text-zinc-900 font-medium text-sm">{review.customerName}</p>
-                      {review.isVerified && (
-                        <p className="text-[#d0a760] text-xs">Geverifieerd</p>
-                      )}
+                      <p className="text-zinc-900 font-medium text-sm">
+                        {review.customer?.firstName || "Klant"} {review.customer?.lastName ? review.customer.lastName.charAt(0) + "." : ""}
+                      </p>
+                      <p className="text-[#d0a760] text-xs">Trusted Shops Geverifieerd</p>
                     </div>
                   </div>
                 </CardContent>

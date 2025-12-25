@@ -1,0 +1,90 @@
+Hieronder staan Flow-ready prompts die je 1-op-1 kunt gebruiken in Google Flow. Ze zijn bewust concreet, technisch correct en consistent, zodat je visueel één sterke productlijn krijgt.
+
+Ik geef je 5 variaties, elk met een duidelijk doel.
+Je kunt ze afzonderlijk draaien of als batch met kleine seed-variaties.
+
+1) Frontale studio productfoto (webshop / hero)
+
+Prompt
+
+High-resolution studio product photo of the Audison Prima APBMW-K4E 2-way component speaker set. Front view showing woofer and tweeter side by side. Neutral light grey background, soft professional studio lighting, sharp focus on cone texture and tweeter dome. Realistic shadows, no text, no branding overlays, ultra-clean commercial product photography style.
+
+Gebruik
+
+Webshop hoofdafbeelding
+
+Hero image categoriepagina
+
+2) Angled premium shot (ads / branding)
+
+Prompt
+
+Premium angled studio shot of the Audison Prima APBMW-K4E car speakers. 45-degree diagonal perspective, dark charcoal background with subtle gradient. Dramatic rim lighting highlighting the aluminium basket, paper cone texture and Tetolon dome tweeter. High contrast, cinematic lighting, luxury audio product photography.
+
+Gebruik
+
+Google Ads visuals
+
+Social ads / banners
+
+3) Exploded / component layout view (technisch & overtuigend)
+
+Prompt
+
+Exploded view product layout of the Audison Prima APBMW-K4E speaker system. Woofer, tweeter, crossover and plug-and-play connectors displayed separately but aligned symmetrically. Clean white background, even studio lighting, technical product presentation style, ultra-sharp details, realistic proportions, no labels or text.
+
+Gebruik
+
+Productdetailpagina
+
+Technische uitleg / comparison content
+
+4) In-car installatie context (BMW OEM look)
+
+Prompt
+
+Realistic in-car installation photo of the Audison Prima APBMW-K4E speakers mounted inside a modern BMW door panel. OEM-style fitment, clean interior, natural daylight, shallow depth of field. Focus on seamless integration and premium finish. Photorealistic automotive lifestyle photography.
+
+Gebruik
+
+Conversie-verhogend beeld (“past perfect in BMW”)
+
+Landingspagina’s
+
+5) Macro detail shots (kwaliteit & materiaal)
+
+Prompt
+
+Extreme close-up macro photo of the Audison Prima APBMW-K4E speaker components. Focus on Tetolon dome tweeter and paper cone texture with water-repellent coating. Ultra-sharp detail, soft background blur, professional macro photography lighting, realistic materials, premium audio engineering look.
+
+Gebruik
+
+Detail sliders
+
+Blog / product storytelling
+
+Aanbevolen Flow-instellingen (praktisch)
+
+Aspect ratios
+
+1:1 → webshop
+
+4:5 → ads
+
+16:9 → banners / headers
+
+Style consistency
+
+Gebruik dezelfde prompt + andere seed
+
+Niet telkens compleet herschrijven
+
+Negatieve hints (indien mogelijk in Flow)
+
+no people
+
+no text
+
+no watermark
+
+no logo distortion

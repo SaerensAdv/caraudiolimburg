@@ -11,6 +11,7 @@ import {
   bookings,
   quoteRequests,
   productVehicleCompatibility,
+  productVariations,
   wishlists,
   blogPosts,
   blogCategories,
@@ -46,6 +47,8 @@ import {
   type InsertBlogCategory,
   type ProductVehicleCompatibility,
   type InsertProductVehicleCompatibility,
+  type ProductVariation,
+  type InsertProductVariation,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, or, desc, asc, like, inArray } from "drizzle-orm";
@@ -178,6 +181,14 @@ export interface IStorage {
   setProductVehicleCompatibility(productId: string, compatibility: InsertProductVehicleCompatibility[]): Promise<ProductVehicleCompatibility[]>;
   clearProductVehicleCompatibility(productId: string): Promise<void>;
   getAllVehicleModels(): Promise<{ id: string; name: string; makeId: string }[]>;
+
+  // Product variation operations
+  getProductVariations(productId: string): Promise<ProductVariation[]>;
+  getProductVariation(id: string): Promise<ProductVariation | undefined>;
+  createProductVariation(variation: InsertProductVariation): Promise<ProductVariation>;
+  updateProductVariation(id: string, updates: Partial<InsertProductVariation>): Promise<ProductVariation | undefined>;
+  deleteProductVariation(id: string): Promise<boolean>;
+  deleteProductVariationsByProductId(productId: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -328,6 +339,9 @@ export class DatabaseStorage implements IStorage {
     // Delete product vehicle compatibility records
     await db.delete(productVehicleCompatibility).where(eq(productVehicleCompatibility.productId, id));
     
+    // Delete product variations (cascade should handle this, but be explicit)
+    await db.delete(productVariations).where(eq(productVariations.productId, id));
+    
     // Delete cart items that reference this product
     await db.delete(cartItems).where(eq(cartItems.productId, id));
     
@@ -393,33 +407,48 @@ export class DatabaseStorage implements IStorage {
         productId: cartItems.productId,
         quantity: cartItems.quantity,
         needsInstallation: cartItems.needsInstallation,
+        variationId: cartItems.variationId,
         createdAt: cartItems.createdAt,
         product: {
           id: products.id,
           name: products.name,
           price: products.price,
           images: products.images,
+          hasVariations: products.hasVariations,
+        },
+        variation: {
+          id: productVariations.id,
+          label: productVariations.label,
+          price: productVariations.price,
+          originalPrice: productVariations.originalPrice,
+          stock: productVariations.stock,
         }
       })
       .from(cartItems)
       .leftJoin(products, eq(cartItems.productId, products.id))
+      .leftJoin(productVariations, eq(cartItems.variationId, productVariations.id))
       .where(eq(cartItems.userId, userId)) as any;
   }
 
   async addToCart(cartItem: InsertCartItem): Promise<CartItem> {
-    // Check if item already exists
+    // Check if item already exists with same product and variation
+    const conditions = [
+      eq(cartItems.userId, cartItem.userId),
+      eq(cartItems.productId, cartItem.productId)
+    ];
+    
+    // For products with variations, also match on variationId
+    if (cartItem.variationId) {
+      conditions.push(eq(cartItems.variationId, cartItem.variationId));
+    }
+
     const [existing] = await db
       .select()
       .from(cartItems)
-      .where(
-        and(
-          eq(cartItems.userId, cartItem.userId),
-          eq(cartItems.productId, cartItem.productId)
-        )
-      );
+      .where(and(...conditions));
 
-    if (existing) {
-      // Update quantity
+    // Only update quantity if variationId matches (or both are null)
+    if (existing && existing.variationId === (cartItem.variationId || null)) {
       const [updated] = await db
         .update(cartItems)
         .set({ quantity: existing.quantity + (cartItem.quantity || 1) })
@@ -914,6 +943,54 @@ export class DatabaseStorage implements IStorage {
       .select({ id: vehicleModels.id, name: vehicleModels.name, makeId: vehicleModels.makeId })
       .from(vehicleModels)
       .orderBy(asc(vehicleModels.name));
+  }
+
+  // Product variation operations
+  async getProductVariations(productId: string): Promise<ProductVariation[]> {
+    return await db
+      .select()
+      .from(productVariations)
+      .where(eq(productVariations.productId, productId))
+      .orderBy(asc(productVariations.sortOrder), asc(productVariations.createdAt));
+  }
+
+  async getProductVariation(id: string): Promise<ProductVariation | undefined> {
+    const [variation] = await db
+      .select()
+      .from(productVariations)
+      .where(eq(productVariations.id, id));
+    return variation;
+  }
+
+  async createProductVariation(variation: InsertProductVariation): Promise<ProductVariation> {
+    const [newVariation] = await db
+      .insert(productVariations)
+      .values(variation)
+      .returning();
+    return newVariation;
+  }
+
+  async updateProductVariation(id: string, updates: Partial<InsertProductVariation>): Promise<ProductVariation | undefined> {
+    const [updated] = await db
+      .update(productVariations)
+      .set(updates)
+      .where(eq(productVariations.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteProductVariation(id: string): Promise<boolean> {
+    const result = await db
+      .delete(productVariations)
+      .where(eq(productVariations.id, id))
+      .returning();
+    return result.length > 0;
+  }
+
+  async deleteProductVariationsByProductId(productId: string): Promise<void> {
+    await db
+      .delete(productVariations)
+      .where(eq(productVariations.productId, productId));
   }
 }
 

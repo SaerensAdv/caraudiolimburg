@@ -21,6 +21,7 @@ import {
   insertReviewSchema,
   insertBlogPostSchema,
   insertBlogCategorySchema,
+  insertProductVariationSchema,
 } from "@shared/schema";
 
 let stripe: Stripe | null = null;
@@ -454,6 +455,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!product) {
         return res.status(404).json({ message: "Product not found" });
       }
+      
+      // Include variations if the product has variations
+      if (product.hasVariations) {
+        const variations = await storage.getProductVariations(product.id);
+        return res.json({ ...product, variations });
+      }
+      
       res.json(product);
     } catch (error) {
       console.error("Error fetching product:", error);
@@ -576,6 +584,91 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Product variation routes
+  app.get('/api/products/:productId/variations', async (req, res) => {
+    try {
+      const productId = req.params.productId;
+      const variations = await storage.getProductVariations(productId);
+      res.json(variations);
+    } catch (error) {
+      console.error("Error fetching product variations:", error);
+      res.status(500).json({ message: "Failed to fetch product variations" });
+    }
+  });
+
+  app.post('/api/products/:productId/variations', isAdmin, async (req, res) => {
+    try {
+      const productId = req.params.productId;
+      
+      // Verify product exists
+      const product = await storage.getProduct(productId);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      
+      const variationData = insertProductVariationSchema.parse({
+        ...req.body,
+        productId,
+      });
+      
+      const variation = await storage.createProductVariation(variationData);
+      
+      // Update product to have variations flag
+      if (!product.hasVariations) {
+        await storage.updateProduct(productId, { hasVariations: true });
+      }
+      
+      res.json(variation);
+    } catch (error) {
+      console.error("Error creating product variation:", error);
+      res.status(500).json({ message: "Failed to create product variation" });
+    }
+  });
+
+  app.put('/api/products/:productId/variations/:variationId', isAdmin, async (req, res) => {
+    try {
+      const { productId, variationId } = req.params;
+      
+      // Verify variation exists and belongs to product
+      const existingVariation = await storage.getProductVariation(variationId);
+      if (!existingVariation || existingVariation.productId !== productId) {
+        return res.status(404).json({ message: "Variation not found" });
+      }
+      
+      const updates = req.body;
+      const variation = await storage.updateProductVariation(variationId, updates);
+      res.json(variation);
+    } catch (error) {
+      console.error("Error updating product variation:", error);
+      res.status(500).json({ message: "Failed to update product variation" });
+    }
+  });
+
+  app.delete('/api/products/:productId/variations/:variationId', isAdmin, async (req, res) => {
+    try {
+      const { productId, variationId } = req.params;
+      
+      // Verify variation exists and belongs to product
+      const existingVariation = await storage.getProductVariation(variationId);
+      if (!existingVariation || existingVariation.productId !== productId) {
+        return res.status(404).json({ message: "Variation not found" });
+      }
+      
+      await storage.deleteProductVariation(variationId);
+      
+      // Check if product has any remaining variations
+      const remainingVariations = await storage.getProductVariations(productId);
+      if (remainingVariations.length === 0) {
+        await storage.updateProduct(productId, { hasVariations: false });
+      }
+      
+      res.json({ message: "Variation deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting product variation:", error);
+      res.status(500).json({ message: "Failed to delete product variation" });
+    }
+  });
+
   // Get all vehicle models (for admin panel)
   app.get('/api/vehicle-models', async (req, res) => {
     try {
@@ -657,6 +750,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const userId = req.user.id;
+      const { productId, variationId } = req.body;
+      
+      // Validate product exists
+      const product = await storage.getProduct(productId);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      
+      // If product has variations, variationId must be provided and valid
+      if (product.hasVariations) {
+        if (!variationId) {
+          return res.status(400).json({ message: "Variation is required for this product" });
+        }
+        const variation = await storage.getProductVariation(variationId);
+        if (!variation || variation.productId !== productId) {
+          return res.status(400).json({ message: "Invalid variation for this product" });
+        }
+      }
+      
       const cartItemData = insertCartItemSchema.parse({
         ...req.body,
         userId,
@@ -912,12 +1024,15 @@ ${message || 'Geen aanvullende informatie'}`
 
           // Create order items
           for (const cartItem of cartItems) {
+            const cartItemAny = cartItem as any;
             await storage.createOrderItem({
               orderId: order.id,
               productId: cartItem.productId,
               quantity: cartItem.quantity,
-              price: (await storage.getProduct(cartItem.productId))?.price || "0",
+              price: cartItemAny.variation?.price || (await storage.getProduct(cartItem.productId))?.price || "0",
               needsInstallation: cartItem.needsInstallation,
+              variationId: cartItem.variationId || null,
+              variationLabel: cartItemAny.variation?.label || null,
             });
           }
 
@@ -1012,12 +1127,15 @@ ${message || 'Geen aanvullende informatie'}`
 
       // Create order items
       for (const cartItem of cartItems) {
+        const cartItemAny = cartItem as any;
         await storage.createOrderItem({
           orderId: order.id,
           productId: cartItem.productId,
           quantity: cartItem.quantity,
-          price: (cartItem as any).product?.price || "0",
+          price: cartItemAny.variation?.price || cartItemAny.product?.price || "0",
           needsInstallation: cartItem.needsInstallation,
+          variationId: cartItem.variationId || null,
+          variationLabel: cartItemAny.variation?.label || null,
         });
 
         // If installation is needed, create a booking placeholder
@@ -1136,13 +1254,16 @@ ${message || 'Geen aanvullende informatie'}`
 
       // Create order items
       for (const cartItem of cartItems) {
+        const cartItemAny = cartItem as any;
         const product = await storage.getProduct(cartItem.productId);
         await storage.createOrderItem({
           orderId: order.id,
           productId: cartItem.productId,
           quantity: cartItem.quantity,
-          price: product?.price || "0",
+          price: cartItemAny.variation?.price || product?.price || "0",
           needsInstallation: cartItem.needsInstallation,
+          variationId: cartItem.variationId || null,
+          variationLabel: cartItemAny.variation?.label || null,
         });
 
         // If installation is needed, create a booking placeholder

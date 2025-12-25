@@ -159,11 +159,11 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
       <Card className={`bg-zinc-900 border-zinc-800 hover:border-[#d0a760]/50 transition-all duration-300 ease-out group overflow-hidden rounded-none hover:-translate-y-1 hover:shadow-xl hover:shadow-black/50 h-full flex flex-col ${featured ? 'animated-gold-border' : ''}`} data-testid={`product-card-${product.id}`}>
         <Link href={`/product/${product.slug}`}>
           <div className="relative overflow-hidden">
-            <div className="aspect-square bg-zinc-800 flex items-center justify-center p-8">
+            <div className="aspect-square bg-white flex items-center justify-center">
               <img 
                 src={product.images?.[product.primaryImageIndex || 0] ? getImageSrc(product.images[product.primaryImageIndex || 0]) : carAudioLogo} 
                 alt={product.name}
-                className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 onError={(e) => {
                   e.currentTarget.src = carAudioLogo;
                 }}

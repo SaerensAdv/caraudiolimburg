@@ -1346,13 +1346,23 @@ ${message || 'Geen aanvullende informatie'}`
       const fs = await import('fs');
       const path = await import('path');
 
-      // Process image: resize to 1000x1000 and convert to WebP
-      const processedImage = await sharp(req.file.buffer)
-        .resize(1000, 1000, {
-          fit: 'contain',
-          background: { r: 255, g: 255, b: 255, alpha: 1 }
-        })
-        .webp({ quality: 85 })
+      // Process image: resize to max 1000x1000 (don't upscale) and convert to WebP
+      const metadata = await sharp(req.file.buffer).metadata();
+      const maxSize = 1000;
+      
+      // Only resize if image is larger than maxSize, otherwise keep original dimensions
+      const needsResize = (metadata.width && metadata.width > maxSize) || (metadata.height && metadata.height > maxSize);
+      
+      let sharpInstance = sharp(req.file.buffer);
+      if (needsResize) {
+        sharpInstance = sharpInstance.resize(maxSize, maxSize, {
+          fit: 'inside',
+          withoutEnlargement: true
+        });
+      }
+      
+      const processedImage = await sharpInstance
+        .webp({ quality: 90 })
         .toBuffer();
       
       console.log("✅ [UPLOAD] Image optimized: 1000x1000 WebP, size:", processedImage.length, "bytes");
@@ -1887,13 +1897,21 @@ ${message || 'Geen aanvullende informatie'}`
               continue;
             }
             
-            // Process image: resize to 1000x1000 and convert to WebP
-            const processedImage = await sharp(imageBuffer)
-              .resize(1000, 1000, {
-                fit: 'contain',
-                background: { r: 255, g: 255, b: 255, alpha: 1 }
-              })
-              .webp({ quality: 85 })
+            // Process image: resize to max 1000x1000 (don't upscale small images) and convert to WebP
+            const metadata = await sharp(imageBuffer).metadata();
+            const maxSize = 1000;
+            
+            let sharpInstance = sharp(imageBuffer);
+            // Only resize if image is larger than maxSize
+            if ((metadata.width && metadata.width > maxSize) || (metadata.height && metadata.height > maxSize)) {
+              sharpInstance = sharpInstance.resize(maxSize, maxSize, {
+                fit: 'inside',
+                withoutEnlargement: true
+              });
+            }
+            
+            const processedImage = await sharpInstance
+              .webp({ quality: 90 })
               .toBuffer();
             
             // Save to Object Storage

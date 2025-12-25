@@ -8,11 +8,9 @@ interface CinematicIntroProps {
 
 export default function CinematicIntro({ onComplete }: CinematicIntroProps) {
   const [phase, setPhase] = useState(0);
-  const [isSkipping, setIsSkipping] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    if (isSkipping) return;
-
     const timings = [3000, 3500, 3500, 3500, 4000, 2500];
     
     if (phase < 6) {
@@ -21,14 +19,28 @@ export default function CinematicIntro({ onComplete }: CinematicIntroProps) {
       }, timings[phase] || 3000);
       return () => clearTimeout(timer);
     } else {
-      onComplete();
+      setTimeout(() => {
+        setIsVisible(false);
+        setTimeout(onComplete, 300);
+      }, 500);
     }
-  }, [phase, isSkipping, onComplete]);
+  }, [phase, onComplete]);
 
   const handleSkip = () => {
-    setIsSkipping(true);
-    onComplete();
+    setIsVisible(false);
+    setTimeout(onComplete, 150);
   };
+
+  if (!isVisible) {
+    return (
+      <motion.div
+        className="fixed inset-0 z-[100] bg-black"
+        initial={{ opacity: 1 }}
+        animate={{ opacity: 0 }}
+        transition={{ duration: 0.15 }}
+      />
+    );
+  }
 
   return (
     <AnimatePresence>
@@ -36,7 +48,7 @@ export default function CinematicIntro({ onComplete }: CinematicIntroProps) {
         className="fixed inset-0 z-[100] bg-black overflow-hidden"
         initial={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 1 }}
+        transition={{ duration: 0.3 }}
       >
         <button
           onClick={handleSkip}

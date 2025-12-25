@@ -220,7 +220,7 @@ export function TrustedShopsBadgeLink({ className = '' }: { className?: string }
       className={`flex items-center gap-3 p-4 bg-zinc-50 border border-zinc-200 rounded-none hover:bg-zinc-100 transition-colors ${className}`}
       data-testid="trusted-shops-badge-link"
     >
-      <div className="w-12 h-12 bg-[#FFDC0F] flex items-center justify-center p-2">
+      <div className="w-12 h-12 flex items-center justify-center p-2 bg-[#d0a760]">
         <img 
           src="https://www.trstd.com/nl-nl/wp-content/uploads/sites/6/2025/06/icon-trusted-shops-product-certification-white.svg" 
           alt="Trusted Shops" 

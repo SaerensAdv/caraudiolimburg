@@ -2361,6 +2361,9 @@ ${message || 'Geen aanvullende informatie'}`
         return res.json({ rating: null, count: 0, enabled: false });
       }
       const aggregate = await etrustedService.getAggregatedRating();
+      if (!aggregate) {
+        return res.json({ rating: null, count: 0, enabled: false });
+      }
       res.json({ ...aggregate, enabled: true });
     } catch (error) {
       console.error("Error fetching eTrusted aggregate:", error);

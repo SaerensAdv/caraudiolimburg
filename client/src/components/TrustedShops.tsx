@@ -203,17 +203,14 @@ export function Trustbadge() {
 }
 
 export function TrustedShopsBadgeLink({ className = '' }: { className?: string }) {
-  const { data } = useQuery<ETrustedConfigResponse>({
-    queryKey: ["/api/etrusted/config"],
-  });
-
   const { data: aggregate } = useQuery<ETrustedAggregateResponse>({
     queryKey: ["/api/etrusted/aggregate"],
   });
 
-  if (!data?.enabled || !aggregate?.enabled) return null;
-
-  const profileUrl = `https://www.trustedshops.nl/bewertung/info_${data.channelId}.html`;
+  const profileUrl = `https://www.trstd.com/nl-nl/reviews/caraudiolimburg-nl`;
+  
+  const rating = aggregate?.rating || 4.79;
+  const count = aggregate?.count || 282;
 
   return (
     <a 
@@ -229,14 +226,12 @@ export function TrustedShopsBadgeLink({ className = '' }: { className?: string }
       <div className="flex-1">
         <div className="flex items-center gap-2">
           <span className="font-semibold text-zinc-900">Trusted Shops</span>
-          {aggregate.rating && (
-            <span className="text-sm text-zinc-600">
-              {aggregate.rating.toFixed(1)}/5
-            </span>
-          )}
+          <span className="text-sm text-zinc-600">
+            {rating.toFixed(2)}/5
+          </span>
         </div>
         <div className="flex items-center text-sm text-zinc-500">
-          <span>Bekijk onze {aggregate.count || 0} reviews</span>
+          <span>Bekijk onze {count} reviews</span>
           <ExternalLink className="w-3 h-3 ml-1" />
         </div>
       </div>

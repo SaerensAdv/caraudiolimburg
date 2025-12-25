@@ -30,7 +30,6 @@ import { useState, useRef, useEffect } from "react";
 import type { Product, Category, Review } from "@shared/schema";
 import { ProductAudioSkeleton } from "@/components/AudioSkeletons";
 import { Link } from "wouter";
-import { TrustedShopsReviews, TrustedShopsAggregateRating } from "@/components/TrustedShops";
 
 import heroImage from "@assets/C5025.00_33_41_03.Still050-2048x1152_1757024504641.jpg";
 import studioImage1 from "@assets/C5025.00_06_16_04.Still024-1-2048x1152_1757024538840.jpg";
@@ -773,16 +772,10 @@ export default function Home() {
               <p className="text-zinc-600 text-lg">
                 Dit is waarom meer dan 500 klanten ons hun vertrouwen gaven
               </p>
-              <div className="flex justify-center mt-6">
-                <TrustedShopsAggregateRating variant="compact" />
-              </div>
             </div>
           </ScrollReveal>
 
-          <TrustedShopsReviews limit={3} />
-          
-          {/* Fallback to local reviews if eTrusted not available */}
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8" staggerDelay={150}>
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8" staggerDelay={150}>
             {(reviews as Review[])?.slice(0, 3).map((review: Review) => (
               <Card key={review.id} className="bg-zinc-100 border-zinc-200 rounded-none hover:-translate-y-1 transition-transform duration-300" data-testid={`testimonial-${review.id}`}>
                 <CardContent className="p-6">

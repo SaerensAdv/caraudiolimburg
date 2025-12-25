@@ -351,9 +351,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Transition: Black to White */}
-      <SectionDivider variant="angle" fromColor="black" toColor="white" />
-
       {/* Featured Products - WHITE */}
       <section className="py-24 md:py-32 bg-white">
         <div className="container px-8 md:px-16 lg:px-24 mx-auto">

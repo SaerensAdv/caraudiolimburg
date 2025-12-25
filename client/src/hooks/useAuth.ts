@@ -7,17 +7,20 @@ export function useAuth() {
     retry: false,
     refetchOnWindowFocus: false,
     refetchOnMount: true,
-    staleTime: 2 * 60 * 1000, // 2 minutes
-    gcTime: 5 * 60 * 1000,   // 5 minutes
+    staleTime: 0, // Always refetch to check auth status
+    gcTime: 0,    // Don't cache auth data
     networkMode: "always",
   });
 
   // Don't show loading forever - if there's an error, consider auth check complete
   const effectiveLoading = isLoading && !error;
 
+  // If there's an error (like 401), user is not authenticated
+  const isAuthenticated = !!user && !error;
+
   return {
-    user,
+    user: error ? undefined : user,
     isLoading: effectiveLoading,
-    isAuthenticated: !!user,
+    isAuthenticated,
   };
 }

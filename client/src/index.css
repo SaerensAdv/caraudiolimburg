@@ -752,11 +752,11 @@
   }
 }
 
-/* Trusted Shops Badge - Force Right Position */
+/* Trusted Shops Badge - Force Left Position (chat is on right) */
 #trustbadge-container-98add9a730774c6e8c0bfb5b84be17ce,
 [id^="trustbadge-container"],
 .etrusted-widget,
 div[data-widget="trustbadge"] {
-  left: auto !important;
-  right: 20px !important;
+  right: auto !important;
+  left: 20px !important;
 }

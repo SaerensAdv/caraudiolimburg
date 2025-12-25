@@ -2,24 +2,24 @@ import { useQuery } from "@tanstack/react-query";
 import type { User } from "@shared/schema";
 
 export function useAuth() {
-  const { data: user, isLoading, error } = useQuery<User>({
+  const { data: user, isLoading, error } = useQuery<User | null>({
     queryKey: ["/api/auth/user"],
     retry: false,
     refetchOnWindowFocus: false,
     refetchOnMount: true,
-    staleTime: 0, // Always refetch to check auth status
-    gcTime: 0,    // Don't cache auth data
+    staleTime: 0,
+    gcTime: 0,
     networkMode: "always",
   });
 
-  // Don't show loading forever - if there's an error, consider auth check complete
   const effectiveLoading = isLoading && !error;
-
-  // If there's an error (like 401), user is not authenticated
-  const isAuthenticated = !!user && !error;
+  
+  // User is authenticated only if we have actual user data (not null, not undefined)
+  // The queryFn returns null on 401, so we must check for null explicitly
+  const isAuthenticated = user != null && !error;
 
   return {
-    user: error ? undefined : user,
+    user: (error || user === null) ? undefined : user,
     isLoading: effectiveLoading,
     isAuthenticated,
   };

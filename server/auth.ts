@@ -141,6 +141,17 @@ export function setupAuth(app: Express) {
 
   // Auth routes
 
+  // Main login route - redirects to Google OAuth or login page
+  app.get('/api/login', (req, res) => {
+    if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+      // Redirect to Google OAuth
+      res.redirect('/api/auth/google');
+    } else {
+      // Redirect to login page
+      res.redirect('/login');
+    }
+  });
+
   // Google OAuth
   app.get('/api/auth/google',
     passport.authenticate('google', { scope: ['profile', 'email'] })

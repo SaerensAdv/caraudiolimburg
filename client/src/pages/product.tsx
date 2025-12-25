@@ -194,13 +194,13 @@ export default function ProductPage() {
   }, [product]);
 
   const addToCartMutation = useMutation({
-    mutationFn: async ({ needsInstallation }: { needsInstallation: boolean }) => {
+    mutationFn: async ({ needsInstallation, authenticated }: { needsInstallation: boolean; authenticated: boolean }) => {
       if (!product) return;
       if (product.hasVariations && !selectedVariation) {
         throw new Error("Selecteer eerst een variatie");
       }
       
-      if (isAuthenticated) {
+      if (authenticated) {
         await apiRequest("POST", "/api/cart", {
           productId: product.id,
           quantity,
@@ -216,8 +216,8 @@ export default function ProductPage() {
         });
       }
     },
-    onSuccess: () => {
-      if (isAuthenticated) {
+    onSuccess: (_, variables) => {
+      if (variables.authenticated) {
         queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
       }
       toast({
@@ -713,7 +713,7 @@ export default function ProductPage() {
                     <Button
                       size="lg"
                       className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none h-14 text-base font-medium"
-                      onClick={() => addToCartMutation.mutate({ needsInstallation: false })}
+                      onClick={() => addToCartMutation.mutate({ needsInstallation: false, authenticated: isAuthenticated })}
                       disabled={!canAddToCart || addToCartMutation.isPending}
                       data-testid="button-add-to-cart"
                     >
@@ -725,7 +725,7 @@ export default function ProductPage() {
                       variant="outline"
                       size="lg"
                       className="border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760]/10 rounded-none h-14 text-base font-medium flex flex-col items-center justify-center py-2"
-                      onClick={() => addToCartMutation.mutate({ needsInstallation: true })}
+                      onClick={() => addToCartMutation.mutate({ needsInstallation: true, authenticated: isAuthenticated })}
                       disabled={!canAddToCart || addToCartMutation.isPending}
                       data-testid="button-add-with-installation"
                     >
@@ -1061,7 +1061,7 @@ export default function ProductPage() {
           <div className="grid grid-cols-2 gap-2">
             <Button
               className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 active:scale-[0.98] rounded-none h-12 text-sm font-semibold transition-transform"
-              onClick={() => addToCartMutation.mutate({ needsInstallation: false })}
+              onClick={() => addToCartMutation.mutate({ needsInstallation: false, authenticated: isAuthenticated })}
               disabled={!canAddToCart || addToCartMutation.isPending}
               data-testid="mobile-button-add-to-cart"
             >
@@ -1072,7 +1072,7 @@ export default function ProductPage() {
             <Button
               variant="outline"
               className="border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760]/10 active:scale-[0.98] rounded-none h-12 text-sm font-semibold transition-transform flex flex-col items-center justify-center py-1"
-              onClick={() => addToCartMutation.mutate({ needsInstallation: true })}
+              onClick={() => addToCartMutation.mutate({ needsInstallation: true, authenticated: isAuthenticated })}
               disabled={!canAddToCart || addToCartMutation.isPending}
               data-testid="mobile-button-add-with-installation"
             >

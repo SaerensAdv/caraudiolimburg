@@ -34,6 +34,20 @@ import {
 } from "lucide-react";
 import type { Product } from "@shared/schema";
 
+type ProductVariation = {
+  id: string;
+  label: string;
+  price: string;
+  originalPrice?: string | null;
+  stock: number | null;
+  sortOrder: number | null;
+  isDefault: boolean | null;
+};
+
+type ProductWithVariations = Product & {
+  variations?: ProductVariation[];
+};
+
 export default function ProductPage() {
   const { slug } = useParams();
   const [, navigate] = useLocation();
@@ -45,6 +59,7 @@ export default function ProductPage() {
   const [isMobile, setIsMobile] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [selectedVariation, setSelectedVariation] = useState<ProductVariation | null>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -100,7 +115,7 @@ export default function ProductPage() {
     }
   };
 
-  const { data: product, isLoading } = useQuery<Product>({
+  const { data: product, isLoading } = useQuery<ProductWithVariations>({
     queryKey: ["/api/products", slug],
     enabled: !!slug,
   });
@@ -115,6 +130,16 @@ export default function ProductPage() {
   const filteredRelatedProducts = relatedProducts
     .filter(p => p.id !== product?.id)
     .slice(0, 4);
+
+  // Initialize default variation when product loads
+  useEffect(() => {
+    if (product?.hasVariations && product.variations && product.variations.length > 0) {
+      const defaultVariation = product.variations.find(v => v.isDefault) || product.variations[0];
+      setSelectedVariation(defaultVariation);
+    } else {
+      setSelectedVariation(null);
+    }
+  }, [product?.id, product?.hasVariations, product?.variations]);
 
   // SEO: Update page title and meta tags - moved before early returns
   useEffect(() => {
@@ -164,10 +189,14 @@ export default function ProductPage() {
   const addToCartMutation = useMutation({
     mutationFn: async ({ needsInstallation }: { needsInstallation: boolean }) => {
       if (!product) return;
+      if (product.hasVariations && !selectedVariation) {
+        throw new Error("Selecteer eerst een variatie");
+      }
       await apiRequest("POST", "/api/cart", {
         productId: product.id,
         quantity,
         needsInstallation,
+        variationId: selectedVariation?.id || null,
       });
     },
     onSuccess: () => {
@@ -247,11 +276,23 @@ export default function ProductPage() {
     );
   }
 
-  const currentPrice = parseFloat(product.price);
-  const originalPrice = product.originalPrice ? parseFloat(product.originalPrice) : null;
+  // Use variation price if product has variations and a variation is selected
+  const currentPrice = product.hasVariations && selectedVariation 
+    ? parseFloat(selectedVariation.price) 
+    : parseFloat(product.price);
+  const originalPrice = product.hasVariations && selectedVariation 
+    ? (selectedVariation.originalPrice ? parseFloat(selectedVariation.originalPrice) : null)
+    : (product.originalPrice ? parseFloat(product.originalPrice) : null);
   const discount = originalPrice ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100) : null;
   const images = product.images || [];
   const installationPrice = product.installationPrice ? parseFloat(product.installationPrice) : null;
+  
+  // Determine stock based on variation or product
+  const effectiveStock = product.hasVariations && selectedVariation 
+    ? selectedVariation.stock 
+    : product.stock;
+  const isInStock = effectiveStock !== null && effectiveStock > 0;
+  const canAddToCart = product.hasVariations ? (selectedVariation && isInStock) : isInStock;
 
   // JSON-LD Product Schema
   const productJsonLd = {
@@ -515,6 +556,50 @@ export default function ProductPage() {
                   <span className="text-white/40 text-sm">4.8 (24 reviews)</span>
                 </div>
 
+                {/* Variation Selector */}
+                {product.hasVariations && product.variations && product.variations.length > 0 && (
+                  <div className="py-4 border-b border-white/10" data-testid="variation-selector">
+                    <p className="text-white/60 text-sm mb-3">Kies een optie:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {product.variations
+                        .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+                        .map((variation) => {
+                          const variationStock = variation.stock;
+                          const isOutOfStock = variationStock === null || variationStock <= 0;
+                          const isSelected = selectedVariation?.id === variation.id;
+                          
+                          return (
+                            <button
+                              key={variation.id}
+                              onClick={() => setSelectedVariation(variation)}
+                              disabled={isOutOfStock}
+                              className={`
+                                min-h-[44px] px-4 py-2 border-2 transition-all duration-200
+                                ${isSelected 
+                                  ? 'border-[#d0a760] bg-[#d0a760]/10 text-white' 
+                                  : 'border-zinc-700 bg-zinc-800 text-white/80 hover:border-zinc-500'
+                                }
+                                ${isOutOfStock 
+                                  ? 'opacity-40 cursor-not-allowed line-through' 
+                                  : 'cursor-pointer'
+                                }
+                              `}
+                              data-testid={`variation-${variation.id}`}
+                            >
+                              <span className="font-medium">{variation.label}</span>
+                              <span className="block text-xs text-white/50 mt-0.5">
+                                €{parseFloat(variation.price).toFixed(0)}
+                              </span>
+                            </button>
+                          );
+                        })}
+                    </div>
+                    {product.hasVariations && !selectedVariation && (
+                      <p className="text-orange-400 text-xs mt-2">Selecteer een optie om door te gaan</p>
+                    )}
+                  </div>
+                )}
+
                 {/* Price - Mobile compact, Desktop full */}
                 <div className="py-4 md:py-6 border-y border-white/10" data-testid="product-pricing">
                   <div className="flex items-baseline gap-3 md:gap-4 mb-2 md:mb-3">
@@ -535,7 +620,7 @@ export default function ProductPage() {
                   )}
 
                   <div className="mt-3 md:mt-4 space-y-3">
-                    {product.stock && product.stock > 0 ? (
+                    {isInStock ? (
                       <div className="flex flex-col gap-1">
                         <span className="inline-flex items-center gap-2 text-green-500 text-sm font-medium">
                           <span className="w-2 h-2 bg-green-500 animate-pulse" />
@@ -549,7 +634,9 @@ export default function ProductPage() {
                     ) : (
                       <span className="inline-flex items-center gap-2 text-orange-500 text-sm">
                         <Clock className="w-4 h-4" />
-                        Op aanvraag leverbaar (2-5 werkdagen)
+                        {product.hasVariations && !selectedVariation 
+                          ? "Selecteer een optie" 
+                          : "Niet op voorraad"}
                       </span>
                     )}
                     
@@ -592,7 +679,7 @@ export default function ProductPage() {
                       </span>
                       <button
                         onClick={() => setQuantity(quantity + 1)}
-                        disabled={!product.stock || quantity >= product.stock}
+                        disabled={effectiveStock === null || quantity >= effectiveStock}
                         className="p-3 text-white/60 hover:text-white hover:bg-white/5 disabled:opacity-30 transition-colors"
                         data-testid="button-increase-quantity"
                       >
@@ -606,7 +693,7 @@ export default function ProductPage() {
                       size="lg"
                       className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none h-14 text-base font-medium"
                       onClick={() => addToCartMutation.mutate({ needsInstallation: false })}
-                      disabled={!product.stock || product.stock <= 0 || addToCartMutation.isPending}
+                      disabled={!canAddToCart || addToCartMutation.isPending}
                       data-testid="button-add-to-cart"
                     >
                       <ShoppingCart className="w-5 h-5 mr-2" />
@@ -618,7 +705,7 @@ export default function ProductPage() {
                       size="lg"
                       className="border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760]/10 rounded-none h-14 text-base font-medium flex flex-col items-center justify-center py-2"
                       onClick={() => addToCartMutation.mutate({ needsInstallation: true })}
-                      disabled={!product.stock || product.stock <= 0 || addToCartMutation.isPending}
+                      disabled={!canAddToCart || addToCartMutation.isPending}
                       data-testid="button-add-with-installation"
                     >
                       <span className="flex items-center">
@@ -871,7 +958,7 @@ export default function ProductPage() {
               </span>
               <button
                 onClick={() => setQuantity(quantity + 1)}
-                disabled={!product.stock || quantity >= product.stock}
+                disabled={effectiveStock === null || quantity >= effectiveStock}
                 className="p-2.5 text-white/60 hover:text-white active:bg-white/10 disabled:opacity-30 transition-colors"
                 data-testid="mobile-button-increase-quantity"
               >
@@ -891,8 +978,12 @@ export default function ProductPage() {
                   of €{(currentPrice + installationPrice).toFixed(0)} met installatie
                 </span>
               )}
-              {product.stock && product.stock > 0 && (
+              {isInStock ? (
                 <span className="text-xs text-green-500 block">Op voorraad</span>
+              ) : (
+                <span className="text-xs text-orange-500 block">
+                  {product.hasVariations && !selectedVariation ? "Kies optie" : "Niet op voorraad"}
+                </span>
               )}
             </div>
           </div>
@@ -902,7 +993,7 @@ export default function ProductPage() {
             <Button
               className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 active:scale-[0.98] rounded-none h-12 text-sm font-semibold transition-transform"
               onClick={() => addToCartMutation.mutate({ needsInstallation: false })}
-              disabled={!product.stock || product.stock <= 0 || addToCartMutation.isPending}
+              disabled={!canAddToCart || addToCartMutation.isPending}
               data-testid="mobile-button-add-to-cart"
             >
               <ShoppingCart className="w-4 h-4 mr-1.5" />
@@ -913,7 +1004,7 @@ export default function ProductPage() {
               variant="outline"
               className="border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760]/10 active:scale-[0.98] rounded-none h-12 text-sm font-semibold transition-transform flex flex-col items-center justify-center py-1"
               onClick={() => addToCartMutation.mutate({ needsInstallation: true })}
-              disabled={!product.stock || product.stock <= 0 || addToCartMutation.isPending}
+              disabled={!canAddToCart || addToCartMutation.isPending}
               data-testid="mobile-button-add-with-installation"
             >
               <span className="flex items-center">

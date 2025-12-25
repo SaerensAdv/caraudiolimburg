@@ -30,6 +30,7 @@ import { useState, useRef, useEffect } from "react";
 import type { Product, Category } from "@shared/schema";
 import { ProductAudioSkeleton } from "@/components/AudioSkeletons";
 import { Link } from "wouter";
+import CinematicIntro from "@/components/CinematicIntro";
 
 import heroImage from "@assets/C5025.00_33_41_03.Still050-2048x1152_1757024504641.jpg";
 import studioImage1 from "@assets/C5025.00_06_16_04.Still024-1-2048x1152_1757024538840.jpg";
@@ -40,7 +41,20 @@ import promoVideo from "@assets/Verkorte-Video-Car-Audio-Limburg-Studio-1_175823
 export default function Home() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<{make: string; model: string; year: number} | null>(null);
+  const [showIntro, setShowIntro] = useState(false);
   const recommendationsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const hasSeenIntro = localStorage.getItem("cal_intro_seen");
+    if (!hasSeenIntro) {
+      setShowIntro(true);
+    }
+  }, []);
+
+  const handleIntroComplete = () => {
+    setShowIntro(false);
+    localStorage.setItem("cal_intro_seen", "true");
+  };
 
   const { data: featuredProducts, isLoading: isLoadingProducts } = useQuery({
     queryKey: ["/api/products", { featured: true, limit: 4 }],
@@ -146,6 +160,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-black scroll-smooth">
+      {showIntro && <CinematicIntro onComplete={handleIntroComplete} />}
+      
       {/* LocalBusiness JSON-LD for Local SEO */}
       <script
         type="application/ld+json"

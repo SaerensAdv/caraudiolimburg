@@ -86,7 +86,6 @@ import type { Product, Order, Booking, QuoteRequest, User, BlogPost, BlogCategor
 import { Link } from "wouter";
 
 import logoImage from "@assets/CAL white_1758369495328.png";
-import { ClickUpAdmin } from "@/components/admin/ClickUpAdmin";
 
 const productFormSchema = insertProductSchema.extend({
   price: z.string().min(1, "Prijs is verplicht"),
@@ -99,7 +98,7 @@ const productFormSchema = insertProductSchema.extend({
 
 type ProductFormData = z.infer<typeof productFormSchema>;
 
-type AdminSection = 'dashboard' | 'products' | 'orders' | 'bookings' | 'quotes' | 'users' | 'blog' | 'clickup';
+type AdminSection = 'dashboard' | 'products' | 'orders' | 'bookings' | 'quotes' | 'users' | 'blog';
 
 export default function Admin() {
   const [activeSection, setActiveSection] = useState<AdminSection>('dashboard');
@@ -1066,7 +1065,6 @@ export default function Admin() {
     { id: 'quotes' as AdminSection, label: 'Offertes', icon: FileText },
     { id: 'users' as AdminSection, label: 'Gebruikers', icon: Users },
     { id: 'blog' as AdminSection, label: 'Blog', icon: FileText },
-    { id: 'clickup' as AdminSection, label: 'ClickUp', icon: Settings },
   ];
 
   return (
@@ -3435,10 +3433,6 @@ export default function Admin() {
                 )}
               </div>
             </div>
-          )}
-
-          {activeSection === 'clickup' && (
-            <ClickUpAdmin />
           )}
         </div>
       </main>

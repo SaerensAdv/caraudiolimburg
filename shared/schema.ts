@@ -575,3 +575,30 @@ export type InsertBlogCategory = z.infer<typeof insertBlogCategorySchema>;
 
 export type BlogPost = typeof blogPosts.$inferSelect;
 export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
+
+// ClickUp configuration for scheduled jobs
+export const clickupConfig = pgTable("clickup_config", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  workspaceId: varchar("workspace_id"),
+  workspaceName: varchar("workspace_name"),
+  spaceId: varchar("space_id"),
+  spaceName: varchar("space_name"),
+  folderId: varchar("folder_id"),
+  folderName: varchar("folder_name"),
+  listId: varchar("list_id"),
+  listName: varchar("list_name"),
+  isEnabled: boolean("is_enabled").default(true),
+  lastRunAt: timestamp("last_run_at"),
+  nextRunAt: timestamp("next_run_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertClickupConfigSchema = createInsertSchema(clickupConfig).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type ClickupConfig = typeof clickupConfig.$inferSelect;
+export type InsertClickupConfig = z.infer<typeof insertClickupConfigSchema>;

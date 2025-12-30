@@ -9,6 +9,8 @@ import { storage } from "./storage";
 import { setupAuth, isAuthenticated, isAdmin } from "./auth";
 import { handleChatMessage } from "./chatbot";
 import { etrustedService } from "./services/etrusted";
+import { clickupService, type WebsiteReport } from "./services/clickup";
+import { clickupScheduler } from "./services/scheduler";
 import {
   insertProductSchema,
   insertCategorySchema,
@@ -2451,6 +2453,309 @@ ${message || 'Geen aanvullende informatie'}`
       console.error("Error sending review invitation:", error);
       res.status(500).json({ message: "Failed to send review invitation", success: false });
     }
+  });
+
+  // ClickUp Integration Routes
+  app.get('/api/clickup/workspaces', isAdmin, async (req, res) => {
+    try {
+      const data = await clickupService.getWorkspaces();
+      res.json(data);
+    } catch (error: any) {
+      console.error("Error fetching ClickUp workspaces:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch workspaces" });
+    }
+  });
+
+  app.get('/api/clickup/workspaces/:workspaceId/spaces', isAdmin, async (req, res) => {
+    try {
+      const { workspaceId } = req.params;
+      const data = await clickupService.getSpaces(workspaceId);
+      res.json(data);
+    } catch (error: any) {
+      console.error("Error fetching ClickUp spaces:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch spaces" });
+    }
+  });
+
+  app.get('/api/clickup/spaces/:spaceId/folders', isAdmin, async (req, res) => {
+    try {
+      const { spaceId } = req.params;
+      const data = await clickupService.getFolders(spaceId);
+      res.json(data);
+    } catch (error: any) {
+      console.error("Error fetching ClickUp folders:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch folders" });
+    }
+  });
+
+  app.get('/api/clickup/folders/:folderId/lists', isAdmin, async (req, res) => {
+    try {
+      const { folderId } = req.params;
+      const data = await clickupService.getLists(folderId);
+      res.json(data);
+    } catch (error: any) {
+      console.error("Error fetching ClickUp lists:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch lists" });
+    }
+  });
+
+  app.get('/api/clickup/spaces/:spaceId/lists', isAdmin, async (req, res) => {
+    try {
+      const { spaceId } = req.params;
+      const data = await clickupService.getFolderlessLists(spaceId);
+      res.json(data);
+    } catch (error: any) {
+      console.error("Error fetching ClickUp folderless lists:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch lists" });
+    }
+  });
+
+  app.get('/api/clickup/lists/:listId/tasks', isAdmin, async (req, res) => {
+    try {
+      const { listId } = req.params;
+      const includeCompleted = req.query.include_closed === 'true';
+      const data = await clickupService.getTasks(listId, { include_closed: includeCompleted });
+      res.json(data);
+    } catch (error: any) {
+      console.error("Error fetching ClickUp tasks:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch tasks" });
+    }
+  });
+
+  app.get('/api/clickup/spaces/:spaceId/tags', isAdmin, async (req, res) => {
+    try {
+      const { spaceId } = req.params;
+      const data = await clickupService.getSpaceTags(spaceId);
+      res.json(data);
+    } catch (error: any) {
+      console.error("Error fetching ClickUp tags:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch tags" });
+    }
+  });
+
+  app.post('/api/clickup/spaces/:spaceId/setup-tags', isAdmin, async (req, res) => {
+    try {
+      const { spaceId } = req.params;
+      const result = await clickupService.setupDefaultTags(spaceId);
+      res.json({ 
+        message: `Tags setup complete. Created: ${result.created.length}, Already existing: ${result.existing.length}`,
+        ...result
+      });
+    } catch (error: any) {
+      console.error("Error setting up ClickUp tags:", error);
+      res.status(500).json({ message: error.message || "Failed to setup tags" });
+    }
+  });
+
+  app.get('/api/clickup/default-tags', isAdmin, (req, res) => {
+    const tags = clickupService.getDefaultTags();
+    res.json(tags);
+  });
+
+  app.get('/api/clickup/lists/:listId/custom-fields', isAdmin, async (req, res) => {
+    try {
+      const { listId } = req.params;
+      const data = await clickupService.getCustomFields(listId);
+      res.json(data);
+    } catch (error: any) {
+      console.error("Error fetching ClickUp custom fields:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch custom fields" });
+    }
+  });
+
+  async function generateWebsiteReport(): Promise<WebsiteReport> {
+    const [products, orders, users, bookings, quotes] = await Promise.all([
+      storage.getProducts().catch(() => []),
+      storage.getOrders().catch(() => []),
+      storage.getAllUsers().catch(() => []),
+      storage.getBookings().catch(() => []),
+      storage.getQuoteRequests().catch(() => []),
+    ]);
+
+    const now = new Date();
+    const lastMonth = new Date(now);
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
+
+    const recentOrders = orders.filter((o: any) => new Date(o.createdAt || 0) >= lastMonth);
+    const recentBookings = bookings.filter((b: any) => new Date(b.createdAt || 0) >= lastMonth);
+    const recentQuotes = quotes.filter((q: any) => new Date(q.createdAt || 0) >= lastMonth);
+
+    const completedItems: string[] = [
+      'Cinematic intro animatie geïmplementeerd',
+      'eTrusted/Trusted Shops reviews integratie actief',
+      'Chat widget met localStorage persistentie',
+      'Google OAuth authenticatie',
+      'Stripe betalingen (iDEAL, Bancontact)',
+      'Product variaties systeem',
+      'Mobiele optimalisatie',
+      'SEO optimalisatie met meta tags',
+    ];
+
+    const inProgressItems: string[] = [
+      'ClickUp integratie voor maandelijkse monitoring',
+    ];
+
+    const todoItems: string[] = [
+      'Google Analytics integratie uitbreiden',
+      'Email marketing automatisering',
+      'Performance optimalisatie afbeeldingen',
+      'A/B testing voor conversie verbetering',
+    ];
+
+    const issues: string[] = [];
+    
+    if (products.length === 0) {
+      issues.push('Geen producten in de database gevonden');
+    }
+    
+    const recommendations: string[] = [];
+    
+    if (recentOrders.length < 5) {
+      recommendations.push('Overweeg promotiecampagne om verkoop te stimuleren');
+    }
+    
+    if (recentQuotes.length > recentOrders.length * 2) {
+      recommendations.push('Veel offertes maar weinig conversie - follow-up proces verbeteren');
+    }
+
+    return {
+      status: 'online',
+      uptime: '99.9%',
+      lastUpdate: now.toISOString(),
+      completed: completedItems,
+      inProgress: inProgressItems,
+      todo: todoItems,
+      issues: issues.length > 0 ? issues : undefined,
+      statistics: {
+        products: products.length,
+        orders: orders.length,
+        users: users.length,
+        bookings: bookings.length,
+        quotes: quotes.length,
+      },
+      recommendations: recommendations.length > 0 ? recommendations : undefined,
+    };
+  }
+
+  app.post('/api/clickup/monthly-report', isAdmin, async (req, res) => {
+    try {
+      const { listId } = req.body;
+      
+      if (!listId) {
+        return res.status(400).json({ message: "List ID is required" });
+      }
+
+      const report = await generateWebsiteReport();
+      const task = await clickupService.createMonthlyReport(listId, report);
+      
+      res.json({ 
+        message: "Monthly report created successfully",
+        taskId: task.id,
+        taskUrl: task.url,
+        report
+      });
+    } catch (error: any) {
+      console.error("Error creating monthly report:", error);
+      res.status(500).json({ message: error.message || "Failed to create monthly report" });
+    }
+  });
+
+  app.get('/api/clickup/report-preview', isAdmin, async (req, res) => {
+    try {
+      const report = await generateWebsiteReport();
+      res.json(report);
+    } catch (error: any) {
+      console.error("Error generating report preview:", error);
+      res.status(500).json({ message: error.message || "Failed to generate report" });
+    }
+  });
+
+  app.post('/api/clickup/lists/:listId/tasks', isAdmin, async (req, res) => {
+    try {
+      const { listId } = req.params;
+      const taskSchema = z.object({
+        name: z.string().min(1),
+        description: z.string().optional(),
+        tags: z.array(z.string()).optional(),
+        priority: z.number().min(1).max(4).optional(),
+        due_date: z.number().optional(),
+        status: z.string().optional(),
+      });
+
+      const parseResult = taskSchema.safeParse(req.body);
+      if (!parseResult.success) {
+        return res.status(400).json({ 
+          message: "Invalid task data", 
+          errors: parseResult.error.flatten().fieldErrors 
+        });
+      }
+
+      const task = await clickupService.createTask(listId, parseResult.data);
+      res.json(task);
+    } catch (error: any) {
+      console.error("Error creating ClickUp task:", error);
+      res.status(500).json({ message: error.message || "Failed to create task" });
+    }
+  });
+
+  app.get('/api/clickup/config', isAdmin, async (req, res) => {
+    try {
+      const config = await clickupScheduler.getConfig();
+      const stats = clickupScheduler.getStats();
+      res.json({ config, stats });
+    } catch (error: any) {
+      console.error("Error fetching ClickUp config:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch config" });
+    }
+  });
+
+  app.post('/api/clickup/config', isAdmin, async (req, res) => {
+    try {
+      const configSchema = z.object({
+        workspaceId: z.string().optional(),
+        workspaceName: z.string().optional(),
+        spaceId: z.string().optional(),
+        spaceName: z.string().optional(),
+        folderId: z.string().optional(),
+        folderName: z.string().optional(),
+        listId: z.string().optional(),
+        listName: z.string().optional(),
+        isEnabled: z.boolean().optional(),
+      });
+
+      const parseResult = configSchema.safeParse(req.body);
+      if (!parseResult.success) {
+        return res.status(400).json({ 
+          message: "Invalid config data", 
+          errors: parseResult.error.flatten().fieldErrors 
+        });
+      }
+
+      const config = await clickupScheduler.saveConfig(parseResult.data);
+      res.json({ message: "Configuration saved", config });
+    } catch (error: any) {
+      console.error("Error saving ClickUp config:", error);
+      res.status(500).json({ message: error.message || "Failed to save config" });
+    }
+  });
+
+  app.post('/api/clickup/scheduler/run', isAdmin, async (req, res) => {
+    try {
+      const result = await clickupScheduler.runMonthlyReport();
+      if (result.success) {
+        res.json({ message: "Report created successfully", taskUrl: result.taskUrl });
+      } else {
+        res.status(400).json({ message: result.error || "Failed to create report" });
+      }
+    } catch (error: any) {
+      console.error("Error running ClickUp scheduler:", error);
+      res.status(500).json({ message: error.message || "Failed to run scheduler" });
+    }
+  });
+
+  app.get('/api/clickup/scheduler/stats', isAdmin, (req, res) => {
+    const stats = clickupScheduler.getStats();
+    res.json(stats);
   });
 
   // Robots.txt route

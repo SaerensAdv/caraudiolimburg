@@ -11,6 +11,7 @@ import { handleChatMessage } from "./chatbot";
 import { etrustedService } from "./services/etrusted";
 import { clickupService, type WebsiteReport } from "./services/clickup";
 import { clickupScheduler } from "./services/scheduler";
+import { emailService } from "./services/email";
 import {
   insertProductSchema,
   insertCategorySchema,
@@ -1188,9 +1189,44 @@ ${message || 'Geen aanvullende informatie'}`
         });
       }
 
-      // Send eTrusted review invitation (non-blocking)
+      // Send order confirmation email and eTrusted review invitation
       const customerEmail = guestEmail || paymentIntent.metadata?.guestEmail;
       if (customerEmail) {
+        // Send order confirmation email
+        const itemsWithDetails = await Promise.all(
+          cartItems.map(async (item: any) => {
+            const product = await storage.getProduct(item.productId);
+            return {
+              name: product?.name || 'Product',
+              quantity: item.quantity,
+              price: (parseFloat(item.price) * item.quantity).toFixed(2),
+            };
+          })
+        );
+
+        emailService.sendOrderConfirmationEmail({
+          orderNumber,
+          customerEmail,
+          customerName: shippingDetails?.firstName || 'Klant',
+          items: itemsWithDetails,
+          subtotal: subtotal.toFixed(2),
+          shipping: shipping.toFixed(2),
+          total: total.toFixed(2),
+          shippingAddress: {
+            firstName: shippingDetails?.firstName || '',
+            lastName: shippingDetails?.lastName || '',
+            address: shippingDetails?.address || '',
+            city: shippingDetails?.city || '',
+            postalCode: shippingDetails?.postalCode || '',
+            country: shippingDetails?.country || 'Nederland',
+          },
+        }).then(() => {
+          console.log(`[Guest Order] Confirmation email sent for order ${orderNumber} to ${customerEmail}`);
+        }).catch(err => {
+          console.error(`[Guest Order] Failed to send confirmation email for ${orderNumber}:`, err);
+        });
+
+        // Send eTrusted review invitation (non-blocking)
         const productDetails = await Promise.all(
           cartItems.slice(0, 5).map(async (item: any) => {
             const product = await storage.getProduct(item.productId);
@@ -1231,33 +1267,28 @@ ${message || 'Geen aanvullende informatie'}`
         return res.status(403).json({ message: "Not a guest checkout" });
       }
 
-      // Get order from database
+      // Get order with items from database
       const order = await storage.getOrderByPaymentIntentId(paymentIntentId);
       if (!order) {
         return res.status(404).json({ message: "Order not found" });
       }
 
-      // Get order items
-      const orderItems = await storage.getOrderItems(order.id);
-      
-      // Enrich with product details
-      const itemsWithDetails = await Promise.all(
-        orderItems.map(async (item) => {
-          const product = await storage.getProduct(item.productId);
-          return {
-            ...item,
-            product: product ? {
-              name: product.name,
-              slug: product.slug,
-              imageUrl: product.imageUrl,
-            } : null,
-          };
-        })
-      );
+      // Get order with items using existing function
+      const orderWithItems = await storage.getOrderWithItems(order.id);
+      if (!orderWithItems) {
+        return res.status(404).json({ message: "Order details not found" });
+      }
 
       res.json({
-        ...order,
-        items: itemsWithDetails,
+        ...orderWithItems.order,
+        items: orderWithItems.items.map(item => ({
+          ...item,
+          product: item.product ? {
+            name: item.product.name,
+            slug: item.product.slug,
+            imageUrl: item.product.imageUrl,
+          } : null,
+        })),
       });
     } catch (error) {
       console.error("Error fetching guest order:", error);

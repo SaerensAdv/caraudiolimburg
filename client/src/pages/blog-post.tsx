@@ -129,27 +129,89 @@ export default function BlogPostPage() {
     return format(d, "d MMMM yyyy", { locale: nl });
   };
 
+  const renderInlineContent = (text: string): React.ReactNode => {
+    const parts: React.ReactNode[] = [];
+    let remaining = text;
+    let keyIndex = 0;
+
+    while (remaining.length > 0) {
+      const linkMatch = remaining.match(/\[([^\]]+)\]\(([^)]+)\)/);
+      const boldMatch = remaining.match(/\*\*([^*]+)\*\*/);
+
+      let firstMatch: { type: 'link' | 'bold'; index: number; full: string; content: string; url?: string } | null = null;
+
+      if (linkMatch && linkMatch.index !== undefined) {
+        if (!firstMatch || linkMatch.index < firstMatch.index) {
+          firstMatch = { type: 'link', index: linkMatch.index, full: linkMatch[0], content: linkMatch[1], url: linkMatch[2] };
+        }
+      }
+      if (boldMatch && boldMatch.index !== undefined) {
+        if (!firstMatch || boldMatch.index < firstMatch.index) {
+          firstMatch = { type: 'bold', index: boldMatch.index, full: boldMatch[0], content: boldMatch[1] };
+        }
+      }
+
+      if (!firstMatch) {
+        parts.push(remaining);
+        break;
+      }
+
+      if (firstMatch.index > 0) {
+        parts.push(remaining.substring(0, firstMatch.index));
+      }
+
+      if (firstMatch.type === 'link') {
+        const isExternal = firstMatch.url?.startsWith('http');
+        if (isExternal) {
+          parts.push(
+            <a 
+              key={keyIndex++} 
+              href={firstMatch.url} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-[#d0a760] hover:underline"
+            >
+              {firstMatch.content}
+            </a>
+          );
+        } else {
+          parts.push(
+            <Link key={keyIndex++} href={firstMatch.url || '/'}>
+              <span className="text-[#d0a760] hover:underline cursor-pointer">{firstMatch.content}</span>
+            </Link>
+          );
+        }
+      } else if (firstMatch.type === 'bold') {
+        parts.push(<strong key={keyIndex++} className="text-white font-semibold">{firstMatch.content}</strong>);
+      }
+
+      remaining = remaining.substring(firstMatch.index + firstMatch.full.length);
+    }
+
+    return parts.length === 1 && typeof parts[0] === 'string' ? parts[0] : <>{parts}</>;
+  };
+
   const renderContent = (content: string) => {
     const paragraphs = content.split('\n\n').filter(p => p.trim());
     return paragraphs.map((paragraph, index) => {
       if (paragraph.startsWith('# ')) {
         return (
           <h2 key={index} className="text-2xl md:text-3xl font-medium text-white mt-12 mb-6">
-            {paragraph.replace('# ', '')}
+            {renderInlineContent(paragraph.replace('# ', ''))}
           </h2>
         );
       }
       if (paragraph.startsWith('## ')) {
         return (
           <h3 key={index} className="text-xl md:text-2xl font-medium text-white mt-10 mb-4">
-            {paragraph.replace('## ', '')}
+            {renderInlineContent(paragraph.replace('## ', ''))}
           </h3>
         );
       }
       if (paragraph.startsWith('### ')) {
         return (
           <h4 key={index} className="text-lg md:text-xl font-medium text-[#d0a760] mt-8 mb-3">
-            {paragraph.replace('### ', '')}
+            {renderInlineContent(paragraph.replace('### ', ''))}
           </h4>
         );
       }
@@ -158,14 +220,14 @@ export default function BlogPostPage() {
         return (
           <ul key={index} className="list-disc list-inside text-white/80 text-lg leading-relaxed space-y-2 mb-6 ml-4">
             {items.map((item, i) => (
-              <li key={i}>{item.replace('- ', '')}</li>
+              <li key={i}>{renderInlineContent(item.replace('- ', ''))}</li>
             ))}
           </ul>
         );
       }
       return (
         <p key={index} className="text-white/80 text-lg leading-relaxed mb-6">
-          {paragraph}
+          {renderInlineContent(paragraph)}
         </p>
       );
     });

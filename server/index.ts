@@ -188,6 +188,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/products', express.static(path.join(process.cwd(), 'public', 'products')));
 app.use('/public/products', express.static(path.join(process.cwd(), 'public', 'products')));
 
+// Serve blog images
+app.use('/blog-images', express.static(path.join(process.cwd(), 'public', 'blog-images')));
+
 // Serve attached assets (stock images, etc.)
 app.use('/attached_assets', express.static(path.join(process.cwd(), 'attached_assets')));
 

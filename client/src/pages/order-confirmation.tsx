@@ -39,19 +39,32 @@ export default function OrderConfirmationPage() {
     queryFn: async () => {
       if (!paymentIntentId) throw new Error("No payment intent found");
       
-      // First try to get existing order (for idempotency and card payments)
+      // First try authenticated endpoint (for logged-in users)
       try {
         const existingResponse = await apiRequest("GET", `/api/orders/by-payment-intent/${paymentIntentId}`);
         if (existingResponse.ok) {
           const existingOrder = await existingResponse.json();
           if (existingOrder && existingOrder.id) {
-            // Order already exists, clear localStorage and return
             localStorage.removeItem('checkout_shipping_details');
             return existingOrder;
           }
         }
       } catch (e) {
-        // Order doesn't exist yet, continue to create it
+        // Not authenticated or order doesn't exist, try guest endpoint
+      }
+      
+      // Try guest order endpoint
+      try {
+        const guestResponse = await apiRequest("GET", `/api/guest-orders/by-payment-intent/${paymentIntentId}`);
+        if (guestResponse.ok) {
+          const guestOrder = await guestResponse.json();
+          if (guestOrder && guestOrder.id) {
+            localStorage.removeItem('checkout_shipping_details');
+            return guestOrder;
+          }
+        }
+      } catch (e) {
+        // Guest order doesn't exist, try to create it
       }
       
       // Retrieve shipping details from localStorage (stored before redirect for iDEAL, Bancontact, etc.)
@@ -65,7 +78,22 @@ export default function OrderConfirmationPage() {
         }
       }
       
-      // Create order from redirect (iDEAL, Bancontact, etc.)
+      // Try guest order confirmation endpoint first (for guest checkout)
+      try {
+        const guestConfirmResponse = await apiRequest("POST", `/api/guest-orders/confirm`, {
+          paymentIntentId,
+          shippingDetails,
+        });
+        if (guestConfirmResponse.ok) {
+          const result = await guestConfirmResponse.json();
+          localStorage.removeItem('checkout_shipping_details');
+          return result.order || result;
+        }
+      } catch (e) {
+        // Not a guest checkout, try authenticated endpoint
+      }
+      
+      // Fallback: Create order from redirect (authenticated users with iDEAL, Bancontact, etc.)
       const response = await apiRequest("POST", `/api/orders/create-from-redirect`, {
         paymentIntentId,
         shippingDetails
@@ -76,8 +104,6 @@ export default function OrderConfirmationPage() {
       }
       
       const order = await response.json();
-      
-      // Only clear localStorage after successful order creation
       localStorage.removeItem('checkout_shipping_details');
       
       return order;

@@ -1216,6 +1216,55 @@ ${message || 'Geen aanvullende informatie'}`
     }
   });
 
+  // Get guest order by payment intent ID
+  app.get("/api/guest-orders/by-payment-intent/:paymentIntentId", async (req, res) => {
+    if (!stripe) {
+      return res.status(500).json({ message: "Payment system not configured" });
+    }
+
+    try {
+      const { paymentIntentId } = req.params;
+
+      // Verify payment intent exists and is a guest checkout
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      if (paymentIntent.metadata?.isGuest !== "true") {
+        return res.status(403).json({ message: "Not a guest checkout" });
+      }
+
+      // Get order from database
+      const order = await storage.getOrderByPaymentIntentId(paymentIntentId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      // Get order items
+      const orderItems = await storage.getOrderItems(order.id);
+      
+      // Enrich with product details
+      const itemsWithDetails = await Promise.all(
+        orderItems.map(async (item) => {
+          const product = await storage.getProduct(item.productId);
+          return {
+            ...item,
+            product: product ? {
+              name: product.name,
+              slug: product.slug,
+              imageUrl: product.imageUrl,
+            } : null,
+          };
+        })
+      );
+
+      res.json({
+        ...order,
+        items: itemsWithDetails,
+      });
+    } catch (error) {
+      console.error("Error fetching guest order:", error);
+      res.status(500).json({ message: "Failed to fetch order" });
+    }
+  });
+
   // Get order by payment intent ID (idempotent - creates order if missing for successful payments)
   app.get("/api/orders/by-payment-intent/:paymentIntentId", isAuthenticated, async (req, res) => {
     try {

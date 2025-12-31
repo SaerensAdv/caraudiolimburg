@@ -4,8 +4,131 @@ import { setupVite, serveStatic, log } from "./vite";
 import { ogMiddleware } from "./og-middleware";
 import { clickupScheduler } from "./services/scheduler";
 import path from "path";
+import Stripe from "stripe";
+import { storage } from "./storage";
 
 const app = express();
+
+let stripeWebhook: Stripe | null = null;
+if (process.env.STRIPE_SECRET_KEY) {
+  stripeWebhook = new Stripe(process.env.STRIPE_SECRET_KEY);
+}
+
+app.post("/api/webhooks/stripe", express.raw({ type: 'application/json' }), async (req: Request, res: Response) => {
+  if (!stripeWebhook) {
+    console.error("[Stripe Webhook] Stripe not configured");
+    return res.status(500).json({ message: "Stripe not configured" });
+  }
+
+  const sig = req.headers['stripe-signature'] as string;
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  if (!webhookSecret) {
+    console.error("[Stripe Webhook] STRIPE_WEBHOOK_SECRET not configured");
+    return res.status(500).json({ message: "Webhook secret not configured" });
+  }
+
+  let event: Stripe.Event;
+
+  try {
+    event = stripeWebhook.webhooks.constructEvent(req.body, sig, webhookSecret);
+  } catch (err: any) {
+    console.error(`[Stripe Webhook] Signature verification failed: ${err.message}`);
+    return res.status(400).json({ message: `Webhook signature verification failed: ${err.message}` });
+  }
+
+  console.log(`[Stripe Webhook] Received event: ${event.type}`);
+
+  try {
+    switch (event.type) {
+      case 'payment_intent.succeeded': {
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        console.log(`[Stripe Webhook] Payment succeeded: ${paymentIntent.id}`);
+
+        const existingOrder = await storage.getOrderByPaymentIntentId(paymentIntent.id);
+        if (existingOrder) {
+          console.log(`[Stripe Webhook] Order already exists for payment ${paymentIntent.id}: ${existingOrder.orderNumber}`);
+          break;
+        }
+
+        const metadata = paymentIntent.metadata || {};
+        const isGuest = metadata.isGuest === "true";
+        const userId = metadata.userId || null;
+        const guestEmail = metadata.guestEmail || null;
+
+        let cartItems: any[] = [];
+        try {
+          cartItems = JSON.parse(metadata.cartItems || "[]");
+        } catch (e) {
+          console.error(`[Stripe Webhook] Failed to parse cart items for payment ${paymentIntent.id}`);
+          break;
+        }
+
+        if (cartItems.length === 0) {
+          console.log(`[Stripe Webhook] No cart items found for payment ${paymentIntent.id}`);
+          break;
+        }
+
+        let subtotal = 0;
+        for (const item of cartItems) {
+          subtotal += parseFloat(item.price) * item.quantity;
+        }
+
+        const installationFee = cartItems.some((item: any) => item.needsInstallation) ? 89 : 0;
+        const shipping = subtotal >= 50 ? 0 : 5.95;
+        const total = subtotal + installationFee + shipping;
+
+        const orderNumber = isGuest ? `CAL-G-${Date.now()}` : `CAL-${Date.now()}`;
+
+        const order = await storage.createOrder({
+          userId: isGuest ? null : userId,
+          guestEmail: isGuest ? guestEmail : null,
+          orderNumber,
+          status: "confirmed",
+          total: total.toString(),
+          subtotal: subtotal.toString(),
+          installationTotal: installationFee.toString(),
+          stripePaymentIntentId: paymentIntent.id,
+          shippingAddress: {},
+        });
+
+        for (const cartItem of cartItems) {
+          await storage.createOrderItem({
+            orderId: order.id,
+            productId: cartItem.productId,
+            quantity: cartItem.quantity,
+            price: cartItem.price,
+            needsInstallation: cartItem.needsInstallation || false,
+            variationId: cartItem.variationId || null,
+            variationLabel: null,
+          });
+        }
+
+        console.log(`[Stripe Webhook] Created order ${order.orderNumber} for payment ${paymentIntent.id}`);
+
+        // TODO: Send confirmation email
+        console.log(`[Stripe Webhook] TODO: Send confirmation email for order ${order.orderNumber}`);
+        break;
+      }
+
+      case 'payment_intent.payment_failed': {
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        const failureMessage = paymentIntent.last_payment_error?.message || 'Unknown error';
+        console.error(`[Stripe Webhook] Payment failed: ${paymentIntent.id}, reason: ${failureMessage}`);
+        break;
+      }
+
+      default:
+        console.log(`[Stripe Webhook] Unhandled event type: ${event.type}`);
+    }
+  } catch (error: any) {
+    console.error(`[Stripe Webhook] Error processing event ${event.type}: ${error.message}`);
+    return res.status(500).json({ message: "Error processing webhook event" });
+  }
+
+  res.status(200).json({ received: true });
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 

@@ -1286,7 +1286,7 @@ ${message || 'Geen aanvullende informatie'}`
           product: item.product ? {
             name: item.product.name,
             slug: item.product.slug,
-            imageUrl: item.product.imageUrl,
+            images: item.product.images,
           } : null,
         })),
       });

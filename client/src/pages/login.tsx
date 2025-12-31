@@ -7,12 +7,10 @@ import { useLocation, Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { AudioLoadingSpinner } from "@/components/AudioSkeletons";
 import { Mail, Lock, ArrowLeft, User, Volume2, Headphones, Speaker } from "lucide-react";
-import { FcGoogle } from "react-icons/fc";
 
 import calLogo from "@assets/cal-white-logo.png";
 import calLogoDark from "@assets/Caraudiolimburg-logo_1757008375383.png";
@@ -102,10 +100,6 @@ export default function Login() {
     },
   });
 
-  const handleGoogleAuth = () => {
-    window.location.href = "/api/auth/google";
-  };
-
   const onLoginSubmit = (data: LoginData) => {
     loginMutation.mutate(data);
   };
@@ -160,28 +154,6 @@ export default function Login() {
                   : "Welkom terug! Log in om door te gaan"
                 }
               </p>
-            </div>
-
-            {/* Google Auth Button */}
-            <Button
-              onClick={handleGoogleAuth}
-              variant="outline"
-              className="w-full py-6 text-base bg-white border-zinc-300 text-zinc-700 hover:bg-zinc-50 hover:border-zinc-400 rounded-none transition-all duration-300"
-              disabled={isLoading}
-              data-testid="button-google-auth"
-            >
-              <FcGoogle className="w-5 h-5 mr-3" />
-              {isRegistering ? "Registreren" : "Inloggen"} met Google
-            </Button>
-
-            {/* Divider */}
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <Separator className="w-full bg-zinc-200" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-3 text-zinc-400">Of met e-mail</span>
-              </div>
             </div>
 
             {/* Form */}

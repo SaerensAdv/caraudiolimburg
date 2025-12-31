@@ -1,6 +1,5 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Express } from "express";
 import session from "express-session";
 import { randomBytes } from "crypto";
@@ -83,51 +82,6 @@ export function setupAuth(app: Express) {
     )
   );
 
-  // Google OAuth Strategy
-  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-    passport.use(
-      new GoogleStrategy(
-        {
-          clientID: process.env.GOOGLE_CLIENT_ID,
-          clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-          callbackURL: "/api/auth/google/callback",
-        },
-        async (accessToken, refreshToken, profile, done) => {
-          try {
-            const email = profile.emails?.[0]?.value;
-            if (!email) {
-              return done(null, false, { message: "Geen e-mailadres gevonden" });
-            }
-
-            // Check if user already exists
-            let user = await storage.getUserByEmail(email);
-            
-            if (user) {
-              // Update user with Google info if needed
-              if (!user.googleId) {
-                user = await storage.updateUserGoogleId(user.id, profile.id);
-              }
-              return done(null, user);
-            }
-
-            // Create new user
-            const newUser = await storage.createUser({
-              email,
-              firstName: profile.name?.givenName || "",
-              lastName: profile.name?.familyName || "",
-              profileImageUrl: profile.photos?.[0]?.value || null,
-              googleId: profile.id,
-              role: 'customer',
-            });
-
-            return done(null, newUser);
-          } catch (error) {
-            return done(error);
-          }
-        }
-      )
-    );
-  }
 
   passport.serializeUser((user, done) => done(null, user.id));
   passport.deserializeUser(async (id: string, done) => {
@@ -141,28 +95,10 @@ export function setupAuth(app: Express) {
 
   // Auth routes
 
-  // Main login route - redirects to Google OAuth or login page
+  // Main login route - redirects to login page
   app.get('/api/login', (req, res) => {
-    if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-      // Redirect to Google OAuth
-      res.redirect('/api/auth/google');
-    } else {
-      // Redirect to login page
-      res.redirect('/login');
-    }
+    res.redirect('/login');
   });
-
-  // Google OAuth
-  app.get('/api/auth/google',
-    passport.authenticate('google', { scope: ['profile', 'email'] })
-  );
-
-  app.get('/api/auth/google/callback',
-    passport.authenticate('google', {
-      successRedirect: '/',
-      failureRedirect: '/login?error=google_auth_failed',
-    })
-  );
 
   // Email/Password Registration
   app.post('/api/auth/register', async (req, res, next) => {

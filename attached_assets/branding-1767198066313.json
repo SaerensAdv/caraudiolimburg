@@ -1,0 +1,100 @@
+{
+  "colorScheme": "light",
+  "fonts": [
+    {
+      "family": "Inter",
+      "count": 100
+    },
+    {
+      "family": "system-ui",
+      "count": 100
+    },
+    {
+      "family": "sans-serif",
+      "count": 100
+    }
+  ],
+  "colors": {
+    "primary": "#D0A760",
+    "accent": "#F6EDDF",
+    "background": "#FFFFFF",
+    "textPrimary": "#000000",
+    "link": "#F6EDDF"
+  },
+  "typography": {
+    "fontFamilies": {
+      "primary": "Inter",
+      "heading": "Inter"
+    },
+    "fontStacks": {
+      "body": [
+        "Inter",
+        "system-ui",
+        "sans-serif"
+      ],
+      "heading": [
+        "Inter",
+        "system-ui",
+        "sans-serif"
+      ],
+      "paragraph": [
+        "Inter",
+        "system-ui",
+        "sans-serif"
+      ]
+    },
+    "fontSizes": {
+      "h1": "60px",
+      "h2": "48px",
+      "body": "18px"
+    }
+  },
+  "spacing": {
+    "baseUnit": 4,
+    "borderRadius": "0px"
+  },
+  "components": {
+    "input": {
+      "background": "#27272A",
+      "textColor": "#FFFFFF",
+      "borderColor": "#3F3F46",
+      "borderRadius": "0px",
+      "borderRadiusCorners": {
+        "topLeft": "0px",
+        "topRight": "0px",
+        "bottomRight": "0px",
+        "bottomLeft": "0px"
+      },
+      "shadow": "none"
+    }
+  },
+  "images": {
+    "logo": "https://caraudiolimburg.replit.app/assets/cal-white-logo-B-C7tVAv.png",
+    "favicon": "https://caraudiolimburg.replit.app/favicon.png",
+    "ogImage": "https://caraudiolimburg.nl/og-image.jpg"
+  },
+  "__framework_hints": [],
+  "__llm_logo_reasoning": {
+    "selectedIndex": 0,
+    "reasoning": "Strong indicators: header logo linking to homepage, header location, visible, top-left position, highest logo on page, src contains logo, alt exactly matches brand name \"Car Audio Limburg\", reasonable size. Score: 137 (clear winner by 137 points)",
+    "confidence": 0.9
+  },
+  "__llm_button_reasoning": {
+    "primary": {
+      "index": -1,
+      "text": "N/A",
+      "reasoning": "LLM failed"
+    },
+    "secondary": {
+      "index": -1,
+      "text": "N/A",
+      "reasoning": "LLM failed"
+    },
+    "confidence": 0
+  },
+  "confidence": {
+    "buttons": 0,
+    "colors": 0,
+    "overall": 0
+  }
+}

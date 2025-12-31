@@ -3,6 +3,7 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { ogMiddleware } from "./og-middleware";
 import { clickupScheduler } from "./services/scheduler";
+import { emailService } from "./services/email";
 import path from "path";
 import Stripe from "stripe";
 import { storage } from "./storage";
@@ -106,8 +107,38 @@ app.post("/api/webhooks/stripe", express.raw({ type: 'application/json' }), asyn
 
         console.log(`[Stripe Webhook] Created order ${order.orderNumber} for payment ${paymentIntent.id}`);
 
-        // TODO: Send confirmation email
-        console.log(`[Stripe Webhook] TODO: Send confirmation email for order ${order.orderNumber}`);
+        // Send confirmation email
+        const customerEmail = isGuest ? guestEmail : null;
+        if (customerEmail) {
+          // Fetch product details for email
+          const itemsWithDetails = await Promise.all(cartItems.map(async (item: any) => {
+            const product = await storage.getProduct(item.productId);
+            return {
+              name: product?.name || 'Product',
+              quantity: item.quantity,
+              price: (parseFloat(item.price) * item.quantity).toFixed(2),
+            };
+          }));
+
+          await emailService.sendOrderConfirmationEmail({
+            orderNumber: order.orderNumber,
+            customerEmail,
+            customerName: 'Klant',
+            items: itemsWithDetails,
+            subtotal: subtotal.toFixed(2),
+            shipping: shipping.toFixed(2),
+            total: total.toFixed(2),
+            shippingAddress: {
+              firstName: '',
+              lastName: '',
+              address: '',
+              city: '',
+              postalCode: '',
+              country: 'Nederland',
+            },
+          });
+          console.log(`[Stripe Webhook] Confirmation email sent for order ${order.orderNumber}`);
+        }
         break;
       }
 

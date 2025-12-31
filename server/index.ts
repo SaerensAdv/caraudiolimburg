@@ -85,7 +85,7 @@ app.post("/api/webhooks/stripe", express.raw({ type: 'application/json' }), asyn
           userId: isGuest ? null : userId,
           guestEmail: isGuest ? guestEmail : null,
           orderNumber,
-          status: "confirmed",
+          status: "paid",
           total: total.toString(),
           subtotal: subtotal.toString(),
           installationTotal: installationFee.toString(),
@@ -118,7 +118,7 @@ app.post("/api/webhooks/stripe", express.raw({ type: 'application/json' }), asyn
             const user = await storage.getUser(userId);
             if (user?.email) {
               customerEmail = user.email;
-              customerName = user.firstName || user.username || 'Klant';
+              customerName = user.firstName || 'Klant';
             }
           } catch (e) {
             console.error(`[Stripe Webhook] Failed to fetch user ${userId} for email`);

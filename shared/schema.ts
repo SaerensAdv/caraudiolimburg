@@ -165,7 +165,7 @@ export const reviews = pgTable("reviews", {
 });
 
 // Order status enum
-export const orderStatusEnum = pgEnum("order_status", ["pending", "confirmed", "processing", "completed", "cancelled"]);
+export const orderStatusEnum = pgEnum("order_status", ["pending", "paid", "processing", "shipped", "delivered", "cancelled", "refunded"]);
 
 // Orders
 export const orders = pgTable("orders", {

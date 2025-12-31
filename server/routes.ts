@@ -1167,7 +1167,7 @@ ${message || 'Geen aanvullende informatie'}`
         userId: null,
         guestEmail: guestEmail || paymentIntent.metadata?.guestEmail,
         orderNumber,
-        status: "confirmed",
+        status: "paid",
         total: total.toString(),
         subtotal: subtotal.toString(),
         installationTotal: installationFee.toString(),
@@ -1260,7 +1260,7 @@ ${message || 'Geen aanvullende informatie'}`
           order = await storage.createOrder({
             userId,
             orderNumber,
-            status: "confirmed",
+            status: "paid",
             total: expectedTotal.toString(),
             stripePaymentIntentId: paymentIntentId,
             shippingAddress: {}, // Default empty shipping for 3DS return
@@ -1363,7 +1363,7 @@ ${message || 'Geen aanvullende informatie'}`
       const order = await storage.createOrder({
         userId,
         orderNumber,
-        status: "confirmed",
+        status: "paid",
         total: total.toString(),
         stripePaymentIntentId: paymentIntentId,
         shippingAddress: shippingDetails,
@@ -1512,7 +1512,7 @@ ${message || 'Geen aanvullende informatie'}`
       const order = await storage.createOrder({
         userId,
         orderNumber,
-        status: "confirmed",
+        status: "paid",
         total: expectedTotal.toString(),
         stripePaymentIntentId: paymentIntentId,
         shippingAddress: shippingDetails || {},

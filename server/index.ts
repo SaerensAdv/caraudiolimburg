@@ -107,37 +107,58 @@ app.post("/api/webhooks/stripe", express.raw({ type: 'application/json' }), asyn
 
         console.log(`[Stripe Webhook] Created order ${order.orderNumber} for payment ${paymentIntent.id}`);
 
-        // Send confirmation email
-        const customerEmail = isGuest ? guestEmail : null;
+        // Send confirmation email to all customers (guest or logged-in)
+        let customerEmail: string | null = null;
+        let customerName = 'Klant';
+        
+        if (isGuest) {
+          customerEmail = guestEmail;
+        } else if (userId) {
+          try {
+            const user = await storage.getUser(userId);
+            if (user?.email) {
+              customerEmail = user.email;
+              customerName = user.firstName || user.username || 'Klant';
+            }
+          } catch (e) {
+            console.error(`[Stripe Webhook] Failed to fetch user ${userId} for email`);
+          }
+        }
+        
         if (customerEmail) {
-          // Fetch product details for email
-          const itemsWithDetails = await Promise.all(cartItems.map(async (item: any) => {
-            const product = await storage.getProduct(item.productId);
-            return {
-              name: product?.name || 'Product',
-              quantity: item.quantity,
-              price: (parseFloat(item.price) * item.quantity).toFixed(2),
-            };
-          }));
+          try {
+            const itemsWithDetails = await Promise.all(cartItems.map(async (item: any) => {
+              const product = await storage.getProduct(item.productId);
+              return {
+                name: product?.name || 'Product',
+                quantity: item.quantity,
+                price: (parseFloat(item.price) * item.quantity).toFixed(2),
+              };
+            }));
 
-          await emailService.sendOrderConfirmationEmail({
-            orderNumber: order.orderNumber,
-            customerEmail,
-            customerName: 'Klant',
-            items: itemsWithDetails,
-            subtotal: subtotal.toFixed(2),
-            shipping: shipping.toFixed(2),
-            total: total.toFixed(2),
-            shippingAddress: {
-              firstName: '',
-              lastName: '',
-              address: '',
-              city: '',
-              postalCode: '',
-              country: 'Nederland',
-            },
-          });
-          console.log(`[Stripe Webhook] Confirmation email sent for order ${order.orderNumber}`);
+            await emailService.sendOrderConfirmationEmail({
+              orderNumber: order.orderNumber,
+              customerEmail,
+              customerName,
+              items: itemsWithDetails,
+              subtotal: subtotal.toFixed(2),
+              shipping: shipping.toFixed(2),
+              total: total.toFixed(2),
+              shippingAddress: {
+                firstName: '',
+                lastName: '',
+                address: '',
+                city: '',
+                postalCode: '',
+                country: 'Nederland',
+              },
+            });
+            console.log(`[Stripe Webhook] Confirmation email sent for order ${order.orderNumber} to ${customerEmail}`);
+          } catch (emailError: any) {
+            console.error(`[Stripe Webhook] Failed to send confirmation email for order ${order.orderNumber}: ${emailError.message}`);
+          }
+        } else {
+          console.warn(`[Stripe Webhook] No email address found for order ${order.orderNumber}`);
         }
         break;
       }

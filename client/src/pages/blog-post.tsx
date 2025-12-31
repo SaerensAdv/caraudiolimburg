@@ -4,6 +4,8 @@ import { useParams, Link } from "wouter";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CartSidebar } from "@/components/CartSidebar";
+import { AuthorBox } from "@/components/blog/AuthorBox";
+import { BlogCTA } from "@/components/blog/BlogCTA";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -343,8 +345,18 @@ export default function BlogPostPage() {
                 )}
                 
                 {renderContent(post.content)}
+                
+                {/* CTA Section */}
+                <BlogCTA variant="quote" />
               </article>
             </ScrollReveal>
+
+            {/* Author Box */}
+            {post.author && (
+              <ScrollReveal delay={100}>
+                <AuthorBox author={post.author} />
+              </ScrollReveal>
+            )}
 
             {/* Back to Blog Link */}
             <ScrollReveal delay={200}>

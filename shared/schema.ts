@@ -602,3 +602,6 @@ export const insertClickupConfigSchema = createInsertSchema(clickupConfig).omit(
 
 export type ClickupConfig = typeof clickupConfig.$inferSelect;
 export type InsertClickupConfig = z.infer<typeof insertClickupConfigSchema>;
+
+// Re-export chat models for Gemini integration
+export * from "./models/chat";

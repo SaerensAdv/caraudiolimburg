@@ -27,6 +27,7 @@ import {
   insertBlogCategorySchema,
   insertProductVariationSchema,
 } from "@shared/schema";
+import { generateImage } from "./replit_integrations/image";
 
 let stripe: Stripe | null = null;
 
@@ -2836,6 +2837,95 @@ ${message || 'Geen aanvullende informatie'}`
   app.get('/api/clickup/scheduler/stats', isAdmin, (req, res) => {
     const stats = clickupScheduler.getStats();
     res.json(stats);
+  });
+
+  // Product image generation with Gemini
+  app.post('/api/admin/products/:id/generate-images', isAdmin, async (req: any, res) => {
+    try {
+      const productId = req.params.id;
+      const { imageTypes } = req.body;
+      
+      const product = await storage.getProduct(productId);
+      if (!product) {
+        return res.status(404).json({ message: "Product niet gevonden" });
+      }
+
+      const brand = product.brandId ? await storage.getBrand(product.brandId) : null;
+      const category = product.categoryId ? await storage.getCategory(product.categoryId) : null;
+      
+      const brandName = brand?.name || '';
+      const categoryType = category?.name || 'audio product';
+      
+      const promptTemplates: Record<string, string> = {
+        studio: `High-resolution studio product photo of the ${brandName} ${product.name} ${categoryType}. Front view showing main components. Neutral light grey background, soft professional studio lighting, sharp focus on product details. Realistic shadows, no text, no branding overlays, ultra-clean commercial product photography style. Square 1:1 aspect ratio.`,
+        
+        premium: `Premium angled studio shot of the ${brandName} ${product.name} ${categoryType}. 45-degree diagonal perspective, dark charcoal background with subtle gradient. Dramatic rim lighting highlighting materials and textures. High contrast, cinematic lighting, luxury audio product photography. Square 1:1 aspect ratio.`,
+        
+        exploded: `Exploded view product layout of the ${brandName} ${product.name} ${categoryType}. All components displayed separately but aligned symmetrically. Clean white background, even studio lighting, technical product presentation style, ultra-sharp details, realistic proportions, no labels or text. Square 1:1 aspect ratio.`,
+        
+        incar: `Realistic in-car installation photo of the ${brandName} ${product.name} ${categoryType} installed in a modern luxury car interior. OEM-style fitment, clean interior, natural daylight, shallow depth of field. Focus on seamless integration and premium finish. Photorealistic automotive lifestyle photography. Square 1:1 aspect ratio.`,
+        
+        closeup: `Extreme close-up macro photo of the ${brandName} ${product.name} ${categoryType}. Focus on key details and premium materials. Ultra-sharp detail, soft background blur, professional macro photography lighting, realistic materials, premium audio engineering look. Square 1:1 aspect ratio.`
+      };
+
+      const typesToGenerate = imageTypes || ['studio', 'premium', 'closeup'];
+      const generatedImages: { type: string; url: string }[] = [];
+      const errors: { type: string; error: string }[] = [];
+
+      const fs = await import('fs');
+      const path = await import('path');
+
+      for (const imageType of typesToGenerate) {
+        const prompt = promptTemplates[imageType];
+        if (!prompt) {
+          errors.push({ type: imageType, error: 'Unknown image type' });
+          continue;
+        }
+
+        try {
+          console.log(`[Image Gen] Generating ${imageType} image for ${product.name}...`);
+          const dataUrl = await generateImage(prompt);
+          
+          const base64Data = dataUrl.replace(/^data:image\/\w+;base64,/, '');
+          const buffer = Buffer.from(base64Data, 'base64');
+          
+          const slug = product.slug || product.name.toLowerCase().replace(/\s+/g, '-');
+          const fileName = `${slug}-${imageType}-${Date.now()}.webp`;
+          
+          const processedImage = await sharp(buffer)
+            .resize(1000, 1000, { fit: 'inside', withoutEnlargement: true })
+            .webp({ quality: 90 })
+            .toBuffer();
+          
+          const productDir = path.join('public', 'products');
+          await fs.promises.mkdir(productDir, { recursive: true });
+          await fs.promises.writeFile(path.join(productDir, fileName), processedImage);
+          
+          const publicUrl = `/products/${fileName}`;
+          generatedImages.push({ type: imageType, url: publicUrl });
+          console.log(`[Image Gen] ✅ Generated ${imageType}: ${publicUrl}`);
+        } catch (error: any) {
+          console.error(`[Image Gen] ❌ Error generating ${imageType}:`, error.message);
+          errors.push({ type: imageType, error: error.message });
+        }
+      }
+
+      if (generatedImages.length > 0) {
+        const existingImages = product.images || [];
+        const newImages = [...existingImages, ...generatedImages.map(img => img.url)];
+        await storage.updateProduct(productId, { images: newImages });
+      }
+
+      res.json({
+        success: true,
+        product: product.name,
+        generated: generatedImages,
+        errors: errors.length > 0 ? errors : undefined
+      });
+    } catch (error: any) {
+      console.error("[Image Gen] Error:", error);
+      res.status(500).json({ message: error.message || "Failed to generate images" });
+    }
   });
 
   // Robots.txt route

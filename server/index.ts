@@ -4,6 +4,7 @@ import { setupVite, serveStatic, log } from "./vite";
 import { ogMiddleware } from "./og-middleware";
 import { clickupScheduler } from "./services/scheduler";
 import { emailService } from "./services/email";
+import { blogScheduler } from "./services/blog-scheduler";
 import path from "path";
 import Stripe from "stripe";
 import { storage } from "./storage";
@@ -269,5 +270,8 @@ app.use((req, res, next) => {
     clickupScheduler.start().catch(err => {
       console.error('Failed to start ClickUp scheduler:', err);
     });
+    
+    // Start the Blog scheduler for auto-publishing scheduled posts
+    blogScheduler.start();
   });
 })();

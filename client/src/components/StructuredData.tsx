@@ -126,6 +126,7 @@ interface ProductSchemaProps {
   reviewCount?: number;
   ratingValue?: number;
   url?: string;
+  condition?: 'NewCondition' | 'UsedCondition' | 'RefurbishedCondition';
 }
 
 export function ProductSchema({
@@ -140,6 +141,7 @@ export function ProductSchema({
   reviewCount,
   ratingValue,
   url,
+  condition = 'NewCondition',
 }: ProductSchemaProps) {
   const availabilityMap = {
     InStock: 'https://schema.org/InStock',
@@ -147,21 +149,33 @@ export function ProductSchema({
     PreOrder: 'https://schema.org/PreOrder',
   };
 
+  const conditionMap = {
+    NewCondition: 'https://schema.org/NewCondition',
+    UsedCondition: 'https://schema.org/UsedCondition',
+    RefurbishedCondition: 'https://schema.org/RefurbishedCondition',
+  };
+
+  const productUrl = url?.startsWith('http') ? url : `${SITE_URL}${url || ''}`;
+
   const data: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name,
     description,
-    image: Array.isArray(image) ? image : [image],
+    image: Array.isArray(image) ? image.map(img => img.startsWith('http') ? img : `${SITE_URL}${img}`) : (image.startsWith('http') ? image : `${SITE_URL}${image}`),
+    url: productUrl,
     offers: {
       '@type': 'Offer',
       price: price.toFixed(2),
       priceCurrency: currency,
       availability: availabilityMap[availability],
-      url: url || SITE_URL,
+      itemCondition: conditionMap[condition],
+      url: productUrl,
+      priceValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       seller: {
         '@type': 'Organization',
         name: 'Car Audio Limburg',
+        url: SITE_URL,
       },
     },
   };

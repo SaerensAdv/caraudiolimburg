@@ -2416,27 +2416,6 @@ ${message || 'Geen aanvullende informatie'}`
     }
   });
 
-  // Sitemap route
-  app.get('/sitemap.xml', async (req, res) => {
-    try {
-      // Always use HTTPS for sitemap URLs (required by Google)
-      const host = req.headers['x-forwarded-host'] || req.headers.host || 'caraudiolimburg.replit.app';
-      const baseUrl = process.env.BASE_URL || `https://${host}`;
-
-      const xml = await generateSitemapXml(baseUrl.replace(/\/+$/, '')); // Remove trailing slash from base
-
-      // Set correct headers for XML
-      res.setHeader('Content-Type', 'application/xml; charset=utf-8');
-      res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
-      res.setHeader('X-Robots-Tag', 'noindex'); // Sitemap itself should not be indexed
-      
-      res.send(xml);
-    } catch (error) {
-      console.error('Sitemap generation error:', error);
-      res.status(500).setHeader('Content-Type', 'text/plain').send('Error generating sitemap');
-    }
-  });
-
   // AI Chatbot route
   app.post('/api/chat', async (req, res) => {
     const chatRequestSchema = z.object({
@@ -2930,26 +2909,116 @@ ${message || 'Geen aanvullende informatie'}`
 
   // Robots.txt route
   app.get('/robots.txt', (req, res) => {
-    // Always use HTTPS for sitemap reference
-    const host = req.headers['x-forwarded-host'] || req.headers.host || 'caraudiolimburg.replit.app';
-    const baseUrl = process.env.BASE_URL || `https://${host}`;
-
     const robotsTxt = `User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /api/
-Disallow: /login
 Disallow: /my-account
-Disallow: /cart
 Disallow: /checkout
-Disallow: /order-confirmation
+Disallow: /cart
 
-Sitemap: ${baseUrl.replace(/\/+$/, '')}/sitemap.xml
+Sitemap: https://caraudiolimburg.com/sitemap.xml
 `;
 
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-    res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24 hours
+    res.setHeader('Cache-Control', 'public, max-age=86400');
     res.send(robotsTxt);
+  });
+
+  // Sitemap.xml route - dynamic XML sitemap for SEO
+  app.get('/sitemap.xml', async (req, res) => {
+    try {
+      const baseUrl = 'https://caraudiolimburg.com';
+      const now = new Date().toISOString().split('T')[0];
+
+      // Fetch dynamic content from database
+      const [activeProducts, publishedBlogPosts, allCategories] = await Promise.all([
+        storage.getProducts({ limit: 10000 }),
+        storage.getPublishedBlogPostsForSitemap(),
+        storage.getCategories(),
+      ]);
+
+      // Static pages with monthly changefreq and 0.5 priority
+      const staticPages = [
+        '/shop',
+        '/about',
+        '/contact',
+        '/faq',
+        '/blog',
+        '/studio',
+        '/privacy',
+        '/voorwaarden',
+      ];
+
+      let xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${baseUrl}/</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>`;
+
+      // Static pages
+      for (const page of staticPages) {
+        xml += `
+  <url>
+    <loc>${baseUrl}${page}</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>`;
+      }
+
+      // Categories
+      for (const category of allCategories) {
+        xml += `
+  <url>
+    <loc>${baseUrl}/shop?category=${category.slug}</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`;
+      }
+
+      // Products
+      for (const product of activeProducts) {
+        const lastmod = product.updatedAt 
+          ? new Date(product.updatedAt).toISOString().split('T')[0] 
+          : now;
+        xml += `
+  <url>
+    <loc>${baseUrl}/product/${product.slug}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>`;
+      }
+
+      // Blog posts
+      for (const post of publishedBlogPosts) {
+        const lastmod = post.updatedAt 
+          ? new Date(post.updatedAt).toISOString().split('T')[0] 
+          : now;
+        xml += `
+  <url>
+    <loc>${baseUrl}/blog/${post.slug}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>`;
+      }
+
+      xml += `
+</urlset>`;
+
+      res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+      res.send(xml);
+    } catch (error) {
+      console.error("Error generating sitemap:", error);
+      res.status(500).send('<?xml version="1.0" encoding="UTF-8"?><error>Failed to generate sitemap</error>');
+    }
   });
 
   const httpServer = createServer(app);

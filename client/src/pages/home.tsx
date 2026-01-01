@@ -10,6 +10,8 @@ import { ScrollReveal, StaggerContainer, Parallax, GoldAccentLine, ImageReveal, 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { SEO } from "@/components/SEO";
+import { OrganizationSchema, LocalBusinessSchema, WebSiteSchema } from "@/components/StructuredData";
 import { 
   Award, 
   Wrench, 
@@ -75,98 +77,20 @@ export default function Home() {
     }, 100);
   };
 
-  // SEO meta tags for homepage
-  useEffect(() => {
-    document.title = "Car Audio Limburg | Premium Car Audio & Professionele Installatie";
-    
-    const description = "Car Audio Limburg - Specialist in premium car audio systemen, Apple CarPlay, Android Auto en professionele installatie. Bezoek onze studio in Limburg.";
-    let metaDescription = document.querySelector('meta[name="description"]');
-    if (!metaDescription) {
-      metaDescription = document.createElement('meta');
-      metaDescription.setAttribute('name', 'description');
-      document.head.appendChild(metaDescription);
-    }
-    metaDescription.setAttribute('content', description);
-    
-    return () => {
-      document.title = "Car Audio Limburg";
-    };
-  }, []);
-
-  // LocalBusiness JSON-LD Schema for local SEO
-  const localBusinessSchema = {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "name": "Car Audio Limburg",
-    "description": "Specialist in premium car audio systemen, Apple CarPlay, Android Auto retrofit en professionele installatie.",
-    "url": typeof window !== 'undefined' ? window.location.origin : "",
-    "telephone": "+32-XXX-XX-XX-XX",
-    "email": "info@caraudiolimburg.be",
-    "address": {
-      "@type": "PostalAddress",
-      "addressLocality": "Limburg",
-      "addressCountry": "BE"
-    },
-    "geo": {
-      "@type": "GeoCoordinates",
-      "latitude": "50.9",
-      "longitude": "5.3"
-    },
-    "openingHoursSpecification": [
-      {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-        "opens": "09:00",
-        "closes": "18:00"
-      },
-      {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": "Saturday",
-        "opens": "10:00",
-        "closes": "16:00"
-      }
-    ],
-    "priceRange": "€€€",
-    "image": typeof window !== 'undefined' ? `${window.location.origin}/logo.png` : "",
-    "sameAs": [],
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "reviewCount": "127"
-    },
-    "hasOfferCatalog": {
-      "@type": "OfferCatalog",
-      "name": "Car Audio Producten",
-      "itemListElement": [
-        {
-          "@type": "OfferCatalog",
-          "name": "Apple CarPlay Systemen"
-        },
-        {
-          "@type": "OfferCatalog",
-          "name": "Android Auto Systemen"
-        },
-        {
-          "@type": "OfferCatalog",
-          "name": "Versterkers"
-        },
-        {
-          "@type": "OfferCatalog",
-          "name": "Subwoofers"
-        }
-      ]
-    }
-  };
 
   return (
     <div className="min-h-screen bg-black scroll-smooth">
-      {showIntro && <CinematicIntro onComplete={handleIntroComplete} />}
-      
-      {/* LocalBusiness JSON-LD for Local SEO */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+      <SEO 
+        title="Car Audio Limburg | Premium Autoradio & Installatie"
+        description="Car Audio Limburg - Uw specialist in premium car audio systemen, Apple CarPlay, Android Auto en professionele installatie. Bezoek onze studio in Geleen, Limburg."
+        canonical="/"
+        keywords="car audio, autoradio, Alpine, Audison, Focal, Hertz, installatie, Limburg"
       />
+      <OrganizationSchema />
+      <LocalBusinessSchema />
+      <WebSiteSchema />
+      
+      {showIntro && <CinematicIntro onComplete={handleIntroComplete} />}
       
       <Header onCartOpen={() => setIsCartOpen(true)} variant="transparent" />
       

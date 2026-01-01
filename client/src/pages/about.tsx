@@ -5,6 +5,8 @@ import { CartSidebar } from "@/components/CartSidebar";
 import { ScrollReveal, StaggerContainer, StaggerItem, SectionDivider, GoldAccentLine, ImageReveal, CountUp } from "@/components/ScrollAnimations";
 import { BassPulse } from "@/components/AudioPulseEffects";
 import { Button } from "@/components/ui/button";
+import { SEO } from "@/components/SEO";
+import { BreadcrumbSchema } from "@/components/StructuredData";
 import { 
   MapPin, 
   Phone, 
@@ -30,6 +32,17 @@ export default function About() {
 
   return (
     <div className="min-h-screen bg-black">
+      <SEO 
+        title="Over Ons"
+        description="Leer meer over Car Audio Limburg - Met passie voor auto's en muziek. Al meer dan 10 jaar specialist in premium car audio systemen en professionele installatie in Limburg."
+        canonical="/about"
+        keywords="over ons, car audio limburg, installatie studio, Sittard, Geleen"
+      />
+      <BreadcrumbSchema items={[
+        { name: "Home", url: "/" },
+        { name: "Over Ons", url: "/about" }
+      ]} />
+      
       <Header onCartOpen={() => setIsCartOpen(true)} variant="transparent" />
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
 

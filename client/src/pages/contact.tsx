@@ -13,6 +13,8 @@ import { z } from "zod";
 import { ScrollReveal, StaggerContainer, GoldAccentLine, SectionDivider } from "@/components/ScrollAnimations";
 import { BassPulse } from "@/components/AudioPulseEffects";
 import { Link } from "wouter";
+import { SEO } from "@/components/SEO";
+import { LocalBusinessSchema, BreadcrumbSchema } from "@/components/StructuredData";
 import { 
   MapPin, 
   Phone, 
@@ -75,6 +77,18 @@ export default function Contact() {
 
   return (
     <div className="min-h-screen bg-black">
+      <SEO 
+        title="Contact"
+        description="Neem contact op met Car Audio Limburg. Bel ons, stuur een WhatsApp of bezoek onze showroom in Sittard. Wij helpen je graag met al je car audio vragen."
+        canonical="/contact"
+        keywords="contact, car audio limburg, telefoon, whatsapp, showroom, Sittard"
+      />
+      <LocalBusinessSchema />
+      <BreadcrumbSchema items={[
+        { name: "Home", url: "/" },
+        { name: "Contact", url: "/contact" }
+      ]} />
+      
       <Header onCartOpen={() => setIsCartOpen(true)} variant="transparent" />
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
 

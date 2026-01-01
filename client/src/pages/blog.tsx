@@ -7,6 +7,8 @@ import { CartSidebar } from "@/components/CartSidebar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SEO } from "@/components/SEO";
+import { BreadcrumbSchema } from "@/components/StructuredData";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -39,48 +41,6 @@ export default function Blog() {
     }
   }, [searchString]);
 
-  useEffect(() => {
-    document.title = "Kenniscentrum | Car Audio Limburg";
-    const description = 'Ontdek alles over car audio in ons kenniscentrum. Tips, handleidingen en expertise over speakers, versterkers, installatie en meer.';
-    
-    // Meta description
-    let metaDescription = document.querySelector('meta[name="description"]');
-    if (!metaDescription) {
-      metaDescription = document.createElement('meta');
-      metaDescription.setAttribute('name', 'description');
-      document.head.appendChild(metaDescription);
-    }
-    metaDescription.setAttribute('content', description);
-    
-    // Open Graph tags with data attribute for cleanup
-    const ogTagsData = [
-      { property: 'og:title', content: 'Kenniscentrum | Car Audio Limburg' },
-      { property: 'og:description', content: description },
-      { property: 'og:type', content: 'website' },
-      { property: 'og:url', content: `${window.location.origin}/blog` },
-      { property: 'og:site_name', content: 'Car Audio Limburg' },
-      { name: 'twitter:card', content: 'summary' },
-      { name: 'twitter:title', content: 'Kenniscentrum | Car Audio Limburg' },
-      { name: 'twitter:description', content: description },
-    ];
-    
-    const createdTags: Element[] = [];
-    ogTagsData.forEach(tag => {
-      const meta = document.createElement('meta');
-      meta.setAttribute('data-page', 'blog-listing');
-      if (tag.property) meta.setAttribute('property', tag.property);
-      if (tag.name) meta.setAttribute('name', tag.name);
-      meta.setAttribute('content', tag.content || '');
-      document.head.appendChild(meta);
-      createdTags.push(meta);
-    });
-    
-    return () => {
-      document.title = "Car Audio Limburg";
-      // Only remove tags we created
-      document.querySelectorAll('meta[data-page="blog-listing"]').forEach(tag => tag.remove());
-    };
-  }, []);
 
   const { data: categories = [], isLoading: categoriesLoading } = useQuery<BlogCategory[]>({
     queryKey: ["/api/blog/categories"],
@@ -89,35 +49,6 @@ export default function Blog() {
   const { data: posts = [], isLoading: postsLoading } = useQuery<BlogPostWithCategory[]>({
     queryKey: ["/api/blog/posts", { categoryId: selectedCategory !== "all" ? selectedCategory : undefined }],
   });
-
-  // JSON-LD for blog listing page with posts
-  const jsonLd = useMemo(() => {
-    const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
-    const blogPostings = posts.slice(0, 10).map(post => ({
-      "@type": "BlogPosting",
-      "headline": post.title,
-      "url": `${baseUrl}/blog/${post.slug}`,
-      "datePublished": post.publishedAt ? new Date(post.publishedAt).toISOString() : "",
-      "description": post.excerpt || ""
-    }));
-    
-    return {
-      "@context": "https://schema.org",
-      "@type": "Blog",
-      "name": "Kenniscentrum Car Audio Limburg",
-      "description": "Tips, handleidingen en expertise over car audio, speakers, versterkers en installatie.",
-      "url": `${baseUrl}/blog`,
-      "publisher": {
-        "@type": "Organization",
-        "name": "Car Audio Limburg",
-        "logo": {
-          "@type": "ImageObject",
-          "url": `${baseUrl}/logo.png`
-        }
-      },
-      "blogPost": blogPostings
-    };
-  }, [posts]);
 
   const featuredPosts = useMemo(() => {
     return posts.filter(post => post.isFeatured);
@@ -147,10 +78,17 @@ export default function Blog() {
 
   return (
     <div className="min-h-screen bg-black">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      <SEO 
+        title="Blog & Kenniscentrum | Car Audio Tips & Nieuws"
+        description="Ontdek alles over car audio in ons kenniscentrum. Tips, handleidingen en expertise over speakers, versterkers, installatie en meer."
+        canonical="/blog"
+        keywords="car audio blog, car audio tips, speakers, versterkers, installatie handleiding"
       />
+      <BreadcrumbSchema items={[
+        { name: "Home", url: "/" },
+        { name: "Blog", url: "/blog" }
+      ]} />
+      
       <Header onCartOpen={() => setIsCartOpen(true)} variant="transparent" />
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
 

@@ -8,6 +8,8 @@ import { AuthorBox } from "@/components/blog/AuthorBox";
 import { BlogCTA } from "@/components/blog/BlogCTA";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SEO } from "@/components/SEO";
+import { ArticleSchema, BreadcrumbSchema } from "@/components/StructuredData";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -45,83 +47,6 @@ export default function BlogPostPage() {
     return relatedPosts.filter(p => p.id !== post?.id).slice(0, 3);
   }, [relatedPosts, post?.id]);
 
-  useEffect(() => {
-    if (post) {
-      document.title = `${post.title} | Kenniscentrum | Car Audio Limburg`;
-      const description = post.metaDescription || post.excerpt || `Lees meer over ${post.title} in het Car Audio Limburg kenniscentrum.`;
-      
-      // Meta description
-      let metaDescription = document.querySelector('meta[name="description"]');
-      if (!metaDescription) {
-        metaDescription = document.createElement('meta');
-        metaDescription.setAttribute('name', 'description');
-        document.head.appendChild(metaDescription);
-      }
-      metaDescription.setAttribute('content', description);
-      
-      // Remove any existing blog-post page tags first
-      document.querySelectorAll('meta[data-page="blog-post"]').forEach(tag => tag.remove());
-      
-      // Open Graph tags with data attribute for cleanup
-      const ogTagsData = [
-        { property: 'og:title', content: `${post.title} | Car Audio Limburg` },
-        { property: 'og:description', content: description },
-        { property: 'og:type', content: 'article' },
-        { property: 'og:url', content: `${window.location.origin}/blog/${post.slug}` },
-        { property: 'og:image', content: post.featuredImage || `${window.location.origin}/og-image.jpg` },
-        { property: 'og:site_name', content: 'Car Audio Limburg' },
-        { property: 'article:published_time', content: post.publishedAt ? new Date(post.publishedAt).toISOString() : '' },
-        { name: 'twitter:card', content: 'summary_large_image' },
-        { name: 'twitter:title', content: `${post.title} | Car Audio Limburg` },
-        { name: 'twitter:description', content: description },
-      ];
-      
-      ogTagsData.forEach(tag => {
-        const meta = document.createElement('meta');
-        meta.setAttribute('data-page', 'blog-post');
-        if (tag.property) meta.setAttribute('property', tag.property);
-        if (tag.name) meta.setAttribute('name', tag.name);
-        meta.setAttribute('content', tag.content || '');
-        document.head.appendChild(meta);
-      });
-    }
-    
-    return () => {
-      document.title = "Car Audio Limburg";
-      // Only remove tags we created
-      document.querySelectorAll('meta[data-page="blog-post"]').forEach(tag => tag.remove());
-    };
-  }, [post]);
-  
-  // JSON-LD structured data
-  const jsonLd = useMemo(() => {
-    if (!post) return null;
-    return {
-      "@context": "https://schema.org",
-      "@type": "Article",
-      "headline": post.title,
-      "description": post.metaDescription || post.excerpt || "",
-      "image": post.featuredImage || "",
-      "datePublished": post.publishedAt ? new Date(post.publishedAt).toISOString() : "",
-      "dateModified": post.updatedAt ? new Date(post.updatedAt).toISOString() : "",
-      "author": {
-        "@type": "Organization",
-        "name": "Car Audio Limburg"
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": "Car Audio Limburg",
-        "logo": {
-          "@type": "ImageObject",
-          "url": `${typeof window !== 'undefined' ? window.location.origin : ''}/logo.png`
-        }
-      },
-      "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": typeof window !== 'undefined' ? `${window.location.origin}/blog/${post.slug}` : ""
-      }
-    };
-  }, [post]);
 
   const formatDate = (date: Date | string | null) => {
     if (!date) return "";
@@ -296,12 +221,28 @@ export default function BlogPostPage() {
 
   return (
     <div className="min-h-screen bg-black">
-      {jsonLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      )}
+      <SEO 
+        title={post.title}
+        description={post.metaDescription || post.excerpt || `Lees meer over ${post.title} in het Car Audio Limburg kenniscentrum.`}
+        canonical={`/blog/${post.slug}`}
+        ogImage={post.featuredImage || undefined}
+        ogType="article"
+      />
+      <ArticleSchema
+        headline={post.title}
+        description={post.metaDescription || post.excerpt || ''}
+        image={post.featuredImage || ''}
+        datePublished={post.publishedAt ? new Date(post.publishedAt).toISOString() : new Date().toISOString()}
+        dateModified={post.updatedAt ? new Date(post.updatedAt).toISOString() : undefined}
+        authorName={authorName || 'Car Audio Limburg'}
+        url={`/blog/${post.slug}`}
+      />
+      <BreadcrumbSchema items={[
+        { name: "Home", url: "/" },
+        { name: "Blog", url: "/blog" },
+        { name: post.title, url: `/blog/${post.slug}` }
+      ]} />
+      
       <Header onCartOpen={() => setIsCartOpen(true)} variant="transparent" />
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
 

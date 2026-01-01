@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CartSidebar } from "@/components/CartSidebar";
 import { ScrollReveal, StaggerContainer, GoldAccentLine } from "@/components/ScrollAnimations";
+import { SEO } from "@/components/SEO";
+import { FAQSchema, BreadcrumbSchema } from "@/components/StructuredData";
 import {
   Accordion,
   AccordionContent,
@@ -118,8 +120,26 @@ export default function FAQ() {
     }
   ];
 
+  const faqItems = useMemo(() => {
+    return faqData.flatMap(category => 
+      category.questions.map(q => ({ question: q.question, answer: q.answer }))
+    );
+  }, []);
+
   return (
     <div className="min-h-screen bg-black scroll-smooth">
+      <SEO 
+        title="Veelgestelde Vragen (FAQ)"
+        description="Vind antwoorden op veelgestelde vragen over car audio producten, verzending, retourneren en professionele installatie bij Car Audio Limburg."
+        canonical="/faq"
+        keywords="FAQ, veelgestelde vragen, car audio, installatie, verzending, retourneren"
+      />
+      <FAQSchema items={faqItems} />
+      <BreadcrumbSchema items={[
+        { name: "Home", url: "/" },
+        { name: "Veelgestelde Vragen", url: "/faq" }
+      ]} />
+      
       <Header onCartOpen={() => setIsCartOpen(true)} variant="transparent" />
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
       

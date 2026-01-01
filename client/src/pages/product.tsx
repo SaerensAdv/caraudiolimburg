@@ -13,6 +13,8 @@ import { isUnauthorizedError } from "@/lib/authUtils";
 import { useAuth } from "@/hooks/useAuth";
 import { useGuestCart } from "@/lib/guestCart";
 import { ScrollReveal, StaggerContainer, StaggerItem } from "@/components/ScrollAnimations";
+import { SEO } from "@/components/SEO";
+import { ProductSchema, BreadcrumbSchema } from "@/components/StructuredData";
 import { 
   Heart, 
   ShoppingCart, 
@@ -148,50 +150,6 @@ export default function ProductPage() {
     }
   }, [product?.id, product?.hasVariations, product?.variations]);
 
-  // SEO: Update page title and meta tags - moved before early returns
-  useEffect(() => {
-    if (product) {
-      const currentPrice = parseFloat(product.price);
-      const images = product.images || [];
-      
-      document.title = `${product.name} | Car Audio Limburg`;
-      
-      // Meta description
-      const description = product.shortDescription || product.description?.toString().substring(0, 160) || `Koop ${product.name} bij Car Audio Limburg. Professionele installatie beschikbaar.`;
-      let metaDescription = document.querySelector('meta[name="description"]');
-      if (!metaDescription) {
-        metaDescription = document.createElement('meta');
-        metaDescription.setAttribute('name', 'description');
-        document.head.appendChild(metaDescription);
-      }
-      metaDescription.setAttribute('content', description);
-
-      // OG tags
-      const ogTags = [
-        { property: 'og:title', content: `${product.name} | Car Audio Limburg` },
-        { property: 'og:description', content: description },
-        { property: 'og:type', content: 'product' },
-        { property: 'og:url', content: `${window.location.origin}/product/${product.slug}` },
-        { property: 'og:image', content: images[0] || '' },
-        { property: 'product:price:amount', content: currentPrice.toString() },
-        { property: 'product:price:currency', content: 'EUR' },
-      ];
-      
-      document.querySelectorAll('meta[data-page="product"]').forEach(tag => tag.remove());
-      ogTags.forEach(tag => {
-        const meta = document.createElement('meta');
-        meta.setAttribute('data-page', 'product');
-        meta.setAttribute('property', tag.property);
-        meta.setAttribute('content', tag.content);
-        document.head.appendChild(meta);
-      });
-    }
-    
-    return () => {
-      document.title = 'Car Audio Limburg';
-      document.querySelectorAll('meta[data-page="product"]').forEach(tag => tag.remove());
-    };
-  }, [product]);
 
   const addToCartMutation = useMutation({
     mutationFn: async ({ needsInstallation, authenticated }: { needsInstallation: boolean; authenticated: boolean }) => {
@@ -314,46 +272,32 @@ export default function ProductPage() {
   const isInStock = effectiveStock !== null && effectiveStock > 0;
   const canAddToCart = product.hasVariations ? (selectedVariation && isInStock) : isInStock;
 
-  // JSON-LD Product Schema
-  const productJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "name": product.name,
-    "description": product.shortDescription || product.description?.toString().substring(0, 300) || "",
-    "image": images,
-    "sku": product.sku || product.id,
-    "brand": {
-      "@type": "Brand",
-      "name": "Car Audio Limburg"
-    },
-    "offers": {
-      "@type": "Offer",
-      "url": `${typeof window !== 'undefined' ? window.location.origin : ''}/product/${product.slug}`,
-      "priceCurrency": "EUR",
-      "price": currentPrice,
-      "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      "availability": product.stock && product.stock > 0 
-        ? "https://schema.org/InStock" 
-        : "https://schema.org/PreOrder",
-      "seller": {
-        "@type": "Organization",
-        "name": "Car Audio Limburg"
-      }
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.8",
-      "reviewCount": "24"
-    }
-  };
-
+  const productDescription = product.shortDescription || product.description?.toString().substring(0, 160) || `Koop ${product.name} bij Car Audio Limburg. Professionele installatie beschikbaar.`;
+  
   return (
     <div className="min-h-screen bg-black">
-      {/* JSON-LD Product Schema for SEO */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      <SEO 
+        title={product.name}
+        description={productDescription}
+        canonical={`/product/${product.slug}`}
+        ogImage={images[0] || undefined}
+        ogType="product"
       />
+      <ProductSchema
+        name={product.name}
+        description={productDescription}
+        image={images.length > 0 ? images : ['https://caraudiolimburg.com/og-image.jpg']}
+        price={currentPrice}
+        availability={isInStock ? 'InStock' : 'OutOfStock'}
+        sku={product.sku || product.id}
+        url={`/product/${product.slug}`}
+      />
+      <BreadcrumbSchema items={[
+        { name: "Home", url: "/" },
+        { name: "Producten", url: "/products" },
+        { name: product.name, url: `/product/${product.slug}` }
+      ]} />
+      
       {/* Desktop Header */}
       <div className="hidden md:block">
         <Header onCartOpen={() => setIsCartOpen(true)} />

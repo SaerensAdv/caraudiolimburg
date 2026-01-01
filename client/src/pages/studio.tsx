@@ -4,6 +4,8 @@ import { Footer } from "@/components/Footer";
 import { CartSidebar } from "@/components/CartSidebar";
 import { Button } from "@/components/ui/button";
 import { ScrollReveal, StaggerContainer, StaggerItem } from "@/components/ScrollAnimations";
+import { SEO } from "@/components/SEO";
+import { BreadcrumbSchema } from "@/components/StructuredData";
 import { 
   ExternalLink, 
   Users, 
@@ -77,6 +79,17 @@ export default function StudioPage() {
 
   return (
     <div className="min-h-screen bg-black flex flex-col">
+      <SEO 
+        title="Installatie Studio | Professionele Montage"
+        description="Ontdek onze professionele inbouwstudio voor car audio installatie. Vakkundige montage, advies op maat en 1 jaar garantie op de inbouwservice."
+        canonical="/studio"
+        keywords="installatie studio, car audio montage, inbouw, BMW, Mercedes, Porsche, Audi"
+      />
+      <BreadcrumbSchema items={[
+        { name: "Home", url: "/" },
+        { name: "Installatie Studio", url: "/studio" }
+      ]} />
+      
       <Header onCartOpen={() => setIsCartOpen(true)} />
       
       {/* Hero Section */}

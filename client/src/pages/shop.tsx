@@ -8,6 +8,8 @@ import { CartSidebar } from "@/components/CartSidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { SEO } from "@/components/SEO";
+import { BreadcrumbSchema } from "@/components/StructuredData";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -176,77 +178,41 @@ export default function Shop() {
     return byId?.name || null;
   }, [selectedBrand, brands]);
 
-  useEffect(() => {
-    let title = "Producten | Car Audio Limburg";
-    let description = "Bekijk ons complete assortiment car audio producten. Premium speakers, versterkers, head units en accessoires van topmerken. Met vakkundige installatie in Limburg.";
-    
+  const seoTitle = useMemo(() => {
     if (activeCategoryName && activeBrandName) {
-      title = `${activeBrandName} ${activeCategoryName} | Producten | Car Audio Limburg`;
-      description = `Ontdek ${activeBrandName} ${activeCategoryName.toLowerCase()} bij Car Audio Limburg. Vakkundig advies en professionele installatie van premium car audio.`;
+      return `${activeBrandName} ${activeCategoryName} | Producten`;
     } else if (activeCategoryName) {
-      title = `${activeCategoryName} | Producten | Car Audio Limburg`;
-      description = `Bekijk ons assortiment ${activeCategoryName.toLowerCase()}. Premium kwaliteit met vakkundige installatie bij Car Audio Limburg.`;
+      return `${activeCategoryName} | Producten`;
     } else if (activeBrandName) {
-      title = `${activeBrandName} Producten | Car Audio Limburg`;
-      description = `Ontdek het complete ${activeBrandName} assortiment bij Car Audio Limburg. Vakkundig advies en professionele installatie.`;
+      return `${activeBrandName} Producten`;
     }
-    
-    document.title = title;
-    
-    let metaDescription = document.querySelector('meta[name="description"]');
-    if (!metaDescription) {
-      metaDescription = document.createElement('meta');
-      metaDescription.setAttribute('name', 'description');
-      document.head.appendChild(metaDescription);
-    }
-    metaDescription.setAttribute('content', description);
-    
-    return () => {
-      document.title = "Car Audio Limburg";
-    };
+    return "Car Audio Webshop | Alpine, Audison, Focal, Hertz";
   }, [activeCategoryName, activeBrandName]);
 
-  const breadcrumbJsonLd = useMemo(() => {
-    const items: { "@type": string; position: number; name: string; item?: string }[] = [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: typeof window !== 'undefined' ? `${window.location.origin}/` : "/"
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Producten",
-        item: typeof window !== 'undefined' ? `${window.location.origin}/products` : "/products"
-      }
+  const seoDescription = useMemo(() => {
+    if (activeCategoryName && activeBrandName) {
+      return `Ontdek ${activeBrandName} ${activeCategoryName.toLowerCase()} bij Car Audio Limburg. Vakkundig advies en professionele installatie van premium car audio.`;
+    } else if (activeCategoryName) {
+      return `Bekijk ons assortiment ${activeCategoryName.toLowerCase()}. Premium kwaliteit met vakkundige installatie bij Car Audio Limburg.`;
+    } else if (activeBrandName) {
+      return `Ontdek het complete ${activeBrandName} assortiment bij Car Audio Limburg. Vakkundig advies en professionele installatie.`;
+    }
+    return "Bekijk ons complete assortiment car audio producten. Premium speakers, versterkers, head units en accessoires van topmerken Alpine, Audison, Focal en Hertz.";
+  }, [activeCategoryName, activeBrandName]);
+
+  const breadcrumbItems = useMemo(() => {
+    const items = [
+      { name: "Home", url: "/" },
+      { name: "Producten", url: "/products" }
     ];
-
     if (activeCategoryName) {
-      items.push({
-        "@type": "ListItem",
-        position: 3,
-        name: activeCategoryName,
-        item: typeof window !== 'undefined' 
-          ? `${window.location.origin}/products?category=${selectedCategory}` 
-          : `/products?category=${selectedCategory}`
-      });
+      items.push({ name: activeCategoryName, url: `/products?category=${selectedCategory}` });
     }
-
     if (activeBrandName) {
-      items.push({
-        "@type": "ListItem",
-        position: activeCategoryName ? 4 : 3,
-        name: activeBrandName
-      });
+      items.push({ name: activeBrandName, url: `/products?brand=${selectedBrand}` });
     }
-
-    return {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: items
-    };
-  }, [activeCategoryName, activeBrandName, selectedCategory]);
+    return items;
+  }, [activeCategoryName, activeBrandName, selectedCategory, selectedBrand]);
 
   const categoryIcons: Record<string, React.ReactNode> = {
     speakers: <Volume2 className="w-6 h-6" />,
@@ -257,10 +223,13 @@ export default function Shop() {
 
   return (
     <div className="min-h-screen bg-black">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      <SEO 
+        title={seoTitle}
+        description={seoDescription}
+        canonical="/products"
+        keywords="car audio, speakers, versterkers, head units, Alpine, Audison, Focal, Hertz"
       />
+      <BreadcrumbSchema items={breadcrumbItems} />
       
       {/* Desktop Header */}
       <div className="hidden md:block">

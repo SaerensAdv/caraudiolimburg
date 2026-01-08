@@ -87,6 +87,117 @@
 
 ---
 
+## Advertentiegroep: CarPlay & Multimedia
+
+### Koppen (max 30 karakters)
+1. Apple CarPlay Inbouwen
+2. Android Auto Installatie
+3. CarPlay Retrofit Expert
+4. Draadloos CarPlay Inbouw
+5. Multimedia Upgrade Auto
+6. Navigatie Systeem Inbouw
+7. Infotainment Specialist
+8. CarPlay voor Elke Auto
+9. Android Auto Specialist
+10. Touchscreen Inbouwen
+11. OEM Navigatie Upgrade
+12. Spotify in Je Auto
+13. Wireless CarPlay Limburg
+14. CarPlay BMW Audi VW
+15. Professionele Inbouw
+
+### Beschrijvingen (max 90 karakters)
+1. Apple CarPlay laten inbouwen? Professionele installatie in Sittard. Gratis offerte!
+2. Android Auto retrofit voor elke auto. Behoud je originele scherm, voeg functie toe.
+3. Draadloos CarPlay inbouwen door experts. Navigeren, bellen en muziek via je iPhone.
+4. Multimedia upgrade met Apple CarPlay en Android Auto. Altijd verbonden onderweg.
+5. Spotify, Google Maps en Waze in je auto. Wij bouwen het professioneel in.
+6. OEM-look navigatie upgrade. Perfecte integratie, geen zichtbare modificaties.
+7. Van oudere auto tot nieuwste modellen. CarPlay retrofit door 15+ jaar experts.
+8. Touchscreen met CarPlay inbouwen. Bekijk demo in onze showroom in Sittard.
+
+### Zoekwoorden
+
+**Exacte match:**
+- [apple carplay inbouwen]
+- [android auto inbouwen]
+- [carplay retrofit]
+- [draadloos carplay]
+- [wireless carplay inbouwen]
+- [navigatie inbouwen auto]
+
+**Woordgroep match:**
+- "carplay laten inbouwen"
+- "android auto installeren"
+- "multimedia systeem auto"
+- "infotainment upgrade"
+- "touchscreen auto inbouwen"
+
+**Brede match:**
+- carplay installatie limburg
+- android auto specialist
+- auto navigatie upgrade
+- multimedia retrofit
+- infotainment inbouw
+
+### Zoekwoorden per automerk
+- apple carplay bmw inbouwen
+- carplay audi retrofit
+- android auto volkswagen
+- carplay mercedes inbouwen
+- carplay porsche cayenne
+- android auto skoda
+- carplay mini cooper
+- carplay range rover
+
+### Negatieve zoekwoorden
+- gratis
+- zelf doen
+- handleiding
+- tutorial
+- goedkoop
+- tweedehands
+- gebruikt
+
+### Aanbevolen advertentie combinaties
+
+**Advertentie 1 - Algemeen CarPlay:**
+- Koppen: 1, 3, 8, 15, 4
+- Beschrijvingen: 1, 3, 4
+
+**Advertentie 2 - Android Auto:**
+- Koppen: 2, 9, 5, 15, 8
+- Beschrijvingen: 2, 4, 7
+
+**Advertentie 3 - Draadloos/Wireless:**
+- Koppen: 4, 13, 1, 15, 8
+- Beschrijvingen: 3, 5, 8
+
+**Advertentie 4 - Merk-specifiek:**
+- Koppen: 14, 3, 15, 8, 11
+- Beschrijvingen: 2, 6, 7
+
+### Sitelinks voor CarPlay campagne
+
+| Sitelink | URL | Beschrijving |
+|----------|-----|--------------|
+| Apple CarPlay Info | /diensten/apple-carplay/ | Alle info over CarPlay inbouw |
+| Android Auto Info | /diensten/android-auto/ | Android Auto retrofit opties |
+| Gratis Offerte | /offerte-aanvragen/ | Vrijblijvende prijsopgave |
+| Onze Showroom | /inbouw-studio/ | Bekijk live demo's |
+| Portfolio | /portfolio/ | Bekijk ons werk |
+| Contact | /contact/ | Bel ons direct |
+
+### Callouts voor CarPlay campagne
+- Draadloos CarPlay
+- OEM Integratie
+- Behoud Garantie
+- Alle Automerken
+- Showroom Demo
+- Gratis Offerte
+
+---
+
 ## Sitelink Extensies
 
 | Sitelink | URL | Beschrijving |

@@ -198,6 +198,127 @@
 
 ---
 
+## Advertentiegroep: Brand Protection (Car Audio Limburg)
+
+> **Tip:** Overweeg een aparte campagne voor brand terms met hoger budget en priority, zodat je altijd bovenaan staat bij zoekopdrachten op je eigen naam.
+
+### Koppen (max 30 karakters)
+1. Car Audio Limburg
+2. Officiële Website
+3. De Originele Specialist
+4. Sinds 2013 in Sittard
+5. Bezoek Onze Showroom
+6. Inbouwstudio Limburg
+7. 15+ Jaar Ervaring
+8. Gratis Offerte Aanvragen
+9. Premium Car Audio
+10. Bel Ons Direct
+
+### Beschrijvingen (max 90 karakters)
+1. Car Audio Limburg - De officiële website. Bezoek onze showroom in Sittard!
+2. Sinds 2013 specialist in premium car audio. Audison, Focal, Hertz en meer.
+3. Zoekt u Car Audio Limburg? U bent hier aan het juiste adres. Gratis offerte!
+4. De echte Car Audio Limburg. 15+ jaar ervaring in audio upgrades. Bel ons!
+
+### Zoekwoorden
+
+**Exacte match:**
+- [car audio limburg]
+- [caraudiolimburg]
+- [car audio limburg sittard]
+- [car audio limburg geleen]
+- [car audio limburg studio]
+
+**Woordgroep match:**
+- "car audio limburg"
+- "car audio limburg offerte"
+- "car audio limburg review"
+- "car audio limburg contact"
+- "car audio limburg prijs"
+
+**Brede match (modified):**
+- +car +audio +limburg
+- +caraudiolimburg +sittard
+- +car +audio +limburg +inbouw
+
+### Aanbevolen advertentie
+- Koppen: 1, 2, 3, 4, 5, 8
+- Beschrijvingen: 1, 2, 3
+
+### Sitelinks voor Brand campagne
+
+| Sitelink | URL | Beschrijving |
+|----------|-----|--------------|
+| Offerte Aanvragen | /offerte-aanvragen/ | Gratis vrijblijvende offerte |
+| Onze Studio | /inbouw-studio/ | Bezoek onze showroom |
+| Diensten | /diensten/ | Bekijk alle diensten |
+| Portfolio | /portfolio/ | Bekijk ons werk |
+| Contact | /contact/ | Bel of mail direct |
+| Over Ons | /over-ons/ | Leer ons kennen |
+
+---
+
+## Advertentiegroep: Competitor Targeting (Car Audio Plus)
+
+> **Let op:** Competitor targeting is toegestaan, maar je mag de merknaam NIET in de advertentietekst gebruiken. Alleen in zoekwoorden.
+
+### Koppen (max 30 karakters)
+1. Zoekt u Car Audio Expert?
+2. Premium Audio Specialist
+3. 15+ Jaar Ervaring
+4. Inbouwstudio Limburg
+5. Showroom in Sittard
+6. Gratis Offerte Aanvragen
+7. Topmerken Car Audio
+8. Audison Focal Hertz
+9. Professionele Installatie
+10. Bekijk Onze Reviews
+
+### Beschrijvingen (max 90 karakters)
+1. Op zoek naar een car audio specialist? Bezoek onze showroom in Sittard voor een demo!
+2. Premium car audio installatie met 15+ jaar ervaring. Vraag een gratis offerte aan.
+3. Vergelijk eerst! Bezoek onze showroom en beluister het verschil. Koffie staat klaar.
+4. Topmerken als Audison, Focal en Hertz. Professionele installatie met garantie.
+
+### Zoekwoorden
+
+**Exacte match:**
+- [car audio plus]
+- [caraudioplus]
+- [car audio plus review]
+- [car audio plus ervaringen]
+- [car audio plus prijzen]
+
+**Woordgroep match:**
+- "car audio plus"
+- "car audio plus alternatief"
+- "car audio plus of"
+- "beter dan car audio plus"
+
+**Brede match:**
+- car audio plus concurrent
+- car audio specialist nederland
+- car audio installateur alternatief
+
+### Negatieve zoekwoorden
+- vacature
+- werken bij
+- banen
+- solliciteren
+
+### Aanbevolen advertentie
+- Koppen: 1, 2, 3, 5, 6, 10
+- Beschrijvingen: 1, 3, 4
+
+### Strategie tips voor competitor targeting
+1. **Bied agressief** - je wilt bovenaan staan bij hun zoektermen
+2. **Focus op onderscheidende kenmerken** - showroom, demo mogelijkheid, ervaring
+3. **Gebruik "vergelijk" angle** - mensen die competitor zoeken zijn in vergelijkingsfase
+4. **Monitor kwaliteitsscore** - kan lager zijn bij competitor terms, pas biedingen aan
+5. **A/B test** - test verschillende hooks (prijs, ervaring, showroom, reviews)
+
+---
+
 ## Sitelink Extensies
 
 | Sitelink | URL | Beschrijving |

@@ -35,12 +35,12 @@ export default function About() {
       <SEO 
         title="Over Ons"
         description="Leer meer over Car Audio Limburg - Met passie voor auto's en muziek. Al meer dan 10 jaar specialist in premium car audio systemen en professionele installatie in Limburg."
-        canonical="/about"
+        canonical="/over-ons"
         keywords="over ons, car audio limburg, installatie studio, Sittard, Geleen"
       />
       <BreadcrumbSchema items={[
         { name: "Home", url: "/" },
-        { name: "Over Ons", url: "/about" }
+        { name: "Over Ons", url: "/over-ons" }
       ]} />
       
       <Header onCartOpen={() => setIsCartOpen(true)} variant="transparent" />

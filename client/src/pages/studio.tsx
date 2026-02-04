@@ -82,12 +82,12 @@ export default function StudioPage() {
       <SEO 
         title="Installatie Studio | Professionele Montage"
         description="Ontdek onze professionele inbouwstudio voor car audio installatie. Vakkundige montage, advies op maat en 1 jaar garantie op de inbouwservice."
-        canonical="/studio"
+        canonical="/montage"
         keywords="installatie studio, car audio montage, inbouw, BMW, Mercedes, Porsche, Audi"
       />
       <BreadcrumbSchema items={[
         { name: "Home", url: "/" },
-        { name: "Installatie Studio", url: "/studio" }
+        { name: "Installatie Studio", url: "/montage" }
       ]} />
       
       <Header onCartOpen={() => setIsCartOpen(true)} />

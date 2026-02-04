@@ -131,13 +131,13 @@ export default function FAQ() {
       <SEO 
         title="Veelgestelde Vragen (FAQ)"
         description="Vind antwoorden op veelgestelde vragen over car audio producten, verzending, retourneren en professionele installatie bij Car Audio Limburg."
-        canonical="/faq"
+        canonical="/veelgestelde-vragen"
         keywords="FAQ, veelgestelde vragen, car audio, installatie, verzending, retourneren"
       />
       <FAQSchema items={faqItems} />
       <BreadcrumbSchema items={[
         { name: "Home", url: "/" },
-        { name: "Veelgestelde Vragen", url: "/faq" }
+        { name: "Veelgestelde Vragen", url: "/veelgestelde-vragen" }
       ]} />
       
       <Header onCartOpen={() => setIsCartOpen(true)} variant="transparent" />

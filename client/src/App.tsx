@@ -70,23 +70,21 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
-      <Route path="/products" component={Shop} />
-      <Route path="/shop" component={Shop} />
-      <Route path="/product/:slug" component={Product} />
+      <Route path="/webshop" component={Shop} />
+      <Route path="/webshop/:slug" component={Product} />
       <Route path="/cart" component={Cart} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/order-confirmation" component={OrderConfirmation} />
-      <Route path="/studio" component={Studio} />
-      <Route path="/booking" component={Studio} />
-      <Route path="/about" component={About} />
-      <Route path="/faq" component={FAQ} />
+      <Route path="/montage" component={Studio} />
+      <Route path="/over-ons" component={About} />
+      <Route path="/veelgestelde-vragen" component={FAQ} />
       <Route path="/contact" component={Contact} />
-      <Route path="/apple-carplay-bmw" component={AppleCarPlayBMW} />
+      <Route path="/apple-carplay-voor-uw-bmw" component={AppleCarPlayBMW} />
       <Route path="/login" component={Login} />
       <Route path="/my-account" component={CustomerPortal} />
       <Route path="/admin" component={Admin} />
-      <Route path="/privacy" component={Privacy} />
-      <Route path="/voorwaarden" component={Voorwaarden} />
+      <Route path="/privacy-policy" component={Privacy} />
+      <Route path="/algemene-voorwaarden" component={Voorwaarden} />
       <Route path="/blog" component={Blog} />
       <Route path="/kenniscentrum" component={Blog} />
       <Route path="/blog/:slug" component={BlogPostPage} />

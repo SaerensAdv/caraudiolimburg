@@ -254,7 +254,7 @@ export function ProductQuickView({ product, isOpen, onClose }: ProductQuickViewP
                   )}
                 </div>
 
-                <Link href={`/product/${product.slug}`} onClick={onClose}>
+                <Link href={`/webshop/${product.slug}`} onClick={onClose}>
                   <Button
                     variant="ghost"
                     className="w-full text-white/60 hover:text-white hover:bg-white/5 rounded-none"

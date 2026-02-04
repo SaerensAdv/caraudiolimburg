@@ -130,7 +130,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
                   return (
                     <li key={category.id} role="none">
                       <Link
-                        href={`/products?category=${category.slug}`}
+                        href={`/webshop?category=${category.slug}`}
                         className="flex items-center gap-3 py-2.5 px-3 text-white/80 hover:text-white hover:bg-white/5 transition-all duration-200 group"
                         role="menuitem"
                         onClick={onClose}
@@ -148,7 +148,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
             
             <div className="mt-6 pt-4 border-t border-white/10">
               <Link
-                href="/products"
+                href="/webshop"
                 className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-[#d0a760] transition-colors group"
                 onClick={onClose}
                 data-testid="megamenu-all-products"
@@ -178,7 +178,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
                   return (
                     <li key={brand.id} role="none">
                       <Link
-                        href={`/products?brand=${brand.slug}`}
+                        href={`/webshop?brand=${brand.slug}`}
                         className="flex items-center gap-3 py-3 px-4 text-white/80 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-200 group"
                         role="menuitem"
                         onClick={onClose}
@@ -211,7 +211,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
             </h3>
             
             <Link
-              href="/apple-carplay-bmw"
+              href="/apple-carplay-voor-uw-bmw"
               className="group block relative overflow-hidden border border-white/10 hover:border-[#d0a760]/50 transition-all duration-300"
               onClick={onClose}
               data-testid="megamenu-featured-bmw-carplay"
@@ -284,7 +284,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
               vehicleMakes.map((make) => (
                 <Link
                   key={make.id}
-                  href={`/products?make=${make.slug}`}
+                  href={`/webshop?make=${make.slug}`}
                   onClick={onClose}
                   className="shrink-0 snap-start px-3 py-2 md:px-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#d0a760]/30 transition-all duration-200 group"
                   data-testid={`megamenu-car-brand-${make.slug}`}

@@ -122,21 +122,21 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
   const showSolidHeader = !isTransparent || scrolled || isMegaMenuOpen;
 
   const menuItems = [
-    { href: "/products", label: "Producten", highlight: false },
-    { href: "/apple-carplay-bmw", label: "BMW/MINI CarPlay", highlight: true },
+    { href: "/webshop", label: "Producten", highlight: false },
+    { href: "/apple-carplay-voor-uw-bmw", label: "BMW/MINI CarPlay", highlight: true },
     { href: "/blog", label: "Kenniscentrum", highlight: false },
-    { href: "/studio", label: "Studio", highlight: false },
-    { href: "/about", label: "Over Ons", highlight: false },
-    { href: "/faq", label: "FAQ", highlight: false },
+    { href: "/montage", label: "Studio", highlight: false },
+    { href: "/over-ons", label: "Over Ons", highlight: false },
+    { href: "/veelgestelde-vragen", label: "FAQ", highlight: false },
     { href: "/contact", label: "Contact", highlight: false },
   ];
 
   const mobileMenuItems = [
-    { href: "/apple-carplay-bmw", label: "BMW/MINI CarPlay", highlight: true },
+    { href: "/apple-carplay-voor-uw-bmw", label: "BMW/MINI CarPlay", highlight: true },
     { href: "/blog", label: "Kenniscentrum", highlight: false },
-    { href: "/studio", label: "Studio", highlight: false },
-    { href: "/about", label: "Over Ons", highlight: false },
-    { href: "/faq", label: "FAQ", highlight: false },
+    { href: "/montage", label: "Studio", highlight: false },
+    { href: "/over-ons", label: "Over Ons", highlight: false },
+    { href: "/veelgestelde-vragen", label: "FAQ", highlight: false },
     { href: "/contact", label: "Contact", highlight: false },
   ];
 
@@ -162,7 +162,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8" aria-label="Hoofdnavigatie">
             {menuItems.map((item) => {
-              if (item.href === "/products") {
+              if (item.href === "/webshop") {
                 return (
                   <div
                     key={item.href}
@@ -360,7 +360,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
                       categories.map((category) => (
                         <Link
                           key={category.id}
-                          href={`/products?category=${category.slug}`}
+                          href={`/webshop?category=${category.slug}`}
                           onClick={handleMobileMenuClose}
                           className="block py-2.5 text-white/70 hover:text-[#d0a760] transition-colors text-lg"
                           data-testid={`mobile-category-${category.slug}`}
@@ -370,7 +370,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
                       ))
                     )}
                     <Link
-                      href="/products"
+                      href="/webshop"
                       onClick={handleMobileMenuClose}
                       className="block py-2.5 text-[#d0a760] hover:text-[#d0a760]/80 transition-colors text-lg font-medium"
                       data-testid="mobile-all-products"
@@ -420,7 +420,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
                       brands.map((brand) => (
                         <Link
                           key={brand.id}
-                          href={`/products?brand=${brand.slug}`}
+                          href={`/webshop?brand=${brand.slug}`}
                           onClick={handleMobileMenuClose}
                           className="block py-2.5 text-white/70 hover:text-[#d0a760] transition-colors text-lg"
                           data-testid={`mobile-brand-${brand.slug}`}

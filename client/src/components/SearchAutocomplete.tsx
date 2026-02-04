@@ -74,7 +74,7 @@ export function SearchAutocomplete({ variant = 'desktop', onNavigate }: SearchAu
     } else if (e.key === "Enter" && query.trim()) {
       e.preventDefault();
       setIsOpen(false);
-      navigate(`/products?search=${encodeURIComponent(query.trim())}`);
+      navigate(`/webshop?search=${encodeURIComponent(query.trim())}`);
       onNavigate?.();
     }
   };
@@ -82,21 +82,21 @@ export function SearchAutocomplete({ variant = 'desktop', onNavigate }: SearchAu
   const handleProductClick = (slug: string) => {
     setIsOpen(false);
     setQuery("");
-    navigate(`/product/${slug}`);
+    navigate(`/webshop/${slug}`);
     onNavigate?.();
   };
 
   const handleCategoryClick = (slug: string) => {
     setIsOpen(false);
     setQuery("");
-    navigate(`/products?category=${slug}`);
+    navigate(`/webshop?category=${slug}`);
     onNavigate?.();
   };
 
   const handleBrandClick = (slug: string) => {
     setIsOpen(false);
     setQuery("");
-    navigate(`/products?brand=${slug}`);
+    navigate(`/webshop?brand=${slug}`);
     onNavigate?.();
   };
 

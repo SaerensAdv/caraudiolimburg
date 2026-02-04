@@ -174,7 +174,7 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
   return (
     <>
       <Card className={`bg-zinc-900 border-zinc-800 hover:border-[#d0a760]/50 transition-all duration-300 ease-out group overflow-hidden rounded-none hover:-translate-y-1 hover:shadow-xl hover:shadow-black/50 h-full flex flex-col ${featured ? 'animated-gold-border' : ''}`} data-testid={`product-card-${product.id}`}>
-        <Link href={`/product/${product.slug}`}>
+        <Link href={`/webshop/${product.slug}`}>
           <div className="relative overflow-hidden">
             <div className={`aspect-square flex items-center justify-center ${hasValidImage ? 'bg-white' : 'bg-zinc-800 p-8'}`}>
               <img 
@@ -228,7 +228,7 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
         </Link>
 
         <CardContent className="p-5 flex flex-col flex-grow">
-          <Link href={`/product/${product.slug}`}>
+          <Link href={`/webshop/${product.slug}`}>
             <h3 className="text-white font-medium mb-2 group-hover:text-[#d0a760] transition-all duration-300 cursor-pointer line-clamp-2 min-h-[3rem]" data-testid={`product-title-${product.id}`}>
               {product.name}
             </h3>

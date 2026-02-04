@@ -203,13 +203,13 @@ export default function Shop() {
   const breadcrumbItems = useMemo(() => {
     const items = [
       { name: "Home", url: "/" },
-      { name: "Producten", url: "/products" }
+      { name: "Producten", url: "/webshop" }
     ];
     if (activeCategoryName) {
-      items.push({ name: activeCategoryName, url: `/products?category=${selectedCategory}` });
+      items.push({ name: activeCategoryName, url: `/webshop?category=${selectedCategory}` });
     }
     if (activeBrandName) {
-      items.push({ name: activeBrandName, url: `/products?brand=${selectedBrand}` });
+      items.push({ name: activeBrandName, url: `/webshop?brand=${selectedBrand}` });
     }
     return items;
   }, [activeCategoryName, activeBrandName, selectedCategory, selectedBrand]);
@@ -226,7 +226,7 @@ export default function Shop() {
       <SEO 
         title={seoTitle}
         description={seoDescription}
-        canonical="/products"
+        canonical="/webshop"
         keywords="car audio, speakers, versterkers, head units, Alpine, Audison, Focal, Hertz"
       />
       <BreadcrumbSchema items={breadcrumbItems} />
@@ -316,7 +316,7 @@ export default function Shop() {
               <BreadcrumbItem>
                 {activeCategoryName || activeBrandName ? (
                   <BreadcrumbLink asChild>
-                    <Link href="/products" className="hover:text-[#d0a760] transition-colors" data-testid="breadcrumb-products">
+                    <Link href="/webshop" className="hover:text-[#d0a760] transition-colors" data-testid="breadcrumb-products">
                       Producten
                     </Link>
                   </BreadcrumbLink>
@@ -331,7 +331,7 @@ export default function Shop() {
                     {activeBrandName ? (
                       <BreadcrumbLink asChild>
                         <Link 
-                          href={`/products?category=${selectedCategory}`} 
+                          href={`/webshop?category=${selectedCategory}`} 
                           className="hover:text-[#d0a760] transition-colors"
                           data-testid="breadcrumb-category"
                         >
@@ -709,7 +709,7 @@ export default function Shop() {
                           <div className="flex justify-between items-start mb-4">
                             <div>
                               <h2 className="text-xl font-semibold text-white mb-2 group-hover:text-[#d0a760] transition-colors">
-                                <a href={`/product/${product.slug}`}>{product.name}</a>
+                                <a href={`/webshop/${product.slug}`}>{product.name}</a>
                               </h2>
                               {product.shortDescription && (
                                 <p className="text-white/50 mb-3 line-clamp-2">
@@ -744,7 +744,7 @@ export default function Shop() {
                               asChild 
                               className="bg-white text-black hover:bg-[#d0a760] rounded-none"
                             >
-                              <a href={`/product/${product.slug}`}>
+                              <a href={`/webshop/${product.slug}`}>
                                 Bekijk Product
                                 <ChevronRight className="w-4 h-4 ml-1" />
                               </a>

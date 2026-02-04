@@ -279,7 +279,7 @@ export default function ProductPage() {
       <SEO 
         title={product.name}
         description={productDescription}
-        canonical={`/product/${product.slug}`}
+        canonical={`/webshop/${product.slug}`}
         ogImage={images[0] || undefined}
         ogType="product"
       />
@@ -290,12 +290,12 @@ export default function ProductPage() {
         price={currentPrice}
         availability={isInStock ? 'InStock' : 'OutOfStock'}
         sku={product.sku || product.id}
-        url={`/product/${product.slug}`}
+        url={`/webshop/${product.slug}`}
       />
       <BreadcrumbSchema items={[
         { name: "Home", url: "/" },
-        { name: "Producten", url: "/products" },
-        { name: product.name, url: `/product/${product.slug}` }
+        { name: "Producten", url: "/webshop" },
+        { name: product.name, url: `/webshop/${product.slug}` }
       ]} />
       
       {/* Desktop Header */}
@@ -877,7 +877,7 @@ export default function ProductPage() {
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
               {filteredRelatedProducts.map((relatedProduct) => (
-                <Link key={relatedProduct.id} href={`/product/${relatedProduct.slug}`}>
+                <Link key={relatedProduct.id} href={`/webshop/${relatedProduct.slug}`}>
                   <div className="group cursor-pointer" data-testid={`related-product-${relatedProduct.id}`}>
                     <div className="relative aspect-square bg-zinc-900 border border-zinc-800 mb-3 overflow-hidden">
                       {relatedProduct.images && relatedProduct.images[0] ? (

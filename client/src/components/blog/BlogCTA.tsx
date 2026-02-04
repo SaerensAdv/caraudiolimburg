@@ -75,7 +75,7 @@ export function BlogRelatedProducts({
       <h3 className="text-[#d0a760] text-sm uppercase tracking-wider mb-4">Gerelateerde Producten</h3>
       <div className="space-y-3">
         {products.map((product, index) => (
-          <Link key={index} href={`/product/${product.slug}`}>
+          <Link key={index} href={`/webshop/${product.slug}`}>
             <div className="flex items-center justify-between py-2 border-b border-zinc-800 last:border-0 hover:bg-zinc-800/50 px-2 -mx-2 cursor-pointer transition-colors">
               <span className="text-white text-sm">{product.name}</span>
               {product.price && (

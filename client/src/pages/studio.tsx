@@ -186,7 +186,7 @@ export default function StudioPage() {
                       <ExternalLink className="w-4 h-4 ml-2" />
                     </Button>
                   </a>
-                  <a href="/products">
+                  <a href="/webshop">
                     <Button variant="outline" className="border-zinc-700 text-white hover:bg-zinc-800 hover:text-white">
                       Bekijk onze producten
                     </Button>

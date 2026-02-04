@@ -327,11 +327,11 @@ export default function Login() {
             <div className="mt-6 text-center">
               <p className="text-zinc-400 text-xs">
                 Door in te loggen gaat u akkoord met onze{" "}
-                <Link href="/voorwaarden" className="text-[#d0a760] hover:underline">
+                <Link href="/algemene-voorwaarden" className="text-[#d0a760] hover:underline">
                   Algemene Voorwaarden
                 </Link>{" "}
                 en{" "}
-                <Link href="/privacy" className="text-[#d0a760] hover:underline">
+                <Link href="/privacy-policy" className="text-[#d0a760] hover:underline">
                   Privacybeleid
                 </Link>
               </p>

@@ -898,7 +898,7 @@ export default function CustomerPortal() {
                             className="bg-zinc-950 border border-zinc-800 hover:border-zinc-700 transition-colors group"
                             data-testid={`wishlist-item-${item.productId}`}
                           >
-                            <Link href={`/product/${item.product.slug}`}>
+                            <Link href={`/webshop/${item.product.slug}`}>
                               <div className="aspect-square bg-zinc-900 flex items-center justify-center p-6 relative overflow-hidden">
                                 <img 
                                   src={item.product.images?.[item.product.primaryImageIndex || 0] || '/caraudiolimburg-logo.png'} 
@@ -911,7 +911,7 @@ export default function CustomerPortal() {
                               </div>
                             </Link>
                             <div className="p-4">
-                              <Link href={`/product/${item.product.slug}`}>
+                              <Link href={`/webshop/${item.product.slug}`}>
                                 <h3 className="text-white font-medium mb-2 group-hover:text-[#d0a760] transition-colors cursor-pointer line-clamp-2" data-testid={`wishlist-product-name-${item.productId}`}>
                                   {item.product.name}
                                 </h3>
@@ -1229,7 +1229,7 @@ export default function CustomerPortal() {
                           <h3 className="text-white font-medium">Snelle links</h3>
                         </div>
                         <div className="p-6 space-y-2">
-                          <Link href="/faq">
+                          <Link href="/veelgestelde-vragen">
                             <div 
                               className="flex items-center justify-between p-4 hover:bg-zinc-900 transition-colors group cursor-pointer"
                               data-testid="link-faq"

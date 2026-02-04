@@ -264,7 +264,7 @@ export default function About() {
 
             <ScrollReveal delay={400}>
               <div className="mt-16 text-center">
-                <Link href="/products">
+                <Link href="/webshop">
                   <Button 
                     className="bg-black text-white hover:bg-zinc-900 px-8 py-6 rounded-none"
                     data-testid="button-view-products"

@@ -131,7 +131,7 @@ export default function Home() {
             
             <ScrollReveal direction="up" delay={800}>
               <div className="mt-8 flex items-center gap-6">
-                <Link href="/products">
+                <Link href="/webshop">
                   <Button 
                     variant="ghost"
                     className="text-white/70 hover:text-white hover:bg-transparent rounded-none px-0 underline-offset-4 hover:underline"
@@ -185,7 +185,7 @@ export default function Home() {
 
             <ScrollReveal delay={400}>
               <div className="mt-12 text-center">
-                <Link href="/products">
+                <Link href="/webshop">
                   <Button 
                     className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none px-8 py-6"
                     data-testid="button-view-all-compatible"
@@ -257,7 +257,7 @@ export default function Home() {
                   rechtstreeks van de fabriek komt. Jouw tevredenheid is waar wij voor gaan.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <Link href="/products" className="w-full sm:w-auto">
+                  <Link href="/webshop" className="w-full sm:w-auto">
                     <Button 
                       className="w-full bg-transparent border border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760] hover:text-black rounded-none px-8 py-6"
                       data-testid="button-view-products"
@@ -302,7 +302,7 @@ export default function Home() {
                   Hoogwaardige car audio producten die wij met trots aanbevelen
                 </p>
               </div>
-              <Link href="/products">
+              <Link href="/webshop">
                 <Button 
                   variant="ghost" 
                   className="text-[#d0a760] hover:text-[#d0a760]/80 hover:bg-transparent mt-4 md:mt-0 rounded-none"
@@ -432,7 +432,7 @@ export default function Home() {
 
           <StaggerContainer className="flex flex-wrap justify-center gap-6" staggerDelay={80}>
             {(categories as Category[])?.map((category: Category) => (
-              <Link key={category.id} href={`/products?category=${category.slug}`} className="w-[calc(50%-12px)] md:w-[calc(25%-18px)]">
+              <Link key={category.id} href={`/webshop?category=${category.slug}`} className="w-[calc(50%-12px)] md:w-[calc(25%-18px)]">
                 <Card 
                   className="group cursor-pointer bg-zinc-100 border-zinc-200 hover:border-[#d0a760] transition-all duration-300 rounded-none hover:-translate-y-1 h-full"
                   data-testid={`category-card-${category.slug}`}
@@ -486,7 +486,7 @@ export default function Home() {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/apple-carplay-bmw" className="w-full sm:w-auto">
+                <Link href="/apple-carplay-voor-uw-bmw" className="w-full sm:w-auto">
                   <Button 
                     className="w-full bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none px-8 py-6"
                     data-testid="button-bmw-carplay"
@@ -494,7 +494,7 @@ export default function Home() {
                     Ontdek de Mogelijkheden
                   </Button>
                 </Link>
-                <Link href="/apple-carplay-bmw#offerte" className="w-full sm:w-auto">
+                <Link href="/apple-carplay-voor-uw-bmw#offerte" className="w-full sm:w-auto">
                   <Button 
                     className="w-full bg-transparent border border-white/30 text-white hover:bg-white/10 rounded-none px-8 py-6"
                     data-testid="button-bmw-quote"

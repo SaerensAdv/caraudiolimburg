@@ -257,7 +257,7 @@ export default function Cart() {
                   <Card key={item.id} className="bg-zinc-900 border-zinc-800 rounded-none" data-testid={`cart-item-${item.id}`}>
                     <CardContent className="p-4 md:p-6">
                       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                        <Link href={`/product/${product?.slug || product?.id}`}>
+                        <Link href={`/webshop/${product?.slug || product?.id}`}>
                           <div className="w-full sm:w-24 h-32 sm:h-24 bg-zinc-800 flex-shrink-0 cursor-pointer">
                             <img 
                               src={product?.images?.[product.primaryImageIndex || 0] || carAudioLogo}
@@ -271,7 +271,7 @@ export default function Cart() {
                         </Link>
 
                         <div className="flex-1 min-w-0 w-full">
-                          <Link href={`/product/${product?.slug || product?.id}`}>
+                          <Link href={`/webshop/${product?.slug || product?.id}`}>
                             <h3 className="font-semibold text-white mb-1 hover:text-[#d0a760] transition-colors cursor-pointer" data-testid={`product-name-${item.id}`}>
                               {product?.name || "Onbekend product"}
                             </h3>

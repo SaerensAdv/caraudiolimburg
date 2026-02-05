@@ -28,12 +28,12 @@ app.use((req, res, next) => {
   // Content Security Policy - prevent XSS, injection attacks
   res.setHeader('Content-Security-Policy', 
     "default-src 'self'; " +
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://cdn.jsdelivr.net https://*.stripe.com; " +
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://cdn.jsdelivr.net https://*.stripe.com https://consentease.io; " +
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; " +
     "font-src 'self' data: https://fonts.gstatic.com; " +
     "img-src 'self' data: https: blob:; " +
-    "connect-src 'self' https://api.stripe.com https://*.stripe.com wss://localhost:* http://localhost:*; " +
-    "frame-src https://js.stripe.com https://*.stripe.com; " +
+    "connect-src 'self' https://api.stripe.com https://*.stripe.com https://consentease.io wss://localhost:* http://localhost:*; " +
+    "frame-src https://js.stripe.com https://*.stripe.com https://www.youtube.com https://youtube.com https://www.youtube-nocookie.com; " +
     "child-src 'self'; " +
     "object-src 'none'; " +
     "upgrade-insecure-requests"

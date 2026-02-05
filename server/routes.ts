@@ -3,6 +3,8 @@ import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import multer from "multer";
 import Papa from "papaparse";
+import path from "path";
+import fs from "fs";
 import sharp from "sharp";
 import { z } from "zod";
 import { storage } from "./storage";
@@ -61,6 +63,21 @@ const imageUpload = multer({
       cb(null, true);
     } else {
       cb(new Error('Only image files are allowed'));
+    }
+  }
+});
+
+// PDF upload configuration
+const pdfUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 20 * 1024 * 1024, // 20MB limit for PDFs
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'application/pdf') {
+      cb(null, true);
+    } else {
+      cb(new Error('Only PDF files are allowed'));
     }
   }
 });
@@ -1988,6 +2005,53 @@ ${message || 'Geen aanvullende informatie'}`
       console.error("❌ [UPLOAD] Error:", error);
       res.status(500).json({ 
         message: "Failed to upload image",
+        error: error?.message || "Unknown error"
+      });
+    }
+  });
+
+  // PDF upload endpoint for product downloads (manuals, tech sheets, etc.)
+  app.post('/api/upload/pdf', isAdmin, pdfUpload.single('file'), async (req: any, res) => {
+    console.log("🔍 [UPLOAD] Starting PDF upload...");
+    
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      console.log("🔍 [UPLOAD] PDF file received:", {
+        originalName: req.file.originalname,
+        size: req.file.size,
+        mimetype: req.file.mimetype
+      });
+
+      // Sanitize filename
+      const sanitizedName = req.file.originalname
+        .replace(/[^a-zA-Z0-9.-]/g, '_')
+        .toLowerCase();
+      const fileName = `download-${Date.now()}-${sanitizedName}`;
+      
+      const downloadDir = path.join(process.cwd(), 'public', 'downloads');
+      const filePath = path.join(downloadDir, fileName);
+      
+      await fs.promises.mkdir(downloadDir, { recursive: true });
+      await fs.promises.writeFile(filePath, req.file.buffer);
+      
+      console.log(`✅ [UPLOAD] PDF saved: ${filePath}`);
+      
+      const publicUrl = `/downloads/${fileName}`;
+      
+      res.json({
+        url: publicUrl,
+        fileName: fileName,
+        originalName: req.file.originalname,
+        size: req.file.size,
+        mimeType: 'application/pdf'
+      });
+    } catch (error: any) {
+      console.error("❌ [UPLOAD] PDF upload error:", error);
+      res.status(500).json({ 
+        message: "Failed to upload PDF",
         error: error?.message || "Unknown error"
       });
     }

@@ -2071,19 +2071,61 @@ export default function Admin() {
                         {/* Downloads */}
                         <div>
                           <Label className="text-zinc-300">Downloads (handleidingen, tech sheets, etc.)</Label>
-                          <div className="flex gap-2 mt-2">
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            <div className="relative">
+                              <input
+                                type="file"
+                                accept=".pdf"
+                                onChange={async (e) => {
+                                  const file = e.target.files?.[0];
+                                  if (!file) return;
+                                  
+                                  const formData = new FormData();
+                                  formData.append('file', file);
+                                  
+                                  try {
+                                    const response = await fetch('/api/upload/pdf', {
+                                      method: 'POST',
+                                      credentials: 'include',
+                                      body: formData,
+                                    });
+                                    
+                                    if (!response.ok) throw new Error('Upload failed');
+                                    
+                                    const result = await response.json();
+                                    const fileName = file.name.replace('.pdf', '').replace(/_/g, ' ');
+                                    setDownloads([...downloads, { name: fileName, url: result.url }]);
+                                    toast({ title: "PDF geüpload", description: file.name });
+                                  } catch (error) {
+                                    toast({ title: "Upload mislukt", variant: "destructive" });
+                                  }
+                                  e.target.value = '';
+                                }}
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                data-testid="input-pdf-upload"
+                              />
+                              <Button
+                                type="button"
+                                variant="outline"
+                                className="bg-blue-600/20 border-blue-600/50 text-blue-400 hover:bg-blue-600/30 hover:text-blue-300 rounded-none"
+                              >
+                                <Upload className="w-4 h-4 mr-2" />
+                                PDF Uploaden
+                              </Button>
+                            </div>
+                            <span className="text-zinc-500 self-center">of handmatig:</span>
                             <Input
                               placeholder="Naam"
                               value={newDownloadName}
                               onChange={(e) => setNewDownloadName(e.target.value)}
-                              className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                              className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760] w-32"
                               data-testid="input-download-name"
                             />
                             <Input
                               placeholder="URL"
                               value={newDownloadUrl}
                               onChange={(e) => setNewDownloadUrl(e.target.value)}
-                              className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                              className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760] flex-1 min-w-32"
                               data-testid="input-download-url"
                             />
                             <Button

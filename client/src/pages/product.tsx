@@ -42,8 +42,14 @@ import {
   Cube,
   Sparkle
 } from "@phosphor-icons/react";
-import { SiApplepay, SiGooglepay, SiRevolut, SiKlarna, SiVisa, SiMastercard } from "react-icons/si";
+import { SiRevolut, SiKlarna, SiVisa } from "react-icons/si";
 import type { Product } from "@shared/schema";
+
+import bancontactLogo from "@assets/Bancontact-Original-logo-RGB_1770317016482.png";
+import googlePayLogo from "@assets/Google_Pay_Logo.svg_1770317053129.png";
+import applePayLogo from "@assets/Apple_Pay_logo.svg_1770317065102.png";
+import mastercardLogo from "@assets/Mastercard-Emblem_1770317085225.png";
+import idealLogo from "@assets/ideal-logo-1024_1770317108053.webp";
 
 type ProductVariation = {
   id: string;
@@ -663,34 +669,23 @@ export default function ProductPage() {
                         <div className="bg-[#1A1F71] px-2 py-1.5 rounded flex items-center justify-center" title="Visa">
                           <SiVisa className="w-7 h-5 text-white" />
                         </div>
-                        <div className="bg-zinc-800 px-2 py-1.5 rounded flex items-center justify-center" title="Mastercard">
-                          <SiMastercard className="w-6 h-5" />
+                        <div className="bg-white px-1.5 py-1 rounded flex items-center justify-center" title="Mastercard">
+                          <img src={mastercardLogo} alt="Mastercard" className="h-5 w-auto" />
                         </div>
-                        <div className="bg-black px-3 py-1.5 rounded flex items-center justify-center" title="Apple Pay">
-                          <SiApplepay className="w-10 h-6 text-white" />
+                        <div className="bg-black px-2 py-1.5 rounded flex items-center justify-center" title="Apple Pay">
+                          <img src={applePayLogo} alt="Apple Pay" className="h-4 w-auto invert" />
                         </div>
                         <div className="bg-white px-2 py-1.5 rounded flex items-center justify-center" title="Google Pay">
-                          <SiGooglepay className="w-8 h-5" />
+                          <img src={googlePayLogo} alt="Google Pay" className="h-5 w-auto" />
                         </div>
                         <div className="bg-black px-2 py-1.5 rounded flex items-center justify-center" title="Revolut Pay">
                           <SiRevolut className="w-5 h-5 text-white" />
                         </div>
-                        <div className="bg-white px-2 py-1.5 rounded flex items-center justify-center" title="Bancontact">
-                          <svg viewBox="0 0 100 32" className="w-10 h-5" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="16" cy="16" r="14" fill="#005498"/>
-                            <circle cx="28" cy="16" r="14" fill="#FFD800"/>
-                            <path d="M22 6.5a14 14 0 0 0 0 19" fill="#005498"/>
-                            <text x="48" y="22" fill="#005498" fontSize="14" fontWeight="bold" fontFamily="Arial, sans-serif">BC</text>
-                          </svg>
+                        <div className="bg-white px-1.5 py-1 rounded flex items-center justify-center" title="Bancontact">
+                          <img src={bancontactLogo} alt="Bancontact" className="h-6 w-auto" />
                         </div>
-                        <div className="bg-white px-2 py-1.5 rounded flex items-center justify-center" title="iDEAL">
-                          <svg viewBox="0 0 50 20" className="w-10 h-5" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="0" y="0" width="50" height="20" rx="2" fill="white"/>
-                            <circle cx="10" cy="10" r="8" fill="#CC0066"/>
-                            <circle cx="10" cy="10" r="5" fill="white"/>
-                            <circle cx="10" cy="10" r="2" fill="#CC0066"/>
-                            <text x="22" y="14" fill="#CC0066" fontSize="10" fontWeight="bold" fontFamily="Arial, sans-serif">iDEAL</text>
-                          </svg>
+                        <div className="bg-white px-1.5 py-1 rounded flex items-center justify-center" title="iDEAL">
+                          <img src={idealLogo} alt="iDEAL" className="h-6 w-auto" />
                         </div>
                         <div className="bg-[#FFB3C7] px-2 py-1.5 rounded flex items-center justify-center" title="Klarna">
                           <SiKlarna className="w-6 h-5 text-[#0A0B09]" />

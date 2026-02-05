@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useLocation } from "wouter";
 import { MessageCircle, X, Send, Headphones, User, Loader2, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +34,8 @@ function AudioBars() {
 }
 
 export function ChatBot() {
+  const [location] = useLocation();
+  const [isMobile, setIsMobile] = useState(false);
   const [isOpen, setIsOpen] = useState(() => {
     const stored = localStorage.getItem("cal_chat_open");
     return stored === "true";
@@ -47,6 +50,16 @@ export function ChatBot() {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const isProductPage = location.startsWith('/webshop/') && location !== '/webshop/';
+  const hasStickyBar = isMobile && isProductPage;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -115,7 +128,9 @@ export function ChatBot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-24 right-4 z-50 w-[380px] max-w-[calc(100vw-2rem)] overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4),0_0_0_1px_rgba(208,167,96,0.2)]"
+            className={`fixed right-4 z-50 w-[380px] max-w-[calc(100vw-2rem)] overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4),0_0_0_1px_rgba(208,167,96,0.2)] transition-all duration-300 ${
+              hasStickyBar ? 'bottom-60' : 'bottom-24'
+            }`}
             data-testid="chatbot-window"
           >
             <div className="bg-[#0a0a0a] border border-[#d0a760]/30">
@@ -221,7 +236,9 @@ export function ChatBot() {
 
       <motion.button
         onClick={() => handleToggle(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-br from-[#d0a760] to-[#a88540] shadow-[0_4px_20px_rgba(208,167,96,0.4)] flex items-center justify-center group"
+        className={`fixed right-6 z-50 w-14 h-14 bg-gradient-to-br from-[#d0a760] to-[#a88540] shadow-[0_4px_20px_rgba(208,167,96,0.4)] flex items-center justify-center group transition-all duration-300 ${
+          hasStickyBar ? 'bottom-44' : 'bottom-6'
+        }`}
         whileHover={{ scale: 1.05, boxShadow: "0 6px 30px rgba(208,167,96,0.5)" }}
         whileTap={{ scale: 0.95 }}
         data-testid="chatbot-toggle"

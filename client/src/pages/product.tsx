@@ -17,31 +17,31 @@ import { ScrollReveal, StaggerContainer, StaggerItem } from "@/components/Scroll
 import { SEO } from "@/components/SEO";
 import { ProductSchema, BreadcrumbSchema } from "@/components/StructuredData";
 import { 
-  Heart, 
-  ShoppingCart, 
-  Wrench, 
-  Truck, 
-  Shield,
-  ChevronLeft,
-  ChevronRight,
-  ChevronDown,
+  Heart,
+  ShoppingCart,
+  Wrench,
+  Truck,
+  ShieldCheck,
+  CaretLeft,
+  CaretRight,
+  CaretDown,
   Check,
-  ZoomIn,
+  MagnifyingGlassPlus,
   ArrowLeft,
   Package,
   Clock,
-  Award,
-  Share2,
+  Trophy,
+  ShareNetwork,
   X,
   Plus,
   Minus,
   CreditCard,
   FileText,
-  Download,
+  DownloadSimple,
   Play,
-  Box,
-  Sparkles
-} from "lucide-react";
+  Cube,
+  Sparkle
+} from "@phosphor-icons/react";
 import { SiApplepay, SiGooglepay, SiRevolut, SiKlarna } from "react-icons/si";
 import type { Product } from "@shared/schema";
 
@@ -237,7 +237,7 @@ export default function ProductPage() {
           <div className="container mx-auto px-4 text-center py-20">
             <div className="mb-8">
               <div className="w-24 h-24 mx-auto bg-zinc-900 flex items-center justify-center mb-6">
-                <Package className="w-12 h-12 text-white/20" />
+                <Package weight="duotone" className="w-12 h-12 text-white/20" />
               </div>
               <h1 className="text-3xl font-bold text-white mb-4">Product niet gevonden</h1>
               <p className="text-white/50 mb-8">
@@ -247,7 +247,7 @@ export default function ProductPage() {
                 onClick={() => window.history.back()}
                 className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"
               >
-                <ArrowLeft className="w-4 h-4 mr-2" />
+                <ArrowLeft weight="duotone" className="w-4 h-4 mr-2" />
                 Ga terug
               </Button>
             </div>
@@ -315,7 +315,7 @@ export default function ProductPage() {
             data-testid="mobile-back-button"
             aria-label="Terug naar shop"
           >
-            <ArrowLeft className="w-6 h-6 text-white" />
+            <ArrowLeft weight="duotone" className="w-6 h-6 text-white" />
           </button>
           
           <div className="flex items-center">
@@ -325,7 +325,7 @@ export default function ProductPage() {
               data-testid="mobile-share-button"
               aria-label="Deel dit product"
             >
-              <Share2 className="w-5 h-5 text-white" />
+              <ShareNetwork weight="duotone" className="w-5 h-5 text-white" />
             </button>
             <button 
               onClick={() => setIsWishlisted(!isWishlisted)}
@@ -334,7 +334,7 @@ export default function ProductPage() {
               aria-label={isWishlisted ? "Verwijder uit favorieten" : "Voeg toe aan favorieten"}
               aria-pressed={isWishlisted}
             >
-              <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-white'}`} />
+              <Heart weight="duotone" className={`w-5 h-5 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-white'}`} />
             </button>
             <button 
               onClick={() => setIsCartOpen(true)}
@@ -342,7 +342,7 @@ export default function ProductPage() {
               data-testid="mobile-cart-button"
               aria-label="Open winkelwagen"
             >
-              <ShoppingCart className="w-5 h-5 text-white" />
+              <ShoppingCart weight="duotone" className="w-5 h-5 text-white" />
             </button>
           </div>
         </div>
@@ -397,7 +397,7 @@ export default function ProductPage() {
                       {/* Zoom indicator - Desktop only */}
                       <div className="hidden md:flex absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 items-center justify-center">
                         <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 p-3">
-                          <ZoomIn className="w-6 h-6 text-black" />
+                          <MagnifyingGlassPlus weight="duotone" className="w-6 h-6 text-black" />
                         </div>
                       </div>
 
@@ -420,7 +420,7 @@ export default function ProductPage() {
                             data-testid="button-previous-image"
                             aria-label="Vorige afbeelding"
                           >
-                            <ChevronLeft className="w-6 h-6" />
+                            <CaretLeft weight="duotone" className="w-6 h-6" />
                           </button>
                           <button
                             onClick={(e) => {
@@ -431,7 +431,7 @@ export default function ProductPage() {
                             data-testid="button-next-image"
                             aria-label="Volgende afbeelding"
                           >
-                            <ChevronRight className="w-6 h-6" />
+                            <CaretRight weight="duotone" className="w-6 h-6" />
                           </button>
                         </>
                       )}
@@ -521,7 +521,7 @@ export default function ProductPage() {
                   </>
                 ) : (
                   <div className="aspect-square bg-zinc-900 border border-zinc-800 flex flex-col items-center justify-center">
-                    <Package className="w-16 h-16 text-white/10 mb-4" />
+                    <Package weight="duotone" className="w-16 h-16 text-white/10 mb-4" />
                     <p className="text-white/30 text-sm">Geen afbeelding beschikbaar</p>
                   </div>
                 )}
@@ -545,7 +545,7 @@ export default function ProductPage() {
                       aria-label={isWishlisted ? "Verwijderen uit verlanglijst" : "Toevoegen aan verlanglijst"}
                       aria-pressed={isWishlisted}
                     >
-                      <Heart className={`w-6 h-6 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-white/40'}`} />
+                      <Heart weight="duotone" className={`w-6 h-6 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-white/40'}`} />
                     </button>
                   </div>
                   
@@ -625,7 +625,7 @@ export default function ProductPage() {
                   
                   {installationPrice && (
                     <p className="text-[#d0a760] text-sm font-medium flex items-center gap-2">
-                      <Sparkles className="w-4 h-4" />
+                      <Sparkle weight="duotone" className="w-4 h-4" />
                       + €{installationPrice.toFixed(0)} voor professionele installatie
                     </p>
                   )}
@@ -643,13 +643,13 @@ export default function ProductPage() {
                           )}
                         </span>
                         <span className="text-white/50 text-xs flex items-center gap-1">
-                          <Truck className="w-3 h-3" />
+                          <Truck weight="duotone" className="w-3 h-3" />
                           Bestel voor 16:00, morgen in huis
                         </span>
                       </div>
                     ) : (
                       <span className="inline-flex items-center gap-2 text-orange-500 text-sm">
-                        <Clock className="w-4 h-4" />
+                        <Clock weight="duotone" className="w-4 h-4" />
                         {product.hasVariations && !selectedVariation 
                           ? "Selecteer een optie" 
                           : "Niet op voorraad"}
@@ -661,7 +661,7 @@ export default function ProductPage() {
                       <span className="text-white/40 text-xs">Betaalmethodes:</span>
                       <div className="flex flex-wrap items-center gap-1.5">
                         <div className="bg-zinc-800 p-1.5 rounded" title="Kaarten (Visa, Mastercard)">
-                          <CreditCard className="w-4 h-4 text-white" />
+                          <CreditCard weight="duotone" className="w-4 h-4 text-white" />
                         </div>
                         <div className="bg-black p-1 rounded" title="Apple Pay">
                           <SiApplepay className="w-6 h-5 text-white" />
@@ -697,7 +697,7 @@ export default function ProductPage() {
                         className="w-11 h-11 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/5 disabled:opacity-30 transition-colors text-lg"
                         data-testid="button-decrease-quantity"
                       >
-                        <Minus className="w-4 h-4" />
+                        <Minus weight="duotone" className="w-4 h-4" />
                       </button>
                       <span className="w-12 text-center text-white font-medium" data-testid="quantity-display">
                         {quantity}
@@ -708,7 +708,7 @@ export default function ProductPage() {
                         className="w-11 h-11 flex items-center justify-center text-white/60 hover:text-white hover:bg-white/5 disabled:opacity-30 transition-colors text-lg"
                         data-testid="button-increase-quantity"
                       >
-                        <Plus className="w-4 h-4" />
+                        <Plus weight="duotone" className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
@@ -721,7 +721,7 @@ export default function ProductPage() {
                       disabled={!canAddToCart || addToCartMutation.isPending}
                       data-testid="button-add-to-cart"
                     >
-                      <ShoppingCart className="w-5 h-5 mr-2" />
+                      <ShoppingCart weight="duotone" className="w-5 h-5 mr-2" />
                       {addToCartMutation.isPending ? "Toevoegen..." : "In Winkelwagen"}
                     </Button>
                     
@@ -734,7 +734,7 @@ export default function ProductPage() {
                       data-testid="button-add-with-installation"
                     >
                       <span className="flex items-center">
-                        <Wrench className="w-4 h-4 mr-1.5" />
+                        <Wrench weight="duotone" className="w-4 h-4 mr-1.5" />
                         + Professionele Installatie
                       </span>
                       {installationPrice && (
@@ -750,7 +750,7 @@ export default function ProductPage() {
                     <div className="bg-[#d0a760]/5 border border-[#d0a760]/20 p-4 mt-4">
                       <div className="flex items-start gap-3">
                         <div className="p-2 bg-[#d0a760]/10">
-                          <Shield className="w-5 h-5 text-[#d0a760]" />
+                          <ShieldCheck weight="duotone" className="w-5 h-5 text-[#d0a760]" />
                         </div>
                         <div>
                           <p className="text-white font-medium text-sm mb-1">Bundel met Installatie</p>
@@ -769,15 +769,15 @@ export default function ProductPage() {
                   {/* Mobile: Compact horizontal badges */}
                   <div className="flex md:hidden gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
                     <div className="flex items-center gap-2 px-3 py-2.5 bg-zinc-900/80 border border-zinc-700 whitespace-nowrap flex-shrink-0 hover:border-[#d0a760]/50 transition-colors">
-                      <Truck className="w-4 h-4 text-[#d0a760]" />
+                      <Truck weight="duotone" className="w-4 h-4 text-[#d0a760]" />
                       <span className="text-white text-xs font-medium">Gratis Verzending</span>
                     </div>
                     <div className="flex items-center gap-2 px-3 py-2.5 bg-zinc-900/80 border border-zinc-700 whitespace-nowrap flex-shrink-0 hover:border-[#d0a760]/50 transition-colors">
-                      <Shield className="w-4 h-4 text-[#d0a760]" />
+                      <ShieldCheck weight="duotone" className="w-4 h-4 text-[#d0a760]" />
                       <span className="text-white text-xs font-medium">2 Jaar Garantie</span>
                     </div>
                     <div className="flex items-center gap-2 px-3 py-2.5 bg-zinc-900/80 border border-zinc-700 whitespace-nowrap flex-shrink-0 hover:border-[#d0a760]/50 transition-colors">
-                      <Award className="w-4 h-4 text-[#d0a760]" />
+                      <Trophy weight="duotone" className="w-4 h-4 text-[#d0a760]" />
                       <span className="text-white text-xs font-medium">Prof. Installatie</span>
                     </div>
                   </div>
@@ -787,7 +787,7 @@ export default function ProductPage() {
                     <StaggerItem>
                       <div className="flex items-center gap-4 p-5 bg-gradient-to-r from-zinc-900 to-zinc-900/50 border border-zinc-700 hover:border-[#d0a760]/40 transition-all duration-300 group">
                         <div className="p-3 bg-[#d0a760]/10 group-hover:bg-[#d0a760]/20 transition-colors">
-                          <Truck className="w-5 h-5 text-[#d0a760]" />
+                          <Truck weight="duotone" className="w-5 h-5 text-[#d0a760]" />
                         </div>
                         <div>
                           <p className="text-white font-semibold text-sm">Gratis Verzending</p>
@@ -799,7 +799,7 @@ export default function ProductPage() {
                     <StaggerItem>
                       <div className="flex items-center gap-4 p-5 bg-gradient-to-r from-zinc-900 to-zinc-900/50 border border-zinc-700 hover:border-[#d0a760]/40 transition-all duration-300 group">
                         <div className="p-3 bg-[#d0a760]/10 group-hover:bg-[#d0a760]/20 transition-colors">
-                          <Shield className="w-5 h-5 text-[#d0a760]" />
+                          <ShieldCheck weight="duotone" className="w-5 h-5 text-[#d0a760]" />
                         </div>
                         <div>
                           <p className="text-white font-semibold text-sm">2 Jaar Garantie</p>
@@ -811,7 +811,7 @@ export default function ProductPage() {
                     <StaggerItem>
                       <div className="flex items-center gap-4 p-5 bg-gradient-to-r from-zinc-900 to-zinc-900/50 border border-zinc-700 hover:border-[#d0a760]/40 transition-all duration-300 group">
                         <div className="p-3 bg-[#d0a760]/10 group-hover:bg-[#d0a760]/20 transition-colors">
-                          <Award className="w-5 h-5 text-[#d0a760]" />
+                          <Trophy weight="duotone" className="w-5 h-5 text-[#d0a760]" />
                         </div>
                         <div>
                           <p className="text-white font-semibold text-sm">Professionele Installatie</p>
@@ -828,7 +828,7 @@ export default function ProductPage() {
                       className="flex flex-col items-center gap-2 text-white/40 hover:text-[#d0a760] transition-colors group cursor-pointer"
                     >
                       <span className="text-xs font-medium">Bekijk productdetails</span>
-                      <ChevronDown className="w-5 h-5 animate-bounce" />
+                      <CaretDown weight="duotone" className="w-5 h-5 animate-bounce" />
                     </a>
                   </div>
                 </div>
@@ -852,21 +852,21 @@ export default function ProductPage() {
                     value="description" 
                     className="flex-shrink-0 rounded-none px-4 md:px-6 py-3 md:py-3.5 text-xs md:text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black data-[state=active]:shadow-[0_0_20px_rgba(208,167,96,0.3)] flex items-center gap-1.5 md:gap-2 transition-all duration-300 whitespace-nowrap"
                   >
-                    <Play className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                    <Play weight="duotone" className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     Beschrijving
                   </TabsTrigger>
                   <TabsTrigger 
                     value="specifications" 
                     className="flex-shrink-0 rounded-none px-4 md:px-6 py-3 md:py-3.5 text-xs md:text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black data-[state=active]:shadow-[0_0_20px_rgba(208,167,96,0.3)] flex items-center gap-1.5 md:gap-2 transition-all duration-300 whitespace-nowrap"
                   >
-                    <FileText className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                    <FileText weight="duotone" className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     Specificaties
                   </TabsTrigger>
                   <TabsTrigger 
                     value="box-content" 
                     className="flex-shrink-0 rounded-none px-4 md:px-6 py-3 md:py-3.5 text-xs md:text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black data-[state=active]:shadow-[0_0_20px_rgba(208,167,96,0.3)] flex items-center gap-1.5 md:gap-2 transition-all duration-300 whitespace-nowrap"
                   >
-                    <Box className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                    <Cube weight="duotone" className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     In de doos
                   </TabsTrigger>
                 </TabsList>
@@ -908,7 +908,7 @@ export default function ProductPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                           {(product.features as string[]).map((feature, index) => (
                             <div key={index} className="flex items-start gap-3 p-3 bg-zinc-800/50">
-                              <Check className="w-5 h-5 text-[#d0a760] flex-shrink-0 mt-0.5" />
+                              <Check weight="duotone" className="w-5 h-5 text-[#d0a760] flex-shrink-0 mt-0.5" />
                               <span className="text-white/80">{String(feature)}</span>
                             </div>
                           ))}
@@ -992,11 +992,11 @@ export default function ProductPage() {
                                   rel="noopener noreferrer"
                                   className="flex items-center gap-4 p-4 bg-zinc-800/50 border border-zinc-700 hover:border-[#d0a760] transition-colors group"
                                 >
-                                  <FileText className="w-6 h-6 text-[#d0a760]" />
+                                  <FileText weight="duotone" className="w-6 h-6 text-[#d0a760]" />
                                   <div className="flex-1">
                                     <p className="font-medium text-white group-hover:text-[#d0a760]">{download.name}</p>
                                   </div>
-                                  <Download className="w-5 h-5 text-white/30 group-hover:text-[#d0a760]" />
+                                  <DownloadSimple weight="duotone" className="w-5 h-5 text-white/30 group-hover:text-[#d0a760]" />
                                 </a>
                               )) : null}
                               {product.specifications && (product.specifications as Record<string, string>).manualUrl && (
@@ -1006,11 +1006,11 @@ export default function ProductPage() {
                                   rel="noopener noreferrer"
                                   className="flex items-center gap-4 p-4 bg-zinc-800/50 border border-zinc-700 hover:border-[#d0a760] transition-colors group"
                                 >
-                                  <FileText className="w-6 h-6 text-[#d0a760]" />
+                                  <FileText weight="duotone" className="w-6 h-6 text-[#d0a760]" />
                                   <div className="flex-1">
                                     <p className="font-medium text-white group-hover:text-[#d0a760]">Handleiding (PDF)</p>
                                   </div>
-                                  <Download className="w-5 h-5 text-white/30 group-hover:text-[#d0a760]" />
+                                  <DownloadSimple weight="duotone" className="w-5 h-5 text-white/30 group-hover:text-[#d0a760]" />
                                 </a>
                               )}
                               {product.specifications && (product.specifications as Record<string, string>).techSheetUrl && (
@@ -1020,11 +1020,11 @@ export default function ProductPage() {
                                   rel="noopener noreferrer"
                                   className="flex items-center gap-4 p-4 bg-zinc-800/50 border border-zinc-700 hover:border-[#d0a760] transition-colors group"
                                 >
-                                  <FileText className="w-6 h-6 text-[#d0a760]" />
+                                  <FileText weight="duotone" className="w-6 h-6 text-[#d0a760]" />
                                   <div className="flex-1">
                                     <p className="font-medium text-white group-hover:text-[#d0a760]">Tech Sheet (PDF)</p>
                                   </div>
-                                  <Download className="w-5 h-5 text-white/30 group-hover:text-[#d0a760]" />
+                                  <DownloadSimple weight="duotone" className="w-5 h-5 text-white/30 group-hover:text-[#d0a760]" />
                                 </a>
                               )}
                             </div>
@@ -1046,7 +1046,7 @@ export default function ProductPage() {
                         <ul className="space-y-3">
                           {(product.boxContent as (string | { item: string; quantity?: number })[]).map((item, index) => (
                             <li key={index} className="flex items-start gap-3 p-3 bg-zinc-800/50 border border-zinc-700">
-                              <Box className="w-5 h-5 text-[#d0a760] flex-shrink-0 mt-0.5" />
+                              <Cube weight="duotone" className="w-5 h-5 text-[#d0a760] flex-shrink-0 mt-0.5" />
                               <span className="text-white/80">
                                 {typeof item === 'string' ? item : `${item.quantity ? `${item.quantity}x ` : ''}${item.item}`}
                               </span>
@@ -1099,7 +1099,7 @@ export default function ProductPage() {
                         />
                       ) : (
                         <div className="flex items-center justify-center h-full">
-                          <Package className="w-10 h-10 text-white/10" />
+                          <Package weight="duotone" className="w-10 h-10 text-white/10" />
                         </div>
                       )}
                     </div>
@@ -1119,7 +1119,7 @@ export default function ProductPage() {
               ))}
               {/* Scroll hint */}
               <div className="flex-shrink-0 w-8 flex items-center justify-center">
-                <ChevronRight className="w-5 h-5 text-white/20" />
+                <CaretRight weight="duotone" className="w-5 h-5 text-white/20" />
               </div>
             </div>
             </div>
@@ -1142,7 +1142,7 @@ export default function ProductPage() {
                         />
                       ) : (
                         <div className="flex items-center justify-center h-full">
-                          <Package className="w-12 h-12 text-white/10" />
+                          <Package weight="duotone" className="w-12 h-12 text-white/10" />
                         </div>
                       )}
                     </div>
@@ -1170,7 +1170,7 @@ export default function ProductPage() {
           <ScrollReveal animation="fade-up">
             <div className="max-w-3xl mx-auto text-center">
               <div className="inline-flex items-center justify-center p-4 bg-[#d0a760]/10 border border-[#d0a760]/20 mb-8">
-                <Award className="w-10 h-10 text-[#d0a760]" />
+                <Trophy weight="duotone" className="w-10 h-10 text-[#d0a760]" />
               </div>
               <h2 className="text-2xl md:text-4xl font-bold text-white mb-5">
                 Vragen over dit product?
@@ -1213,7 +1213,7 @@ export default function ProductPage() {
                 className="w-11 h-11 flex items-center justify-center text-white/60 hover:text-white active:bg-white/10 disabled:opacity-30 transition-colors"
                 data-testid="mobile-button-decrease-quantity"
               >
-                <Minus className="w-4 h-4" />
+                <Minus weight="duotone" className="w-4 h-4" />
               </button>
               <span className="w-10 text-center text-white font-medium text-sm" data-testid="mobile-quantity-display">
                 {quantity}
@@ -1224,7 +1224,7 @@ export default function ProductPage() {
                 className="w-11 h-11 flex items-center justify-center text-white/60 hover:text-white active:bg-white/10 disabled:opacity-30 transition-colors"
                 data-testid="mobile-button-increase-quantity"
               >
-                <Plus className="w-4 h-4" />
+                <Plus weight="duotone" className="w-4 h-4" />
               </button>
             </div>
             
@@ -1263,7 +1263,7 @@ export default function ProductPage() {
               disabled={!canAddToCart || addToCartMutation.isPending}
               data-testid="mobile-button-add-to-cart"
             >
-              <ShoppingCart className="w-4 h-4 mr-1.5" />
+              <ShoppingCart weight="duotone" className="w-4 h-4 mr-1.5" />
               {addToCartMutation.isPending ? "..." : "In Wagen"}
             </Button>
             
@@ -1275,7 +1275,7 @@ export default function ProductPage() {
               data-testid="mobile-button-add-with-installation"
             >
               <span className="flex items-center">
-                <Wrench className="w-3.5 h-3.5 mr-1" />
+                <Wrench weight="duotone" className="w-3.5 h-3.5 mr-1" />
                 + Installatie
               </span>
               {installationPrice && (

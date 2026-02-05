@@ -13,24 +13,24 @@ import { Badge } from "@/components/ui/badge";
 import { SEO } from "@/components/SEO";
 import { OrganizationSchema, LocalBusinessSchema, WebSiteSchema } from "@/components/StructuredData";
 import { 
-  Award, 
-  Wrench, 
-  ShieldCheck, 
-  Clock, 
+  Trophy,
+  Wrench,
+  ShieldCheck,
+  Clock,
   Phone,
   MapPin,
-  Volume2,
+  SpeakerHigh,
   Car,
   Star,
   User,
   Check,
-  Settings,
+  Gear,
   ArrowRight,
-  Sparkles,
+  Sparkle,
   Truck,
-  BadgeCheck,
+  Medal,
   Headphones
-} from "lucide-react";
+} from "@phosphor-icons/react";
 import { useState, useRef, useEffect } from "react";
 import type { Product, Category } from "@shared/schema";
 import { ProductAudioSkeleton } from "@/components/AudioSkeletons";
@@ -140,7 +140,7 @@ export default function Home() {
                     data-testid="button-shop-now"
                   >
                     Bekijk Webshop
-                    <ArrowRight className="w-5 h-5 ml-2" />
+                    <ArrowRight weight="duotone" className="w-5 h-5 ml-2" />
                   </Button>
                 </Link>
                 <Link href="/booking">
@@ -171,7 +171,7 @@ export default function Home() {
           <div className="container px-8 md:px-16 lg:px-24 mx-auto relative z-10">
             <ScrollReveal>
               <div className="flex items-center gap-3 mb-4">
-                <Sparkles className="w-5 h-5 text-[#d0a760]" />
+                <Sparkle weight="duotone" className="w-5 h-5 text-[#d0a760]" />
                 <span className="text-[#d0a760] text-sm font-medium tracking-wider uppercase">Speciaal voor jou geselecteerd</span>
               </div>
               <h2 className="text-3xl md:text-4xl font-light text-white mb-4">
@@ -202,7 +202,7 @@ export default function Home() {
                     data-testid="button-view-all-compatible"
                   >
                     Ontdek meer voor jouw auto
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                    <ArrowRight weight="duotone" className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
               </div>
@@ -217,7 +217,7 @@ export default function Home() {
           <div className="md:px-16 lg:px-24 flex overflow-x-auto gap-6 pb-2 md:pb-0 snap-x snap-mandatory scrollbar-hide -mx-0 px-4 md:mx-0 md:flex-wrap md:justify-between md:overflow-visible">
             <div className="flex items-center gap-3 group snap-start flex-shrink-0 min-w-[160px] md:min-w-0 md:flex-shrink">
               <div className="w-10 h-10 bg-[#d0a760]/10 flex items-center justify-center group-hover:bg-[#d0a760]/20 transition-colors duration-300">
-                <Truck className="w-5 h-5 text-[#d0a760]" />
+                <Truck weight="duotone" className="w-5 h-5 text-[#d0a760]" />
               </div>
               <div>
                 <p className="text-white text-sm font-medium whitespace-nowrap">Gratis Verzending</p>
@@ -227,7 +227,7 @@ export default function Home() {
             
             <div className="flex items-center gap-3 group snap-start flex-shrink-0 min-w-[160px] md:min-w-0 md:flex-shrink">
               <div className="w-10 h-10 bg-[#d0a760]/10 flex items-center justify-center group-hover:bg-[#d0a760]/20 transition-colors duration-300">
-                <ShieldCheck className="w-5 h-5 text-[#d0a760]" />
+                <ShieldCheck weight="duotone" className="w-5 h-5 text-[#d0a760]" />
               </div>
               <div>
                 <p className="text-white text-sm font-medium whitespace-nowrap">2 Jaar Garantie</p>
@@ -237,7 +237,7 @@ export default function Home() {
             
             <div className="flex items-center gap-3 group snap-start flex-shrink-0 min-w-[160px] md:min-w-0 md:flex-shrink">
               <div className="w-10 h-10 bg-[#d0a760]/10 flex items-center justify-center group-hover:bg-[#d0a760]/20 transition-colors duration-300">
-                <BadgeCheck className="w-5 h-5 text-[#d0a760]" />
+                <Medal weight="duotone" className="w-5 h-5 text-[#d0a760]" />
               </div>
               <div>
                 <p className="text-white text-sm font-medium whitespace-nowrap">Trusted Shops</p>
@@ -247,7 +247,7 @@ export default function Home() {
             
             <div className="flex items-center gap-3 group snap-start flex-shrink-0 min-w-[160px] md:min-w-0 md:flex-shrink">
               <div className="w-10 h-10 bg-[#d0a760]/10 flex items-center justify-center group-hover:bg-[#d0a760]/20 transition-colors duration-300">
-                <Headphones className="w-5 h-5 text-[#d0a760]" />
+                <Headphones weight="duotone" className="w-5 h-5 text-[#d0a760]" />
               </div>
               <div>
                 <p className="text-white text-sm font-medium whitespace-nowrap">Persoonlijk Advies</p>
@@ -268,7 +268,7 @@ export default function Home() {
             <StaggerContainer className="md:grid md:grid-cols-3 md:gap-8 flex overflow-x-auto gap-6 pb-4 md:pb-0 snap-x snap-mandatory scrollbar-hide -mx-8 px-8 md:mx-0 md:px-0" staggerDelay={150}>
               <div className="text-center md:text-left group snap-start flex-shrink-0 w-[260px] md:w-auto md:flex-shrink">
                 <div className="w-12 h-12 bg-[#d0a760]/10 flex items-center justify-center mb-4 mx-auto md:mx-0 group-hover:bg-[#d0a760]/20 group-hover:scale-110 transition-all duration-300">
-                  <Award className="w-6 h-6 text-[#d0a760]" />
+                  <Trophy weight="duotone" className="w-6 h-6 text-[#d0a760]" />
                 </div>
                 <h3 className="text-zinc-900 text-lg font-medium mb-2">Topkwaliteit Merken</h3>
                 <p className="text-zinc-600 leading-relaxed">
@@ -278,7 +278,7 @@ export default function Home() {
               
               <div className="text-center md:text-left group snap-start flex-shrink-0 w-[260px] md:w-auto md:flex-shrink">
                 <div className="w-12 h-12 bg-[#d0a760]/10 flex items-center justify-center mb-4 mx-auto md:mx-0 group-hover:bg-[#d0a760]/20 group-hover:scale-110 transition-all duration-300">
-                  <Wrench className="w-6 h-6 text-[#d0a760]" />
+                  <Wrench weight="duotone" className="w-6 h-6 text-[#d0a760]" />
                 </div>
                 <h3 className="text-zinc-900 text-lg font-medium mb-2">Vakkundige Installatie</h3>
                 <p className="text-zinc-600 leading-relaxed">
@@ -288,7 +288,7 @@ export default function Home() {
               
               <div className="text-center md:text-left group snap-start flex-shrink-0 w-[260px] md:w-auto md:flex-shrink">
                 <div className="w-12 h-12 bg-[#d0a760]/10 flex items-center justify-center mb-4 mx-auto md:mx-0 group-hover:bg-[#d0a760]/20 group-hover:scale-110 transition-all duration-300">
-                  <User className="w-6 h-6 text-[#d0a760]" />
+                  <User weight="duotone" className="w-6 h-6 text-[#d0a760]" />
                 </div>
                 <h3 className="text-zinc-900 text-lg font-medium mb-2">Persoonlijk Advies</h3>
                 <p className="text-zinc-600 leading-relaxed">
@@ -335,7 +335,7 @@ export default function Home() {
                       data-testid="button-view-products"
                     >
                       Ontdek Onze Producten
-                      <ArrowRight className="w-4 h-4 ml-2" />
+                      <ArrowRight weight="duotone" className="w-4 h-4 ml-2" />
                     </Button>
                   </Link>
                   <Link href="/contact" className="w-full sm:w-auto">
@@ -381,7 +381,7 @@ export default function Home() {
                   data-testid="button-all-products"
                 >
                   Bekijk Alles
-                  <ArrowRight className="w-4 h-4 ml-2" />
+                  <ArrowRight weight="duotone" className="w-4 h-4 ml-2" />
                 </Button>
               </Link>
             </div>
@@ -519,14 +519,14 @@ export default function Home() {
                   >
                     <CardContent className="p-4 md:p-6 text-center">
                       <div className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-3 md:mb-4 bg-white border border-zinc-200 flex items-center justify-center group-hover:border-[#d0a760] group-hover:bg-[#d0a760]/10 group-hover:shadow-md group-hover:shadow-[#d0a760]/20 transition-all duration-300 group-hover:scale-110">
-                        {category.slug === 'multimedia-navigatie' && <Volume2 className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
-                        {category.slug === 'speakers-subwoofers' && <Volume2 className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
-                        {category.slug === 'versterkers-dsp' && <Settings className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
-                        {category.slug === 'installatie-accessoires' && <Wrench className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
-                        {category.slug === 'cameras-veiligheid' && <ShieldCheck className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
-                        {category.slug === 'oem-upgrades' && <Car className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
+                        {category.slug === 'multimedia-navigatie' && <SpeakerHigh weight="duotone" className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
+                        {category.slug === 'speakers-subwoofers' && <SpeakerHigh weight="duotone" className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
+                        {category.slug === 'versterkers-dsp' && <Gear weight="duotone" className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
+                        {category.slug === 'installatie-accessoires' && <Wrench weight="duotone" className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
+                        {category.slug === 'cameras-veiligheid' && <ShieldCheck weight="duotone" className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
+                        {category.slug === 'oem-upgrades' && <Car weight="duotone" className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
                         {!['multimedia-navigatie', 'speakers-subwoofers', 'versterkers-dsp', 'installatie-accessoires', 'cameras-veiligheid', 'oem-upgrades'].includes(category.slug) && 
-                          <Volume2 className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />
+                          <SpeakerHigh weight="duotone" className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />
                         }
                       </div>
                       
@@ -573,7 +573,7 @@ export default function Home() {
                     data-testid="button-bmw-carplay"
                   >
                     Ontdek de Mogelijkheden
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                    <ArrowRight weight="duotone" className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
                 <Link href="/apple-carplay-voor-uw-bmw#offerte" className="w-full sm:w-auto">
@@ -655,7 +655,7 @@ export default function Home() {
                 <div className="space-y-6 mb-8">
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 bg-[#d0a760]/10 flex items-center justify-center flex-shrink-0">
-                      <Clock className="w-5 h-5 text-[#d0a760]" />
+                      <Clock weight="duotone" className="w-5 h-5 text-[#d0a760]" />
                     </div>
                     <div>
                       <h3 className="text-zinc-900 font-medium mb-1">Snel en Vakkundig</h3>
@@ -665,7 +665,7 @@ export default function Home() {
                   
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 bg-[#d0a760]/10 flex items-center justify-center flex-shrink-0">
-                      <ShieldCheck className="w-5 h-5 text-[#d0a760]" />
+                      <ShieldCheck weight="duotone" className="w-5 h-5 text-[#d0a760]" />
                     </div>
                     <div>
                       <h3 className="text-zinc-900 font-medium mb-1">Met Garantie</h3>
@@ -675,7 +675,7 @@ export default function Home() {
                   
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 bg-[#d0a760]/10 flex items-center justify-center flex-shrink-0">
-                      <Award className="w-5 h-5 text-[#d0a760]" />
+                      <Trophy weight="duotone" className="w-5 h-5 text-[#d0a760]" />
                     </div>
                     <div>
                       <h3 className="text-zinc-900 font-medium mb-1">Fabriekskwaliteit</h3>
@@ -703,7 +703,7 @@ export default function Home() {
                   <Link href="/booking">
                     <Button className="w-full bg-[#d0a760] text-black hover:bg-[#d0a760]/90 hover:shadow-md hover:shadow-[#d0a760]/30 hover:scale-[1.02] rounded-none font-medium transition-all duration-300" data-testid="button-book-installation">
                       Plan Jouw Afspraak
-                      <ArrowRight className="w-4 h-4 ml-2" />
+                      <ArrowRight weight="duotone" className="w-4 h-4 ml-2" />
                     </Button>
                   </Link>
                 </div>
@@ -746,15 +746,15 @@ export default function Home() {
                     
                     <div className="space-y-4">
                       <div className="flex items-center gap-3">
-                        <Check className="w-5 h-5 text-[#d0a760]" />
+                        <Check weight="duotone" className="w-5 h-5 text-[#d0a760]" />
                         <span className="text-white/80">Eerlijk en deskundig advies op maat</span>
                       </div>
                       <div className="flex items-center gap-3">
-                        <Check className="w-5 h-5 text-[#d0a760]" />
+                        <Check weight="duotone" className="w-5 h-5 text-[#d0a760]" />
                         <span className="text-white/80">Vrijblijvende offerte, geen verplichtingen</span>
                       </div>
                       <div className="flex items-center gap-3">
-                        <Check className="w-5 h-5 text-[#d0a760]" />
+                        <Check weight="duotone" className="w-5 h-5 text-[#d0a760]" />
                         <span className="text-white/80">Wij reageren binnen 24 uur</span>
                       </div>
                     </div>
@@ -789,7 +789,7 @@ export default function Home() {
                 <CardContent className="p-6">
                   <div className="flex items-center mb-4">
                     {[...Array(Math.round(review.rating))].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 text-[#d0a760] fill-current" />
+                      <Star key={i} weight="duotone" className="w-4 h-4 text-[#d0a760] fill-current" />
                     ))}
                   </div>
                   {review.title && (
@@ -800,7 +800,7 @@ export default function Home() {
                   </p>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-[#d0a760]/20 flex items-center justify-center">
-                      <User className="w-5 h-5 text-[#d0a760]" />
+                      <User weight="duotone" className="w-5 h-5 text-[#d0a760]" />
                     </div>
                     <div>
                       <p className="text-zinc-900 font-medium text-sm">
@@ -840,15 +840,15 @@ export default function Home() {
                 
                 <div className="space-y-4 mb-8">
                   <div className="flex items-center gap-4">
-                    <MapPin className="w-5 h-5 text-[#d0a760]" />
+                    <MapPin weight="duotone" className="w-5 h-5 text-[#d0a760]" />
                     <span className="text-white/80">Sittard, Limburg</span>
                   </div>
                   <div className="flex items-center gap-4">
-                    <Phone className="w-5 h-5 text-[#d0a760]" />
+                    <Phone weight="duotone" className="w-5 h-5 text-[#d0a760]" />
                     <span className="text-white/80">085-27 33 625</span>
                   </div>
                   <div className="flex items-center gap-4">
-                    <Clock className="w-5 h-5 text-[#d0a760]" />
+                    <Clock weight="duotone" className="w-5 h-5 text-[#d0a760]" />
                     <span className="text-white/80">Ma-Vr: 08:30 - 17:30 (op afspraak)</span>
                   </div>
                 </div>
@@ -860,7 +860,7 @@ export default function Home() {
                       data-testid="button-plan-visit"
                     >
                       Maak een Afspraak
-                      <ArrowRight className="w-4 h-4 ml-2" />
+                      <ArrowRight weight="duotone" className="w-4 h-4 ml-2" />
                     </Button>
                   </Link>
                   <a href="tel:0852733625" className="w-full sm:w-auto">
@@ -868,7 +868,7 @@ export default function Home() {
                       className="w-full bg-transparent border border-white/30 text-white hover:bg-white/10 hover:border-white/50 rounded-none px-8 py-6 transition-all duration-300"
                       data-testid="button-call-now"
                     >
-                      <Phone className="w-4 h-4 mr-2" />
+                      <Phone weight="duotone" className="w-4 h-4 mr-2" />
                       Bel Ons
                     </Button>
                   </a>

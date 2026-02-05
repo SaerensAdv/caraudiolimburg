@@ -2,7 +2,15 @@ import { Link } from "wouter";
 import whiteLogoUrl from "@assets/CAL white_1758369495328.png";
 import saerensLogoUrl from "@assets/Saerens_Advertising_1764900190628.png";
 import iconLogoUrl from "@assets/CAR_1765257768308.png";
-import { Facebook, Instagram, Youtube, MapPin, Phone, Mail, Clock } from "lucide-react";
+import { 
+  Phone,
+  Envelope,
+  MapPin,
+  Clock,
+  InstagramLogo,
+  FacebookLogo,
+  YoutubeLogo
+} from "@phosphor-icons/react";
 import { TrustedShopsBadgeLink } from "@/components/TrustedShops";
 
 export function Footer() {
@@ -36,7 +44,7 @@ export function Footer() {
                 data-testid="social-facebook"
                 aria-label="Volg ons op Facebook"
               >
-                <Facebook className="w-5 h-5" />
+                <FacebookLogo weight="duotone" className="w-5 h-5" />
               </a>
               <a 
                 href="https://instagram.com" 
@@ -46,7 +54,7 @@ export function Footer() {
                 data-testid="social-instagram"
                 aria-label="Volg ons op Instagram"
               >
-                <Instagram className="w-5 h-5" />
+                <InstagramLogo weight="duotone" className="w-5 h-5" />
               </a>
               <a 
                 href="https://youtube.com" 
@@ -56,7 +64,7 @@ export function Footer() {
                 data-testid="social-youtube"
                 aria-label="Volg ons op YouTube"
               >
-                <Youtube className="w-5 h-5" />
+                <YoutubeLogo weight="duotone" className="w-5 h-5" />
               </a>
             </div>
           </div>
@@ -92,22 +100,22 @@ export function Footer() {
             <h4 className="text-[#d0a760] text-sm font-medium tracking-wider uppercase mb-6">Contact</h4>
             <div className="space-y-4 text-sm">
               <div className="flex items-start space-x-3">
-                <MapPin className="w-4 h-4 text-[#d0a760] mt-0.5 flex-shrink-0" />
+                <MapPin weight="duotone" className="w-4 h-4 text-[#d0a760] mt-0.5 flex-shrink-0" />
                 <div className="text-white/60">
                   <span>Dr. Nolenslaan 157c</span><br />
                   <span>6136 GM Sittard</span>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
-                <Phone className="w-4 h-4 text-[#d0a760] flex-shrink-0" />
+                <Phone weight="duotone" className="w-4 h-4 text-[#d0a760] flex-shrink-0" />
                 <a href="tel:0852733625" className="text-white/60 hover:text-white transition-colors">085-27 33 625</a>
               </div>
               <div className="flex items-center space-x-3">
-                <Mail className="w-4 h-4 text-[#d0a760] flex-shrink-0" />
+                <Envelope weight="duotone" className="w-4 h-4 text-[#d0a760] flex-shrink-0" />
                 <a href="mailto:info@caraudiolimburg.nl" className="text-white/60 hover:text-white transition-colors">info@caraudiolimburg.nl</a>
               </div>
               <div className="flex items-start space-x-3">
-                <Clock className="w-4 h-4 text-[#d0a760] mt-0.5 flex-shrink-0" />
+                <Clock weight="duotone" className="w-4 h-4 text-[#d0a760] mt-0.5 flex-shrink-0" />
                 <div className="text-white/60">
                   <p>Ma-Vr: 08:30-17:30</p>
                   <p className="text-white/40 text-xs">Op afspraak</p>

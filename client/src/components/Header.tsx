@@ -13,16 +13,16 @@ import type { Category, Brand } from "@shared/schema";
 import { 
   ShoppingCart,
   User,
-  Menu,
+  List,
   X,
-  LogOut,
+  SignOut,
   Phone,
   MapPin,
   ArrowRight,
-  ChevronDown,
-  Grid3X3,
+  CaretDown,
+  SquaresFour,
   Tag
-} from "lucide-react";
+} from "@phosphor-icons/react";
 
 interface HeaderProps {
   onCartOpen: () => void;
@@ -203,7 +203,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
                       data-testid="nav-products-trigger"
                     >
                       {item.label}
-                      <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isMegaMenuOpen ? 'rotate-180' : ''}`} />
+                      <CaretDown weight="duotone" className={`w-4 h-4 transition-transform duration-300 ${isMegaMenuOpen ? 'rotate-180' : ''}`} />
                       <span className={`absolute -bottom-0.5 left-3 right-3 h-0.5 bg-[#d0a760] origin-right group-hover:origin-left transition-transform duration-300 ease-out ${isMegaMenuOpen || isActiveLink(item.href) ? 'scale-x-100 origin-left' : 'scale-x-0 group-hover:scale-x-100'}`} />
                     </button>
                   </div>
@@ -246,7 +246,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
               onClick={onCartOpen}
               data-testid="button-cart"
             >
-              <ShoppingCart className="w-5 h-5 transition-transform duration-300 group-hover/cart:scale-110" />
+              <ShoppingCart weight="duotone" className="w-5 h-5 transition-transform duration-300 group-hover/cart:scale-110" />
               {cartItemCount > 0 && (
                 <Badge className="absolute -top-1 -right-1 bg-[#d0a760] text-black text-xs w-5 h-5 flex items-center justify-center p-0 rounded-none" data-testid="badge-cart-count">
                   {cartItemCount}
@@ -258,7 +258,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
               <div className="hidden md:flex items-center space-x-2">
                 <Link href="/my-account">
                   <Button variant="ghost" size="sm" className="rounded-none group/account text-white hover:text-white hover:bg-white/10" data-testid="button-my-account">
-                    <User className="w-4 h-4 mr-2 transition-transform duration-300 group-hover/account:scale-110" />
+                    <User weight="duotone" className="w-4 h-4 mr-2 transition-transform duration-300 group-hover/account:scale-110" />
                     Account
                   </Button>
                 </Link>
@@ -276,7 +276,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
                   onClick={() => window.location.href = '/api/auth/logout'}
                   data-testid="button-logout"
                 >
-                  <LogOut className="w-5 h-5 transition-transform duration-300 group-hover/logout:translate-x-0.5" />
+                  <SignOut weight="duotone" className="w-5 h-5 transition-transform duration-300 group-hover/logout:translate-x-0.5" />
                 </Button>
               </div>
             ) : (
@@ -299,7 +299,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               data-testid="button-mobile-menu"
             >
-              {isMenuOpen ? <X className="w-6 h-6 transition-transform duration-300 rotate-0 hover:rotate-90" /> : <Menu className="w-6 h-6 transition-transform duration-300" />}
+              {isMenuOpen ? <X weight="duotone" className="w-6 h-6 transition-transform duration-300 rotate-0 hover:rotate-90" /> : <List weight="duotone" className="w-6 h-6 transition-transform duration-300" />}
             </Button>
           </div>
         </div>
@@ -359,12 +359,12 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
                   data-testid="mobile-accordion-categories"
                 >
                   <div className="flex items-center gap-3">
-                    <Grid3X3 className="w-5 h-5 text-[#d0a760]" />
+                    <SquaresFour weight="duotone" className="w-5 h-5 text-[#d0a760]" />
                     <span className="text-2xl font-light tracking-wide text-white group-hover:text-[#d0a760] transition-colors">
                       Shop Categorieën
                     </span>
                   </div>
-                  <ChevronDown 
+                  <CaretDown weight="duotone"
                     className={`w-5 h-5 text-white/60 transition-transform duration-300 ${categoriesExpanded ? 'rotate-180' : ''}`} 
                   />
                 </button>
@@ -419,12 +419,12 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
                   data-testid="mobile-accordion-brands"
                 >
                   <div className="flex items-center gap-3">
-                    <Tag className="w-5 h-5 text-[#d0a760]" />
+                    <Tag weight="duotone" className="w-5 h-5 text-[#d0a760]" />
                     <span className="text-2xl font-light tracking-wide text-white group-hover:text-[#d0a760] transition-colors">
                       Shop Merken
                     </span>
                   </div>
-                  <ChevronDown 
+                  <CaretDown weight="duotone"
                     className={`w-5 h-5 text-white/60 transition-transform duration-300 ${brandsExpanded ? 'rotate-180' : ''}`} 
                   />
                 </button>
@@ -489,7 +489,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
                           {item.label}
                         </span>
                       </div>
-                      <ArrowRight className={`w-5 h-5 transition-all duration-300 ${
+                      <ArrowRight weight="duotone" className={`w-5 h-5 transition-all duration-300 ${
                         isMobileActive || item.highlight 
                           ? 'text-[#d0a760]' 
                           : 'text-white/40 group-hover:text-[#d0a760]'
@@ -509,7 +509,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
                 <div className="space-y-3">
                   <Link href="/my-account" onClick={handleMobileMenuClose}>
                     <div className="flex items-center gap-3 text-white/70 hover:text-white transition-colors py-2">
-                      <User className="w-5 h-5" />
+                      <User weight="duotone" className="w-5 h-5" />
                       <span className="text-lg">Mijn Account</span>
                     </div>
                   </Link>
@@ -527,7 +527,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
                     }}
                     className="flex items-center gap-3 text-white/70 hover:text-white transition-colors py-2"
                   >
-                    <LogOut className="w-5 h-5" />
+                    <SignOut weight="duotone" className="w-5 h-5" />
                     <span className="text-lg">Uitloggen</span>
                   </button>
                 </div>
@@ -552,13 +552,13 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
           >
             <div className="space-y-3 text-white/50 text-sm">
               <div className="flex items-center gap-3">
-                <Phone className="w-4 h-4 text-[#d0a760]" />
+                <Phone weight="duotone" className="w-4 h-4 text-[#d0a760]" />
                 <a href="tel:0852733625" className="hover:text-white transition-colors">
                   085-27 33 625
                 </a>
               </div>
               <div className="flex items-center gap-3">
-                <MapPin className="w-4 h-4 text-[#d0a760]" />
+                <MapPin weight="duotone" className="w-4 h-4 text-[#d0a760]" />
                 <span>Sittard, Limburg</span>
               </div>
             </div>

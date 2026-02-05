@@ -177,7 +177,7 @@ export function Footer() {
                 <YoutubeLogo weight="duotone" className="w-5 h-5" />
               </a>
             </div>
-            <TrustedShopsBadgeLink className="bg-zinc-900 border-zinc-700 hover:bg-zinc-800 scale-90" />
+            <TrustedShopsBadgeLink className="bg-zinc-900 border-zinc-700 hover:bg-zinc-800" />
           </div>
 
           {/* Mobile Bottom Bar */}

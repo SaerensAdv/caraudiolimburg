@@ -231,26 +231,26 @@ export function TrustedShopsBadgeLink({ className = '' }: { className?: string }
       href={profileUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className={`flex items-center gap-3 p-4 bg-zinc-50 border border-zinc-200 rounded-none hover:bg-zinc-100 transition-colors ${className}`}
+      className={`flex items-center gap-2 p-2 md:p-4 md:gap-3 bg-zinc-50 border border-zinc-200 rounded-none hover:bg-zinc-100 transition-colors ${className}`}
       data-testid="trusted-shops-badge-link"
     >
-      <div className="w-12 h-12 flex items-center justify-center p-1.5 bg-[#d0a760]">
+      <div className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center p-1 md:p-1.5 bg-[#d0a760] flex-shrink-0">
         <img 
           src={trustedShopsLogo}
           alt="Trusted Shops" 
           className="w-full h-full object-contain"
         />
       </div>
-      <div className="flex-1">
-        <div className="flex items-center gap-2">
-          <span className="font-semibold text-[#d0a760]">Trusted Shops</span>
-          <span className="text-sm text-zinc-600">
-            {rating.toFixed(2)}/5
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1 md:gap-2">
+          <span className="font-semibold text-[#d0a760] text-xs md:text-base">Trusted</span>
+          <span className="text-xs md:text-sm text-zinc-600">
+            {rating.toFixed(2)}
           </span>
         </div>
-        <div className="flex items-center text-sm text-zinc-500">
-          <span>Bekijk onze {count} reviews</span>
-          <ExternalLink className="w-3 h-3 ml-1" />
+        <div className="flex items-center text-xs md:text-sm text-zinc-500">
+          <span className="truncate">{count} reviews</span>
+          <ExternalLink className="w-3 h-3 ml-1 flex-shrink-0" />
         </div>
       </div>
     </a>

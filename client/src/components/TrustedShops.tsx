@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star, User, Shield, ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
+import trustedShopsLogo from "@assets/trusted-shops-icon-logo-png_seeklogo-620346_1770318250295.png";
 
 interface ETrustedReview {
   id: string;
@@ -233,9 +234,9 @@ export function TrustedShopsBadgeLink({ className = '' }: { className?: string }
       className={`flex items-center gap-3 p-4 bg-zinc-50 border border-zinc-200 rounded-none hover:bg-zinc-100 transition-colors ${className}`}
       data-testid="trusted-shops-badge-link"
     >
-      <div className="w-12 h-12 flex items-center justify-center p-2 bg-[#d0a760]">
+      <div className="w-12 h-12 flex items-center justify-center p-1.5 bg-[#d0a760]">
         <img 
-          src="https://www.trstd.com/nl-nl/wp-content/uploads/sites/6/2025/06/icon-trusted-shops-product-certification-white.svg" 
+          src={trustedShopsLogo}
           alt="Trusted Shops" 
           className="w-full h-full object-contain"
         />

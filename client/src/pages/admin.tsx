@@ -94,6 +94,10 @@ const productFormSchema = insertProductSchema.extend({
   features: z.array(z.string()).optional(),
   specifications: z.record(z.string(), z.any()).optional(),
   images: z.array(z.string()).optional(),
+  videoUrl: z.string().optional(),
+  overviewContent: z.string().optional(),
+  boxContent: z.array(z.string()).optional(),
+  downloads: z.array(z.object({ name: z.string(), url: z.string() })).optional(),
 });
 
 type ProductFormData = z.infer<typeof productFormSchema>;
@@ -124,6 +128,13 @@ export default function Admin() {
   const [newVariationPrice, setNewVariationPrice] = useState('');
   const [newVariationStock, setNewVariationStock] = useState(0);
   const [newVariationSku, setNewVariationSku] = useState('');
+  const [videoUrl, setVideoUrl] = useState('');
+  const [overviewContent, setOverviewContent] = useState('');
+  const [boxContent, setBoxContent] = useState<string[]>([]);
+  const [newBoxItem, setNewBoxItem] = useState('');
+  const [downloads, setDownloads] = useState<{name: string, url: string}[]>([]);
+  const [newDownloadName, setNewDownloadName] = useState('');
+  const [newDownloadUrl, setNewDownloadUrl] = useState('');
   const { isAuthenticated, user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -268,7 +279,7 @@ export default function Admin() {
   }, [orders]);
 
   const createProductMutation = useMutation({
-    mutationFn: async (data: ProductFormData & { hasVariations?: boolean }) => {
+    mutationFn: async (data: ProductFormData & { hasVariations?: boolean; videoUrl?: string; overviewContent?: string; boxContent?: string[]; downloads?: {name: string, url: string}[] }) => {
       const payload = {
         ...data,
         price: data.price,
@@ -278,6 +289,10 @@ export default function Admin() {
         features,
         specifications,
         hasVariations: data.hasVariations || false,
+        videoUrl: data.videoUrl || null,
+        overviewContent: data.overviewContent || null,
+        boxContent: data.boxContent || null,
+        downloads: data.downloads || null,
       };
       const response = await apiRequest("POST", "/api/products", payload);
       const newProduct = await response.json();
@@ -318,6 +333,13 @@ export default function Admin() {
       setVehicleCompatibilityOpen(false);
       setHasVariations(false);
       setProductVariations([]);
+      setVideoUrl('');
+      setOverviewContent('');
+      setBoxContent([]);
+      setDownloads([]);
+      setNewBoxItem('');
+      setNewDownloadName('');
+      setNewDownloadUrl('');
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
@@ -337,7 +359,7 @@ export default function Admin() {
   });
 
   const updateProductMutation = useMutation({
-    mutationFn: async (data: ProductFormData & { hasVariations?: boolean }) => {
+    mutationFn: async (data: ProductFormData & { hasVariations?: boolean; videoUrl?: string; overviewContent?: string; boxContent?: string[]; downloads?: {name: string, url: string}[] }) => {
       if (!selectedProduct) return;
       
       const imagesToUse = productImages.length > 0 ? productImages : (selectedProduct.images || []);
@@ -354,6 +376,10 @@ export default function Admin() {
         features,
         specifications,
         hasVariations: data.hasVariations || false,
+        videoUrl: data.videoUrl || null,
+        overviewContent: data.overviewContent || null,
+        boxContent: data.boxContent || null,
+        downloads: data.downloads || null,
       };
       await apiRequest("PUT", `/api/products/${selectedProduct.id}`, payload);
       
@@ -426,6 +452,13 @@ export default function Admin() {
       setVehicleCompatibilityOpen(false);
       setHasVariations(false);
       setProductVariations([]);
+      setVideoUrl('');
+      setOverviewContent('');
+      setBoxContent([]);
+      setDownloads([]);
+      setNewBoxItem('');
+      setNewDownloadName('');
+      setNewDownloadUrl('');
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
@@ -964,6 +997,10 @@ export default function Admin() {
       originalPrice: data.originalPrice || undefined,
       installationPrice: data.installationPrice || undefined,
       hasVariations,
+      videoUrl: videoUrl || undefined,
+      overviewContent: overviewContent || undefined,
+      boxContent: boxContent.length > 0 ? boxContent : undefined,
+      downloads: downloads.length > 0 ? downloads : undefined,
     };
     
     if (selectedProduct) {
@@ -1001,6 +1038,11 @@ export default function Admin() {
     setPrimaryImageIndex(product.primaryImageIndex || 0);
     setFeatures(Array.isArray(product.features) ? [...product.features] : []);
     setSpecifications(product.specifications ? {...product.specifications} : {});
+    
+    setVideoUrl(product.videoUrl || '');
+    setOverviewContent(product.overviewContent || '');
+    setBoxContent(Array.isArray(product.boxContent) ? [...product.boxContent as string[]] : []);
+    setDownloads(Array.isArray(product.downloads) ? [...product.downloads as {name: string, url: string}[]] : []);
     
     setHasVariations(product.hasVariations || false);
     
@@ -1853,6 +1895,173 @@ export default function Admin() {
                                     }}
                                     className="text-zinc-400 hover:text-red-400"
                                     data-testid={`button-remove-spec-${key}`}
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Video URL */}
+                        <div>
+                          <Label className="text-zinc-300">Video URL (YouTube)</Label>
+                          <Input
+                            placeholder="https://www.youtube.com/watch?v=..."
+                            value={videoUrl}
+                            onChange={(e) => setVideoUrl(e.target.value)}
+                            className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760] mt-2"
+                            data-testid="input-video-url"
+                          />
+                          {videoUrl && videoUrl.includes('youtube.com/watch?v=') && (
+                            <div className="mt-3">
+                              <p className="text-zinc-400 text-xs mb-2">YouTube Preview:</p>
+                              <img
+                                src={`https://img.youtube.com/vi/${videoUrl.split('v=')[1]?.split('&')[0]}/mqdefault.jpg`}
+                                alt="YouTube Thumbnail"
+                                className="w-48 h-auto border border-zinc-700"
+                              />
+                            </div>
+                          )}
+                          {videoUrl && videoUrl.includes('youtu.be/') && (
+                            <div className="mt-3">
+                              <p className="text-zinc-400 text-xs mb-2">YouTube Preview:</p>
+                              <img
+                                src={`https://img.youtube.com/vi/${videoUrl.split('youtu.be/')[1]?.split('?')[0]}/mqdefault.jpg`}
+                                alt="YouTube Thumbnail"
+                                className="w-48 h-auto border border-zinc-700"
+                              />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Overview Content */}
+                        <div>
+                          <Label className="text-zinc-300">Uitgebreide Beschrijving (Overview)</Label>
+                          <Textarea
+                            placeholder="Uitgebreide productbeschrijving..."
+                            value={overviewContent}
+                            onChange={(e) => setOverviewContent(e.target.value)}
+                            rows={8}
+                            className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760] mt-2 resize-y"
+                            data-testid="input-overview-content"
+                          />
+                        </div>
+
+                        {/* Box Content */}
+                        <div>
+                          <Label className="text-zinc-300">Inhoud van de doos</Label>
+                          <div className="flex gap-2 mt-2">
+                            <Input
+                              placeholder="Item toevoegen..."
+                              value={newBoxItem}
+                              onChange={(e) => setNewBoxItem(e.target.value)}
+                              className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                              data-testid="input-new-box-item"
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  if (newBoxItem.trim()) {
+                                    setBoxContent([...boxContent, newBoxItem.trim()]);
+                                    setNewBoxItem('');
+                                  }
+                                }
+                              }}
+                            />
+                            <Button
+                              type="button"
+                              onClick={() => {
+                                if (newBoxItem.trim()) {
+                                  setBoxContent([...boxContent, newBoxItem.trim()]);
+                                  setNewBoxItem('');
+                                }
+                              }}
+                              className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"
+                              data-testid="button-add-box-item"
+                            >
+                              <Plus className="w-4 h-4" />
+                            </Button>
+                          </div>
+                          
+                          {boxContent.length > 0 && (
+                            <div className="mt-2 space-y-1">
+                              {boxContent.map((item, index) => (
+                                <div
+                                  key={index}
+                                  className="flex items-center justify-between bg-zinc-800 px-3 py-2"
+                                >
+                                  <span className="text-sm text-zinc-300">{item}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setBoxContent(boxContent.filter((_, i) => i !== index));
+                                    }}
+                                    className="text-zinc-400 hover:text-red-400"
+                                    data-testid={`button-remove-box-item-${index}`}
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Downloads */}
+                        <div>
+                          <Label className="text-zinc-300">Downloads (handleidingen, tech sheets, etc.)</Label>
+                          <div className="flex gap-2 mt-2">
+                            <Input
+                              placeholder="Naam"
+                              value={newDownloadName}
+                              onChange={(e) => setNewDownloadName(e.target.value)}
+                              className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                              data-testid="input-download-name"
+                            />
+                            <Input
+                              placeholder="URL"
+                              value={newDownloadUrl}
+                              onChange={(e) => setNewDownloadUrl(e.target.value)}
+                              className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                              data-testid="input-download-url"
+                            />
+                            <Button
+                              type="button"
+                              onClick={() => {
+                                if (newDownloadName.trim() && newDownloadUrl.trim()) {
+                                  setDownloads([...downloads, { name: newDownloadName.trim(), url: newDownloadUrl.trim() }]);
+                                  setNewDownloadName('');
+                                  setNewDownloadUrl('');
+                                }
+                              }}
+                              className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"
+                              data-testid="button-add-download"
+                            >
+                              <Plus className="w-4 h-4" />
+                            </Button>
+                          </div>
+                          
+                          {downloads.length > 0 && (
+                            <div className="mt-2 space-y-1">
+                              {downloads.map((download, index) => (
+                                <div
+                                  key={index}
+                                  className="flex items-center justify-between bg-zinc-800 px-3 py-2"
+                                >
+                                  <div className="flex items-center gap-2 text-sm">
+                                    <Download className="w-4 h-4 text-[#d0a760]" />
+                                    <span className="text-white font-medium">{download.name}</span>
+                                    <span className="text-zinc-500">-</span>
+                                    <span className="text-zinc-400 text-xs truncate max-w-48">{download.url}</span>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setDownloads(downloads.filter((_, i) => i !== index));
+                                    }}
+                                    className="text-zinc-400 hover:text-red-400"
+                                    data-testid={`button-remove-download-${index}`}
                                   >
                                     <X className="w-4 h-4" />
                                   </button>

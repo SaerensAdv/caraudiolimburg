@@ -24,6 +24,7 @@ import {
   Shield,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Check,
   ZoomIn,
   ArrowLeft,
@@ -38,7 +39,8 @@ import {
   FileText,
   Download,
   Play,
-  Box
+  Box,
+  Sparkles
 } from "lucide-react";
 import { SiApplepay, SiGooglepay, SiRevolut, SiKlarna } from "react-icons/si";
 import type { Product } from "@shared/schema";
@@ -358,8 +360,8 @@ export default function ProductPage() {
         </div>
       </div>
       {/* Product Section - Black */}
-      <section className="pt-16 md:pt-0 py-6 md:py-20 pb-36 md:pb-20">
-        <div className="container mx-auto px-4 mt-[32px] mb-[32px]">
+      <section className="pt-16 md:pt-0 py-8 md:py-24 pb-36 md:pb-24">
+        <div className="container mx-auto px-4 mt-[32px] mb-[48px]">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 lg:gap-16">
             {/* Product Images - Mobile Swipeable Gallery */}
             <ScrollReveal animation="fade-right">
@@ -553,21 +555,27 @@ export default function ProductPage() {
                   </div>
                 )}
 
-                {/* Price - Mobile compact, Desktop full */}
-                <div className="py-4 md:py-6 border-y border-white/10" data-testid="product-pricing">
-                  <div className="flex items-baseline gap-3 md:gap-4 mb-2 md:mb-3">
-                    <span className="text-3xl md:text-4xl font-bold text-white">
+                {/* Price - Mobile compact, Desktop full - Enhanced visibility */}
+                <div className="py-6 md:py-8 border-y border-[#d0a760]/20 bg-gradient-to-r from-[#d0a760]/5 via-transparent to-[#d0a760]/5" data-testid="product-pricing">
+                  <div className="flex items-baseline gap-3 md:gap-4 mb-3 md:mb-4">
+                    <span className="text-4xl md:text-5xl font-bold text-white drop-shadow-[0_0_20px_rgba(208,167,96,0.3)]">
                       €{currentPrice.toFixed(0)}
                     </span>
                     {originalPrice && (
-                      <span className="text-lg md:text-xl text-white/30 line-through">
+                      <span className="text-lg md:text-xl text-white/40 line-through">
                         €{originalPrice.toFixed(0)}
+                      </span>
+                    )}
+                    {discount && (
+                      <span className="ml-2 px-3 py-1 bg-green-500/20 text-green-400 text-sm font-semibold border border-green-500/30">
+                        Bespaar €{(originalPrice! - currentPrice).toFixed(0)}
                       </span>
                     )}
                   </div>
                   
                   {installationPrice && (
-                    <p className="text-[#d0a760] text-sm">
+                    <p className="text-[#d0a760] text-sm font-medium flex items-center gap-2">
+                      <Sparkles className="w-4 h-4" />
                       + €{installationPrice.toFixed(0)} voor professionele installatie
                     </p>
                   )}
@@ -655,10 +663,10 @@ export default function ProductPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <Button
                       size="lg"
-                      className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none h-14 text-base font-medium"
+                      className="bg-[#d0a760] text-black hover:bg-[#c49650] rounded-none h-16 text-lg font-semibold shadow-[0_0_30px_rgba(208,167,96,0.4)] hover:shadow-[0_0_40px_rgba(208,167,96,0.6)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
                       onClick={() => addToCartMutation.mutate({ needsInstallation: false, authenticated: isAuthenticated })}
                       disabled={!canAddToCart || addToCartMutation.isPending}
                       data-testid="button-add-to-cart"
@@ -670,7 +678,7 @@ export default function ProductPage() {
                     <Button
                       variant="outline"
                       size="lg"
-                      className="border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760]/10 rounded-none h-14 text-base font-medium flex flex-col items-center justify-center py-2"
+                      className="border-2 border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760] hover:text-black rounded-none h-16 text-base font-semibold flex flex-col items-center justify-center py-2 hover:shadow-[0_0_30px_rgba(208,167,96,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
                       onClick={() => addToCartMutation.mutate({ needsInstallation: true, authenticated: isAuthenticated })}
                       disabled={!canAddToCart || addToCartMutation.isPending}
                       data-testid="button-add-with-installation"
@@ -680,7 +688,7 @@ export default function ProductPage() {
                         + Professionele Installatie
                       </span>
                       {installationPrice && (
-                        <span className="text-xs text-[#d0a760]/70 font-normal">
+                        <span className="text-xs opacity-70 font-normal">
                           Totaal: €{(currentPrice + installationPrice).toFixed(0)}
                         </span>
                       )}
@@ -707,61 +715,72 @@ export default function ProductPage() {
                 </div>
 
                 {/* Trust Indicators - Mobile: Horizontal scroll, Desktop: Grid */}
-                <div className="pt-4 md:pt-6" data-testid="product-benefits">
+                <div className="pt-6 md:pt-8" data-testid="product-benefits">
                   {/* Mobile: Compact horizontal badges */}
                   <div className="flex md:hidden gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
-                    <div className="flex items-center gap-2 px-3 py-2 bg-zinc-900 border border-zinc-800 whitespace-nowrap flex-shrink-0">
+                    <div className="flex items-center gap-2 px-3 py-2.5 bg-zinc-900/80 border border-zinc-700 whitespace-nowrap flex-shrink-0 hover:border-[#d0a760]/50 transition-colors">
                       <Truck className="w-4 h-4 text-[#d0a760]" />
                       <span className="text-white text-xs font-medium">Gratis Verzending</span>
                     </div>
-                    <div className="flex items-center gap-2 px-3 py-2 bg-zinc-900 border border-zinc-800 whitespace-nowrap flex-shrink-0">
+                    <div className="flex items-center gap-2 px-3 py-2.5 bg-zinc-900/80 border border-zinc-700 whitespace-nowrap flex-shrink-0 hover:border-[#d0a760]/50 transition-colors">
                       <Shield className="w-4 h-4 text-[#d0a760]" />
                       <span className="text-white text-xs font-medium">2 Jaar Garantie</span>
                     </div>
-                    <div className="flex items-center gap-2 px-3 py-2 bg-zinc-900 border border-zinc-800 whitespace-nowrap flex-shrink-0">
+                    <div className="flex items-center gap-2 px-3 py-2.5 bg-zinc-900/80 border border-zinc-700 whitespace-nowrap flex-shrink-0 hover:border-[#d0a760]/50 transition-colors">
                       <Award className="w-4 h-4 text-[#d0a760]" />
                       <span className="text-white text-xs font-medium">Prof. Installatie</span>
                     </div>
                   </div>
                   
-                  {/* Desktop: Full grid with stagger */}
-                  <StaggerContainer className="hidden md:grid grid-cols-1 gap-3">
+                  {/* Desktop: Full grid with stagger and enhanced styling */}
+                  <StaggerContainer className="hidden md:grid grid-cols-1 gap-4">
                     <StaggerItem>
-                      <div className="flex items-center gap-4 p-4 bg-zinc-900 border border-zinc-800">
-                        <div className="p-2 bg-[#d0a760]/10">
+                      <div className="flex items-center gap-4 p-5 bg-gradient-to-r from-zinc-900 to-zinc-900/50 border border-zinc-700 hover:border-[#d0a760]/40 transition-all duration-300 group">
+                        <div className="p-3 bg-[#d0a760]/10 group-hover:bg-[#d0a760]/20 transition-colors">
                           <Truck className="w-5 h-5 text-[#d0a760]" />
                         </div>
                         <div>
-                          <p className="text-white font-medium text-sm">Gratis Verzending</p>
-                          <p className="text-white/40 text-xs">Bij bestellingen vanaf €50</p>
+                          <p className="text-white font-semibold text-sm">Gratis Verzending</p>
+                          <p className="text-white/50 text-xs">Bij bestellingen vanaf €50</p>
                         </div>
                       </div>
                     </StaggerItem>
                     
                     <StaggerItem>
-                      <div className="flex items-center gap-4 p-4 bg-zinc-900 border border-zinc-800">
-                        <div className="p-2 bg-[#d0a760]/10">
+                      <div className="flex items-center gap-4 p-5 bg-gradient-to-r from-zinc-900 to-zinc-900/50 border border-zinc-700 hover:border-[#d0a760]/40 transition-all duration-300 group">
+                        <div className="p-3 bg-[#d0a760]/10 group-hover:bg-[#d0a760]/20 transition-colors">
                           <Shield className="w-5 h-5 text-[#d0a760]" />
                         </div>
                         <div>
-                          <p className="text-white font-medium text-sm">2 Jaar Garantie</p>
-                          <p className="text-white/40 text-xs">Volledige fabrieksgarantie</p>
+                          <p className="text-white font-semibold text-sm">2 Jaar Garantie</p>
+                          <p className="text-white/50 text-xs">Volledige fabrieksgarantie</p>
                         </div>
                       </div>
                     </StaggerItem>
                     
                     <StaggerItem>
-                      <div className="flex items-center gap-4 p-4 bg-zinc-900 border border-zinc-800">
-                        <div className="p-2 bg-[#d0a760]/10">
+                      <div className="flex items-center gap-4 p-5 bg-gradient-to-r from-zinc-900 to-zinc-900/50 border border-zinc-700 hover:border-[#d0a760]/40 transition-all duration-300 group">
+                        <div className="p-3 bg-[#d0a760]/10 group-hover:bg-[#d0a760]/20 transition-colors">
                           <Award className="w-5 h-5 text-[#d0a760]" />
                         </div>
                         <div>
-                          <p className="text-white font-medium text-sm">Professionele Installatie</p>
-                          <p className="text-white/40 text-xs">Door gecertificeerde monteurs</p>
+                          <p className="text-white font-semibold text-sm">Professionele Installatie</p>
+                          <p className="text-white/50 text-xs">Door gecertificeerde monteurs</p>
                         </div>
                       </div>
                     </StaggerItem>
                   </StaggerContainer>
+                  
+                  {/* Scroll to description indicator - Desktop only */}
+                  <div className="hidden md:flex justify-center mt-8">
+                    <a 
+                      href="#product-details" 
+                      className="flex flex-col items-center gap-2 text-white/40 hover:text-[#d0a760] transition-colors group cursor-pointer"
+                    >
+                      <span className="text-xs font-medium">Bekijk productdetails</span>
+                      <ChevronDown className="w-5 h-5 animate-bounce" />
+                    </a>
+                  </div>
                 </div>
               </div>
             </ScrollReveal>
@@ -769,29 +788,33 @@ export default function ProductPage() {
         </div>
       </section>
       {/* Product Information Tabs - Dark Section */}
-      <section className="bg-zinc-950 py-12 md:py-20 border-t border-white/5" data-testid="product-information">
+      <section className="bg-zinc-950 py-16 md:py-24 border-t border-[#d0a760]/10" data-testid="product-information" id="product-details">
         <div className="container mx-auto px-4">
           <ScrollReveal animation="fade-up">
             <div className="max-w-5xl mx-auto">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                <span className="w-1 h-6 bg-[#d0a760]"></span>
+                Product Details
+              </h2>
               <Tabs defaultValue="description" className="w-full">
-                <TabsList className="w-full justify-start bg-zinc-900 border border-zinc-800 rounded-none p-1 h-auto">
+                <TabsList className="w-full justify-start bg-zinc-900/50 border-2 border-zinc-800 rounded-none p-1.5 h-auto gap-1 backdrop-blur-sm">
                   <TabsTrigger 
                     value="description" 
-                    className="rounded-none px-6 py-3 text-sm font-medium text-white/60 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black flex items-center gap-2"
+                    className="rounded-none px-6 py-3.5 text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black data-[state=active]:shadow-[0_0_20px_rgba(208,167,96,0.3)] flex items-center gap-2 transition-all duration-300"
                   >
                     <Play className="w-4 h-4" />
                     Beschrijving
                   </TabsTrigger>
                   <TabsTrigger 
                     value="specifications" 
-                    className="rounded-none px-6 py-3 text-sm font-medium text-white/60 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black flex items-center gap-2"
+                    className="rounded-none px-6 py-3.5 text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black data-[state=active]:shadow-[0_0_20px_rgba(208,167,96,0.3)] flex items-center gap-2 transition-all duration-300"
                   >
                     <FileText className="w-4 h-4" />
                     Specificaties
                   </TabsTrigger>
                   <TabsTrigger 
                     value="box-content" 
-                    className="rounded-none px-6 py-3 text-sm font-medium text-white/60 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black flex items-center gap-2"
+                    className="rounded-none px-6 py-3.5 text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black data-[state=active]:shadow-[0_0_20px_rgba(208,167,96,0.3)] flex items-center gap-2 transition-all duration-300"
                   >
                     <Box className="w-4 h-4" />
                     In de doos
@@ -993,12 +1016,14 @@ export default function ProductPage() {
       </section>
       {/* Related Products / Upsell Section */}
       {filteredRelatedProducts.length > 0 && (
-        <section className="bg-zinc-950 py-16 md:py-20 border-t border-white/5" data-testid="related-products">
+        <section className="bg-zinc-950 py-16 md:py-24 border-t border-[#d0a760]/10" data-testid="related-products">
           <div className="container mx-auto px-4">
             <ScrollReveal animation="fade-up">
-              <div className="text-center mb-10">
-                <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
+              <div className="text-center mb-12">
+                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4 flex items-center justify-center gap-3">
+                  <span className="w-8 h-0.5 bg-[#d0a760]"></span>
                   Gerelateerde Producten
+                  <span className="w-8 h-0.5 bg-[#d0a760]"></span>
                 </h2>
                 <p className="text-white/50">Andere klanten bekeken ook</p>
               </div>
@@ -1008,12 +1033,12 @@ export default function ProductPage() {
               {filteredRelatedProducts.map((relatedProduct) => (
                 <Link key={relatedProduct.id} href={`/webshop/${relatedProduct.slug}`}>
                   <div className="group cursor-pointer" data-testid={`related-product-${relatedProduct.id}`}>
-                    <div className="relative aspect-square bg-zinc-900 border border-zinc-800 mb-3 overflow-hidden">
+                    <div className="relative aspect-square bg-zinc-900 border border-zinc-700 mb-4 overflow-hidden group-hover:border-[#d0a760]/50 transition-all duration-300 group-hover:shadow-[0_0_20px_rgba(208,167,96,0.15)]">
                       {relatedProduct.images && relatedProduct.images[0] ? (
                         <img 
                           src={relatedProduct.images[0]} 
                           alt={relatedProduct.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                         />
                       ) : (
                         <div className="flex items-center justify-center h-full">
@@ -1021,7 +1046,7 @@ export default function ProductPage() {
                         </div>
                       )}
                     </div>
-                    <h3 className="text-white text-sm font-medium line-clamp-2 group-hover:text-[#d0a760] transition-colors mb-1">
+                    <h3 className="text-white text-sm font-semibold line-clamp-2 group-hover:text-[#d0a760] transition-colors duration-300 mb-1.5">
                       {relatedProduct.name}
                     </h3>
                     <div className="flex items-baseline gap-2">
@@ -1039,31 +1064,31 @@ export default function ProductPage() {
           </div>
         </section>
       )}
-      {/* CTA Section - Black */}
-      <section className="bg-black py-16 border-t border-white/5">
+      {/* CTA Section - Black with gradient */}
+      <section className="bg-gradient-to-b from-black via-zinc-950 to-black py-20 border-t border-[#d0a760]/10">
         <div className="container mx-auto px-4">
           <ScrollReveal animation="fade-up">
             <div className="max-w-3xl mx-auto text-center">
-              <div className="inline-flex items-center justify-center p-3 bg-[#d0a760]/10 mb-6">
-                <Award className="w-8 h-8 text-[#d0a760]" />
+              <div className="inline-flex items-center justify-center p-4 bg-[#d0a760]/10 border border-[#d0a760]/20 mb-8">
+                <Award className="w-10 h-10 text-[#d0a760]" />
               </div>
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+              <h2 className="text-2xl md:text-4xl font-bold text-white mb-5">
                 Vragen over dit product?
               </h2>
-              <p className="text-white/50 mb-8">
+              <p className="text-white/60 mb-10 text-lg">
                 Onze experts staan klaar om al je vragen te beantwoorden en je te helpen met de beste keuze.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
                   asChild
-                  className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none px-8 py-6"
+                  className="bg-[#d0a760] text-black hover:bg-[#c49650] rounded-none px-10 py-6 text-base font-semibold shadow-[0_0_30px_rgba(208,167,96,0.3)] hover:shadow-[0_0_40px_rgba(208,167,96,0.5)] hover:scale-[1.02] transition-all duration-300"
                 >
                   <a href="/contact">Stel een Vraag</a>
                 </Button>
                 <Button 
                   asChild
                   variant="outline"
-                  className="border-white/20 text-white hover:bg-white/10 rounded-none px-8 py-6"
+                  className="border-white/30 text-white hover:bg-white/10 hover:border-white/50 rounded-none px-10 py-6 text-base font-medium hover:scale-[1.02] transition-all duration-300"
                 >
                   <a href="/booking">Plan Installatie</a>
                 </Button>
@@ -1131,9 +1156,9 @@ export default function ProductPage() {
           </div>
           
           {/* Action buttons row */}
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-3">
             <Button
-              className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 active:scale-[0.98] rounded-none h-12 text-sm font-semibold transition-transform"
+              className="bg-[#d0a760] text-black hover:bg-[#c49650] active:scale-[0.97] rounded-none h-14 text-sm font-bold shadow-[0_0_25px_rgba(208,167,96,0.4)] transition-all duration-200"
               onClick={() => addToCartMutation.mutate({ needsInstallation: false, authenticated: isAuthenticated })}
               disabled={!canAddToCart || addToCartMutation.isPending}
               data-testid="mobile-button-add-to-cart"
@@ -1144,7 +1169,7 @@ export default function ProductPage() {
             
             <Button
               variant="outline"
-              className="border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760]/10 active:scale-[0.98] rounded-none h-12 text-sm font-semibold transition-transform flex flex-col items-center justify-center py-1"
+              className="border-2 border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760] hover:text-black active:scale-[0.97] rounded-none h-14 text-sm font-bold transition-all duration-200 flex flex-col items-center justify-center py-1"
               onClick={() => addToCartMutation.mutate({ needsInstallation: true, authenticated: isAuthenticated })}
               disabled={!canAddToCart || addToCartMutation.isPending}
               data-testid="mobile-button-add-with-installation"
@@ -1154,7 +1179,7 @@ export default function ProductPage() {
                 + Installatie
               </span>
               {installationPrice && (
-                <span className="text-[10px] text-[#d0a760]/70 font-normal">
+                <span className="text-[10px] opacity-70 font-normal">
                   €{(currentPrice + installationPrice).toFixed(0)} totaal
                 </span>
               )}

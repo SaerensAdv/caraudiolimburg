@@ -335,15 +335,25 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
         </div>
 
         {/* Menu Content */}
-        <div className="relative h-full flex flex-col justify-between pt-24 pb-8 px-8 overflow-y-auto">
+        <div className="relative h-full flex flex-col pt-20 pb-6 px-6 overflow-hidden">
+          {/* Close Button */}
+          <button
+            onClick={handleMobileMenuClose}
+            className="absolute top-6 right-6 p-3 text-white/60 hover:text-white hover:bg-white/10 transition-all z-10"
+            aria-label="Menu sluiten"
+            data-testid="button-close-mobile-menu"
+          >
+            <X weight="bold" className="w-7 h-7" />
+          </button>
+
           {/* Mobile Search */}
-          <div className="mb-6">
+          <div className="mb-4">
             <SearchAutocomplete variant="mobile" onNavigate={handleMobileMenuClose} />
           </div>
 
           {/* Navigation Links */}
-          <nav className="flex-1" aria-label="Mobiele navigatie">
-            <div className="space-y-1">
+          <nav className="flex-1 flex flex-col justify-center" aria-label="Mobiele navigatie">
+            <div className="space-y-0">
               {/* Categories Accordion */}
               <div 
                 className={`transition-all duration-500 ${isMenuOpen ? 'translate-x-0 opacity-100' : 'translate-x-8 opacity-0'}`}
@@ -351,14 +361,14 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
               >
                 <button
                   onClick={() => setCategoriesExpanded(!categoriesExpanded)}
-                  className="w-full flex items-center justify-between py-4 border-b border-white/10 group"
+                  className="w-full flex items-center justify-between py-3 border-b border-white/10 group"
                   aria-expanded={categoriesExpanded}
                   aria-controls="mobile-categories-list"
                   data-testid="mobile-accordion-categories"
                 >
                   <div className="flex items-center gap-3">
                     <SquaresFour weight="duotone" className="w-5 h-5 text-[#d0a760]" />
-                    <span className="text-2xl font-light tracking-wide text-white group-hover:text-[#d0a760] transition-colors">
+                    <span className="text-lg sm:text-xl font-light tracking-wide text-white group-hover:text-[#d0a760] transition-colors">
                       Shop Categorieën
                     </span>
                   </div>
@@ -411,14 +421,14 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
               >
                 <button
                   onClick={() => setBrandsExpanded(!brandsExpanded)}
-                  className="w-full flex items-center justify-between py-4 border-b border-white/10 group"
+                  className="w-full flex items-center justify-between py-3 border-b border-white/10 group"
                   aria-expanded={brandsExpanded}
                   aria-controls="mobile-brands-list"
                   data-testid="mobile-accordion-brands"
                 >
                   <div className="flex items-center gap-3">
                     <Tag weight="duotone" className="w-5 h-5 text-[#d0a760]" />
-                    <span className="text-2xl font-light tracking-wide text-white group-hover:text-[#d0a760] transition-colors">
+                    <span className="text-lg sm:text-xl font-light tracking-wide text-white group-hover:text-[#d0a760] transition-colors">
                       Shop Merken
                     </span>
                   </div>
@@ -468,18 +478,18 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
                     data-testid={`mobile-nav-${item.href.slice(1)}`}
                   >
                     <div 
-                      className={`group flex items-center justify-between py-4 border-b transition-all duration-500 ${
+                      className={`group flex items-center justify-between py-3 border-b transition-all duration-500 ${
                         isMobileActive 
                           ? 'border-[#d0a760]/30 bg-[#d0a760]/5 -mx-4 px-4' 
                           : 'border-white/10'
                       } ${isMenuOpen ? 'translate-x-0 opacity-100' : 'translate-x-8 opacity-0'}`}
-                      style={{ transitionDelay: `${300 + index * 75}ms` }}
+                      style={{ transitionDelay: `${300 + index * 50}ms` }}
                     >
                       <div className="flex items-center gap-3">
                         {isMobileActive && (
                           <span className="w-1.5 h-1.5 rounded-full bg-[#d0a760] animate-pulse" />
                         )}
-                        <span className={`text-2xl font-light tracking-wide transition-colors ${
+                        <span className={`text-lg sm:text-xl font-light tracking-wide transition-colors ${
                           isMobileActive || item.highlight 
                             ? 'text-[#d0a760]' 
                             : 'text-white group-hover:text-[#d0a760]'

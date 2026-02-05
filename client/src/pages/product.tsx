@@ -37,7 +37,13 @@ import {
   Minus,
   CreditCard,
   FileText,
-  Download
+  Download,
+  Zap,
+  Users,
+  BookOpen,
+  Settings,
+  Play,
+  Star
 } from "lucide-react";
 import { SiApplepay, SiGooglepay, SiRevolut, SiKlarna } from "react-icons/si";
 import type { Product } from "@shared/schema";
@@ -483,9 +489,18 @@ export default function ProductPage() {
                 {/* Header */}
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <Badge className="bg-[#d0a760]/10 text-[#d0a760] border-[#d0a760]/20 rounded-none">
-                      Premium Audio
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                      {product.specifications && (product.specifications as Record<string, string>).brand ? (
+                        <Badge className="bg-white/10 text-white border-white/20 rounded-none flex items-center gap-1.5">
+                          <Star className="w-3 h-3" />
+                          {(product.specifications as Record<string, string>).brand}
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-[#d0a760]/10 text-[#d0a760] border-[#d0a760]/20 rounded-none">
+                          Premium Audio
+                        </Badge>
+                      )}
+                    </div>
                     {/* Desktop wishlist button */}
                     <button
                       onClick={() => setIsWishlisted(!isWishlisted)}
@@ -803,21 +818,35 @@ export default function ProductPage() {
                     </p>
                   )}
                   <div className="prose prose-zinc prose-p:text-black/70 prose-p:leading-relaxed prose-p:mb-4 prose-headings:text-black prose-headings:font-semibold prose-strong:text-black/80 max-w-none">
-                    {String(product.description).split('\n\n').map((paragraph, index) => {
-                      const trimmed = paragraph.trim();
-                      if (!trimmed) return null;
-                      
-                      return (
-                        <p key={index}>
-                          {trimmed.split('\n').map((line, lineIndex, arr) => (
-                            <span key={lineIndex}>
-                              {line}
-                              {lineIndex < arr.length - 1 && <br />}
-                            </span>
-                          ))}
-                        </p>
-                      );
-                    })}
+                    {(String(product.description) as string).split('\n\n').filter((p: string) => p.trim()).map((paragraph: string, index: number) => (
+                      <p key={index}>
+                        {paragraph.trim().split('\n').map((line: string, lineIndex: number, arr: string[]) => (
+                          <span key={lineIndex}>
+                            {line}
+                            {lineIndex < arr.length - 1 && <br />}
+                          </span>
+                        ))}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Video Section - if product has videoUrl */}
+              {product.specifications && (product.specifications as Record<string, string>).videoUrl && (
+                <div className="mb-10">
+                  <h3 className="flex items-center gap-3 text-black text-lg font-semibold mb-4">
+                    <Play className="w-5 h-5 text-rose-500" />
+                    Productvideo
+                  </h3>
+                  <div className="aspect-video bg-zinc-100 border border-zinc-200 overflow-hidden">
+                    <iframe
+                      src={(product.specifications as Record<string, string>).videoUrl}
+                      title={`${product.name} video`}
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
                   </div>
                 </div>
               )}
@@ -828,7 +857,10 @@ export default function ProductPage() {
                 {product.specifications ? (
                   <AccordionItem value="specificaties" className="border-zinc-200">
                     <AccordionTrigger className="text-black text-lg font-semibold hover:text-rose-600 hover:no-underline py-5">
-                      Technische Specificaties
+                      <span className="flex items-center gap-3">
+                        <Settings className="w-5 h-5 text-rose-500" />
+                        Technische Specificaties
+                      </span>
                     </AccordionTrigger>
                     <AccordionContent className="pb-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -892,28 +924,68 @@ export default function ProductPage() {
                 ) : null}
 
                 {/* Kenmerken Accordion Item */}
-                {product.features && Array.isArray(product.features) && product.features.length > 0 ? (
+                {product.features && Array.isArray(product.features) && product.features.length > 0 && (
                   <AccordionItem value="kenmerken" className="border-zinc-200">
                     <AccordionTrigger className="text-black text-lg font-semibold hover:text-rose-600 hover:no-underline py-5">
-                      Kenmerken
+                      <span className="flex items-center gap-3">
+                        <Zap className="w-5 h-5 text-rose-500" />
+                        Kenmerken
+                      </span>
                     </AccordionTrigger>
                     <AccordionContent className="pb-6">
                       <ul className="space-y-2">
-                        {(product.features as string[]).map((feature, index) => (
+                        {(product.features as (string | null)[]).filter((f): f is string => typeof f === 'string').map((feature: string, index: number) => (
                           <li key={index} className="flex items-start gap-3 text-black/70">
                             <span className="text-rose-500 mt-1">•</span>
-                            <span>{String(feature)}</span>
+                            <span>{feature}</span>
                           </li>
                         ))}
                       </ul>
                     </AccordionContent>
                   </AccordionItem>
-                ) : null}
+                )}
+
+                {/* Geschikt voor Accordion Item */}
+                {product.specifications && (product.specifications as Record<string, string>).suitableFor && (
+                  <AccordionItem value="geschikt-voor" className="border-zinc-200">
+                    <AccordionTrigger className="text-black text-lg font-semibold hover:text-rose-600 hover:no-underline py-5">
+                      <span className="flex items-center gap-3">
+                        <Users className="w-5 h-5 text-rose-500" />
+                        Geschikt voor
+                      </span>
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-6">
+                      <p className="text-black/70 leading-relaxed">
+                        {(product.specifications as Record<string, string>).suitableFor}
+                      </p>
+                    </AccordionContent>
+                  </AccordionItem>
+                )}
+
+                {/* Gebruiksaanwijzing Accordion Item */}
+                {product.specifications && (product.specifications as Record<string, string>).usageInstructions && (
+                  <AccordionItem value="gebruiksaanwijzing" className="border-zinc-200">
+                    <AccordionTrigger className="text-black text-lg font-semibold hover:text-rose-600 hover:no-underline py-5">
+                      <span className="flex items-center gap-3">
+                        <BookOpen className="w-5 h-5 text-rose-500" />
+                        Gebruiksaanwijzing
+                      </span>
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-6">
+                      <p className="text-black/70 leading-relaxed whitespace-pre-line">
+                        {(product.specifications as Record<string, string>).usageInstructions}
+                      </p>
+                    </AccordionContent>
+                  </AccordionItem>
+                )}
 
                 {/* Inbouwservice Accordion Item */}
                 <AccordionItem value="inbouwservice" className="border-zinc-200">
                   <AccordionTrigger className="text-black text-lg font-semibold hover:text-rose-600 hover:no-underline py-5">
-                    Inbouwservice
+                    <span className="flex items-center gap-3">
+                      <Wrench className="w-5 h-5 text-rose-500" />
+                      Inbouwservice
+                    </span>
                   </AccordionTrigger>
                   <AccordionContent className="pb-6">
                     <div className="bg-zinc-50 border border-zinc-200 p-6">

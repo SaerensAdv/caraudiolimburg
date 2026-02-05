@@ -510,29 +510,33 @@ export default function Home() {
 
           <div className="relative">
             
-            <StaggerContainer className="md:grid md:grid-cols-3 lg:grid-cols-6 md:gap-6 flex overflow-x-auto gap-4 pb-4 md:pb-0 snap-x snap-mandatory scrollbar-hide -mx-8 px-8 md:mx-0 md:px-0" staggerDelay={80}>
+            <StaggerContainer className="md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-6 lg:gap-8 flex overflow-x-auto gap-4 pb-4 md:pb-0 snap-x snap-mandatory scrollbar-hide -mx-8 px-8 md:mx-0 md:px-0" staggerDelay={80}>
               {(categories as Category[])?.map((category: Category) => (
                 <Link key={category.id} href={`/webshop?category=${category.slug}`} className="snap-start flex-shrink-0 w-[140px] md:w-auto md:flex-shrink">
                   <Card 
-                    className="group cursor-pointer bg-zinc-100 border-zinc-200 hover:border-[#d0a760] hover:shadow-lg hover:shadow-[#d0a760]/10 transition-all duration-300 rounded-none hover:-translate-y-2 hover:scale-[1.02] h-full"
+                    className="group cursor-pointer bg-gradient-to-br from-zinc-50 to-zinc-100 border-zinc-200 hover:border-[#d0a760] hover:shadow-xl hover:shadow-[#d0a760]/15 transition-all duration-500 rounded-none hover:-translate-y-3 h-full relative overflow-hidden"
                     data-testid={`category-card-${category.slug}`}
                   >
-                    <CardContent className="p-4 md:p-6 text-center">
-                      <div className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-3 md:mb-4 bg-white border border-zinc-200 flex items-center justify-center group-hover:border-[#d0a760] group-hover:bg-[#d0a760]/10 group-hover:shadow-md group-hover:shadow-[#d0a760]/20 transition-all duration-300 group-hover:scale-110">
-                        {category.slug === 'multimedia-navigatie' && <SpeakerHigh weight="duotone" className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
-                        {category.slug === 'speakers-subwoofers' && <SpeakerHigh weight="duotone" className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
-                        {category.slug === 'versterkers-dsp' && <Gear weight="duotone" className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
-                        {category.slug === 'installatie-accessoires' && <Wrench weight="duotone" className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
-                        {category.slug === 'cameras-veiligheid' && <ShieldCheck weight="duotone" className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
-                        {category.slug === 'oem-upgrades' && <Car weight="duotone" className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#d0a760]/0 to-[#d0a760]/0 group-hover:from-[#d0a760]/5 group-hover:to-[#d0a760]/10 transition-all duration-500" />
+                    <CardContent className="p-4 md:p-8 lg:p-10 text-center relative z-10">
+                      <div className="w-12 h-12 md:w-20 md:h-20 lg:w-24 lg:h-24 mx-auto mb-3 md:mb-6 bg-white border border-zinc-200 flex items-center justify-center group-hover:border-[#d0a760] group-hover:bg-[#d0a760]/10 group-hover:shadow-lg group-hover:shadow-[#d0a760]/25 transition-all duration-500 group-hover:scale-110">
+                        {category.slug === 'multimedia-navigatie' && <SpeakerHigh weight="duotone" className="w-5 h-5 md:w-10 md:h-10 lg:w-12 lg:h-12 text-[#d0a760] group-hover:scale-110 transition-transform duration-500" />}
+                        {category.slug === 'speakers-subwoofers' && <SpeakerHigh weight="duotone" className="w-5 h-5 md:w-10 md:h-10 lg:w-12 lg:h-12 text-[#d0a760] group-hover:scale-110 transition-transform duration-500" />}
+                        {category.slug === 'versterkers-dsp' && <Gear weight="duotone" className="w-5 h-5 md:w-10 md:h-10 lg:w-12 lg:h-12 text-[#d0a760] group-hover:scale-110 transition-transform duration-500" />}
+                        {category.slug === 'installatie-accessoires' && <Wrench weight="duotone" className="w-5 h-5 md:w-10 md:h-10 lg:w-12 lg:h-12 text-[#d0a760] group-hover:scale-110 transition-transform duration-500" />}
+                        {category.slug === 'cameras-veiligheid' && <ShieldCheck weight="duotone" className="w-5 h-5 md:w-10 md:h-10 lg:w-12 lg:h-12 text-[#d0a760] group-hover:scale-110 transition-transform duration-500" />}
+                        {category.slug === 'oem-upgrades' && <Car weight="duotone" className="w-5 h-5 md:w-10 md:h-10 lg:w-12 lg:h-12 text-[#d0a760] group-hover:scale-110 transition-transform duration-500" />}
                         {!['multimedia-navigatie', 'speakers-subwoofers', 'versterkers-dsp', 'installatie-accessoires', 'cameras-veiligheid', 'oem-upgrades'].includes(category.slug) && 
-                          <SpeakerHigh weight="duotone" className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />
+                          <SpeakerHigh weight="duotone" className="w-5 h-5 md:w-10 md:h-10 lg:w-12 lg:h-12 text-[#d0a760] group-hover:scale-110 transition-transform duration-500" />
                         }
                       </div>
                       
-                      <h3 className="font-medium text-zinc-900 text-xs md:text-sm group-hover:text-[#d0a760] transition-colors duration-300">
+                      <h3 className="font-medium text-zinc-900 text-xs md:text-base lg:text-lg group-hover:text-[#d0a760] transition-colors duration-500">
                         {category.name}
                       </h3>
+                      <p className="hidden md:block text-zinc-500 text-sm mt-2 group-hover:text-zinc-600 transition-colors duration-500">
+                        Bekijk collectie
+                      </p>
                     </CardContent>
                   </Card>
                 </Link>

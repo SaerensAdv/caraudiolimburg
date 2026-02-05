@@ -222,7 +222,7 @@ export default function Shop() {
   };
 
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-black" id="main-content">
       <SEO 
         title={seoTitle}
         description={seoDescription}
@@ -241,7 +241,7 @@ export default function Shop() {
         <div className="flex items-center justify-between px-4 h-14">
           <button 
             onClick={() => navigate("/")}
-            className="p-2 -ml-2 hover:bg-white/10 transition-colors active:scale-95"
+            className="min-w-[44px] min-h-[44px] flex items-center justify-center -ml-2 hover:bg-white/10 transition-colors active:scale-95"
             data-testid="mobile-home-button"
             aria-label="Ga naar homepage"
           >
@@ -250,10 +250,10 @@ export default function Shop() {
           
           <h1 className="text-white font-semibold">Shop</h1>
           
-          <div className="flex items-center gap-1">
+          <div className="flex items-center">
             <button 
               onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
-              className="p-2 hover:bg-white/10 transition-colors active:scale-95"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-white/10 transition-colors active:scale-95"
               data-testid="mobile-search-toggle"
               aria-label={mobileSearchOpen ? "Sluit zoeken" : "Open zoeken"}
               aria-expanded={mobileSearchOpen}
@@ -262,7 +262,7 @@ export default function Shop() {
             </button>
             <button 
               onClick={() => setIsCartOpen(true)}
-              className="p-2 -mr-2 hover:bg-white/10 transition-colors active:scale-95"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center -mr-2 hover:bg-white/10 transition-colors active:scale-95"
               data-testid="mobile-cart-button"
               aria-label="Open winkelwagen"
             >
@@ -291,10 +291,10 @@ export default function Shop() {
                 {search && (
                   <button
                     onClick={() => setSearch("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 bg-white/10 hover:bg-white/20 transition-colors"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 min-w-[44px] min-h-[44px] flex items-center justify-center bg-white/10 hover:bg-white/20 transition-colors"
                     aria-label="Wis zoekopdracht"
                   >
-                    <X className="w-3.5 h-3.5 text-white/60" />
+                    <X className="w-4 h-4 text-white/60" />
                   </button>
                 )}
               </div>

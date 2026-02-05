@@ -13,10 +13,37 @@ const app = express();
 
 // Security headers middleware
 app.use((req, res, next) => {
+  // Prevent MIME type sniffing
   res.setHeader('X-Content-Type-Options', 'nosniff');
+  
+  // Prevent clickjacking attacks
   res.setHeader('X-Frame-Options', 'DENY');
+  
+  // Enable XSS protection
   res.setHeader('X-XSS-Protection', '1; mode=block');
+  
+  // Control referrer information
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  
+  // Content Security Policy - prevent XSS, injection attacks
+  res.setHeader('Content-Security-Policy', 
+    "default-src 'self'; " +
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://cdn.jsdelivr.net https://*.stripe.com; " +
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; " +
+    "font-src 'self' data: https://fonts.gstatic.com; " +
+    "img-src 'self' data: https: blob:; " +
+    "connect-src 'self' https://api.stripe.com https://*.stripe.com wss://localhost:* http://localhost:*; " +
+    "frame-src https://js.stripe.com https://*.stripe.com; " +
+    "child-src 'self'; " +
+    "object-src 'none'; " +
+    "upgrade-insecure-requests"
+  );
+  
+  // HSTS - force HTTPS in production
+  if (process.env.NODE_ENV === 'production') {
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+  }
+  
   next();
 });
 

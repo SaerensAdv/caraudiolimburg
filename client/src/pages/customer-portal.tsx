@@ -60,7 +60,7 @@ import type { Order, Booking, Product, Wishlist, OrderItem } from "@shared/schem
 export default function CustomerPortal() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("orders");
-  const [expandedOrders, setExpandedOrders] = useState<Set<number>>(new Set());
+  const [expandedOrders, setExpandedOrders] = useState<Set<string>>(new Set());
   const { isAuthenticated, isLoading, user } = useAuth();
   const { toast } = useToast();
 
@@ -98,13 +98,13 @@ export default function CustomerPortal() {
     }
   }, [isAuthenticated, isLoading, toast]);
 
-  const { data: orders, isLoading: ordersLoading } = useQuery({
+  const { data: orders = [], isLoading: ordersLoading } = useQuery<Order[]>({
     queryKey: ["/api/my-orders"],
     enabled: isAuthenticated,
     retry: false,
   });
 
-  const { data: bookings, isLoading: bookingsLoading } = useQuery({
+  const { data: bookings = [], isLoading: bookingsLoading } = useQuery<Booking[]>({
     queryKey: ["/api/my-bookings"],
     enabled: isAuthenticated,
     retry: false,
@@ -260,7 +260,7 @@ export default function CustomerPortal() {
     submitSupportMutation.mutate({ subject: supportSubject, message: supportMessage });
   };
 
-  const toggleOrderExpand = (orderId: number) => {
+  const toggleOrderExpand = (orderId: string) => {
     setExpandedOrders(prev => {
       const newSet = new Set(prev);
       if (newSet.has(orderId)) {
@@ -284,7 +284,8 @@ export default function CustomerPortal() {
     return null;
   }
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: string | null) => {
+    if (!status) return "bg-zinc-500/20 text-zinc-400 border-zinc-500/30";
     switch (status) {
       case "completed":
       case "delivered":
@@ -304,7 +305,8 @@ export default function CustomerPortal() {
     }
   };
 
-  const getStatusLabel = (status: string) => {
+  const getStatusLabel = (status: string | null) => {
+    if (!status) return "-";
     const labels: Record<string, string> = {
       pending: "In afwachting",
       processing: "In verwerking",
@@ -318,7 +320,8 @@ export default function CustomerPortal() {
     return labels[status] || status;
   };
 
-  const getStatusIcon = (status: string) => {
+  const getStatusIcon = (status: string | null) => {
+    if (!status) return <Package className="h-3.5 w-3.5" />;
     switch (status) {
       case "completed":
       case "delivered":
@@ -581,7 +584,7 @@ export default function CustomerPortal() {
                                   </td>
                                   <td className="px-6 py-4">
                                     <span className="text-zinc-400">
-                                      {format(new Date(order.createdAt), "d MMM yyyy", { locale: nl })}
+                                      {order.createdAt ? format(new Date(order.createdAt), "d MMM yyyy", { locale: nl }) : "-"}
                                     </span>
                                   </td>
                                   <td className="px-6 py-4">
@@ -638,7 +641,7 @@ export default function CustomerPortal() {
                                     <div className="text-left">
                                       <p className="text-white font-medium">#{order.orderNumber}</p>
                                       <p className="text-zinc-500 text-sm">
-                                        {format(new Date(order.createdAt), "d MMM yyyy", { locale: nl })}
+                                        {order.createdAt ? format(new Date(order.createdAt), "d MMM yyyy", { locale: nl }) : "-"}
                                       </p>
                                     </div>
                                   </div>
@@ -779,13 +782,13 @@ export default function CustomerPortal() {
                                 <div>
                                   <p className="text-zinc-500 text-xs uppercase tracking-wider mb-1">Datum</p>
                                   <p className="text-white">
-                                    {format(new Date(booking.scheduledDate), "d MMM yyyy", { locale: nl })}
+                                    {booking.scheduledDate ? format(new Date(booking.scheduledDate), "d MMM yyyy", { locale: nl }) : "-"}
                                   </p>
                                 </div>
                                 <div>
                                   <p className="text-zinc-500 text-xs uppercase tracking-wider mb-1">Tijd</p>
                                   <p className="text-white">
-                                    {format(new Date(booking.scheduledDate), "HH:mm", { locale: nl })}
+                                    {booking.scheduledDate ? format(new Date(booking.scheduledDate), "HH:mm", { locale: nl }) : "-"}
                                   </p>
                                 </div>
                                 <div>
@@ -793,8 +796,8 @@ export default function CustomerPortal() {
                                   <p className="text-white">{booking.duration} uur</p>
                                 </div>
                                 <div className="col-span-2 md:col-span-1">
-                                  <p className="text-zinc-500 text-xs uppercase tracking-wider mb-1">Kenteken</p>
-                                  <p className="text-white">{booking.vehiclePlate || "-"}</p>
+                                  <p className="text-zinc-500 text-xs uppercase tracking-wider mb-1">Auto</p>
+                                  <p className="text-white">{booking.vehicleModel || "-"}</p>
                                 </div>
                               </div>
 
@@ -1332,81 +1335,80 @@ export default function CustomerPortal() {
               </DialogDescription>
             </DialogHeader>
             
-            {orderDetailsLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="w-6 h-6 border-2 border-[#d0a760] border-t-transparent animate-spin" />
-              </div>
-            ) : orderDetails ? (
-              <div className="space-y-6">
-                {/* Order Status */}
-                <div className="flex items-center justify-between p-4 bg-zinc-900 border border-zinc-800">
-                  <span className="text-zinc-400">Status</span>
-                  <Badge className={`${getStatusColor(orderDetails.order.status)} border rounded-none px-2 py-1 text-xs font-medium`}>
-                    {getStatusIcon(orderDetails.order.status)}
-                    <span className="ml-1.5">{getStatusLabel(orderDetails.order.status)}</span>
-                  </Badge>
+            <>
+              {orderDetailsLoading && (
+                <div className="flex items-center justify-center py-8">
+                  <div className="w-6 h-6 border-2 border-[#d0a760] border-t-transparent animate-spin" />
                 </div>
-
-                {/* Products */}
-                <div>
-                  <h4 className="text-white font-medium mb-3 flex items-center gap-2">
-                    <Package className="w-4 h-4 text-[#d0a760]" />
-                    Producten
-                  </h4>
-                  <div className="space-y-2">
-                    {orderDetails.items.map((item, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-zinc-900 border border-zinc-800" data-testid={`order-item-${index}`}>
-                        <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 bg-zinc-800 flex items-center justify-center">
-                            {item.product?.images?.[0] ? (
-                              <img src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-cover" />
-                            ) : (
-                              <Package className="w-6 h-6 text-zinc-600" />
-                            )}
-                          </div>
-                          <div>
-                            <p className="text-white">{item.product?.name || 'Product'}</p>
-                            <p className="text-zinc-500 text-sm">Aantal: {item.quantity}</p>
-                          </div>
-                        </div>
-                        <span className="text-[#d0a760] font-medium">€{parseFloat(item.price).toFixed(2)}</span>
-                      </div>
-                    ))}
+              )}
+              {!orderDetailsLoading && orderDetails && (
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between p-4 bg-zinc-900 border border-zinc-800">
+                    <span className="text-zinc-400">Status</span>
+                    <Badge className={`${getStatusColor(orderDetails.order.status)} border rounded-none px-2 py-1 text-xs font-medium`}>
+                      {getStatusIcon(orderDetails.order.status)}
+                      <span className="ml-1.5">{getStatusLabel(orderDetails.order.status)}</span>
+                    </Badge>
                   </div>
-                </div>
 
-                {/* Shipping Address */}
-                {orderDetails.order.shippingAddress && (
                   <div>
                     <h4 className="text-white font-medium mb-3 flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-[#d0a760]" />
-                      Verzendadres
+                      <Package className="w-4 h-4 text-[#d0a760]" />
+                      Producten
                     </h4>
-                    <div className="p-4 bg-zinc-900 border border-zinc-800">
-                      {(() => {
-                        const addr = orderDetails.order.shippingAddress as any;
-                        return (
-                          <>
+                    <div className="space-y-2">
+                      {orderDetails.items.map((item, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-zinc-900 border border-zinc-800" data-testid={`order-item-${index}`}>
+                          <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 bg-zinc-800 flex items-center justify-center">
+                              {item.product?.images?.[0] ? (
+                                <img src={item.product.images[0]} alt={item.product.name} className="w-full h-full object-cover" />
+                              ) : (
+                                <Package className="w-6 h-6 text-zinc-600" />
+                              )}
+                            </div>
+                            <div>
+                              <p className="text-white">{item.product?.name || 'Product'}</p>
+                              <p className="text-zinc-500 text-sm">Aantal: {item.quantity}</p>
+                            </div>
+                          </div>
+                          <span className="text-[#d0a760] font-medium">€{parseFloat(item.price).toFixed(2)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {(() => {
+                    const addr = orderDetails.order.shippingAddress as any;
+                    if (!addr) return null;
+                    return (
+                      <div>
+                        <h4 className="text-white font-medium mb-3 flex items-center gap-2">
+                          <MapPin className="w-4 h-4 text-[#d0a760]" />
+                          Verzendadres
+                        </h4>
+                        <div className="p-4 bg-zinc-900 border border-zinc-800">
+                          <div>
                             <p className="text-white">{addr.firstName} {addr.lastName}</p>
                             <p className="text-zinc-400">{addr.address}</p>
                             <p className="text-zinc-400">{addr.postalCode} {addr.city}</p>
                             <p className="text-zinc-400">{addr.country || 'Nederland'}</p>
-                          </>
-                        );
-                      })()}
-                    </div>
-                  </div>
-                )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })() as any}
 
-                {/* Total */}
-                <div className="flex items-center justify-between p-4 bg-zinc-900 border border-[#d0a760]/30">
-                  <span className="text-white font-medium">Totaal</span>
-                  <span className="text-[#d0a760] text-xl font-medium">€{parseFloat(orderDetails.order.total).toFixed(2)}</span>
+                  <div className="flex items-center justify-between p-4 bg-zinc-900 border border-[#d0a760]/30">
+                    <span className="text-white font-medium">Totaal</span>
+                    <span className="text-[#d0a760] text-xl font-medium">€{parseFloat(orderDetails.order.total).toFixed(2)}</span>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <p className="text-zinc-400 text-center py-8">Bestelling niet gevonden</p>
-            )}
+              )}
+              {!orderDetailsLoading && !orderDetails && (
+                <p className="text-zinc-400 text-center py-8">Bestelling niet gevonden</p>
+              )}
+            </>
 
             <DialogFooter>
               <Button

@@ -66,13 +66,17 @@ export default function BlogPostPage() {
       let firstMatch: { type: 'link' | 'bold'; index: number; full: string; content: string; url?: string } | null = null;
 
       if (linkMatch && linkMatch.index !== undefined) {
-        if (!firstMatch || linkMatch.index < firstMatch.index) {
-          firstMatch = { type: 'link', index: linkMatch.index, full: linkMatch[0], content: linkMatch[1], url: linkMatch[2] };
+        const linkIndex = linkMatch.index;
+        const shouldUpdate = firstMatch === null || linkIndex < (firstMatch as any).index;
+        if (shouldUpdate) {
+          firstMatch = { type: 'link', index: linkIndex, full: linkMatch[0], content: linkMatch[1], url: linkMatch[2] };
         }
       }
       if (boldMatch && boldMatch.index !== undefined) {
-        if (!firstMatch || boldMatch.index < firstMatch.index) {
-          firstMatch = { type: 'bold', index: boldMatch.index, full: boldMatch[0], content: boldMatch[1] };
+        const boldIndex = boldMatch.index;
+        const shouldUpdate = firstMatch === null || boldIndex < (firstMatch as any).index;
+        if (shouldUpdate) {
+          firstMatch = { type: 'bold', index: boldIndex, full: boldMatch[0], content: boldMatch[1] };
         }
       }
 

@@ -190,16 +190,16 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
               <button
                 onClick={handleWishlistToggle}
                 disabled={isWishlistLoading}
-                className={`absolute top-3 right-3 p-2.5 transition-all duration-300 ease-out backdrop-blur-sm hover:scale-110 active:scale-95 ${
+                className={`absolute top-2 right-2 min-w-[44px] min-h-[44px] flex items-center justify-center transition-all duration-300 ease-out backdrop-blur-sm hover:scale-110 active:scale-95 ${
                   wishlistStatus?.inWishlist 
                     ? "bg-[#d0a760] text-black" 
                     : "bg-black/70 hover:bg-[#d0a760] text-white hover:text-black"
                 } ${isWishlistLoading ? "opacity-50 cursor-wait" : ""}`}
-                title={wishlistStatus?.inWishlist ? "Verwijderen uit favorieten" : "Toevoegen aan favorieten"}
+                aria-label={wishlistStatus?.inWishlist ? "Verwijderen uit favorieten" : "Toevoegen aan favorieten"}
                 data-testid={`wishlist-toggle-${product.id}`}
               >
                 <Heart 
-                  className={`w-4 h-4 transition-transform duration-300 ${isWishlistLoading ? "animate-pulse" : ""}`} 
+                  className={`w-5 h-5 transition-transform duration-300 ${isWishlistLoading ? "animate-pulse" : ""}`} 
                   fill={wishlistStatus?.inWishlist ? "currentColor" : "none"}
                 />
               </button>
@@ -212,11 +212,11 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
                 e.stopPropagation();
                 setIsQuickViewOpen(true);
               }}
-              className={`absolute ${isAuthenticated ? "top-14" : "top-3"} right-3 p-2.5 bg-black/70 hover:bg-[#d0a760] text-white hover:text-black transition-all duration-300 ease-out opacity-0 group-hover:opacity-100 backdrop-blur-sm hover:scale-110 active:scale-95`}
-              title="Quick View"
+              className={`absolute ${isAuthenticated ? "top-14" : "top-2"} right-2 min-w-[44px] min-h-[44px] flex items-center justify-center bg-black/70 hover:bg-[#d0a760] text-white hover:text-black transition-all duration-300 ease-out opacity-0 group-hover:opacity-100 backdrop-blur-sm hover:scale-110 active:scale-95`}
+              aria-label="Snel bekijken"
               data-testid={`quick-view-${product.id}`}
             >
-              <Eye className="w-4 h-4 transition-transform duration-300" />
+              <Eye className="w-5 h-5 transition-transform duration-300" />
             </button>
             
             {discount && (
@@ -271,11 +271,11 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
                   disabled={addToCartMutation.isPending}
                   size="sm"
                   variant="outline"
-                  className="border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760] hover:text-black hover:shadow-md hover:shadow-[#d0a760]/30 rounded-none transition-all duration-300"
-                  title="Inclusief installatie"
+                  className="border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760] hover:text-black hover:shadow-md hover:shadow-[#d0a760]/30 rounded-none transition-all duration-300 min-w-[44px] min-h-[44px]"
+                  aria-label="Toevoegen inclusief installatie"
                   data-testid={`add-with-install-${product.id}`}
                 >
-                  <Wrench className="w-3 h-3" />
+                  <Wrench className="w-4 h-4" />
                 </Button>
               )}
             </div>

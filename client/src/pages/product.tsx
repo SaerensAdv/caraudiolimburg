@@ -279,7 +279,7 @@ export default function ProductPage() {
   const productDescription = product.shortDescription || product.description?.toString().substring(0, 160) || `Koop ${product.name} bij Car Audio Limburg. Professionele installatie beschikbaar.`;
   
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-black" id="main-content">
       <SEO 
         title={product.name}
         description={productDescription}
@@ -311,17 +311,17 @@ export default function ProductPage() {
         <div className="flex items-center justify-between px-4 h-14">
           <button 
             onClick={() => navigate("/shop")}
-            className="p-2 -ml-2 hover:bg-white/10 transition-colors active:scale-95"
+            className="min-w-[44px] min-h-[44px] flex items-center justify-center -ml-2 hover:bg-white/10 transition-colors active:scale-95"
             data-testid="mobile-back-button"
             aria-label="Terug naar shop"
           >
             <ArrowLeft className="w-6 h-6 text-white" />
           </button>
           
-          <div className="flex items-center gap-1">
+          <div className="flex items-center">
             <button 
               onClick={handleShare}
-              className="p-2 hover:bg-white/10 transition-colors active:scale-95"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-white/10 transition-colors active:scale-95"
               data-testid="mobile-share-button"
               aria-label="Deel dit product"
             >
@@ -329,7 +329,7 @@ export default function ProductPage() {
             </button>
             <button 
               onClick={() => setIsWishlisted(!isWishlisted)}
-              className="p-2 hover:bg-white/10 transition-colors active:scale-95"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-white/10 transition-colors active:scale-95"
               data-testid="mobile-wishlist-button"
               aria-label={isWishlisted ? "Verwijder uit favorieten" : "Voeg toe aan favorieten"}
               aria-pressed={isWishlisted}
@@ -338,7 +338,7 @@ export default function ProductPage() {
             </button>
             <button 
               onClick={() => setIsCartOpen(true)}
-              className="p-2 -mr-2 hover:bg-white/10 transition-colors active:scale-95"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center -mr-2 hover:bg-white/10 transition-colors active:scale-95"
               data-testid="mobile-cart-button"
               aria-label="Open winkelwagen"
             >
@@ -407,41 +407,48 @@ export default function ProductPage() {
                               e.stopPropagation();
                               setSelectedImageIndex((prev) => (prev - 1 + images.length) % images.length);
                             }}
-                            className="hidden md:block absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-black/60 hover:bg-[#d0a760] text-white hover:text-black transition-all"
+                            className="hidden md:flex absolute left-4 top-1/2 -translate-y-1/2 min-w-[44px] min-h-[44px] items-center justify-center bg-black/60 hover:bg-[#d0a760] text-white hover:text-black transition-all"
                             data-testid="button-previous-image"
+                            aria-label="Vorige afbeelding"
                           >
-                            <ChevronLeft className="w-5 h-5" />
+                            <ChevronLeft className="w-6 h-6" />
                           </button>
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
                               setSelectedImageIndex((prev) => (prev + 1) % images.length);
                             }}
-                            className="hidden md:block absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-black/60 hover:bg-[#d0a760] text-white hover:text-black transition-all"
+                            className="hidden md:flex absolute right-4 top-1/2 -translate-y-1/2 min-w-[44px] min-h-[44px] items-center justify-center bg-black/60 hover:bg-[#d0a760] text-white hover:text-black transition-all"
                             data-testid="button-next-image"
+                            aria-label="Volgende afbeelding"
                           >
-                            <ChevronRight className="w-5 h-5" />
+                            <ChevronRight className="w-6 h-6" />
                           </button>
                         </>
                       )}
                       
                       {/* Mobile Image Dots Indicator */}
                       {images.length > 1 && isMobile && (
-                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
+                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1" role="tablist" aria-label="Afbeelding selectie">
                           {images.map((_, index) => (
                             <button
                               key={index}
+                              role="tab"
+                              aria-selected={index === selectedImageIndex}
+                              aria-label={`Afbeelding ${index + 1} van ${images.length}`}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setSelectedImageIndex(index);
                               }}
-                              className={`w-2 h-2 transition-all duration-300 ${
+                              className={`min-w-[44px] min-h-[44px] flex items-center justify-center transition-all duration-300`}
+                              data-testid={`mobile-dot-${index}`}
+                            >
+                              <span className={`block h-2 transition-all duration-300 ${
                                 index === selectedImageIndex 
                                   ? 'bg-[#d0a760] w-6' 
-                                  : 'bg-white/30'
-                              }`}
-                              data-testid={`mobile-dot-${index}`}
-                            />
+                                  : 'bg-white/30 w-2'
+                              }`} />
+                            </button>
                           ))}
                         </div>
                       )}
@@ -451,11 +458,11 @@ export default function ProductPage() {
                     {images.length > 1 && (
                       <>
                         {/* Mobile thumbnails - horizontal scroll */}
-                        <div className="flex md:hidden gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+                        <div className="flex md:hidden gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide snap-x snap-mandatory">
                           {images.map((image, index) => (
                             <button
                               key={index}
-                              className={`flex-shrink-0 w-16 h-16 bg-zinc-900 border-2 transition-all duration-300 overflow-hidden ${
+                              className={`flex-shrink-0 w-16 h-16 bg-zinc-900 border-2 transition-all duration-300 overflow-hidden snap-start ${
                                 index === selectedImageIndex 
                                   ? 'border-[#d0a760]' 
                                   : 'border-zinc-800'
@@ -1054,10 +1061,12 @@ export default function ProductPage() {
             </ScrollReveal>
             
             {/* Mobile: horizontal scroll with 2 visible items, Desktop: grid */}
-            <div className="flex md:hidden gap-4 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
-              {filteredRelatedProducts.map((relatedProduct) => (
-                <Link key={relatedProduct.id} href={`/webshop/${relatedProduct.slug}`}>
-                  <div className="group cursor-pointer flex-shrink-0 w-[calc(50vw-24px)]" data-testid={`related-product-${relatedProduct.id}`}>
+            <div className="relative">
+              <div className="md:hidden absolute right-0 top-0 bottom-4 w-8 bg-gradient-to-l from-zinc-950 to-transparent pointer-events-none z-10" />
+              <div className="flex md:hidden gap-4 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide snap-x snap-mandatory">
+                {filteredRelatedProducts.map((relatedProduct) => (
+                  <Link key={relatedProduct.id} href={`/webshop/${relatedProduct.slug}`}>
+                    <div className="group cursor-pointer flex-shrink-0 w-[calc(50vw-24px)] snap-start" data-testid={`related-product-${relatedProduct.id}`}>
                     <div className="relative aspect-square bg-zinc-900 border border-zinc-700 mb-3 overflow-hidden group-hover:border-[#d0a760]/50 transition-all duration-300">
                       {relatedProduct.images && relatedProduct.images[0] ? (
                         <img 
@@ -1089,6 +1098,7 @@ export default function ProductPage() {
               <div className="flex-shrink-0 w-8 flex items-center justify-center">
                 <ChevronRight className="w-5 h-5 text-white/20" />
               </div>
+            </div>
             </div>
             
             {/* Desktop grid */}

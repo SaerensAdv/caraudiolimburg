@@ -82,7 +82,7 @@ export default function Home() {
 
 
   return (
-    <div className="min-h-screen bg-black scroll-smooth">
+    <div className="min-h-screen bg-black scroll-smooth" id="main-content">
       <SEO 
         title="Car Audio Limburg | Premium Autoradio & Installatie"
         description="Car Audio Limburg - Uw specialist in premium car audio systemen, Apple CarPlay, Android Auto en professionele installatie. Bezoek onze studio in Geleen, Limburg."

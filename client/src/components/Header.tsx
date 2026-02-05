@@ -179,7 +179,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
                     onMouseLeave={handleMegaMenuLeave}
                   >
                     <button
-                      className={`relative flex items-center gap-1 px-3 py-2 rounded-sm transition-all duration-300 font-medium text-sm tracking-wide group ${
+                      className={`relative flex items-center gap-1 px-3 py-2 rounded-none transition-all duration-300 font-medium text-sm tracking-wide group whitespace-nowrap ${
                         isActiveLink(item.href)
                           ? 'text-[#d0a760] bg-[#d0a760]/10'
                           : isTransparent 
@@ -213,7 +213,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
                 <Link 
                   key={item.href}
                   href={item.href} 
-                  className={`relative px-3 py-2 rounded-sm transition-all duration-300 font-medium text-sm tracking-wide group ${
+                  className={`relative px-3 py-2 rounded-none transition-all duration-300 font-medium text-sm tracking-wide group whitespace-nowrap ${
                     isActive
                       ? 'text-[#d0a760] bg-[#d0a760]/10'
                       : isTransparent 

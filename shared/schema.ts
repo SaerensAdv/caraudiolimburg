@@ -104,6 +104,11 @@ export const products = pgTable("products", {
   canHaveInstallation: boolean("can_have_installation").default(false),
   hasVariations: boolean("has_variations").default(false),
   upsellCategoryId: varchar("upsell_category_id").references(() => categories.id),
+  overviewContent: text("overview_content"),
+  boxContent: jsonb("box_content"),
+  accessories: jsonb("accessories"),
+  videoUrl: varchar("video_url"),
+  downloads: jsonb("downloads"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

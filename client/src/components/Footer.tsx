@@ -16,6 +16,10 @@ export function Footer() {
               <img 
                 src={whiteLogoUrl} 
                 alt="Car Audio Limburg" 
+                width={150}
+                height={40}
+                loading="lazy"
+                decoding="async"
                 className="h-10 w-auto"
               />
             </div>

@@ -498,6 +498,10 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems, isGuest = false }: 
                       <img 
                         src={item.product?.images?.[item.product.primaryImageIndex || 0] || carAudioLogo}
                         alt={item.product?.name || "Product"}
+                        width={80}
+                        height={80}
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover"
                         onError={(e) => {
                           e.currentTarget.src = carAudioLogo;

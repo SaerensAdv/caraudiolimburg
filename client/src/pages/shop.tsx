@@ -733,6 +733,10 @@ export default function Shop() {
                           <img 
                             src={product.images?.[0] || '/placeholder.png'} 
                             alt={product.name}
+                            width={224}
+                            height={224}
+                            loading="lazy"
+                            decoding="async"
                             className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
                           />
                           {product.originalPrice && (

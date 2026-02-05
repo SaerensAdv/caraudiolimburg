@@ -286,6 +286,10 @@ export default function Cart() {
                             <img 
                               src={product?.images?.[product.primaryImageIndex || 0] || carAudioLogo}
                               alt={product?.name || "Product"}
+                              width={128}
+                              height={128}
+                              loading="lazy"
+                              decoding="async"
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                               onError={(e) => {
                                 e.currentTarget.src = carAudioLogo;

@@ -163,6 +163,8 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
             <img 
               src={logoSrc || (isTransparent && !scrolled ? whiteLogoUrl : (showSolidHeader ? whiteLogoUrl : logoUrl))} 
               alt="Car Audio Limburg" 
+              width={200}
+              height={48}
               className="h-8 sm:h-10 md:h-12 w-auto max-w-[160px] sm:max-w-[200px] md:max-w-none object-contain"
             />
           </Link>

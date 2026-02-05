@@ -221,15 +221,35 @@ app.post("/api/webhooks/stripe", express.raw({ type: 'application/json' }), asyn
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Static asset caching options for performance optimization
+const staticCacheOptions = {
+  maxAge: '1y',
+  etag: true,
+  lastModified: true,
+  immutable: true,
+  setHeaders: (res: Response) => {
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+  }
+};
+
+const shortCacheOptions = {
+  maxAge: '1d',
+  etag: true,
+  lastModified: true,
+  setHeaders: (res: Response) => {
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+  }
+};
+
 // Serve static files from local public directory (development fallback)
-app.use('/products', express.static(path.join(process.cwd(), 'public', 'products')));
-app.use('/public/products', express.static(path.join(process.cwd(), 'public', 'products')));
+app.use('/products', express.static(path.join(process.cwd(), 'public', 'products'), staticCacheOptions));
+app.use('/public/products', express.static(path.join(process.cwd(), 'public', 'products'), staticCacheOptions));
 
 // Serve blog images
-app.use('/blog-images', express.static(path.join(process.cwd(), 'public', 'blog-images')));
+app.use('/blog-images', express.static(path.join(process.cwd(), 'public', 'blog-images'), staticCacheOptions));
 
 // Serve attached assets (stock images, etc.)
-app.use('/attached_assets', express.static(path.join(process.cwd(), 'attached_assets')));
+app.use('/attached_assets', express.static(path.join(process.cwd(), 'attached_assets'), shortCacheOptions));
 
 // Object Storage files are automatically served at /public/* paths when PUBLIC_OBJECT_SEARCH_PATHS is configured
 // Log Object Storage configuration on startup

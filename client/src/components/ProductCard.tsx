@@ -180,6 +180,10 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
               <img 
                 src={hasValidImage ? getImageSrc(product.images![product.primaryImageIndex || 0]) : carAudioLogo} 
                 alt={product.name}
+                width={300}
+                height={300}
+                loading="lazy"
+                decoding="async"
                 className={`group-hover:scale-105 transition-transform duration-500 ${hasValidImage ? 'w-full h-full object-cover' : 'max-w-full max-h-full object-contain'}`}
                 onError={() => setImageError(true)}
               />

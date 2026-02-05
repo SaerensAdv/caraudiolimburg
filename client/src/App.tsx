@@ -7,29 +7,53 @@ import { useAuth } from "@/hooks/useAuth";
 import { VerticalScrollProgress } from "@/components/ScrollProgress";
 import { PageLoader } from "@/components/PageTransition";
 import { ChatBot } from "@/components/ChatBot";
+import { lazy, Suspense, useState, useEffect } from "react";
 
-import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
-import Shop from "@/pages/shop";
-import Product from "@/pages/product";
-import Cart from "@/pages/cart";
-import Checkout from "@/pages/checkout";
-import Studio from "@/pages/studio";
-import Admin from "@/pages/admin";
-import About from "@/pages/about";
-import FAQ from "@/pages/faq";
-import Contact from "@/pages/contact";
-import CustomerPortal from "@/pages/customer-portal";
-import Login from "@/pages/login";
-import AppleCarPlayBMW from "@/pages/apple-carplay-bmw";
-import OrderConfirmation from "@/pages/order-confirmation";
-import Privacy from "@/pages/privacy";
-import Voorwaarden from "@/pages/voorwaarden";
-import Blog from "@/pages/blog";
-import BlogPostPage from "@/pages/blog-post";
-import DemoTools from "@/pages/demo-tools";
-import MigrationOptions from "@/pages/migration-options";
-import { useState, useEffect } from "react";
+import NotFound from "@/pages/not-found";
+
+const Shop = lazy(() => import("@/pages/shop"));
+const Product = lazy(() => import("@/pages/product"));
+const Cart = lazy(() => import("@/pages/cart"));
+const Checkout = lazy(() => import("@/pages/checkout"));
+const Studio = lazy(() => import("@/pages/studio"));
+const Admin = lazy(() => import("@/pages/admin"));
+const About = lazy(() => import("@/pages/about"));
+const FAQ = lazy(() => import("@/pages/faq"));
+const Contact = lazy(() => import("@/pages/contact"));
+const CustomerPortal = lazy(() => import("@/pages/customer-portal"));
+const Login = lazy(() => import("@/pages/login"));
+const AppleCarPlayBMW = lazy(() => import("@/pages/apple-carplay-bmw"));
+const OrderConfirmation = lazy(() => import("@/pages/order-confirmation"));
+const Privacy = lazy(() => import("@/pages/privacy"));
+const Voorwaarden = lazy(() => import("@/pages/voorwaarden"));
+const Blog = lazy(() => import("@/pages/blog"));
+const BlogPostPage = lazy(() => import("@/pages/blog-post"));
+const DemoTools = lazy(() => import("@/pages/demo-tools"));
+const MigrationOptions = lazy(() => import("@/pages/migration-options"));
+const Booking = lazy(() => import("@/pages/booking"));
+
+function RouteLoadingFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-black">
+      <div className="text-center">
+        <div className="flex items-end justify-center gap-1 h-8 mb-4">
+          {[...Array(5)].map((_, i) => (
+            <div
+              key={i}
+              className="w-1 bg-gradient-to-t from-[#d0a760]/50 to-[#d0a760] rounded-full animate-audio-loader"
+              style={{
+                animationDelay: `${i * 0.1}s`,
+                height: '100%',
+              }}
+            />
+          ))}
+        </div>
+        <p className="text-white/40 text-xs tracking-widest uppercase">Laden...</p>
+      </div>
+    </div>
+  );
+}
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -44,12 +68,10 @@ function ScrollToTop() {
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
 
-  // Show loading state while auth is being checked
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black">
         <div className="text-center">
-          {/* Audio wave loader */}
           <div className="flex items-end justify-center gap-1 h-12 mb-6">
             {[...Array(5)].map((_, i) => (
               <div
@@ -69,31 +91,34 @@ function Router() {
   }
 
   return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/webshop" component={Shop} />
-      <Route path="/webshop/:slug" component={Product} />
-      <Route path="/cart" component={Cart} />
-      <Route path="/checkout" component={Checkout} />
-      <Route path="/order-confirmation" component={OrderConfirmation} />
-      <Route path="/montage" component={Studio} />
-      <Route path="/over-ons" component={About} />
-      <Route path="/veelgestelde-vragen" component={FAQ} />
-      <Route path="/contact" component={Contact} />
-      <Route path="/apple-carplay-voor-uw-bmw" component={AppleCarPlayBMW} />
-      <Route path="/login" component={Login} />
-      <Route path="/my-account" component={CustomerPortal} />
-      <Route path="/admin" component={Admin} />
-      <Route path="/privacy-policy" component={Privacy} />
-      <Route path="/algemene-voorwaarden" component={Voorwaarden} />
-      <Route path="/blog" component={Blog} />
-      <Route path="/kenniscentrum" component={Blog} />
-      <Route path="/blog/:slug" component={BlogPostPage} />
-      <Route path="/demo-tools" component={DemoTools} />
-      <Route path="/integraties" component={DemoTools} />
-      <Route path="/migration-options" component={MigrationOptions} />
-      <Route component={NotFound} />
-    </Switch>
+    <Suspense fallback={<RouteLoadingFallback />}>
+      <Switch>
+        <Route path="/" component={Home} />
+        <Route path="/webshop" component={Shop} />
+        <Route path="/webshop/:slug" component={Product} />
+        <Route path="/cart" component={Cart} />
+        <Route path="/checkout" component={Checkout} />
+        <Route path="/order-confirmation" component={OrderConfirmation} />
+        <Route path="/montage" component={Studio} />
+        <Route path="/over-ons" component={About} />
+        <Route path="/veelgestelde-vragen" component={FAQ} />
+        <Route path="/contact" component={Contact} />
+        <Route path="/apple-carplay-voor-uw-bmw" component={AppleCarPlayBMW} />
+        <Route path="/login" component={Login} />
+        <Route path="/my-account" component={CustomerPortal} />
+        <Route path="/admin" component={Admin} />
+        <Route path="/privacy-policy" component={Privacy} />
+        <Route path="/algemene-voorwaarden" component={Voorwaarden} />
+        <Route path="/blog" component={Blog} />
+        <Route path="/kenniscentrum" component={Blog} />
+        <Route path="/blog/:slug" component={BlogPostPage} />
+        <Route path="/demo-tools" component={DemoTools} />
+        <Route path="/integraties" component={DemoTools} />
+        <Route path="/migration-options" component={MigrationOptions} />
+        <Route path="/booking" component={Booking} />
+        <Route component={NotFound} />
+      </Switch>
+    </Suspense>
   );
 }
 
@@ -101,7 +126,6 @@ function App() {
   const [showInitialLoader, setShowInitialLoader] = useState(true);
 
   useEffect(() => {
-    // Show initial branded loader on first page load
     const timer = setTimeout(() => {
       setShowInitialLoader(false);
     }, 1200);
@@ -114,7 +138,6 @@ function App() {
       <TooltipProvider>
         {showInitialLoader && <PageLoader />}
         <div className="min-h-screen bg-background text-foreground">
-          {/* Skip to main content link for keyboard accessibility */}
           <a 
             href="#main-content" 
             className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-3 focus:bg-[#d0a760] focus:text-black focus:font-medium focus:outline-none focus:ring-2 focus:ring-white"

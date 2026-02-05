@@ -381,6 +381,9 @@ export default function ProductPage() {
                       <img 
                         src={images[selectedImageIndex]} 
                         alt={product.name}
+                        width={600}
+                        height={600}
+                        decoding="async"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 select-none"
                         draggable={false}
                       />
@@ -473,6 +476,10 @@ export default function ProductPage() {
                               <img 
                                 src={image} 
                                 alt={`${product.name} ${index + 1}`}
+                                width={64}
+                                height={64}
+                                loading="lazy"
+                                decoding="async"
                                 className="w-full h-full object-cover"
                               />
                             </button>
@@ -494,6 +501,10 @@ export default function ProductPage() {
                               <img 
                                 src={image} 
                                 alt={`${product.name} ${index + 1}`}
+                                width={100}
+                                height={100}
+                                loading="lazy"
+                                decoding="async"
                                 className="w-full h-full object-cover"
                               />
                             </button>

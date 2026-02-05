@@ -255,6 +255,10 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                               <img 
                                 src={product?.images?.[product.primaryImageIndex || 0] || carAudioLogo}
                                 alt={product?.name || "Product"} 
+                                width={64}
+                                height={64}
+                                loading="lazy"
+                                decoding="async"
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
                                   e.currentTarget.src = carAudioLogo;

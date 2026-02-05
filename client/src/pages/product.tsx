@@ -447,28 +447,52 @@ export default function ProductPage() {
                       )}
                     </div>
                     
-                    {/* Thumbnails - Desktop only */}
+                    {/* Thumbnails - Mobile: horizontal scroll, Desktop: grid */}
                     {images.length > 1 && (
-                      <div className="hidden md:grid grid-cols-4 gap-3 px-4 md:px-0">
-                        {images.map((image, index) => (
-                          <button
-                            key={index}
-                            className={`aspect-square bg-zinc-900 border-2 transition-all duration-300 overflow-hidden ${
-                              index === selectedImageIndex 
-                                ? 'border-[#d0a760]' 
-                                : 'border-zinc-800 hover:border-white/30'
-                            }`}
-                            onClick={() => setSelectedImageIndex(index)}
-                            data-testid={`thumbnail-${index}`}
-                          >
-                            <img 
-                              src={image} 
-                              alt={`${product.name} ${index + 1}`}
-                              className="w-full h-full object-cover"
-                            />
-                          </button>
-                        ))}
-                      </div>
+                      <>
+                        {/* Mobile thumbnails - horizontal scroll */}
+                        <div className="flex md:hidden gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+                          {images.map((image, index) => (
+                            <button
+                              key={index}
+                              className={`flex-shrink-0 w-16 h-16 bg-zinc-900 border-2 transition-all duration-300 overflow-hidden ${
+                                index === selectedImageIndex 
+                                  ? 'border-[#d0a760]' 
+                                  : 'border-zinc-800'
+                              }`}
+                              onClick={() => setSelectedImageIndex(index)}
+                              data-testid={`mobile-thumbnail-${index}`}
+                            >
+                              <img 
+                                src={image} 
+                                alt={`${product.name} ${index + 1}`}
+                                className="w-full h-full object-cover"
+                              />
+                            </button>
+                          ))}
+                        </div>
+                        {/* Desktop thumbnails - grid */}
+                        <div className="hidden md:grid grid-cols-4 gap-3 px-4 md:px-0">
+                          {images.map((image, index) => (
+                            <button
+                              key={index}
+                              className={`aspect-square bg-zinc-900 border-2 transition-all duration-300 overflow-hidden ${
+                                index === selectedImageIndex 
+                                  ? 'border-[#d0a760]' 
+                                  : 'border-zinc-800 hover:border-white/30'
+                              }`}
+                              onClick={() => setSelectedImageIndex(index)}
+                              data-testid={`thumbnail-${index}`}
+                            >
+                              <img 
+                                src={image} 
+                                alt={`${product.name} ${index + 1}`}
+                                className="w-full h-full object-cover"
+                              />
+                            </button>
+                          ))}
+                        </div>
+                      </>
                     )}
                   </>
                 ) : (
@@ -797,26 +821,26 @@ export default function ProductPage() {
                 Product Details
               </h2>
               <Tabs defaultValue="description" className="w-full">
-                <TabsList className="w-full justify-start bg-zinc-900/50 border-2 border-zinc-800 rounded-none p-1.5 h-auto gap-1 backdrop-blur-sm">
+                <TabsList className="flex overflow-x-auto md:w-full justify-start bg-zinc-900/50 border-2 border-zinc-800 rounded-none p-1.5 h-auto gap-1 backdrop-blur-sm scrollbar-hide">
                   <TabsTrigger 
                     value="description" 
-                    className="rounded-none px-6 py-3.5 text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black data-[state=active]:shadow-[0_0_20px_rgba(208,167,96,0.3)] flex items-center gap-2 transition-all duration-300"
+                    className="flex-shrink-0 rounded-none px-4 md:px-6 py-3 md:py-3.5 text-xs md:text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black data-[state=active]:shadow-[0_0_20px_rgba(208,167,96,0.3)] flex items-center gap-1.5 md:gap-2 transition-all duration-300 whitespace-nowrap"
                   >
-                    <Play className="w-4 h-4" />
+                    <Play className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     Beschrijving
                   </TabsTrigger>
                   <TabsTrigger 
                     value="specifications" 
-                    className="rounded-none px-6 py-3.5 text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black data-[state=active]:shadow-[0_0_20px_rgba(208,167,96,0.3)] flex items-center gap-2 transition-all duration-300"
+                    className="flex-shrink-0 rounded-none px-4 md:px-6 py-3 md:py-3.5 text-xs md:text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black data-[state=active]:shadow-[0_0_20px_rgba(208,167,96,0.3)] flex items-center gap-1.5 md:gap-2 transition-all duration-300 whitespace-nowrap"
                   >
-                    <FileText className="w-4 h-4" />
+                    <FileText className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     Specificaties
                   </TabsTrigger>
                   <TabsTrigger 
                     value="box-content" 
-                    className="rounded-none px-6 py-3.5 text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black data-[state=active]:shadow-[0_0_20px_rgba(208,167,96,0.3)] flex items-center gap-2 transition-all duration-300"
+                    className="flex-shrink-0 rounded-none px-4 md:px-6 py-3 md:py-3.5 text-xs md:text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black data-[state=active]:shadow-[0_0_20px_rgba(208,167,96,0.3)] flex items-center gap-1.5 md:gap-2 transition-all duration-300 whitespace-nowrap"
                   >
-                    <Box className="w-4 h-4" />
+                    <Box className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     In de doos
                   </TabsTrigger>
                 </TabsList>
@@ -1029,10 +1053,49 @@ export default function ProductPage() {
               </div>
             </ScrollReveal>
             
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            {/* Mobile: horizontal scroll with 2 visible items, Desktop: grid */}
+            <div className="flex md:hidden gap-4 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
               {filteredRelatedProducts.map((relatedProduct) => (
                 <Link key={relatedProduct.id} href={`/webshop/${relatedProduct.slug}`}>
-                  <div className="group cursor-pointer" data-testid={`related-product-${relatedProduct.id}`}>
+                  <div className="group cursor-pointer flex-shrink-0 w-[calc(50vw-24px)]" data-testid={`related-product-${relatedProduct.id}`}>
+                    <div className="relative aspect-square bg-zinc-900 border border-zinc-700 mb-3 overflow-hidden group-hover:border-[#d0a760]/50 transition-all duration-300">
+                      {relatedProduct.images && relatedProduct.images[0] ? (
+                        <img 
+                          src={relatedProduct.images[0]} 
+                          alt={relatedProduct.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full">
+                          <Package className="w-10 h-10 text-white/10" />
+                        </div>
+                      )}
+                    </div>
+                    <h3 className="text-white text-sm font-semibold line-clamp-2 mb-1">
+                      {relatedProduct.name}
+                    </h3>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-[#d0a760] font-bold text-sm">€{parseFloat(relatedProduct.price).toFixed(0)}</span>
+                      {relatedProduct.originalPrice && (
+                        <span className="text-white/30 text-xs line-through">
+                          €{parseFloat(relatedProduct.originalPrice).toFixed(0)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+              {/* Scroll hint */}
+              <div className="flex-shrink-0 w-8 flex items-center justify-center">
+                <ChevronRight className="w-5 h-5 text-white/20" />
+              </div>
+            </div>
+            
+            {/* Desktop grid */}
+            <div className="hidden md:grid grid-cols-4 gap-6">
+              {filteredRelatedProducts.map((relatedProduct) => (
+                <Link key={relatedProduct.id} href={`/webshop/${relatedProduct.slug}`}>
+                  <div className="group cursor-pointer" data-testid={`related-product-desktop-${relatedProduct.id}`}>
                     <div className="relative aspect-square bg-zinc-900 border border-zinc-700 mb-4 overflow-hidden group-hover:border-[#d0a760]/50 transition-all duration-300 group-hover:shadow-[0_0_20px_rgba(208,167,96,0.15)]">
                       {relatedProduct.images && relatedProduct.images[0] ? (
                         <img 

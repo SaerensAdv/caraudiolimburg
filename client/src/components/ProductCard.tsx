@@ -227,41 +227,42 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
           </div>
         </Link>
 
-        <CardContent className="p-5 flex flex-col flex-grow">
+        <CardContent className="p-3 sm:p-5 flex flex-col flex-grow">
           <Link href={`/webshop/${product.slug}`}>
-            <h3 className="text-white font-medium mb-2 group-hover:text-[#d0a760] transition-all duration-300 cursor-pointer line-clamp-2 min-h-[3rem] text-[15px] leading-snug" data-testid={`product-title-${product.id}`}>
+            <h3 className="text-white font-medium mb-1 sm:mb-2 group-hover:text-[#d0a760] transition-all duration-300 cursor-pointer line-clamp-2 min-h-[2.5rem] sm:min-h-[3rem] text-[13px] sm:text-[15px] leading-snug" data-testid={`product-title-${product.id}`}>
               {product.name}
             </h3>
           </Link>
 
-          <p className="text-white/50 text-sm mb-4 line-clamp-2 min-h-[2.5rem]" data-testid={`product-description-${product.id}`}>
+          <p className="text-white/50 text-xs sm:text-sm mb-2 sm:mb-4 line-clamp-2 min-h-[2rem] sm:min-h-[2.5rem] hidden sm:block" data-testid={`product-description-${product.id}`}>
             {product.shortDescription || '\u00A0'}
           </p>
 
           <div className="mt-auto">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-[#d0a760] tracking-tight" data-testid={`product-price-${product.id}`}>
+            <div className="flex items-center justify-between mb-2 sm:mb-4">
+              <div className="flex items-baseline gap-1 sm:gap-2">
+                <span className="text-lg sm:text-2xl font-bold text-[#d0a760] tracking-tight" data-testid={`product-price-${product.id}`}>
                   €{currentPrice.toLocaleString('nl-NL', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                 </span>
                 {originalPrice && (
-                  <span className="text-sm text-white/40 line-through">
+                  <span className="text-xs sm:text-sm text-white/40 line-through">
                     €{originalPrice.toFixed(0)}
                   </span>
                 )}
               </div>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex gap-1 sm:gap-2">
               <Button 
                 onClick={() => handleAddToCart(false)}
                 disabled={addToCartMutation.isPending}
                 size="sm"
-                className="flex-1 bg-[#d0a760] text-black hover:bg-[#d0a760]/90 hover:shadow-md hover:shadow-[#d0a760]/30 rounded-none text-xs font-medium transition-all duration-300"
+                className="flex-1 bg-[#d0a760] text-black hover:bg-[#d0a760]/90 hover:shadow-md hover:shadow-[#d0a760]/30 rounded-none text-[10px] sm:text-xs font-medium transition-all duration-300 h-8 sm:h-9 min-h-[44px] sm:min-h-0"
                 data-testid={`add-to-cart-${product.id}`}
               >
-                <ShoppingCart className="w-3 h-3 mr-1" />
-                Toevoegen
+                <ShoppingCart className="w-3 h-3 mr-0.5 sm:mr-1" />
+                <span className="hidden sm:inline">Toevoegen</span>
+                <span className="sm:hidden">+</span>
               </Button>
               
               {product.installationPrice && (

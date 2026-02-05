@@ -182,7 +182,7 @@ export default function Home() {
               </p>
             </ScrollReveal>
 
-            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8" staggerDelay={100}>
+            <StaggerContainer className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8" staggerDelay={100}>
               {isLoadingProducts ? (
                 [...Array(4)].map((_, i) => (
                   <ProductAudioSkeleton key={i} />
@@ -261,37 +261,40 @@ export default function Home() {
       {/* Services Section - WHITE */}
       <section className="py-24 md:py-32 bg-white">
         <div className="container px-8 md:px-16 lg:px-24 mx-auto">
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8" staggerDelay={150}>
-            <div className="text-center md:text-left group">
-              <div className="w-12 h-12 bg-[#d0a760]/10 flex items-center justify-center mb-4 mx-auto md:mx-0 group-hover:bg-[#d0a760]/20 group-hover:scale-110 transition-all duration-300">
-                <Award className="w-6 h-6 text-[#d0a760]" />
+          <div className="relative">
+            <div className="md:hidden absolute right-0 top-0 bottom-4 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
+            <StaggerContainer className="md:grid md:grid-cols-3 md:gap-8 flex overflow-x-auto gap-6 pb-4 md:pb-0 snap-x snap-mandatory scrollbar-hide -mx-8 px-8 md:mx-0 md:px-0" staggerDelay={150}>
+              <div className="text-center md:text-left group snap-start flex-shrink-0 w-[260px] md:w-auto md:flex-shrink">
+                <div className="w-12 h-12 bg-[#d0a760]/10 flex items-center justify-center mb-4 mx-auto md:mx-0 group-hover:bg-[#d0a760]/20 group-hover:scale-110 transition-all duration-300">
+                  <Award className="w-6 h-6 text-[#d0a760]" />
+                </div>
+                <h3 className="text-zinc-900 text-lg font-medium mb-2">Topkwaliteit Merken</h3>
+                <p className="text-zinc-600 leading-relaxed">
+                  Wij werken uitsluitend met premium merken zoals Alpine, Audison en Hertz. Kwaliteit die je hoort én voelt.
+                </p>
               </div>
-              <h3 className="text-zinc-900 text-lg font-medium mb-2">Topkwaliteit Merken</h3>
-              <p className="text-zinc-600 leading-relaxed">
-                Wij werken uitsluitend met premium merken zoals Alpine, Audison en Hertz. Kwaliteit die je hoort én voelt.
-              </p>
-            </div>
-            
-            <div className="text-center md:text-left group">
-              <div className="w-12 h-12 bg-[#d0a760]/10 flex items-center justify-center mb-4 mx-auto md:mx-0 group-hover:bg-[#d0a760]/20 group-hover:scale-110 transition-all duration-300">
-                <Wrench className="w-6 h-6 text-[#d0a760]" />
+              
+              <div className="text-center md:text-left group snap-start flex-shrink-0 w-[260px] md:w-auto md:flex-shrink">
+                <div className="w-12 h-12 bg-[#d0a760]/10 flex items-center justify-center mb-4 mx-auto md:mx-0 group-hover:bg-[#d0a760]/20 group-hover:scale-110 transition-all duration-300">
+                  <Wrench className="w-6 h-6 text-[#d0a760]" />
+                </div>
+                <h3 className="text-zinc-900 text-lg font-medium mb-2">Vakkundige Installatie</h3>
+                <p className="text-zinc-600 leading-relaxed">
+                  Onze gecertificeerde monteurs zorgen met 25+ jaar ervaring voor een perfect resultaat in jouw auto.
+                </p>
               </div>
-              <h3 className="text-zinc-900 text-lg font-medium mb-2">Vakkundige Installatie</h3>
-              <p className="text-zinc-600 leading-relaxed">
-                Onze gecertificeerde monteurs zorgen met 25+ jaar ervaring voor een perfect resultaat in jouw auto.
-              </p>
-            </div>
-            
-            <div className="text-center md:text-left group">
-              <div className="w-12 h-12 bg-[#d0a760]/10 flex items-center justify-center mb-4 mx-auto md:mx-0 group-hover:bg-[#d0a760]/20 group-hover:scale-110 transition-all duration-300">
-                <User className="w-6 h-6 text-[#d0a760]" />
+              
+              <div className="text-center md:text-left group snap-start flex-shrink-0 w-[260px] md:w-auto md:flex-shrink">
+                <div className="w-12 h-12 bg-[#d0a760]/10 flex items-center justify-center mb-4 mx-auto md:mx-0 group-hover:bg-[#d0a760]/20 group-hover:scale-110 transition-all duration-300">
+                  <User className="w-6 h-6 text-[#d0a760]" />
+                </div>
+                <h3 className="text-zinc-900 text-lg font-medium mb-2">Persoonlijk Advies</h3>
+                <p className="text-zinc-600 leading-relaxed">
+                  Kom langs in onze showroom in Sittard. Wij luisteren naar jouw wensen en adviseren op maat.
+                </p>
               </div>
-              <h3 className="text-zinc-900 text-lg font-medium mb-2">Persoonlijk Advies</h3>
-              <p className="text-zinc-600 leading-relaxed">
-                Kom langs in onze showroom in Sittard. Wij luisteren naar jouw wensen en adviseren op maat.
-              </p>
-            </div>
-          </StaggerContainer>
+            </StaggerContainer>
+          </div>
           
           <GoldAccentLine className="mt-16" />
         </div>
@@ -382,19 +385,26 @@ export default function Home() {
             </div>
           </ScrollReveal>
 
-          {isLoadingProducts ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {[...Array(4)].map((_, i) => (
-                <ProductAudioSkeleton key={i} data-testid={`skeleton-product-${i}`} />
-              ))}
-            </div>
-          ) : (
-            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8" staggerDelay={100}>
-              {(featuredProducts as Product[])?.map((product: Product) => (
-                <ProductCard key={product.id} product={product} featured data-testid={`product-card-${product.id}`} />
-              ))}
-            </StaggerContainer>
-          )}
+          <div className="relative">
+            <div className="sm:hidden absolute right-0 top-0 bottom-4 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
+            {isLoadingProducts ? (
+              <div className="sm:grid sm:grid-cols-3 lg:grid-cols-4 sm:gap-8 flex overflow-x-auto gap-4 pb-4 sm:pb-0 snap-x scrollbar-hide -mx-8 px-8 sm:mx-0 sm:px-0">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="snap-start flex-shrink-0 w-[180px] sm:w-auto sm:flex-shrink">
+                    <ProductAudioSkeleton data-testid={`skeleton-product-${i}`} />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <StaggerContainer className="sm:grid sm:grid-cols-3 lg:grid-cols-4 sm:gap-8 flex overflow-x-auto gap-4 pb-4 sm:pb-0 snap-x scrollbar-hide -mx-8 px-8 sm:mx-0 sm:px-0" staggerDelay={100}>
+                {(featuredProducts as Product[])?.map((product: Product) => (
+                  <div key={product.id} className="snap-start flex-shrink-0 w-[180px] sm:w-auto sm:flex-shrink">
+                    <ProductCard product={product} featured data-testid={`product-card-${product.id}`} />
+                  </div>
+                ))}
+              </StaggerContainer>
+            )}
+          </div>
         </div>
       </section>
 
@@ -497,34 +507,37 @@ export default function Home() {
             </div>
           </ScrollReveal>
 
-          <StaggerContainer className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6" staggerDelay={80}>
-            {(categories as Category[])?.map((category: Category) => (
-              <Link key={category.id} href={`/webshop?category=${category.slug}`}>
-                <Card 
-                  className="group cursor-pointer bg-zinc-100 border-zinc-200 hover:border-[#d0a760] hover:shadow-lg hover:shadow-[#d0a760]/10 transition-all duration-300 rounded-none hover:-translate-y-2 hover:scale-[1.02] h-full"
-                  data-testid={`category-card-${category.slug}`}
-                >
-                  <CardContent className="p-6 text-center">
-                    <div className="w-16 h-16 mx-auto mb-4 bg-white border border-zinc-200 flex items-center justify-center group-hover:border-[#d0a760] group-hover:bg-[#d0a760]/10 group-hover:shadow-md group-hover:shadow-[#d0a760]/20 transition-all duration-300 group-hover:scale-110">
-                      {category.slug === 'multimedia-navigatie' && <Volume2 className="w-7 h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
-                      {category.slug === 'speakers-subwoofers' && <Volume2 className="w-7 h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
-                      {category.slug === 'versterkers-dsp' && <Settings className="w-7 h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
-                      {category.slug === 'installatie-accessoires' && <Wrench className="w-7 h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
-                      {category.slug === 'cameras-veiligheid' && <ShieldCheck className="w-7 h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
-                      {category.slug === 'oem-upgrades' && <Car className="w-7 h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
-                      {!['multimedia-navigatie', 'speakers-subwoofers', 'versterkers-dsp', 'installatie-accessoires', 'cameras-veiligheid', 'oem-upgrades'].includes(category.slug) && 
-                        <Volume2 className="w-7 h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />
-                      }
-                    </div>
-                    
-                    <h3 className="font-medium text-zinc-900 text-sm group-hover:text-[#d0a760] transition-colors duration-300">
-                      {category.name}
-                    </h3>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </StaggerContainer>
+          <div className="relative">
+            <div className="md:hidden absolute right-0 top-0 bottom-4 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
+            <StaggerContainer className="md:grid md:grid-cols-3 lg:grid-cols-6 md:gap-6 flex overflow-x-auto gap-4 pb-4 md:pb-0 snap-x snap-mandatory scrollbar-hide -mx-8 px-8 md:mx-0 md:px-0" staggerDelay={80}>
+              {(categories as Category[])?.map((category: Category) => (
+                <Link key={category.id} href={`/webshop?category=${category.slug}`} className="snap-start flex-shrink-0 w-[140px] md:w-auto md:flex-shrink">
+                  <Card 
+                    className="group cursor-pointer bg-zinc-100 border-zinc-200 hover:border-[#d0a760] hover:shadow-lg hover:shadow-[#d0a760]/10 transition-all duration-300 rounded-none hover:-translate-y-2 hover:scale-[1.02] h-full"
+                    data-testid={`category-card-${category.slug}`}
+                  >
+                    <CardContent className="p-4 md:p-6 text-center">
+                      <div className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-3 md:mb-4 bg-white border border-zinc-200 flex items-center justify-center group-hover:border-[#d0a760] group-hover:bg-[#d0a760]/10 group-hover:shadow-md group-hover:shadow-[#d0a760]/20 transition-all duration-300 group-hover:scale-110">
+                        {category.slug === 'multimedia-navigatie' && <Volume2 className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
+                        {category.slug === 'speakers-subwoofers' && <Volume2 className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
+                        {category.slug === 'versterkers-dsp' && <Settings className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
+                        {category.slug === 'installatie-accessoires' && <Wrench className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
+                        {category.slug === 'cameras-veiligheid' && <ShieldCheck className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
+                        {category.slug === 'oem-upgrades' && <Car className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
+                        {!['multimedia-navigatie', 'speakers-subwoofers', 'versterkers-dsp', 'installatie-accessoires', 'cameras-veiligheid', 'oem-upgrades'].includes(category.slug) && 
+                          <Volume2 className="w-5 h-5 md:w-7 md:h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />
+                        }
+                      </div>
+                      
+                      <h3 className="font-medium text-zinc-900 text-xs md:text-sm group-hover:text-[#d0a760] transition-colors duration-300">
+                        {category.name}
+                      </h3>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </StaggerContainer>
+          </div>
         </div>
       </section>
 

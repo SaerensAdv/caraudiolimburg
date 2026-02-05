@@ -705,7 +705,7 @@ export default function Shop() {
         <div className="container mx-auto px-4">
           {isLoadingProducts ? (
             <div className={viewMode === 'grid' 
-              ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+              ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6"
               : "space-y-4"
             }>
               {[...Array(8)].map((_, i) => (
@@ -714,7 +714,7 @@ export default function Shop() {
             </div>
           ) : sortedProducts && sortedProducts.length > 0 ? (
             viewMode === 'grid' ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
                 {sortedProducts.map((product: Product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}

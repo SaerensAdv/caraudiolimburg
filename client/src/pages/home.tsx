@@ -264,7 +264,7 @@ export default function Home() {
       <section className="py-24 md:py-32 bg-white">
         <div className="container px-8 md:px-16 lg:px-24 mx-auto">
           <div className="relative">
-            <div className="md:hidden absolute right-0 top-0 bottom-4 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
+            
             <StaggerContainer className="md:grid md:grid-cols-3 md:gap-8 flex overflow-x-auto gap-6 pb-4 md:pb-0 snap-x snap-mandatory scrollbar-hide -mx-8 px-8 md:mx-0 md:px-0" staggerDelay={150}>
               <div className="text-center md:text-left group snap-start flex-shrink-0 w-[260px] md:w-auto md:flex-shrink">
                 <div className="w-12 h-12 bg-[#d0a760]/10 flex items-center justify-center mb-4 mx-auto md:mx-0 group-hover:bg-[#d0a760]/20 group-hover:scale-110 transition-all duration-300">
@@ -388,8 +388,7 @@ export default function Home() {
           </ScrollReveal>
 
           <div className="relative">
-            <div className="sm:hidden absolute right-0 top-0 bottom-4 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
-            {isLoadingProducts ? (
+                        {isLoadingProducts ? (
               <div className="sm:grid sm:grid-cols-3 lg:grid-cols-4 sm:gap-8 flex overflow-x-auto gap-4 pb-4 sm:pb-0 snap-x scrollbar-hide -mx-8 px-8 sm:mx-0 sm:px-0">
                 {[...Array(4)].map((_, i) => (
                   <div key={i} className="snap-start flex-shrink-0 w-[180px] sm:w-auto sm:flex-shrink">
@@ -510,7 +509,7 @@ export default function Home() {
           </ScrollReveal>
 
           <div className="relative">
-            <div className="md:hidden absolute right-0 top-0 bottom-4 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none z-10" />
+            
             <StaggerContainer className="md:grid md:grid-cols-3 lg:grid-cols-6 md:gap-6 flex overflow-x-auto gap-4 pb-4 md:pb-0 snap-x snap-mandatory scrollbar-hide -mx-8 px-8 md:mx-0 md:px-0" staggerDelay={80}>
               {(categories as Category[])?.map((category: Category) => (
                 <Link key={category.id} href={`/webshop?category=${category.slug}`} className="snap-start flex-shrink-0 w-[140px] md:w-auto md:flex-shrink">

@@ -2,9 +2,7 @@
 
 ## Overview
 
-This is a full-stack e-commerce application for Car Audio Limburg, combining an online store for car audio equipment with professional installation service booking. The application serves as both a product catalog and customer acquisition platform, targeting customers who want to purchase premium car audio systems with professional installation.
-
-The system handles product sales (Alpine, Audison, OEM upgrades), service bookings with calendar scheduling, quote requests for custom installations, and provides comprehensive admin/CRM capabilities for managing orders, inventory, bookings, and leads.
+This project is a full-stack e-commerce application for Car Audio Limburg, designed to integrate online sales of car audio equipment with professional installation service bookings. It functions as a product catalog, service booking platform, and customer acquisition tool. The application aims to attract customers seeking premium car audio solutions and professional installation, offering products from brands like Alpine and Audison, alongside OEM upgrades. Key capabilities include product sales, calendar-based service scheduling, custom quote requests, and comprehensive administrative features for managing orders, inventory, bookings, and leads. The overarching vision is to provide a seamless customer experience from product selection to professional installation, enhancing market presence and operational efficiency.
 
 ## User Preferences
 
@@ -13,56 +11,198 @@ Preferred communication style: Simple, everyday language.
 ## System Architecture
 
 ### Frontend Architecture
-- **Framework**: React with TypeScript using Vite as the build tool
-- **Styling**: Tailwind CSS with shadcn/ui component library for consistent UI elements
-- **State Management**: TanStack Query for server state, React Hook Form for form state
-- **Routing**: Wouter for lightweight client-side routing
-- **Authentication**: Session-based authentication integrated with Replit's OAuth system
+- **Framework**: React with TypeScript, utilizing Vite for fast development.
+- **UI/UX**: Tailwind CSS for utility-first styling combined with shadcn/ui for consistent and accessible components.
+- **State Management**: TanStack Query manages server-side data, while React Hook Form handles form states.
+- **Routing**: Wouter provides a lightweight client-side routing solution.
+- **Authentication**: Session-based authentication integrated with Replit's OAuth system.
 
 ### Backend Architecture
-- **Runtime**: Node.js with Express.js server framework
-- **Database ORM**: Drizzle ORM with PostgreSQL (configured for Neon database)
-- **API Design**: RESTful API using Express route handlers with Zod validation
-- **Session Management**: Express sessions with PostgreSQL storage
-- **File Structure**: Monorepo structure with separate client, server, and shared directories
+- **Runtime**: Node.js with Express.js as the server framework.
+- **Database ORM**: Drizzle ORM is used for type-safe interaction with PostgreSQL.
+- **API Design**: Adheres to a RESTful API standard, implemented with Express route handlers and validated using Zod schemas.
+- **Session Management**: Express sessions are used, with session data stored persistently in PostgreSQL.
+- **File Structure**: A monorepo organization separates client, server, and shared codebases.
 
 ### Database Design
-- **Primary Database**: PostgreSQL with Drizzle ORM for type-safe database operations
-- **Schema Structure**: Comprehensive schema including users, products, categories, brands, vehicle compatibility, orders, bookings, quotes, and cart management
-- **Relationships**: Well-defined relationships between entities (products-categories, vehicle compatibility, order items)
+- **Technology**: PostgreSQL, accessed via Drizzle ORM for robust and type-safe data operations.
+- **Schema**: Includes comprehensive tables for users, products, categories, brands, vehicle compatibility, orders, bookings, quotes, and cart management.
+- **Relationships**: Features well-defined relational integrity across entities, such as products-categories and order items.
 
 ### Authentication & Authorization
-- **Provider**: Replit OAuth integration with passport.js strategy
-- **Session Storage**: Database-backed sessions for persistence across requests
-- **User Roles**: Role-based access control supporting customer, staff, and admin roles
-- **Security**: HTTP-only cookies with secure session management
+- **Provider**: Leverages Replit OAuth through a Passport.js strategy.
+- **Session Storage**: Sessions are database-backed for persistence and reliability.
+- **User Roles**: Implements role-based access control, supporting customer, staff, and admin roles.
+- **Security**: Utilizes HTTP-only cookies and secure session management practices.
 
 ### Payment Processing
-- **Provider**: Stripe integration with support for multiple payment methods
-- **Supported Methods**: Credit cards, Bancontact, iDEAL (targeting BE/NL markets)
-- **Webhook Handling**: Stripe webhooks for payment confirmation and order processing
+- **Provider**: Integrates with Stripe for secure payment processing.
+- **Supported Methods**: Designed to accept credit cards, Bancontact, and iDEAL, targeting Belgian and Dutch markets.
+- **Webhooks**: Handles Stripe webhooks for real-time payment confirmation and order status updates.
 
-### Key Features Architecture
-- **E-commerce**: Full product catalog with categories, brands, vehicle compatibility, and shopping cart
-- **Booking System**: Calendar-based appointment scheduling for installation services
-- **Quote System**: Lead generation through custom quote request forms
-- **Vehicle Compatibility**: Dynamic filtering based on vehicle make, model, and year
-- **Admin Dashboard**: Comprehensive CRM for managing products, orders, bookings, and customer relationships
+### Key Features
+- **E-commerce**: Comprehensive product catalog with categorization, branding, vehicle compatibility filtering, and a shopping cart system.
+- **Booking System**: An integrated calendar-based system for scheduling installation appointments.
+- **Quote System**: Facilitates lead generation through customizable quote request forms.
+- **Vehicle Compatibility**: Enables dynamic product filtering based on vehicle make, model, and year.
+- **Admin Dashboard**: A CRM-like interface for managing products, orders, bookings, and customer interactions.
+
+## Merk-Onboarding Playbook (Product Data Pipeline)
+
+Dit is de volledige werkwijze voor het toevoegen van een nieuw merk aan de webshop. Alle stappen zijn herbruikbaar als template.
+
+### Overzicht Stappen
+
+0. **Merk & categorie aanmaken** - Brand en category records in database
+1. **Productdata verzamelen** - SKU's, namen, prijzen uit WordPress CSV of handmatig
+2. **Afbeeldingen scrapen** - Van fabrikant-website downloaden naar `/public/products/[merk]/`
+3. **Specificaties vullen** - JSONB specs per product in database
+4. **PDF Tech Sheets downloaden** - Van fabrikant naar `/public/downloads/`
+5. **SEO beschrijvingen schrijven** - Korte + lange beschrijvingen in het Nederlands
+6. **Kwaliteitscontrole** - Alle velden checken met controle-query
+
+### Stap 0: Merk & Categorie Aanmaken
+
+Voordat producten worden toegevoegd, moet het merk en de categorieën bestaan in de database.
+
+Merk aanmaken:
+```sql
+INSERT INTO brands (id, name, slug, logo_url, description)
+VALUES (gen_random_uuid(), 'Audison', 'audison', '/brands/audison-logo.png', 'Italiaanse fabrikant van premium car audio');
+```
+
+Categorie koppelen (noteer de id's voor gebruik bij producten):
+```sql
+SELECT id, name FROM brands WHERE slug = '[merk-slug]';
+SELECT id, name FROM categories;
+```
+
+### Stap 1: Database Productstructuur
+
+Elk product heeft deze velden (zie `shared/schema.ts`):
+
+| Veld | Type | Beschrijving |
+|------|------|-------------|
+| `name` | varchar | Productnaam zoals weergegeven |
+| `slug` | varchar | URL-friendly naam (auto-generated) |
+| `sku` | varchar | Artikelnummer van fabrikant |
+| `price` | numeric | Verkoopprijs in EUR |
+| `original_price` | numeric | Adviesprijs (voor korting) |
+| `installation_price` | numeric | Installatiekosten |
+| `description` | text | Lange SEO beschrijving (Nederlands) |
+| `short_description` | varchar | Meta description, max 155 tekens |
+| `images` | text[] | PostgreSQL array van afbeelding-URLs |
+| `specifications` | jsonb | Technische specs als key-value pairs |
+| `downloads` | jsonb | Array van `{name, url}` objecten |
+| `features` | text[] | Lijst van product-features |
+| `brand_id` | varchar | FK naar brands tabel |
+| `category_id` | varchar | FK naar categories tabel |
+| `stock` | integer | Voorraadaantal |
+| `is_active` | boolean | Zichtbaar in webshop |
+
+### Stap 2: Afbeeldingen Scrapen
+
+Script template: `scripts/scrape-[merk].ts`
+
+Werkwijze: Maak URL-mapping (SKU naar fabrikant URL), scrape pagina met cheerio, download afbeeldingen naar `/public/products/[merk]/`, update database images array.
+
+Bestandsnaam conventie: `/public/products/[merk]/[sku-kebab-case].jpg` (meerdere: `-2.jpg`, `-3.jpg`)
+
+SQL: `UPDATE products SET images = ARRAY['/products/audison/apk-165-1.jpg'] WHERE sku = 'APK 165';`
+
+### Stap 3: Specificaties (JSONB)
+
+Flat JSONB object met key-value pairs. Structuur verschilt per producttype:
+
+Speakers: serie, productType, impedance, peakPower, continuousPower, sensitivity, frequencyResponse, wooferSize, tweeterSize, coneMaterial, coneDiameter, voiceCoilDiameter, magnetSize, crossoverType
+
+Versterkers: serie, productType, channels, peakPower, rmsPower4Ohm, rmsPower2Ohm, rmsPowerBridged, signalToNoise, frequencyResponse, crossoverType, dimensions, weight
+
+DSP Versterkers: serie, productType, ampChannels, dspChannels, rmsPower, sampleRate, bitDepth, inputs, outputs
+
+SQL: `UPDATE products SET specifications = '{"serie":"Prima","peakPower":"300 W"}'::jsonb WHERE sku = 'APK 165';`
+
+### Stap 4: PDF Tech Sheets
+
+Script template: `scripts/download-[merk]-pdfs-v2.ts`
+
+Bestandsnaam conventie: `/public/downloads/[merk]-[serie]-[model]-tech-sheet.pdf`
+
+SQL downloads update: `UPDATE products SET downloads = '[{"name":"Technical Datasheet","url":"/downloads/audison-prima-apk-165-tech-sheet.pdf"}]'::jsonb WHERE sku = 'APK 165';`
+
+Meerdere downloads: `'[{"name":"Technical Datasheet","url":"..."},{"name":"Owner Manual","url":"..."}]'::jsonb`
+
+### Stap 5: SEO Beschrijvingen
+
+**Short description** (max 155 tekens): `[Merk] [Model] - [Type], [Vermogen], [Kernfeature]. [USP]. Made in [Land].`
+
+**Lange description** met gestructureerde opmaak. De `FormattedDescription` component (`client/src/pages/product.tsx`) parsed automatisch:
+- Dubbele newlines = nieuwe paragraaf
+- Regels met bullet prefix (bullet, -, *) = 2-koloms grid met gouden checkmarks
+- Korte regels eindigend op `:` = sectie-header
+
+Template structuur:
+```
+[Merk Model] - [wat het is, 1-2 zinnen]
+
+[Kernvoordelen, 2-3 zinnen over technologie]
+
+Belangrijkste kenmerken:
+- Piekvermogen: [X]W / Continu: [Y]W
+- [Afmeting] woofer/driver
+- Frequentiebereik: [range]
+- Impedantie: [X] Ohm
+- [Unieke features]
+- Made in [Land]
+```
+
+Consistentie-regels per serie:
+- Prima: "OEM integratie", "Klippel-geoptimaliseerd", "Plug & Play"
+- SR: "High Power in Compact Size", "Class D", "ingebouwde crossover"
+- Forza: "Bit Powered Solutions", "Hi-Res 24bit/96kHz"
+- Voce II: "Give Sound Its True Voice", "Hi-Res Audio gecertificeerd"
+
+### Stap 6: Kwaliteitscontrole Query
+
+```sql
+SELECT sku, name,
+  CASE WHEN LENGTH(description) > 100 THEN 'OK' ELSE 'MISSING' END as beschrijving,
+  CASE WHEN LENGTH(short_description) > 50 THEN 'OK' ELSE 'MISSING' END as seo_short,
+  CASE WHEN array_length(images, 1) > 0 THEN 'OK' ELSE 'MISSING' END as afbeeldingen,
+  CASE WHEN specifications::text != '{}' THEN 'OK' ELSE 'MISSING' END as specs,
+  CASE WHEN downloads::text != '[]' THEN 'OK' ELSE 'MISSING' END as downloads,
+  CASE WHEN price::numeric > 0 THEN 'OK' ELSE 'MISSING' END as prijs
+FROM products WHERE LOWER(name) LIKE '%[merk]%' ORDER BY sku;
+```
+
+### Voorbeeld: Audison Status (44 producten compleet)
+
+| Serie | Aantal | Beschrijving | SEO | Afbeeldingen | Specs | PDFs | Prijzen |
+|-------|--------|-------------|-----|-------------|-------|------|---------|
+| Prima APK (composets) | 7 | OK | OK | OK | OK | 6/7 | OK |
+| Prima APX (coaxialen) | 4 | OK | OK | OK | OK | 4/4 | OK |
+| Prima APS (subwoofers) | 4 | OK | OK | OK | OK | 4/4 | OK |
+| Prima APBX (subboxen) | 6 | OK | OK | OK | OK | 4/6 | OK |
+| Prima APBMW (BMW kits) | 5 | OK | OK | OK | OK | 0/5 | OK |
+| SR (versterkers) | 4 | OK | OK | OK | OK | 4/4 | OK |
+| Forza (DSP versterkers) | 7 | OK | OK | OK | OK | 0/7 | OK |
+| Voce II (Hi-Res) | 7 | OK | OK | OK | OK | 0/7 | OK |
+
+22/44 hebben PDF tech sheets. Overige niet gepubliceerd door Audison.
 
 ## External Dependencies
 
 ### Core Infrastructure
-- **Database**: Neon PostgreSQL (configured via DATABASE_URL environment variable)
-- **Authentication**: Replit OAuth service for user authentication
-- **Payment Processing**: Stripe for payment processing and webhook handling
+- **Database**: Neon PostgreSQL.
+- **Authentication**: Replit OAuth service.
+- **Payment Processing**: Stripe.
 
 ### Third-party Services
-- **Email**: Resend for transactional emails (order confirmations, booking notifications)
-- **File Storage**: Local file storage in public directory with optional cloud storage integration
-- **Session Storage**: PostgreSQL-backed session storage using connect-pg-simple
+- **Email**: Resend for transactional email communications.
+- **Session Storage**: `connect-pg-simple` for PostgreSQL-backed session storage.
 
 ### Key Libraries & Frameworks
-- **Frontend**: React, TanStack Query, React Hook Form, Zod validation, shadcn/ui components
-- **Backend**: Express.js, Drizzle ORM, Passport.js, Stripe SDK
-- **Styling**: Tailwind CSS with custom design tokens for brand consistency
-- **Development**: Vite, TypeScript, ESLint for development workflow
+- **Frontend**: React, TanStack Query, React Hook Form, Zod, shadcn/ui.
+- **Backend**: Express.js, Drizzle ORM, Passport.js, Stripe SDK.
+- **Styling**: Tailwind CSS.
+- **Development**: Vite, TypeScript, ESLint.

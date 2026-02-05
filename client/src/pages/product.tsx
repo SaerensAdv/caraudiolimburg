@@ -371,8 +371,12 @@ export default function ProductPage() {
                     {/* Main Image - Swipeable on Mobile */}
                     <div 
                       ref={imageContainerRef}
-                      className="relative aspect-square bg-zinc-900 md:border md:border-zinc-800 md:cursor-zoom-in group overflow-hidden touch-pan-y"
+                      role="button"
+                      tabIndex={0}
+                      aria-label="Klik om afbeelding te vergroten"
+                      className="relative aspect-square bg-zinc-900 md:border md:border-zinc-800 md:cursor-zoom-in group overflow-hidden touch-pan-y focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d0a760]"
                       onClick={() => setIsLightboxOpen(true)}
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsLightboxOpen(true); } }}
                       onTouchStart={images.length > 1 ? onTouchStart : undefined}
                       onTouchMove={images.length > 1 ? onTouchMove : undefined}
                       onTouchEnd={() => images.length > 1 && onTouchEnd(images)}
@@ -384,6 +388,8 @@ export default function ProductPage() {
                         width={600}
                         height={600}
                         decoding="async"
+                        fetchPriority={selectedImageIndex === 0 ? "high" : "low"}
+                        loading={selectedImageIndex === 0 ? "eager" : "lazy"}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 select-none"
                         draggable={false}
                       />
@@ -534,8 +540,10 @@ export default function ProductPage() {
                     {/* Desktop wishlist button */}
                     <button
                       onClick={() => setIsWishlisted(!isWishlisted)}
-                      className="hidden md:block p-2 hover:bg-white/5 transition-colors"
+                      className="hidden md:block p-2 hover:bg-white/5 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d0a760]"
                       data-testid="button-wishlist"
+                      aria-label={isWishlisted ? "Verwijderen uit verlanglijst" : "Toevoegen aan verlanglijst"}
+                      aria-pressed={isWishlisted}
                     >
                       <Heart className={`w-6 h-6 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-white/40'}`} />
                     </button>
@@ -1083,6 +1091,10 @@ export default function ProductPage() {
                         <img 
                           src={relatedProduct.images[0]} 
                           alt={relatedProduct.name}
+                          width={180}
+                          height={180}
+                          loading="lazy"
+                          decoding="async"
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -1122,6 +1134,10 @@ export default function ProductPage() {
                         <img 
                           src={relatedProduct.images[0]} 
                           alt={relatedProduct.name}
+                          width={200}
+                          height={200}
+                          loading="lazy"
+                          decoding="async"
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                         />
                       ) : (

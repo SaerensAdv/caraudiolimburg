@@ -666,8 +666,8 @@ export default function ProductPage() {
                         <div className="bg-zinc-800 px-2 py-1.5 rounded flex items-center justify-center" title="Mastercard">
                           <SiMastercard className="w-6 h-5" />
                         </div>
-                        <div className="bg-black px-2 py-1.5 rounded flex items-center justify-center" title="Apple Pay">
-                          <SiApplepay className="w-8 h-5 text-white" />
+                        <div className="bg-black px-3 py-1.5 rounded flex items-center justify-center" title="Apple Pay">
+                          <SiApplepay className="w-10 h-6 text-white" />
                         </div>
                         <div className="bg-white px-2 py-1.5 rounded flex items-center justify-center" title="Google Pay">
                           <SiGooglepay className="w-8 h-5" />

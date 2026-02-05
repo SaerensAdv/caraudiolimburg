@@ -5,7 +5,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { ChevronLeft, ChevronRight, Car, Wrench, Award, Users } from "lucide-react";
+import { ChevronLeft, ChevronRight, Car, Wrench, Award, Users, CheckCircle2, Clock, AlertCircle, CalendarCheck, Loader2 } from "lucide-react";
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, getDay } from "date-fns";
 import { nl } from "date-fns/locale";
 
@@ -42,14 +42,29 @@ export function BookingCalendar() {
     },
     onSuccess: () => {
       toast({
-        title: "Afspraak geboekt",
-        description: "Je installatie-afspraak is bevestigd. Je ontvangt een bevestiging per email.",
+        title: "✓ Afspraak succesvol geboekt!",
+        description: (
+          <div className="flex flex-col gap-1">
+            <p>Je installatie-afspraak is bevestigd.</p>
+            <p className="text-xs text-muted-foreground">Je ontvangt een bevestiging per e-mail met alle details.</p>
+          </div>
+        ),
       });
+      setSelectedService("");
+      setSelectedDate(null);
+      setSelectedTime("");
     },
     onError: () => {
       toast({
-        title: "Fout bij boeken",
-        description: "Probeer het later opnieuw.",
+        title: "⚠ Fout bij boeken",
+        description: (
+          <div className="flex flex-col gap-1">
+            <p>Er ging iets mis. Probeer het later opnieuw.</p>
+            <a href="tel:0852733625" className="text-[#d0a760] hover:underline font-medium">
+              Of bel ons: 085 - 27 33 625
+            </a>
+          </div>
+        ),
         variant: "destructive",
       });
     },
@@ -90,14 +105,73 @@ export function BookingCalendar() {
     });
   };
 
+  const getStepStatus = (step: number) => {
+    if (step === 1) return selectedService ? "complete" : "current";
+    if (step === 2) return selectedDate ? "complete" : selectedService ? "current" : "pending";
+    if (step === 3) return selectedTime ? "complete" : (selectedDate && selectedService) ? "current" : "pending";
+    return "pending";
+  };
+
+  const selectedServiceData = services.find(s => s.id === selectedService);
+
   return (
     <div className="max-w-4xl mx-auto" data-testid="booking-calendar">
       <div className="bg-black border border-zinc-800">
+        {/* Step Indicators */}
+        <div className="border-b border-zinc-800 p-4 md:p-6">
+          <div className="flex items-center justify-between max-w-md mx-auto">
+            {[
+              { step: 1, label: "Service", icon: Car },
+              { step: 2, label: "Datum", icon: CalendarCheck },
+              { step: 3, label: "Tijd", icon: Clock }
+            ].map(({ step, label, icon: Icon }, index) => {
+              const status = getStepStatus(step);
+              return (
+                <div key={step} className="flex items-center">
+                  <div className="flex flex-col items-center">
+                    <div className={`w-10 h-10 flex items-center justify-center border-2 transition-all duration-300 ${
+                      status === "complete" 
+                        ? "bg-[#d0a760] border-[#d0a760] text-black" 
+                        : status === "current"
+                        ? "border-[#d0a760] text-[#d0a760] bg-[#d0a760]/10"
+                        : "border-zinc-700 text-zinc-600 bg-zinc-900"
+                    }`}>
+                      {status === "complete" ? (
+                        <CheckCircle2 className="w-5 h-5" />
+                      ) : (
+                        <Icon className="w-5 h-5" />
+                      )}
+                    </div>
+                    <span className={`text-xs mt-2 font-medium ${
+                      status === "complete" || status === "current" 
+                        ? "text-white" 
+                        : "text-zinc-600"
+                    }`}>
+                      {label}
+                    </span>
+                  </div>
+                  {index < 2 && (
+                    <div className={`w-12 md:w-20 h-0.5 mx-2 transition-all duration-300 ${
+                      getStepStatus(step + 1) === "complete" || getStepStatus(step + 1) === "current"
+                        ? "bg-[#d0a760]"
+                        : "bg-zinc-800"
+                    }`} />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
         <div className="p-6 md:p-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
             {/* Service Selection */}
             <div>
-              <h3 className="text-xl font-semibold text-white mb-6">Selecteer Service</h3>
+              <h3 className="text-xl font-semibold text-white mb-2 flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-[#d0a760] text-black text-sm flex items-center justify-center font-bold">1</span>
+                Selecteer Service
+              </h3>
+              <p className="text-white/50 text-sm mb-6">Kies de service die je wilt boeken</p>
               
               <RadioGroup value={selectedService} onValueChange={setSelectedService} className="space-y-3">
                 {services.map((service) => {
@@ -135,7 +209,11 @@ export function BookingCalendar() {
 
             {/* Calendar */}
             <div>
-              <h3 className="text-xl font-semibold text-white mb-6">Kies Datum & Tijd</h3>
+              <h3 className="text-xl font-semibold text-white mb-2 flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-[#d0a760] text-black text-sm flex items-center justify-center font-bold">2</span>
+                Kies Datum & Tijd
+              </h3>
+              <p className="text-white/50 text-sm mb-6">Selecteer wanneer je langs wilt komen</p>
               
               {/* Calendar Header */}
               <div className="flex items-center justify-between mb-4">
@@ -206,7 +284,8 @@ export function BookingCalendar() {
               {/* Time Slots */}
               {selectedDate && selectedService && (
                 <div className="space-y-3 mt-6" data-testid="time-slots">
-                  <h4 className="font-medium text-white">
+                  <h4 className="font-medium text-white flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-[#d0a760] text-black text-xs flex items-center justify-center font-bold">3</span>
                     Tijden voor {format(selectedDate, "d MMMM", { locale: nl })}
                   </h4>
                   <div className="grid grid-cols-3 gap-2">
@@ -216,10 +295,10 @@ export function BookingCalendar() {
                         variant="ghost"
                         size="sm"
                         onClick={() => setSelectedTime(time)}
-                        className={`justify-center transition-all duration-150 rounded-none ${
+                        className={`justify-center transition-all duration-200 rounded-none h-11 ${
                           selectedTime === time 
-                            ? "bg-[#d0a760] text-black hover:bg-[#d0a760]/90" 
-                            : "bg-zinc-900 text-white/80 hover:bg-zinc-800 hover:text-white border border-zinc-800"
+                            ? "bg-[#d0a760] text-black hover:bg-[#d0a760]/90 ring-2 ring-[#d0a760]/50" 
+                            : "bg-zinc-900 text-white/80 hover:bg-[#d0a760]/20 hover:text-[#d0a760] hover:border-[#d0a760]/50 border border-zinc-800"
                         }`}
                         data-testid={`button-time-${time}`}
                       >
@@ -230,16 +309,54 @@ export function BookingCalendar() {
                 </div>
               )}
 
+              {/* Booking Summary */}
               {selectedService && selectedDate && selectedTime && (
-                <Button 
-                  onClick={handleBooking}
-                  className="w-full mt-8 bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none py-6 font-medium"
-                  size="lg"
-                  disabled={bookingMutation.isPending}
-                  data-testid="button-confirm-booking"
-                >
-                  {bookingMutation.isPending ? "Bezig met boeken..." : "Bevestig Afspraak"}
-                </Button>
+                <div className="mt-8 space-y-4">
+                  <div className="bg-zinc-900 border border-zinc-800 p-4">
+                    <h4 className="text-sm font-medium text-white/60 mb-3 flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-[#d0a760]" />
+                      Overzicht van je boeking
+                    </h4>
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center py-2 border-b border-zinc-800">
+                        <span className="text-white/60 text-sm">Service</span>
+                        <span className="text-white font-medium">{selectedServiceData?.name}</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-zinc-800">
+                        <span className="text-white/60 text-sm">Datum</span>
+                        <span className="text-white font-medium">{format(selectedDate, "d MMMM yyyy", { locale: nl })}</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-zinc-800">
+                        <span className="text-white/60 text-sm">Tijd</span>
+                        <span className="text-white font-medium">{selectedTime}</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2">
+                        <span className="text-white/60 text-sm">Geschatte duur</span>
+                        <span className="text-[#d0a760] font-medium">{selectedServiceData?.duration}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <Button 
+                    onClick={handleBooking}
+                    className="w-full bg-[#d0a760] text-black hover:bg-[#b8954e] rounded-none py-6 font-medium transition-all duration-300 group disabled:opacity-70"
+                    size="lg"
+                    disabled={bookingMutation.isPending}
+                    data-testid="button-confirm-booking"
+                  >
+                    {bookingMutation.isPending ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Bezig met boeken...
+                      </span>
+                    ) : (
+                      <span className="flex items-center justify-center gap-2">
+                        <CalendarCheck className="w-5 h-5 transition-transform group-hover:scale-110" />
+                        Bevestig Afspraak
+                      </span>
+                    )}
+                  </Button>
+                </div>
               )}
             </div>
           </div>

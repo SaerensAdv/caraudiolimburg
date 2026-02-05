@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
@@ -37,6 +37,14 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
   const [brandsExpanded, setBrandsExpanded] = useState(false);
   const megaMenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { isAuthenticated, user } = useAuth();
+  const [location] = useLocation();
+
+  const isActiveLink = (href: string) => {
+    if (href === "/webshop") {
+      return location === "/webshop" || location.startsWith("/webshop");
+    }
+    return location === href;
+  };
 
   const { data: categories = [], isLoading: isLoadingCategories } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
@@ -171,9 +179,16 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
                     onMouseLeave={handleMegaMenuLeave}
                   >
                     <button
-                      className={`relative flex items-center gap-1 ${isTransparent ? 'text-white/90 hover:text-white' : 'text-muted-foreground hover:text-[#d0a760]'} transition-all duration-300 font-medium text-sm tracking-wide group`}
+                      className={`relative flex items-center gap-1 px-3 py-2 rounded-sm transition-all duration-300 font-medium text-sm tracking-wide group ${
+                        isActiveLink(item.href)
+                          ? 'text-[#d0a760] bg-[#d0a760]/10'
+                          : isTransparent 
+                            ? 'text-white/90 hover:text-white hover:bg-white/5' 
+                            : 'text-muted-foreground hover:text-[#d0a760] hover:bg-[#d0a760]/5'
+                      }`}
                       aria-expanded={isMegaMenuOpen}
                       aria-haspopup="true"
+                      aria-current={isActiveLink(item.href) ? 'page' : undefined}
                       onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
@@ -187,21 +202,29 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
                     >
                       {item.label}
                       <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isMegaMenuOpen ? 'rotate-180' : ''}`} />
-                      <span className={`absolute -bottom-1 left-0 w-full h-0.5 bg-[#d0a760] origin-right group-hover:origin-left transition-transform duration-300 ease-out ${isMegaMenuOpen ? 'scale-x-100 origin-left' : 'scale-x-0 group-hover:scale-x-100'}`} />
+                      <span className={`absolute -bottom-0.5 left-3 right-3 h-0.5 bg-[#d0a760] origin-right group-hover:origin-left transition-transform duration-300 ease-out ${isMegaMenuOpen || isActiveLink(item.href) ? 'scale-x-100 origin-left' : 'scale-x-0 group-hover:scale-x-100'}`} />
                     </button>
                   </div>
                 );
               }
               
+              const isActive = isActiveLink(item.href);
               return (
                 <Link 
                   key={item.href}
                   href={item.href} 
-                  className={`relative ${isTransparent ? 'text-white/90 hover:text-white' : 'text-muted-foreground hover:text-[#d0a760]'} transition-all duration-300 font-medium text-sm tracking-wide group`} 
+                  className={`relative px-3 py-2 rounded-sm transition-all duration-300 font-medium text-sm tracking-wide group ${
+                    isActive
+                      ? 'text-[#d0a760] bg-[#d0a760]/10'
+                      : isTransparent 
+                        ? 'text-white/90 hover:text-white hover:bg-white/5' 
+                        : 'text-muted-foreground hover:text-[#d0a760] hover:bg-[#d0a760]/5'
+                  }`}
+                  aria-current={isActive ? 'page' : undefined}
                   data-testid={`nav-${item.href.slice(1)}`}
                 >
                   {item.label}
-                  <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-[#d0a760] origin-right group-hover:origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out" />
+                  <span className={`absolute -bottom-0.5 left-3 right-3 h-0.5 bg-[#d0a760] origin-right group-hover:origin-left transition-transform duration-300 ease-out ${isActive ? 'scale-x-100 origin-left' : 'scale-x-0 group-hover:scale-x-100'}`} />
                 </Link>
               );
             })}
@@ -434,24 +457,45 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
               </div>
 
               {/* Other Menu Items */}
-              {mobileMenuItems.map((item, index) => (
-                <Link 
-                  key={item.href}
-                  href={item.href}
-                  onClick={handleMobileMenuClose}
-                  data-testid={`mobile-nav-${item.href.slice(1)}`}
-                >
-                  <div 
-                    className={`group flex items-center justify-between py-4 border-b border-white/10 transition-all duration-500 ${isMenuOpen ? 'translate-x-0 opacity-100' : 'translate-x-8 opacity-0'}`}
-                    style={{ transitionDelay: `${300 + index * 75}ms` }}
+              {mobileMenuItems.map((item, index) => {
+                const isMobileActive = isActiveLink(item.href);
+                return (
+                  <Link 
+                    key={item.href}
+                    href={item.href}
+                    onClick={handleMobileMenuClose}
+                    aria-current={isMobileActive ? 'page' : undefined}
+                    data-testid={`mobile-nav-${item.href.slice(1)}`}
                   >
-                    <span className={`text-2xl font-light tracking-wide transition-colors ${item.highlight ? 'text-[#d0a760]' : 'text-white group-hover:text-[#d0a760]'}`}>
-                      {item.label}
-                    </span>
-                    <ArrowRight className={`w-5 h-5 transition-all duration-300 ${item.highlight ? 'text-[#d0a760]' : 'text-white/40 group-hover:text-[#d0a760]'} group-hover:translate-x-2`} />
-                  </div>
-                </Link>
-              ))}
+                    <div 
+                      className={`group flex items-center justify-between py-4 border-b transition-all duration-500 ${
+                        isMobileActive 
+                          ? 'border-[#d0a760]/30 bg-[#d0a760]/5 -mx-4 px-4' 
+                          : 'border-white/10'
+                      } ${isMenuOpen ? 'translate-x-0 opacity-100' : 'translate-x-8 opacity-0'}`}
+                      style={{ transitionDelay: `${300 + index * 75}ms` }}
+                    >
+                      <div className="flex items-center gap-3">
+                        {isMobileActive && (
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#d0a760] animate-pulse" />
+                        )}
+                        <span className={`text-2xl font-light tracking-wide transition-colors ${
+                          isMobileActive || item.highlight 
+                            ? 'text-[#d0a760]' 
+                            : 'text-white group-hover:text-[#d0a760]'
+                        }`}>
+                          {item.label}
+                        </span>
+                      </div>
+                      <ArrowRight className={`w-5 h-5 transition-all duration-300 ${
+                        isMobileActive || item.highlight 
+                          ? 'text-[#d0a760]' 
+                          : 'text-white/40 group-hover:text-[#d0a760]'
+                      } group-hover:translate-x-2`} />
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
 
             {/* Account Section */}

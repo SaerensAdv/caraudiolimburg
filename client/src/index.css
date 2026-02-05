@@ -760,3 +760,22 @@ div[data-widget="trustbadge"] {
   right: auto !important;
   left: 20px !important;
 }
+
+/* Skeleton Shimmer Animations */
+@keyframes skeleton-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes skeleton-shimmer-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.skeleton-shimmer {
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+.skeleton-shimmer-subtle {
+  animation: skeleton-shimmer-subtle 1.8s ease-in-out infinite;
+}

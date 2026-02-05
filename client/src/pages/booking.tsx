@@ -6,6 +6,8 @@ import { BookingCalendar } from "@/components/BookingCalendar";
 import { Button } from "@/components/ui/button";
 import { ScrollReveal, StaggerContainer, GoldAccentLine, SectionDivider } from "@/components/ScrollAnimations";
 import { BassPulse } from "@/components/AudioPulseEffects";
+import { SEO } from "@/components/SEO";
+import { LocalBusinessSchema, BreadcrumbSchema } from "@/components/StructuredData";
 import { 
   Clock, 
   Shield, 
@@ -29,6 +31,18 @@ export default function Booking() {
 
   return (
     <div className="min-h-screen bg-black scroll-smooth">
+      <SEO 
+        title="Afspraak Maken - Professionele Car Audio Installatie"
+        description="Boek online je installatie-afspraak bij Car Audio Limburg. Gecertificeerde monteurs, 2 jaar garantie, en OEM-look resultaat. Snel en professioneel!"
+        canonical="/booking"
+        keywords="afspraak maken, car audio installatie, inbouw, montage, Sittard, carplay inbouwen, speakers inbouwen"
+      />
+      <LocalBusinessSchema />
+      <BreadcrumbSchema items={[
+        { name: "Home", url: "/" },
+        { name: "Afspraak Maken", url: "/booking" }
+      ]} />
+      
       <Header onCartOpen={() => setIsCartOpen(true)} variant="transparent" />
       
       {/* Hero Section - Premium Dark */}

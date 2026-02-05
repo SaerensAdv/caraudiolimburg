@@ -173,7 +173,7 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
 
   return (
     <>
-      <Card className={`bg-zinc-900 border-zinc-800 hover:border-[#d0a760]/50 transition-all duration-300 ease-out group overflow-hidden rounded-none hover:-translate-y-1 hover:shadow-xl hover:shadow-black/50 h-full flex flex-col ${featured ? 'animated-gold-border' : ''}`} data-testid={`product-card-${product.id}`}>
+      <Card className={`bg-zinc-900 border-zinc-800 hover:border-[#d0a760]/70 transition-all duration-300 ease-out group overflow-hidden rounded-none hover:-translate-y-3 hover:shadow-[0_20px_50px_-12px_rgba(208,167,96,0.25)] h-full flex flex-col relative before:absolute before:inset-0 before:opacity-0 hover:before:opacity-100 before:bg-gradient-to-t before:from-[#d0a760]/5 before:to-transparent before:transition-opacity before:duration-300 before:pointer-events-none ${featured ? 'animated-gold-border' : ''}`} data-testid={`product-card-${product.id}`}>
         <Link href={`/webshop/${product.slug}`}>
           <div className="relative overflow-hidden">
             <div className={`aspect-square flex items-center justify-center ${hasValidImage ? 'bg-white' : 'bg-zinc-800 p-8'}`}>
@@ -229,7 +229,7 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
 
         <CardContent className="p-5 flex flex-col flex-grow">
           <Link href={`/webshop/${product.slug}`}>
-            <h3 className="text-white font-medium mb-2 group-hover:text-[#d0a760] transition-all duration-300 cursor-pointer line-clamp-2 min-h-[3rem]" data-testid={`product-title-${product.id}`}>
+            <h3 className="text-white font-medium mb-2 group-hover:text-[#d0a760] transition-all duration-300 cursor-pointer line-clamp-2 min-h-[3rem] text-[15px] leading-snug" data-testid={`product-title-${product.id}`}>
               {product.name}
             </h3>
           </Link>
@@ -241,8 +241,8 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
           <div className="mt-auto">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-baseline gap-2">
-                <span className="text-xl font-semibold text-white" data-testid={`product-price-${product.id}`}>
-                  €{currentPrice.toFixed(0)}
+                <span className="text-2xl font-bold text-[#d0a760] tracking-tight" data-testid={`product-price-${product.id}`}>
+                  €{currentPrice.toLocaleString('nl-NL', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                 </span>
                 {originalPrice && (
                   <span className="text-sm text-white/40 line-through">
@@ -257,7 +257,7 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
                 onClick={() => handleAddToCart(false)}
                 disabled={addToCartMutation.isPending}
                 size="sm"
-                className="flex-1 bg-white text-black hover:bg-[#d0a760] rounded-none text-xs"
+                className="flex-1 bg-[#d0a760] text-black hover:bg-[#d0a760]/90 hover:shadow-md hover:shadow-[#d0a760]/30 rounded-none text-xs font-medium transition-all duration-300"
                 data-testid={`add-to-cart-${product.id}`}
               >
                 <ShoppingCart className="w-3 h-3 mr-1" />
@@ -270,7 +270,7 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
                   disabled={addToCartMutation.isPending}
                   size="sm"
                   variant="outline"
-                  className="border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760] hover:text-black rounded-none"
+                  className="border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760] hover:text-black hover:shadow-md hover:shadow-[#d0a760]/30 rounded-none transition-all duration-300"
                   title="Inclusief installatie"
                   data-testid={`add-with-install-${product.id}`}
                 >

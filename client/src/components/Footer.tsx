@@ -23,14 +23,35 @@ export function Footer() {
               Premium car audio systemen met professionele installatie. 
               Van OEM-upgrades tot complete audio ervaringen.
             </p>
-            <div className="flex space-x-4">
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-white/40 hover:text-[#d0a760] transition-all duration-300 hover:scale-110" data-testid="social-facebook">
+            <div className="flex space-x-3">
+              <a 
+                href="https://facebook.com" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white/60 hover:text-[#d0a760] hover:border-[#d0a760] hover:bg-[#d0a760]/10 transition-all duration-300 hover:scale-110 hover:-translate-y-1" 
+                data-testid="social-facebook"
+                aria-label="Volg ons op Facebook"
+              >
                 <Facebook className="w-5 h-5" />
               </a>
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-white/40 hover:text-[#d0a760] transition-all duration-300 hover:scale-110" data-testid="social-instagram">
+              <a 
+                href="https://instagram.com" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white/60 hover:text-[#d0a760] hover:border-[#d0a760] hover:bg-[#d0a760]/10 transition-all duration-300 hover:scale-110 hover:-translate-y-1" 
+                data-testid="social-instagram"
+                aria-label="Volg ons op Instagram"
+              >
                 <Instagram className="w-5 h-5" />
               </a>
-              <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="text-white/40 hover:text-[#d0a760] transition-all duration-300 hover:scale-110" data-testid="social-youtube">
+              <a 
+                href="https://youtube.com" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white/60 hover:text-[#d0a760] hover:border-[#d0a760] hover:bg-[#d0a760]/10 transition-all duration-300 hover:scale-110 hover:-translate-y-1" 
+                data-testid="social-youtube"
+                aria-label="Volg ons op YouTube"
+              >
                 <Youtube className="w-5 h-5" />
               </a>
             </div>
@@ -40,12 +61,12 @@ export function Footer() {
           <div data-testid="footer-products">
             <h4 className="text-[#d0a760] text-sm font-medium tracking-wider uppercase mb-6">Producten</h4>
             <ul className="space-y-3 text-sm">
-              <li><Link href="/webshop?category=multimedia-navigatie" className="text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-block hover:translate-x-1" data-testid="footer-link-multimedia">Multimedia & Navigatie</Link></li>
-              <li><Link href="/webshop?category=speakers-subwoofers" className="text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-block hover:translate-x-1" data-testid="footer-link-speakers">Speakers & Subwoofers</Link></li>
-              <li><Link href="/webshop?category=versterkers-dsp" className="text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-block hover:translate-x-1" data-testid="footer-link-amplifiers">Versterkers & DSP</Link></li>
-              <li><Link href="/webshop?category=cameras-veiligheid" className="text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-block hover:translate-x-1" data-testid="footer-link-cameras">Cameras & Veiligheid</Link></li>
-              <li><Link href="/webshop?brand=audison" className="text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-block hover:translate-x-1" data-testid="footer-link-audison">Audison</Link></li>
-              <li><Link href="/webshop?brand=alpine" className="text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-block hover:translate-x-1" data-testid="footer-link-alpine">Alpine</Link></li>
+              <li><Link href="/webshop?category=multimedia-navigatie" className="group text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-flex items-center gap-2" data-testid="footer-link-multimedia"><span className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-[#d0a760] after:transition-all after:duration-300 group-hover:after:w-full">Multimedia & Navigatie</span></Link></li>
+              <li><Link href="/webshop?category=speakers-subwoofers" className="group text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-flex items-center gap-2" data-testid="footer-link-speakers"><span className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-[#d0a760] after:transition-all after:duration-300 group-hover:after:w-full">Speakers & Subwoofers</span></Link></li>
+              <li><Link href="/webshop?category=versterkers-dsp" className="group text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-flex items-center gap-2" data-testid="footer-link-amplifiers"><span className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-[#d0a760] after:transition-all after:duration-300 group-hover:after:w-full">Versterkers & DSP</span></Link></li>
+              <li><Link href="/webshop?category=cameras-veiligheid" className="group text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-flex items-center gap-2" data-testid="footer-link-cameras"><span className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-[#d0a760] after:transition-all after:duration-300 group-hover:after:w-full">Cameras & Veiligheid</span></Link></li>
+              <li><Link href="/webshop?brand=audison" className="group text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-flex items-center gap-2" data-testid="footer-link-audison"><span className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-[#d0a760] after:transition-all after:duration-300 group-hover:after:w-full">Audison</span></Link></li>
+              <li><Link href="/webshop?brand=alpine" className="group text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-flex items-center gap-2" data-testid="footer-link-alpine"><span className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-[#d0a760] after:transition-all after:duration-300 group-hover:after:w-full">Alpine</span></Link></li>
             </ul>
           </div>
 
@@ -53,12 +74,12 @@ export function Footer() {
           <div data-testid="footer-services">
             <h4 className="text-[#d0a760] text-sm font-medium tracking-wider uppercase mb-6">Services</h4>
             <ul className="space-y-3 text-sm">
-              <li><Link href="/montage" className="text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-block hover:translate-x-1" data-testid="footer-link-studio">Inbouwstudio</Link></li>
-              <li><Link href="/apple-carplay-voor-uw-bmw" className="text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-block hover:translate-x-1" data-testid="footer-link-carplay">BMW/MINI CarPlay</Link></li>
-              <li><Link href="/blog" className="text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-block hover:translate-x-1" data-testid="footer-link-blog">Kenniscentrum</Link></li>
-              <li><Link href="/veelgestelde-vragen" className="text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-block hover:translate-x-1" data-testid="footer-link-faq">Veelgestelde Vragen</Link></li>
-              <li><Link href="/over-ons" className="text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-block hover:translate-x-1" data-testid="footer-link-about">Over Ons</Link></li>
-              <li><Link href="/contact" className="text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-block hover:translate-x-1" data-testid="footer-link-quote">Offerte Aanvragen</Link></li>
+              <li><Link href="/montage" className="group text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-flex items-center gap-2" data-testid="footer-link-studio"><span className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-[#d0a760] after:transition-all after:duration-300 group-hover:after:w-full">Inbouwstudio</span></Link></li>
+              <li><Link href="/apple-carplay-voor-uw-bmw" className="group text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-flex items-center gap-2" data-testid="footer-link-carplay"><span className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-[#d0a760] after:transition-all after:duration-300 group-hover:after:w-full">BMW/MINI CarPlay</span></Link></li>
+              <li><Link href="/blog" className="group text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-flex items-center gap-2" data-testid="footer-link-blog"><span className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-[#d0a760] after:transition-all after:duration-300 group-hover:after:w-full">Kenniscentrum</span></Link></li>
+              <li><Link href="/veelgestelde-vragen" className="group text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-flex items-center gap-2" data-testid="footer-link-faq"><span className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-[#d0a760] after:transition-all after:duration-300 group-hover:after:w-full">Veelgestelde Vragen</span></Link></li>
+              <li><Link href="/over-ons" className="group text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-flex items-center gap-2" data-testid="footer-link-about"><span className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-[#d0a760] after:transition-all after:duration-300 group-hover:after:w-full">Over Ons</span></Link></li>
+              <li><Link href="/contact" className="group text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-flex items-center gap-2" data-testid="footer-link-quote"><span className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-[#d0a760] after:transition-all after:duration-300 group-hover:after:w-full">Offerte Aanvragen</span></Link></li>
             </ul>
           </div>
 
@@ -104,8 +125,8 @@ export function Footer() {
               <p className="text-sm text-white/40">2025 Car Audio Limburg. Alle rechten voorbehouden.</p>
             </div>
             <div className="flex items-center space-x-6 mt-4 md:mt-0">
-              <Link href="/privacy-policy" className="text-sm text-white/40 hover:text-[#d0a760] transition-all duration-300" data-testid="footer-link-privacy">Privacy</Link>
-              <Link href="/algemene-voorwaarden" className="text-sm text-white/40 hover:text-[#d0a760] transition-all duration-300" data-testid="footer-link-terms">Voorwaarden</Link>
+              <Link href="/privacy-policy" className="group text-sm text-white/40 hover:text-[#d0a760] transition-all duration-300" data-testid="footer-link-privacy"><span className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-[#d0a760] after:transition-all after:duration-300 group-hover:after:w-full">Privacy</span></Link>
+              <Link href="/algemene-voorwaarden" className="group text-sm text-white/40 hover:text-[#d0a760] transition-all duration-300" data-testid="footer-link-terms"><span className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-[#d0a760] after:transition-all after:duration-300 group-hover:after:w-full">Voorwaarden</span></Link>
               <span className="text-white/20">|</span>
               <a 
                 href="https://saerens.agency" 

@@ -26,7 +26,10 @@ import {
   Check,
   Settings,
   ArrowRight,
-  Sparkles
+  Sparkles,
+  Truck,
+  BadgeCheck,
+  Headphones
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import type { Product, Category } from "@shared/schema";
@@ -130,15 +133,23 @@ export default function Home() {
             </ScrollReveal>
             
             <ScrollReveal direction="up" delay={800}>
-              <div className="mt-8 flex items-center gap-6">
+              <div className="mt-8 flex flex-col sm:flex-row items-start sm:items-center gap-4">
                 <Link href="/webshop">
                   <Button 
-                    variant="ghost"
-                    className="text-white/70 hover:text-white hover:bg-transparent rounded-none px-0 underline-offset-4 hover:underline"
-                    data-testid="button-browse-all"
+                    className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 hover:shadow-lg hover:shadow-[#d0a760]/25 rounded-none px-8 py-6 text-base font-medium transition-all duration-300 hover:scale-[1.02]"
+                    data-testid="button-shop-now"
                   >
-                    Ontdek onze collectie
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                    Bekijk Webshop
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Button>
+                </Link>
+                <Link href="/booking">
+                  <Button 
+                    variant="outline"
+                    className="border-white/30 text-white hover:bg-white/10 hover:border-white/50 rounded-none px-8 py-6 text-base transition-all duration-300"
+                    data-testid="button-book-appointment"
+                  >
+                    Plan Afspraak
                   </Button>
                 </Link>
               </div>
@@ -200,27 +211,83 @@ export default function Home() {
         </section>
       )}
 
+      {/* Trust Indicators Bar - Compact */}
+      <section className="py-6 bg-zinc-950 border-y border-zinc-800">
+        <div className="container px-8 md:px-16 lg:px-24 mx-auto">
+          <div className="flex flex-wrap justify-center md:justify-between items-center gap-6 md:gap-4">
+            <div className="flex items-center gap-3 group">
+              <div className="w-10 h-10 bg-[#d0a760]/10 flex items-center justify-center group-hover:bg-[#d0a760]/20 transition-colors duration-300">
+                <Truck className="w-5 h-5 text-[#d0a760]" />
+              </div>
+              <div>
+                <p className="text-white text-sm font-medium">Gratis Verzending</p>
+                <p className="text-white/50 text-xs">Vanaf €100</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-3 group">
+              <div className="w-10 h-10 bg-[#d0a760]/10 flex items-center justify-center group-hover:bg-[#d0a760]/20 transition-colors duration-300">
+                <ShieldCheck className="w-5 h-5 text-[#d0a760]" />
+              </div>
+              <div>
+                <p className="text-white text-sm font-medium">2 Jaar Garantie</p>
+                <p className="text-white/50 text-xs">Op alle installaties</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-3 group">
+              <div className="w-10 h-10 bg-[#d0a760]/10 flex items-center justify-center group-hover:bg-[#d0a760]/20 transition-colors duration-300">
+                <BadgeCheck className="w-5 h-5 text-[#d0a760]" />
+              </div>
+              <div>
+                <p className="text-white text-sm font-medium">Trusted Shops</p>
+                <p className="text-white/50 text-xs">Geverifieerde reviews</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-3 group">
+              <div className="w-10 h-10 bg-[#d0a760]/10 flex items-center justify-center group-hover:bg-[#d0a760]/20 transition-colors duration-300">
+                <Headphones className="w-5 h-5 text-[#d0a760]" />
+              </div>
+              <div>
+                <p className="text-white text-sm font-medium">Persoonlijk Advies</p>
+                <p className="text-white/50 text-xs">Deskundig & eerlijk</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Services Section - WHITE */}
       <section className="py-24 md:py-32 bg-white">
         <div className="container px-8 md:px-16 lg:px-24 mx-auto">
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8" staggerDelay={150}>
-            <div className="text-center md:text-left">
-              <h3 className="text-[#d0a760] text-sm font-medium tracking-wider uppercase mb-4">Topkwaliteit Merken</h3>
-              <p className="text-zinc-600 text-lg leading-relaxed">
+            <div className="text-center md:text-left group">
+              <div className="w-12 h-12 bg-[#d0a760]/10 flex items-center justify-center mb-4 mx-auto md:mx-0 group-hover:bg-[#d0a760]/20 group-hover:scale-110 transition-all duration-300">
+                <Award className="w-6 h-6 text-[#d0a760]" />
+              </div>
+              <h3 className="text-zinc-900 text-lg font-medium mb-2">Topkwaliteit Merken</h3>
+              <p className="text-zinc-600 leading-relaxed">
                 Wij werken uitsluitend met premium merken zoals Alpine, Audison en Hertz. Kwaliteit die je hoort én voelt.
               </p>
             </div>
             
-            <div className="text-center md:text-left">
-              <h3 className="text-[#d0a760] text-sm font-medium tracking-wider uppercase mb-4">Vakkundige Installatie</h3>
-              <p className="text-zinc-600 text-lg leading-relaxed">
+            <div className="text-center md:text-left group">
+              <div className="w-12 h-12 bg-[#d0a760]/10 flex items-center justify-center mb-4 mx-auto md:mx-0 group-hover:bg-[#d0a760]/20 group-hover:scale-110 transition-all duration-300">
+                <Wrench className="w-6 h-6 text-[#d0a760]" />
+              </div>
+              <h3 className="text-zinc-900 text-lg font-medium mb-2">Vakkundige Installatie</h3>
+              <p className="text-zinc-600 leading-relaxed">
                 Onze gecertificeerde monteurs zorgen met 25+ jaar ervaring voor een perfect resultaat in jouw auto.
               </p>
             </div>
             
-            <div className="text-center md:text-left">
-              <h3 className="text-[#d0a760] text-sm font-medium tracking-wider uppercase mb-4">Persoonlijk Advies</h3>
-              <p className="text-zinc-600 text-lg leading-relaxed">
+            <div className="text-center md:text-left group">
+              <div className="w-12 h-12 bg-[#d0a760]/10 flex items-center justify-center mb-4 mx-auto md:mx-0 group-hover:bg-[#d0a760]/20 group-hover:scale-110 transition-all duration-300">
+                <User className="w-6 h-6 text-[#d0a760]" />
+              </div>
+              <h3 className="text-zinc-900 text-lg font-medium mb-2">Persoonlijk Advies</h3>
+              <p className="text-zinc-600 leading-relaxed">
                 Kom langs in onze showroom in Sittard. Wij luisteren naar jouw wensen en adviseren op maat.
               </p>
             </div>
@@ -259,7 +326,7 @@ export default function Home() {
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Link href="/webshop" className="w-full sm:w-auto">
                     <Button 
-                      className="w-full bg-transparent border border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760] hover:text-black rounded-none px-8 py-6"
+                      className="w-full bg-[#d0a760] text-black hover:bg-[#d0a760]/90 hover:shadow-lg hover:shadow-[#d0a760]/25 hover:scale-[1.02] rounded-none px-8 py-6 font-medium transition-all duration-300"
                       data-testid="button-view-products"
                     >
                       Ontdek Onze Producten
@@ -268,7 +335,7 @@ export default function Home() {
                   </Link>
                   <Link href="/contact" className="w-full sm:w-auto">
                     <Button 
-                      className="w-full bg-transparent text-white/70 hover:text-white rounded-none px-8 py-6"
+                      className="w-full bg-transparent border border-white/30 text-white hover:bg-white/10 hover:border-white/50 rounded-none px-8 py-6 transition-all duration-300"
                       data-testid="button-contact-us"
                     >
                       Stel Je Vraag
@@ -430,27 +497,27 @@ export default function Home() {
             </div>
           </ScrollReveal>
 
-          <StaggerContainer className="flex flex-wrap justify-center gap-6" staggerDelay={80}>
+          <StaggerContainer className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6" staggerDelay={80}>
             {(categories as Category[])?.map((category: Category) => (
-              <Link key={category.id} href={`/webshop?category=${category.slug}`} className="w-[calc(50%-12px)] md:w-[calc(25%-18px)]">
+              <Link key={category.id} href={`/webshop?category=${category.slug}`}>
                 <Card 
-                  className="group cursor-pointer bg-zinc-100 border-zinc-200 hover:border-[#d0a760] transition-all duration-300 rounded-none hover:-translate-y-1 h-full"
+                  className="group cursor-pointer bg-zinc-100 border-zinc-200 hover:border-[#d0a760] hover:shadow-lg hover:shadow-[#d0a760]/10 transition-all duration-300 rounded-none hover:-translate-y-2 hover:scale-[1.02] h-full"
                   data-testid={`category-card-${category.slug}`}
                 >
                   <CardContent className="p-6 text-center">
-                    <div className="w-14 h-14 mx-auto mb-4 bg-white border border-zinc-200 flex items-center justify-center group-hover:border-[#d0a760] group-hover:bg-[#d0a760]/5 transition-all duration-300">
-                      {category.slug === 'multimedia-navigatie' && <Volume2 className="w-6 h-6 text-[#d0a760]" />}
-                      {category.slug === 'speakers-subwoofers' && <Volume2 className="w-6 h-6 text-[#d0a760]" />}
-                      {category.slug === 'versterkers-dsp' && <Settings className="w-6 h-6 text-[#d0a760]" />}
-                      {category.slug === 'installatie-accessoires' && <Wrench className="w-6 h-6 text-[#d0a760]" />}
-                      {category.slug === 'cameras-veiligheid' && <ShieldCheck className="w-6 h-6 text-[#d0a760]" />}
-                      {category.slug === 'oem-upgrades' && <Car className="w-6 h-6 text-[#d0a760]" />}
+                    <div className="w-16 h-16 mx-auto mb-4 bg-white border border-zinc-200 flex items-center justify-center group-hover:border-[#d0a760] group-hover:bg-[#d0a760]/10 group-hover:shadow-md group-hover:shadow-[#d0a760]/20 transition-all duration-300 group-hover:scale-110">
+                      {category.slug === 'multimedia-navigatie' && <Volume2 className="w-7 h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
+                      {category.slug === 'speakers-subwoofers' && <Volume2 className="w-7 h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
+                      {category.slug === 'versterkers-dsp' && <Settings className="w-7 h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
+                      {category.slug === 'installatie-accessoires' && <Wrench className="w-7 h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
+                      {category.slug === 'cameras-veiligheid' && <ShieldCheck className="w-7 h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
+                      {category.slug === 'oem-upgrades' && <Car className="w-7 h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />}
                       {!['multimedia-navigatie', 'speakers-subwoofers', 'versterkers-dsp', 'installatie-accessoires', 'cameras-veiligheid', 'oem-upgrades'].includes(category.slug) && 
-                        <Volume2 className="w-6 h-6 text-[#d0a760]" />
+                        <Volume2 className="w-7 h-7 text-[#d0a760] group-hover:scale-110 transition-transform duration-300" />
                       }
                     </div>
                     
-                    <h3 className="font-medium text-zinc-900 text-sm group-hover:text-[#d0a760] transition-colors">
+                    <h3 className="font-medium text-zinc-900 text-sm group-hover:text-[#d0a760] transition-colors duration-300">
                       {category.name}
                     </h3>
                   </CardContent>
@@ -488,15 +555,16 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/apple-carplay-voor-uw-bmw" className="w-full sm:w-auto">
                   <Button 
-                    className="w-full bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none px-8 py-6"
+                    className="w-full bg-[#d0a760] text-black hover:bg-[#d0a760]/90 hover:shadow-lg hover:shadow-[#d0a760]/25 hover:scale-[1.02] rounded-none px-8 py-6 font-medium transition-all duration-300"
                     data-testid="button-bmw-carplay"
                   >
                     Ontdek de Mogelijkheden
+                    <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
                 <Link href="/apple-carplay-voor-uw-bmw#offerte" className="w-full sm:w-auto">
                   <Button 
-                    className="w-full bg-transparent border border-white/30 text-white hover:bg-white/10 rounded-none px-8 py-6"
+                    className="w-full bg-transparent border border-white/30 text-white hover:bg-white/10 hover:border-white/50 rounded-none px-8 py-6 transition-all duration-300"
                     data-testid="button-bmw-quote"
                   >
                     Ontvang Jouw Offerte
@@ -619,8 +687,9 @@ export default function Home() {
                     </div>
                   </div>
                   <Link href="/booking">
-                    <Button className="w-full bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none" data-testid="button-book-installation">
+                    <Button className="w-full bg-[#d0a760] text-black hover:bg-[#d0a760]/90 hover:shadow-md hover:shadow-[#d0a760]/30 hover:scale-[1.02] rounded-none font-medium transition-all duration-300" data-testid="button-book-installation">
                       Plan Jouw Afspraak
+                      <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </Link>
                 </div>
@@ -702,7 +771,7 @@ export default function Home() {
 
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8" staggerDelay={150}>
             {etrustedReviews?.reviews?.slice(0, 3).map((review) => (
-              <Card key={review.id} className="bg-zinc-100 border-zinc-200 rounded-none hover:-translate-y-1 transition-transform duration-300" data-testid={`testimonial-${review.id}`}>
+              <Card key={review.id} className="bg-zinc-100 border-zinc-200 hover:border-[#d0a760]/50 hover:shadow-lg hover:shadow-[#d0a760]/10 rounded-none hover:-translate-y-2 transition-all duration-300" data-testid={`testimonial-${review.id}`}>
                 <CardContent className="p-6">
                   <div className="flex items-center mb-4">
                     {[...Array(Math.round(review.rating))].map((_, i) => (
@@ -773,15 +842,16 @@ export default function Home() {
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Link href="/contact" className="w-full sm:w-auto">
                     <Button 
-                      className="w-full bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none px-8 py-6"
+                      className="w-full bg-[#d0a760] text-black hover:bg-[#d0a760]/90 hover:shadow-lg hover:shadow-[#d0a760]/25 hover:scale-[1.02] rounded-none px-8 py-6 font-medium transition-all duration-300"
                       data-testid="button-plan-visit"
                     >
                       Maak een Afspraak
+                      <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </Link>
                   <a href="tel:0852733625" className="w-full sm:w-auto">
                     <Button 
-                      className="w-full bg-transparent border border-white/30 text-white hover:bg-white/10 rounded-none px-8 py-6"
+                      className="w-full bg-transparent border border-white/30 text-white hover:bg-white/10 hover:border-white/50 rounded-none px-8 py-6 transition-all duration-300"
                       data-testid="button-call-now"
                     >
                       <Phone className="w-4 h-4 mr-2" />

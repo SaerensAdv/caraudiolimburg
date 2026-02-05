@@ -24,7 +24,12 @@ import {
   Truck,
   Shield,
   ArrowLeft,
-  Lock
+  Lock,
+  Package,
+  CheckCircle,
+  RefreshCw,
+  CreditCard,
+  ShieldCheck
 } from "lucide-react";
 import type { CartItem, Product } from "@shared/schema";
 import carAudioLogo from "@assets/Caraudiolimburg-logo_1757008375383_1757016657436.png";
@@ -157,20 +162,20 @@ export default function Cart() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-black flex flex-col">
+      <div className="min-h-screen bg-zinc-950 flex flex-col">
         <Header onCartOpen={() => setIsCartOpen(true)} />
         <div className="container px-4 md:px-8 mx-auto py-8 flex-1">
           <div className="animate-pulse space-y-6">
-            <div className="h-10 bg-zinc-800 w-64 rounded-none"></div>
+            <div className="h-10 bg-zinc-800/50 w-64 rounded-none"></div>
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="bg-zinc-900 p-6 border border-zinc-800">
+              <div key={i} className="bg-zinc-900/50 p-6 border border-zinc-800/50">
                 <div className="flex items-center space-x-4">
-                  <div className="w-24 h-24 bg-zinc-800"></div>
+                  <div className="w-24 h-24 bg-zinc-800/50"></div>
                   <div className="flex-1 space-y-3">
-                    <div className="h-5 bg-zinc-800 w-48"></div>
-                    <div className="h-4 bg-zinc-800 w-32"></div>
+                    <div className="h-5 bg-zinc-800/50 w-48"></div>
+                    <div className="h-4 bg-zinc-800/50 w-32"></div>
                   </div>
-                  <div className="h-8 bg-zinc-800 w-24"></div>
+                  <div className="h-8 bg-zinc-800/50 w-24"></div>
                 </div>
               </div>
             ))}
@@ -191,25 +196,36 @@ export default function Cart() {
   const installationFee = displayItems.some((item: any) => item.needsInstallation) ? 89 : 0;
   const shipping = subtotal >= 50 ? 0 : 5.95;
   const total = subtotal + installationFee + shipping;
+  
+  const totalSavings = displayItems.reduce((sum: number, item: any) => {
+    const originalPrice = item.product?.originalPrice ? parseFloat(item.product.originalPrice) : null;
+    const price = parseFloat(item.product?.price || "0");
+    if (originalPrice && originalPrice > price) {
+      return sum + ((originalPrice - price) * item.quantity);
+    }
+    return sum;
+  }, 0);
 
   if (displayItems.length === 0) {
     return (
-      <div className="min-h-screen bg-black flex flex-col">
+      <div className="min-h-screen bg-zinc-950 flex flex-col">
         <Header onCartOpen={() => setIsCartOpen(true)} />
         <div className="flex-1 flex items-center justify-center px-4 py-16">
           <ScrollReveal>
-            <Card className="bg-zinc-900 border-zinc-800 p-8 md:p-12 text-center max-w-md mx-auto rounded-none" data-testid="empty-cart">
-              <ShoppingBag className="w-16 h-16 text-white/40 mx-auto mb-6" />
-              <h1 className="text-2xl font-bold text-white mb-4">Je winkelwagen is leeg</h1>
-              <p className="text-white/60 mb-8">
-                Voeg wat geweldige car audio producten toe om te beginnen!
+            <Card className="bg-zinc-900/80 border-zinc-800 p-8 md:p-12 text-center max-w-md mx-auto rounded-none backdrop-blur-sm" data-testid="empty-cart">
+              <div className="w-20 h-20 mx-auto mb-6 bg-zinc-800/50 flex items-center justify-center">
+                <ShoppingBag className="w-10 h-10 text-zinc-500" />
+              </div>
+              <h1 className="text-2xl font-bold text-white mb-3">Je winkelwagen is leeg</h1>
+              <p className="text-zinc-400 mb-8 leading-relaxed">
+                Ontdek ons premium assortiment car audio producten en begin met winkelen!
               </p>
               <Link href="/shop">
                 <Button 
-                  className="bg-[#d0a760] text-black hover:bg-[#b8954e] rounded-none px-8 py-6 text-lg font-semibold"
+                  className="bg-[#d0a760] text-black hover:bg-[#b8954e] rounded-none px-8 py-6 text-lg font-semibold transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-[#d0a760]/20"
                   data-testid="button-continue-shopping"
                 >
-                  Doorgaan met winkelen
+                  Bekijk producten
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
@@ -223,7 +239,7 @@ export default function Cart() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex flex-col">
+    <div className="min-h-screen bg-zinc-950 flex flex-col">
       <Header onCartOpen={() => setIsCartOpen(true)} />
       
       <div className="container px-4 md:px-8 lg:px-16 mx-auto py-8 md:py-12 flex-1">
@@ -232,16 +248,18 @@ export default function Cart() {
             <Link href="/shop">
               <Button 
                 variant="ghost" 
-                className="text-white/60 hover:text-white hover:bg-transparent p-0 mb-4"
+                className="text-zinc-400 hover:text-white hover:bg-zinc-800/50 p-0 px-2 mb-4 transition-colors"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Terug naar shop
               </Button>
             </Link>
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">Winkelwagen</h1>
-            <p className="text-white/60">
-              {totalItems} {totalItems === 1 ? 'product' : 'producten'} in je winkelwagen
-            </p>
+            <div className="flex items-center gap-4">
+              <h1 className="text-3xl md:text-4xl font-bold text-white">Winkelwagen</h1>
+              <Badge className="bg-[#d0a760]/20 text-[#d0a760] border-[#d0a760]/30 rounded-none text-sm px-3 py-1">
+                {totalItems} {totalItems === 1 ? 'product' : 'producten'}
+              </Badge>
+            </div>
           </div>
         </ScrollReveal>
 
@@ -252,96 +270,112 @@ export default function Cart() {
                 const product = item.product;
                 const price = parseFloat(product?.price || "0");
                 const originalPrice = product?.originalPrice ? parseFloat(product.originalPrice) : null;
+                const hasSavings = originalPrice && originalPrice > price;
+                const itemSavings = hasSavings ? (originalPrice - price) * item.quantity : 0;
                 
                 return (
-                  <Card key={item.id} className="bg-zinc-900 border-zinc-800 rounded-none" data-testid={`cart-item-${item.id}`}>
-                    <CardContent className="p-4 md:p-6">
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                  <Card 
+                    key={item.id} 
+                    className="bg-zinc-900/80 border-zinc-800 rounded-none overflow-hidden group hover:border-zinc-700 transition-colors backdrop-blur-sm" 
+                    data-testid={`cart-item-${item.id}`}
+                  >
+                    <CardContent className="p-0">
+                      <div className="flex flex-col sm:flex-row">
                         <Link href={`/webshop/${product?.slug || product?.id}`}>
-                          <div className="w-full sm:w-24 h-32 sm:h-24 bg-zinc-800 flex-shrink-0 cursor-pointer">
+                          <div className="w-full sm:w-32 h-40 sm:h-32 bg-zinc-800 flex-shrink-0 cursor-pointer relative overflow-hidden">
                             <img 
                               src={product?.images?.[product.primaryImageIndex || 0] || carAudioLogo}
                               alt={product?.name || "Product"}
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                               onError={(e) => {
                                 e.currentTarget.src = carAudioLogo;
                               }}
                             />
+                            {hasSavings && (
+                              <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1">
+                                -{Math.round(((originalPrice - price) / originalPrice) * 100)}%
+                              </div>
+                            )}
                           </div>
                         </Link>
 
-                        <div className="flex-1 min-w-0 w-full">
-                          <Link href={`/webshop/${product?.slug || product?.id}`}>
-                            <h3 className="font-semibold text-white mb-1 hover:text-[#d0a760] transition-colors cursor-pointer" data-testid={`product-name-${item.id}`}>
-                              {product?.name || "Onbekend product"}
-                            </h3>
-                          </Link>
-                          {product?.shortDescription && (
-                            <p className="text-sm text-white/60 mb-2 line-clamp-1">
-                              {product.shortDescription}
-                            </p>
-                          )}
-                          
-                          <div className="flex items-center space-x-2 mb-2">
-                            <span className="font-bold text-[#d0a760]" data-testid={`product-price-${item.id}`}>
-                              €{price.toFixed(2)}
-                            </span>
-                            {originalPrice && (
-                              <span className="text-sm text-white/40 line-through">
-                                €{originalPrice.toFixed(2)}
-                              </span>
+                        <div className="flex-1 p-4 sm:p-5 flex flex-col justify-between">
+                          <div>
+                            <div className="flex items-start justify-between gap-4 mb-2">
+                              <Link href={`/webshop/${product?.slug || product?.id}`}>
+                                <h3 className="font-semibold text-white text-lg hover:text-[#d0a760] transition-colors cursor-pointer leading-tight" data-testid={`product-name-${item.id}`}>
+                                  {product?.name || "Onbekend product"}
+                                </h3>
+                              </Link>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleRemoveItem(item)}
+                                disabled={removeItemMutation.isPending}
+                                className="text-zinc-500 hover:text-red-400 hover:bg-red-500/10 p-2 -mr-2 -mt-1 transition-colors"
+                                data-testid={`button-remove-${item.id}`}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                            
+                            {product?.shortDescription && (
+                              <p className="text-sm text-zinc-400 mb-3 line-clamp-1">
+                                {product.shortDescription}
+                              </p>
+                            )}
+
+                            {item.needsInstallation && (
+                              <Badge className="text-xs bg-[#d0a760]/20 text-[#d0a760] border-[#d0a760]/30 rounded-none mb-3">
+                                <Wrench className="w-3 h-3 mr-1" />
+                                Inclusief installatie
+                              </Badge>
                             )}
                           </div>
 
-                          {item.needsInstallation && (
-                            <Badge className="text-xs bg-[#d0a760]/20 text-[#d0a760] border-[#d0a760]/30 rounded-none">
-                              <Wrench className="w-3 h-3 mr-1" />
-                              + Installatie
-                            </Badge>
-                          )}
-                        </div>
+                          <div className="flex items-end justify-between gap-4 mt-auto pt-2 border-t border-zinc-800/50">
+                            <div className="flex items-center gap-1 bg-zinc-800/50 p-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleUpdateQuantity(item, item.quantity - 1)}
+                                disabled={item.quantity <= 1 || updateQuantityMutation.isPending}
+                                className="w-9 h-9 p-0 text-zinc-300 hover:bg-zinc-700 hover:text-white disabled:opacity-30 disabled:hover:bg-transparent rounded-none transition-colors"
+                                data-testid={`button-decrease-${item.id}`}
+                              >
+                                <Minus className="w-4 h-4" />
+                              </Button>
+                              <span className="w-12 text-center font-semibold text-white text-lg" data-testid={`quantity-${item.id}`}>
+                                {item.quantity}
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleUpdateQuantity(item, item.quantity + 1)}
+                                disabled={updateQuantityMutation.isPending}
+                                className="w-9 h-9 p-0 text-zinc-300 hover:bg-zinc-700 hover:text-white rounded-none transition-colors"
+                                data-testid={`button-increase-${item.id}`}
+                              >
+                                <Plus className="w-4 h-4" />
+                              </Button>
+                            </div>
 
-                        <div className="flex items-center justify-between w-full sm:w-auto gap-4">
-                          <div className="flex items-center space-x-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleUpdateQuantity(item, item.quantity - 1)}
-                              disabled={item.quantity <= 1 || updateQuantityMutation.isPending}
-                              className="w-8 h-8 p-0 border-zinc-700 text-white hover:bg-zinc-800 hover:text-white rounded-none"
-                              data-testid={`button-decrease-${item.id}`}
-                            >
-                              <Minus className="w-4 h-4" />
-                            </Button>
-                            <span className="w-10 text-center font-medium text-white" data-testid={`quantity-${item.id}`}>
-                              {item.quantity}
-                            </span>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleUpdateQuantity(item, item.quantity + 1)}
-                              disabled={updateQuantityMutation.isPending}
-                              className="w-8 h-8 p-0 border-zinc-700 text-white hover:bg-zinc-800 hover:text-white rounded-none"
-                              data-testid={`button-increase-${item.id}`}
-                            >
-                              <Plus className="w-4 h-4" />
-                            </Button>
+                            <div className="text-right">
+                              <div className="flex items-center gap-2 justify-end">
+                                {originalPrice && (
+                                  <span className="text-sm text-zinc-500 line-through">
+                                    €{(originalPrice * item.quantity).toFixed(2)}
+                                  </span>
+                                )}
+                                <p className="font-bold text-xl text-[#d0a760]" data-testid={`item-total-${item.id}`}>
+                                  €{(price * item.quantity).toFixed(2)}
+                                </p>
+                              </div>
+                              <p className="text-xs text-zinc-500 mt-0.5" data-testid={`product-price-${item.id}`}>
+                                €{price.toFixed(2)} per stuk
+                              </p>
+                            </div>
                           </div>
-
-                          <p className="font-bold text-white min-w-[80px] text-right" data-testid={`item-total-${item.id}`}>
-                            €{(price * item.quantity).toFixed(2)}
-                          </p>
-
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleRemoveItem(item)}
-                            disabled={removeItemMutation.isPending}
-                            className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-2"
-                            data-testid={`button-remove-${item.id}`}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
                         </div>
                       </div>
                     </CardContent>
@@ -353,97 +387,180 @@ export default function Cart() {
 
           <div className="space-y-6">
             <ScrollReveal delay={200}>
-              <Card className="bg-zinc-900 border-zinc-800 rounded-none sticky top-24" data-testid="order-summary">
+              <Card className="bg-zinc-900/80 border-zinc-800 rounded-none sticky top-24 backdrop-blur-sm overflow-hidden" data-testid="order-summary">
+                <div className="bg-gradient-to-r from-[#d0a760]/20 to-transparent p-4 border-b border-zinc-800">
+                  <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                    <Package className="w-5 h-5 text-[#d0a760]" />
+                    Bestelling overzicht
+                  </h3>
+                </div>
+                
                 <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold text-white mb-6">Bestelling overzicht</h3>
-                  
                   <div className="space-y-4">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-white/60">Subtotaal</span>
-                      <span className="text-white" data-testid="subtotal">€{subtotal.toFixed(2)}</span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-zinc-400">Subtotaal ({totalItems} {totalItems === 1 ? 'item' : 'items'})</span>
+                      <span className="text-white font-medium" data-testid="subtotal">€{subtotal.toFixed(2)}</span>
                     </div>
                     
                     {installationFee > 0 && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-white/60">Installatie</span>
-                        <span className="text-white" data-testid="installation-fee">€{installationFee.toFixed(2)}</span>
+                      <div className="flex justify-between items-center">
+                        <span className="text-zinc-400 flex items-center gap-2">
+                          <Wrench className="w-4 h-4 text-[#d0a760]" />
+                          Installatie
+                        </span>
+                        <span className="text-white font-medium" data-testid="installation-fee">€{installationFee.toFixed(2)}</span>
                       </div>
                     )}
                     
-                    <div className="flex justify-between text-sm">
-                      <span className="text-white/60">Verzending</span>
-                      <span className="text-white" data-testid="shipping-cost">
+                    <div className="flex justify-between items-center">
+                      <span className="text-zinc-400 flex items-center gap-2">
+                        <Truck className="w-4 h-4 text-[#d0a760]" />
+                        Verzending
+                      </span>
+                      <span data-testid="shipping-cost">
                         {shipping === 0 ? (
-                          <span className="text-green-400">Gratis</span>
+                          <span className="text-green-400 font-medium flex items-center gap-1">
+                            <CheckCircle className="w-4 h-4" />
+                            Gratis
+                          </span>
                         ) : (
-                          `€${shipping.toFixed(2)}`
+                          <span className="text-white font-medium">€{shipping.toFixed(2)}</span>
                         )}
                       </span>
                     </div>
                     
-                    <Separator className="bg-zinc-800" />
+                    {totalSavings > 0 && (
+                      <div className="flex justify-between items-center bg-green-500/10 p-3 border border-green-500/20 -mx-2">
+                        <span className="text-green-400 font-medium flex items-center gap-2">
+                          <CheckCircle className="w-4 h-4" />
+                          Jouw besparing
+                        </span>
+                        <span className="text-green-400 font-bold">-€{totalSavings.toFixed(2)}</span>
+                      </div>
+                    )}
                     
-                    <div className="flex justify-between text-lg font-semibold">
-                      <span className="text-white">Totaal</span>
-                      <span className="text-[#d0a760]" data-testid="total">€{total.toFixed(2)}</span>
+                    <Separator className="bg-zinc-700 my-2" />
+                    
+                    <div className="flex justify-between items-center pt-2">
+                      <span className="text-white text-lg font-semibold">Totaal</span>
+                      <div className="text-right">
+                        <span className="text-2xl font-bold text-[#d0a760]" data-testid="total">€{total.toFixed(2)}</span>
+                        <p className="text-xs text-zinc-500 mt-0.5">Inclusief BTW</p>
+                      </div>
                     </div>
                   </div>
 
                   {subtotal > 0 && subtotal < 50 && (
-                    <div className="bg-[#d0a760]/10 border border-[#d0a760]/30 p-3 mt-4">
-                      <p className="text-xs text-center text-[#d0a760]">
-                        Nog €{(50 - subtotal).toFixed(2)} voor gratis verzending!
-                      </p>
+                    <div className="bg-[#d0a760]/10 border border-[#d0a760]/30 p-4 mt-6">
+                      <div className="flex items-center gap-3">
+                        <Truck className="w-5 h-5 text-[#d0a760] flex-shrink-0" />
+                        <div>
+                          <p className="text-sm text-white font-medium">
+                            Nog €{(50 - subtotal).toFixed(2)} voor gratis verzending
+                          </p>
+                          <div className="w-full bg-zinc-700 h-1.5 mt-2 rounded-full overflow-hidden">
+                            <div 
+                              className="bg-[#d0a760] h-full rounded-full transition-all duration-500"
+                              style={{ width: `${Math.min((subtotal / 50) * 100, 100)}%` }}
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   )}
 
                   <Link href="/checkout">
                     <Button 
-                      className="w-full mt-6 bg-[#d0a760] text-black hover:bg-[#b8954e] rounded-none py-6 text-lg font-semibold" 
+                      className="w-full mt-6 bg-[#d0a760] text-black hover:bg-[#b8954e] rounded-none py-7 text-lg font-bold transition-all duration-200 hover:scale-[1.01] shadow-lg shadow-[#d0a760]/20 group" 
                       data-testid="button-checkout"
                     >
-                      <Lock className="w-4 h-4 mr-2" />
+                      <Lock className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
                       Veilig afrekenen
-                      <ArrowRight className="w-4 h-4 ml-2" />
+                      <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </Link>
+                  
+                  <div className="flex items-center justify-center gap-2 mt-4 text-zinc-500 text-xs">
+                    <ShieldCheck className="w-4 h-4 text-[#d0a760]" />
+                    <span>SSL beveiligde betaling</span>
+                  </div>
                 </CardContent>
               </Card>
             </ScrollReveal>
 
             <ScrollReveal delay={300}>
-              <Card className="bg-zinc-900 border-zinc-800 rounded-none">
+              <Card className="bg-zinc-900/80 border-zinc-800 rounded-none backdrop-blur-sm">
                 <CardContent className="p-6">
-                  <h4 className="font-semibold text-white mb-4">Waarom bij ons kopen?</h4>
+                  <h4 className="font-semibold text-white mb-5 flex items-center gap-2">
+                    <ShieldCheck className="w-5 h-5 text-[#d0a760]" />
+                    Waarom bij ons kopen?
+                  </h4>
                   <div className="space-y-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-[#d0a760]/20 flex items-center justify-center">
+                    <div className="flex items-start gap-4 group">
+                      <div className="w-11 h-11 bg-[#d0a760]/10 border border-[#d0a760]/20 flex items-center justify-center flex-shrink-0 group-hover:bg-[#d0a760]/20 transition-colors">
                         <Truck className="w-5 h-5 text-[#d0a760]" />
                       </div>
-                      <span className="text-sm text-white">Gratis verzending vanaf €50</span>
+                      <div>
+                        <p className="text-white font-medium text-sm">Gratis verzending</p>
+                        <p className="text-zinc-500 text-xs mt-0.5">Vanaf €50 bestelling</p>
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-[#d0a760]/20 flex items-center justify-center">
+                    <div className="flex items-start gap-4 group">
+                      <div className="w-11 h-11 bg-[#d0a760]/10 border border-[#d0a760]/20 flex items-center justify-center flex-shrink-0 group-hover:bg-[#d0a760]/20 transition-colors">
                         <Shield className="w-5 h-5 text-[#d0a760]" />
                       </div>
-                      <span className="text-sm text-white">2 jaar garantie op alle producten</span>
+                      <div>
+                        <p className="text-white font-medium text-sm">2 jaar garantie</p>
+                        <p className="text-zinc-500 text-xs mt-0.5">Op alle producten</p>
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-[#d0a760]/20 flex items-center justify-center">
+                    <div className="flex items-start gap-4 group">
+                      <div className="w-11 h-11 bg-[#d0a760]/10 border border-[#d0a760]/20 flex items-center justify-center flex-shrink-0 group-hover:bg-[#d0a760]/20 transition-colors">
                         <Wrench className="w-5 h-5 text-[#d0a760]" />
                       </div>
-                      <span className="text-sm text-white">Professionele installatie service</span>
+                      <div>
+                        <p className="text-white font-medium text-sm">Professionele installatie</p>
+                        <p className="text-zinc-500 text-xs mt-0.5">Door vakkundige monteurs</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-4 group">
+                      <div className="w-11 h-11 bg-[#d0a760]/10 border border-[#d0a760]/20 flex items-center justify-center flex-shrink-0 group-hover:bg-[#d0a760]/20 transition-colors">
+                        <RefreshCw className="w-5 h-5 text-[#d0a760]" />
+                      </div>
+                      <div>
+                        <p className="text-white font-medium text-sm">30 dagen retour</p>
+                        <p className="text-zinc-500 text-xs mt-0.5">Niet goed? Geld terug</p>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
+            </ScrollReveal>
+
+            <ScrollReveal delay={350}>
+              <div className="flex items-center justify-center gap-4 p-4 bg-zinc-900/50 border border-zinc-800">
+                <div className="flex items-center gap-2 text-zinc-400 text-xs">
+                  <CreditCard className="w-4 h-4" />
+                  <span>iDEAL</span>
+                </div>
+                <div className="w-px h-4 bg-zinc-700" />
+                <div className="flex items-center gap-2 text-zinc-400 text-xs">
+                  <CreditCard className="w-4 h-4" />
+                  <span>Bancontact</span>
+                </div>
+                <div className="w-px h-4 bg-zinc-700" />
+                <div className="flex items-center gap-2 text-zinc-400 text-xs">
+                  <CreditCard className="w-4 h-4" />
+                  <span>Visa/MC</span>
+                </div>
+              </div>
             </ScrollReveal>
 
             <ScrollReveal delay={400}>
               <Link href="/shop">
                 <Button 
                   variant="outline" 
-                  className="w-full border-zinc-700 text-white hover:bg-zinc-800 hover:text-white rounded-none py-6" 
+                  className="w-full border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white hover:border-zinc-600 rounded-none py-6 transition-all" 
                   data-testid="button-continue-shopping"
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />

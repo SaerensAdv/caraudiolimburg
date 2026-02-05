@@ -274,27 +274,30 @@ export default function Shop() {
         {/* Mobile Search Bar (expandable) */}
         {mobileSearchOpen && (
           <div className="px-4 pb-3 animate-in slide-in-from-top-2 duration-200">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" aria-hidden="true" />
-              <Input
-                type="text"
-                placeholder="Wat zoek je voor jouw auto?"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-10 pl-10 pr-4 bg-white/5 border-white/10 text-white placeholder:text-white/40 rounded-none text-sm"
-                data-testid="mobile-search-input"
-                aria-label="Zoek producten voor jouw auto"
-                autoFocus
-              />
-              {search && (
-                <button
-                  onClick={() => setSearch("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1"
-                  aria-label="Wis zoekopdracht"
-                >
-                  <X className="w-4 h-4 text-white/40" />
-                </button>
-              )}
+            <div className="relative group/msearch">
+              <div className="absolute inset-0 bg-[#d0a760]/10 blur-lg opacity-0 group-focus-within/msearch:opacity-100 transition-opacity duration-300" />
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 group-focus-within/msearch:text-[#d0a760] transition-colors" aria-hidden="true" />
+                <Input
+                  type="text"
+                  placeholder="Zoek producten, merken..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full h-11 pl-10 pr-10 bg-white/5 border-white/15 text-white placeholder:text-white/40 rounded-none text-sm focus:border-[#d0a760] focus:ring-1 focus:ring-[#d0a760]/30 transition-all"
+                  data-testid="mobile-search-input"
+                  aria-label="Zoek producten voor jouw auto"
+                  autoFocus
+                />
+                {search && (
+                  <button
+                    onClick={() => setSearch("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 bg-white/10 hover:bg-white/20 transition-colors"
+                    aria-label="Wis zoekopdracht"
+                  >
+                    <X className="w-3.5 h-3.5 text-white/60" />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -413,17 +416,29 @@ export default function Shop() {
                 Wij nemen je graag mee in ons vakkundig geselecteerde assortiment. Van premium speakers tot complete audiosystemen — altijd met oog voor kwaliteit.
               </p>
 
-              {/* Search Bar */}
-              <div className="max-w-xl mx-auto relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-                <Input
-                  type="text"
-                  placeholder="Wat zoek je voor jouw auto?"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-full h-14 pl-12 pr-4 bg-white/5 border-white/10 text-white placeholder:text-white/40 rounded-none focus:border-[#d0a760] focus:ring-[#d0a760]/20"
-                  data-testid="input-product-search"
-                />
+              {/* Search Bar - Premium styled */}
+              <div className="max-w-xl mx-auto relative group/search">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#d0a760]/20 via-[#d0a760]/10 to-[#d0a760]/20 blur-xl opacity-0 group-focus-within/search:opacity-100 transition-opacity duration-500" />
+                <div className="relative">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within/search:text-[#d0a760] transition-colors duration-300" />
+                  <Input
+                    type="text"
+                    placeholder="Zoek op productnaam, merk of automerk..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="w-full h-14 pl-12 pr-12 bg-white/5 border-white/20 text-white placeholder:text-white/40 rounded-none focus:border-[#d0a760] focus:ring-2 focus:ring-[#d0a760]/20 focus:bg-white/[0.07] transition-all duration-300"
+                    data-testid="input-product-search"
+                  />
+                  {search && (
+                    <button
+                      onClick={() => setSearch("")}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-white/40 hover:text-white transition-colors"
+                      aria-label="Wis zoekopdracht"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
             
@@ -541,123 +556,146 @@ export default function Shop() {
 
           {/* Expanded Filters Panel */}
           {showFilters && (
-            <>
-            <div className="mt-6 pt-6 border-t border-white/10 grid grid-cols-1 md:grid-cols-4 gap-4">
-              {/* Category */}
-              <div>
-                <label className="text-sm text-white/40 mb-2 block">Waar ben je naar op zoek?</label>
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="bg-white/5 border-white/10 text-white rounded-none" data-testid="select-category">
-                    <SelectValue placeholder="Alle categorieën" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-zinc-900 border-zinc-800">
-                    <SelectItem value="all-categories" className="text-white">Alle categorieën</SelectItem>
-                    {categories && Array.isArray(categories) && (categories as Category[]).map((category: Category) => (
-                      <SelectItem key={category.id} value={category.id} className="text-white">
-                        {category.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Brand */}
-              <div>
-                <label className="text-sm text-white/40 mb-2 block">Voorkeursmerk</label>
-                <Select value={selectedBrand} onValueChange={setSelectedBrand}>
-                  <SelectTrigger className="bg-white/5 border-white/10 text-white rounded-none" data-testid="select-brand">
-                    <SelectValue placeholder="Alle merken" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-zinc-900 border-zinc-800">
-                    <SelectItem value="all-brands" className="text-white">Alle merken</SelectItem>
-                    {brands && Array.isArray(brands) && (brands as Brand[]).map((brand: Brand) => (
-                      <SelectItem key={brand.id} value={brand.id} className="text-white">
-                        {brand.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Vehicle Make */}
-              <div>
-                <label className="text-sm text-white/40 mb-2 block">Jouw automerk</label>
-                <Select value={selectedMake} onValueChange={setSelectedMake}>
-                  <SelectTrigger className="bg-white/5 border-white/10 text-white rounded-none" data-testid="select-vehicle-make">
-                    <SelectValue placeholder="Alle merken" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-zinc-900 border-zinc-800">
-                    <SelectItem value="all-makes" className="text-white">Alle merken</SelectItem>
-                    {vehicleMakes && Array.isArray(vehicleMakes) && (vehicleMakes as VehicleMake[]).map((make: VehicleMake) => (
-                      <SelectItem key={make.id} value={make.id} className="text-white">
-                        {make.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Sort */}
-              <div>
-                <label className="text-sm text-white/40 mb-2 block">Rangschikken op</label>
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="bg-white/5 border-white/10 text-white rounded-none" data-testid="select-sort">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-zinc-900 border-zinc-800">
-                    <SelectItem value="name" className="text-white">Naam A-Z</SelectItem>
-                    <SelectItem value="price-low" className="text-white">Prijs laag-hoog</SelectItem>
-                    <SelectItem value="price-high" className="text-white">Prijs hoog-laag</SelectItem>
-                    <SelectItem value="newest" className="text-white">Nieuwste eerst</SelectItem>
-                    <SelectItem value="featured" className="text-white">Uitgelicht eerst</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {/* Second row of filters */}
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Price Range Slider */}
-              <div>
-                <label className="text-sm text-white/40 mb-3 block">
-                  Prijsbereik: €{priceRange[0]} - €{priceRange[1]}
-                </label>
-                <div className="px-2">
-                  <Slider
-                    value={priceRange}
-                    min={0}
-                    max={5000}
-                    step={50}
-                    onValueChange={(value) => setPriceRange(value as [number, number])}
-                    className="w-full"
-                    data-testid="slider-price-range"
-                  />
+            <div className="mt-6 pt-6 border-t border-white/10 animate-in slide-in-from-top-2 duration-300">
+              {/* Filter Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
+                {/* Category */}
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-[#d0a760] uppercase tracking-wider flex items-center gap-2">
+                    <Grid className="w-3.5 h-3.5" />
+                    Categorie
+                  </label>
+                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                    <SelectTrigger className="bg-white/5 border-white/15 text-white rounded-none h-11 hover:border-[#d0a760]/50 transition-colors" data-testid="select-category">
+                      <SelectValue placeholder="Alle categorieën" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-zinc-900 border-zinc-700">
+                      <SelectItem value="all-categories" className="text-white hover:bg-[#d0a760]/10 focus:bg-[#d0a760]/10">Alle categorieën</SelectItem>
+                      {categories && Array.isArray(categories) && (categories as Category[]).map((category: Category) => (
+                        <SelectItem key={category.id} value={category.id} className="text-white hover:bg-[#d0a760]/10 focus:bg-[#d0a760]/10">
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-                <div className="flex justify-between mt-2 text-xs text-white/30">
-                  <span>€0</span>
-                  <span>€5000</span>
+
+                {/* Brand */}
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-[#d0a760] uppercase tracking-wider flex items-center gap-2">
+                    <Volume2 className="w-3.5 h-3.5" />
+                    Merk
+                  </label>
+                  <Select value={selectedBrand} onValueChange={setSelectedBrand}>
+                    <SelectTrigger className="bg-white/5 border-white/15 text-white rounded-none h-11 hover:border-[#d0a760]/50 transition-colors" data-testid="select-brand">
+                      <SelectValue placeholder="Alle merken" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-zinc-900 border-zinc-700">
+                      <SelectItem value="all-brands" className="text-white hover:bg-[#d0a760]/10 focus:bg-[#d0a760]/10">Alle merken</SelectItem>
+                      {brands && Array.isArray(brands) && (brands as Brand[]).map((brand: Brand) => (
+                        <SelectItem key={brand.id} value={brand.id} className="text-white hover:bg-[#d0a760]/10 focus:bg-[#d0a760]/10">
+                          {brand.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Vehicle Make */}
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-[#d0a760] uppercase tracking-wider flex items-center gap-2">
+                    <Car className="w-3.5 h-3.5" />
+                    Automerk
+                  </label>
+                  <Select value={selectedMake} onValueChange={setSelectedMake}>
+                    <SelectTrigger className="bg-white/5 border-white/15 text-white rounded-none h-11 hover:border-[#d0a760]/50 transition-colors" data-testid="select-vehicle-make">
+                      <SelectValue placeholder="Alle merken" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-zinc-900 border-zinc-700">
+                      <SelectItem value="all-makes" className="text-white hover:bg-[#d0a760]/10 focus:bg-[#d0a760]/10">Alle merken</SelectItem>
+                      {vehicleMakes && Array.isArray(vehicleMakes) && (vehicleMakes as VehicleMake[]).map((make: VehicleMake) => (
+                        <SelectItem key={make.id} value={make.id} className="text-white hover:bg-[#d0a760]/10 focus:bg-[#d0a760]/10">
+                          {make.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Sort */}
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-[#d0a760] uppercase tracking-wider flex items-center gap-2">
+                    <Settings className="w-3.5 h-3.5" />
+                    Sorteren
+                  </label>
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="bg-white/5 border-white/15 text-white rounded-none h-11 hover:border-[#d0a760]/50 transition-colors" data-testid="select-sort">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-zinc-900 border-zinc-700">
+                      <SelectItem value="name" className="text-white hover:bg-[#d0a760]/10 focus:bg-[#d0a760]/10">Naam A-Z</SelectItem>
+                      <SelectItem value="price-low" className="text-white hover:bg-[#d0a760]/10 focus:bg-[#d0a760]/10">Prijs laag-hoog</SelectItem>
+                      <SelectItem value="price-high" className="text-white hover:bg-[#d0a760]/10 focus:bg-[#d0a760]/10">Prijs hoog-laag</SelectItem>
+                      <SelectItem value="newest" className="text-white hover:bg-[#d0a760]/10 focus:bg-[#d0a760]/10">Nieuwste eerst</SelectItem>
+                      <SelectItem value="featured" className="text-white hover:bg-[#d0a760]/10 focus:bg-[#d0a760]/10">Uitgelicht eerst</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
-              {/* In Stock Only */}
-              <div className="flex items-center space-x-3">
-                <Checkbox
-                  id="in-stock-only"
-                  checked={inStockOnly}
-                  onCheckedChange={(checked) => setInStockOnly(checked === true)}
-                  className="border-white/30 data-[state=checked]:bg-[#d0a760] data-[state=checked]:border-[#d0a760]"
-                  data-testid="checkbox-in-stock"
-                />
-                <label
-                  htmlFor="in-stock-only"
-                  className="text-sm text-white/60 cursor-pointer flex items-center gap-2"
-                >
-                  <Package className="w-4 h-4" />
-                  Alleen producten op voorraad tonen
-                </label>
+              {/* Second row of filters */}
+              <div className="mt-6 pt-5 border-t border-white/5 grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Price Range Slider */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-medium text-[#d0a760] uppercase tracking-wider">
+                      Prijsbereik
+                    </label>
+                    <span className="text-sm text-white font-medium">
+                      €{priceRange[0].toLocaleString('nl-NL')} - €{priceRange[1].toLocaleString('nl-NL')}
+                    </span>
+                  </div>
+                  <div className="px-1">
+                    <Slider
+                      value={priceRange}
+                      min={0}
+                      max={5000}
+                      step={50}
+                      onValueChange={(value) => setPriceRange(value as [number, number])}
+                      className="w-full"
+                      data-testid="slider-price-range"
+                    />
+                  </div>
+                  <div className="flex justify-between text-xs text-white/30">
+                    <span>€0</span>
+                    <span>€2.500</span>
+                    <span>€5.000</span>
+                  </div>
+                </div>
+
+                {/* In Stock Only */}
+                <div className="flex items-center">
+                  <label
+                    htmlFor="in-stock-only"
+                    className="flex items-center gap-3 cursor-pointer group/stock p-3 -m-3 hover:bg-white/5 transition-colors"
+                  >
+                    <Checkbox
+                      id="in-stock-only"
+                      checked={inStockOnly}
+                      onCheckedChange={(checked) => setInStockOnly(checked === true)}
+                      className="border-white/30 data-[state=checked]:bg-[#d0a760] data-[state=checked]:border-[#d0a760] w-5 h-5"
+                      data-testid="checkbox-in-stock"
+                    />
+                    <div className="flex items-center gap-2">
+                      <Package className="w-4 h-4 text-[#d0a760]" />
+                      <span className="text-sm text-white/80 group-hover/stock:text-white transition-colors">
+                        Alleen producten op voorraad
+                      </span>
+                    </div>
+                  </label>
+                </div>
               </div>
             </div>
-            </>
           )}
         </div>
       </aside>
@@ -758,33 +796,59 @@ export default function Shop() {
               </div>
             )
           ) : (
-            <div className="text-center py-20">
-              <div className="mb-8">
-                {/* Audio wave animation */}
-                <div className="flex items-end justify-center gap-1 h-16">
-                  {[...Array(5)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="w-2 bg-gradient-to-t from-[#d0a760]/30 to-[#d0a760] animate-audio-bar"
-                      style={{
-                        height: `${20 + i * 10}px`,
-                        animationDelay: `${i * 0.1}s`,
-                      }}
-                    />
-                  ))}
+            <div className="text-center py-24">
+              <div className="max-w-md mx-auto">
+                {/* Visual feedback icon */}
+                <div className="mb-8 relative">
+                  <div className="w-24 h-24 mx-auto bg-zinc-900 border border-zinc-800 flex items-center justify-center relative overflow-hidden">
+                    <Search className="w-10 h-10 text-white/20" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#d0a760]/10 to-transparent" />
+                  </div>
+                  {/* Audio wave animation below icon */}
+                  <div className="flex items-end justify-center gap-1 h-8 mt-4 opacity-60">
+                    {[...Array(7)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="w-1.5 bg-gradient-to-t from-[#d0a760]/40 to-[#d0a760] rounded-sm"
+                        style={{
+                          height: `${8 + Math.sin(i * 0.8) * 12}px`,
+                          animation: `pulse 1.5s ease-in-out ${i * 0.15}s infinite`,
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <h3 className="text-2xl font-semibold text-white mb-3">
+                  {search ? `Geen resultaten voor "${search}"` : "Geen producten gevonden"}
+                </h3>
+                <p className="text-white/50 mb-8 leading-relaxed">
+                  {search 
+                    ? "Probeer een andere zoekterm of pas je filters aan. Wij helpen je graag bij het vinden van de perfecte audio."
+                    : "Pas je filters aan om producten te zien die bij jouw wensen passen."
+                  }
+                </p>
+
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Button 
+                    onClick={clearFilters} 
+                    className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none px-6"
+                    data-testid="button-clear-filters-empty"
+                  >
+                    <X className="w-4 h-4 mr-2" />
+                    Alle filters wissen
+                  </Button>
+                  <Button 
+                    asChild
+                    variant="outline"
+                    className="border-white/20 text-white hover:bg-white/10 rounded-none px-6"
+                  >
+                    <a href="/contact">
+                      Hulp nodig? Neem contact op
+                    </a>
+                  </Button>
                 </div>
               </div>
-              <h3 className="text-2xl font-semibold text-white mb-3">We hebben nog geen match gevonden</h3>
-              <p className="text-white/50 mb-6 max-w-md mx-auto">
-                Geen probleem! Probeer andere zoekwoorden of pas je filters aan. Wij helpen je graag bij het vinden van de perfecte audio voor jouw auto.
-              </p>
-              <Button 
-                onClick={clearFilters} 
-                className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"
-                data-testid="button-clear-filters-empty"
-              >
-                Bekijk alle producten
-              </Button>
             </div>
           )}
         </div>

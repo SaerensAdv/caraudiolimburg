@@ -106,6 +106,7 @@ export function Footer() {
           >
             <ul className="space-y-3 text-sm">
               <li><Link href="/montage" className="text-white/60 hover:text-[#d0a760] transition-colors">Inbouwstudio</Link></li>
+              <li><Link href="/portfolio" className="text-white/60 hover:text-[#d0a760] transition-colors">Portfolio</Link></li>
               <li><Link href="/apple-carplay-voor-uw-bmw" className="text-white/60 hover:text-[#d0a760] transition-colors">BMW/MINI CarPlay</Link></li>
               <li><Link href="/blog" className="text-white/60 hover:text-[#d0a760] transition-colors">Kenniscentrum</Link></li>
               <li><Link href="/veelgestelde-vragen" className="text-white/60 hover:text-[#d0a760] transition-colors">Veelgestelde Vragen</Link></li>
@@ -280,6 +281,7 @@ export function Footer() {
               <h4 className="text-[#d0a760] text-sm font-medium tracking-wider uppercase mb-6">Services</h4>
               <ul className="space-y-3 text-sm">
                 <li><Link href="/montage" className="group text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-flex items-center gap-2" data-testid="footer-link-studio"><span className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-[#d0a760] after:transition-all after:duration-300 group-hover:after:w-full">Inbouwstudio</span></Link></li>
+                <li><Link href="/portfolio" className="group text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-flex items-center gap-2" data-testid="footer-link-portfolio"><span className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-[#d0a760] after:transition-all after:duration-300 group-hover:after:w-full">Portfolio</span></Link></li>
                 <li><Link href="/apple-carplay-voor-uw-bmw" className="group text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-flex items-center gap-2" data-testid="footer-link-carplay"><span className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-[#d0a760] after:transition-all after:duration-300 group-hover:after:w-full">BMW/MINI CarPlay</span></Link></li>
                 <li><Link href="/blog" className="group text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-flex items-center gap-2" data-testid="footer-link-blog"><span className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-[#d0a760] after:transition-all after:duration-300 group-hover:after:w-full">Kenniscentrum</span></Link></li>
                 <li><Link href="/veelgestelde-vragen" className="group text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-flex items-center gap-2" data-testid="footer-link-faq"><span className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-[#d0a760] after:transition-all after:duration-300 group-hover:after:w-full">Veelgestelde Vragen</span></Link></li>

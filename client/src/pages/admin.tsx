@@ -102,7 +102,27 @@ const productFormSchema = insertProductSchema.extend({
 
 type ProductFormData = z.infer<typeof productFormSchema>;
 
-type AdminSection = 'dashboard' | 'products' | 'orders' | 'bookings' | 'quotes' | 'users' | 'blog';
+type AdminSection = 'dashboard' | 'products' | 'orders' | 'bookings' | 'quotes' | 'users' | 'blog' | 'portfolio';
+
+interface PortfolioProject {
+  id: string;
+  title: string;
+  slug: string;
+  shortDescription: string | null;
+  fullDescription: string | null;
+  vehicleMake: string | null;
+  vehicleModel: string | null;
+  vehicleYear: string | null;
+  category: string | null;
+  images: string[];
+  featuredImage: string | null;
+  components: string[];
+  isFeatured: boolean;
+  isPublished: boolean;
+  publishedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 export default function Admin() {
   const [activeSection, setActiveSection] = useState<AdminSection>('dashboard');
@@ -226,6 +246,31 @@ export default function Admin() {
   const [blogCategoryName, setBlogCategoryName] = useState('');
   const [blogCategorySlug, setBlogCategorySlug] = useState('');
   const [blogCategoryDescription, setBlogCategoryDescription] = useState('');
+
+  // Portfolio queries
+  const { data: portfolioProjects = [], isLoading: isLoadingPortfolio } = useQuery<PortfolioProject[]>({
+    queryKey: ["/api/admin/portfolio"],
+    enabled: isAuthenticated && user?.role === 'admin',
+  });
+
+  // Portfolio state
+  const [isPortfolioDialogOpen, setIsPortfolioDialogOpen] = useState(false);
+  const [selectedPortfolioProject, setSelectedPortfolioProject] = useState<PortfolioProject | null>(null);
+  
+  // Portfolio form state
+  const [portfolioTitle, setPortfolioTitle] = useState('');
+  const [portfolioSlug, setPortfolioSlug] = useState('');
+  const [portfolioShortDescription, setPortfolioShortDescription] = useState('');
+  const [portfolioFullDescription, setPortfolioFullDescription] = useState('');
+  const [portfolioVehicleMake, setPortfolioVehicleMake] = useState('');
+  const [portfolioVehicleModel, setPortfolioVehicleModel] = useState('');
+  const [portfolioVehicleYear, setPortfolioVehicleYear] = useState('');
+  const [portfolioCategory, setPortfolioCategory] = useState('');
+  const [portfolioFeaturedImage, setPortfolioFeaturedImage] = useState('');
+  const [portfolioImages, setPortfolioImages] = useState('');
+  const [portfolioComponents, setPortfolioComponents] = useState('');
+  const [portfolioIsFeatured, setPortfolioIsFeatured] = useState(false);
+  const [portfolioIsPublished, setPortfolioIsPublished] = useState(false);
 
   // Vehicle compatibility state
   const [vehicleCompatibility, setVehicleCompatibility] = useState<{makeId: string, modelId?: string}[]>([]);
@@ -895,6 +940,162 @@ export default function Admin() {
     }
   };
 
+  // Portfolio mutations
+  const createPortfolioMutation = useMutation({
+    mutationFn: async (data: any) => {
+      await apiRequest("POST", "/api/admin/portfolio", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/portfolio"] });
+      toast({
+        title: "Project aangemaakt",
+        description: "Het portfolio project is succesvol toegevoegd.",
+      });
+      resetPortfolioForm();
+      setIsPortfolioDialogOpen(false);
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Geen toegang",
+          description: "Je hebt geen toegang tot deze functie.",
+          variant: "destructive",
+        });
+        return;
+      }
+      toast({
+        title: "Fout",
+        description: "Kon project niet aanmaken.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updatePortfolioMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: any }) => {
+      await apiRequest("PUT", `/api/admin/portfolio/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/portfolio"] });
+      toast({
+        title: "Project bijgewerkt",
+        description: "Het portfolio project is succesvol gewijzigd.",
+      });
+      resetPortfolioForm();
+      setIsPortfolioDialogOpen(false);
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Geen toegang",
+          description: "Je hebt geen toegang tot deze functie.",
+          variant: "destructive",
+        });
+        return;
+      }
+      toast({
+        title: "Fout",
+        description: "Kon project niet bijwerken.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deletePortfolioMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await apiRequest("DELETE", `/api/admin/portfolio/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/portfolio"] });
+      toast({
+        title: "Project verwijderd",
+        description: "Het portfolio project is succesvol verwijderd.",
+      });
+    },
+    onError: (error) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Geen toegang",
+          description: "Je hebt geen toegang tot deze functie.",
+          variant: "destructive",
+        });
+        return;
+      }
+      toast({
+        title: "Fout",
+        description: "Kon project niet verwijderen.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Portfolio helper functions
+  const resetPortfolioForm = () => {
+    setPortfolioTitle('');
+    setPortfolioSlug('');
+    setPortfolioShortDescription('');
+    setPortfolioFullDescription('');
+    setPortfolioVehicleMake('');
+    setPortfolioVehicleModel('');
+    setPortfolioVehicleYear('');
+    setPortfolioCategory('');
+    setPortfolioFeaturedImage('');
+    setPortfolioImages('');
+    setPortfolioComponents('');
+    setPortfolioIsFeatured(false);
+    setPortfolioIsPublished(false);
+    setSelectedPortfolioProject(null);
+  };
+
+  const handleEditPortfolioProject = (project: PortfolioProject) => {
+    setSelectedPortfolioProject(project);
+    setPortfolioTitle(project.title);
+    setPortfolioSlug(project.slug);
+    setPortfolioShortDescription(project.shortDescription || '');
+    setPortfolioFullDescription(project.fullDescription || '');
+    setPortfolioVehicleMake(project.vehicleMake || '');
+    setPortfolioVehicleModel(project.vehicleModel || '');
+    setPortfolioVehicleYear(project.vehicleYear || '');
+    setPortfolioCategory(project.category || '');
+    setPortfolioFeaturedImage(project.featuredImage || '');
+    setPortfolioImages(project.images?.join(', ') || '');
+    setPortfolioComponents(project.components?.join(', ') || '');
+    setPortfolioIsFeatured(project.isFeatured || false);
+    setPortfolioIsPublished(project.isPublished || false);
+    setIsPortfolioDialogOpen(true);
+  };
+
+  const handleDeletePortfolioProject = (project: PortfolioProject) => {
+    if (window.confirm(`Weet je zeker dat je "${project.title}" wilt verwijderen?`)) {
+      deletePortfolioMutation.mutate(project.id);
+    }
+  };
+
+  const handleSavePortfolioProject = () => {
+    const projectData = {
+      title: portfolioTitle,
+      slug: portfolioSlug || generateSlug(portfolioTitle),
+      shortDescription: portfolioShortDescription || null,
+      fullDescription: portfolioFullDescription || null,
+      vehicleMake: portfolioVehicleMake || null,
+      vehicleModel: portfolioVehicleModel || null,
+      vehicleYear: portfolioVehicleYear || null,
+      category: portfolioCategory || null,
+      featuredImage: portfolioFeaturedImage || null,
+      images: portfolioImages ? portfolioImages.split(',').map(s => s.trim()).filter(Boolean) : [],
+      components: portfolioComponents ? portfolioComponents.split(',').map(s => s.trim()).filter(Boolean) : [],
+      isFeatured: portfolioIsFeatured,
+      isPublished: portfolioIsPublished,
+      publishedAt: portfolioIsPublished ? new Date().toISOString() : null,
+    };
+
+    if (selectedPortfolioProject) {
+      updatePortfolioMutation.mutate({ id: selectedPortfolioProject.id, data: projectData });
+    } else {
+      createPortfolioMutation.mutate(projectData);
+    }
+  };
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -1107,6 +1308,7 @@ export default function Admin() {
     { id: 'quotes' as AdminSection, label: 'Offertes', icon: FileText },
     { id: 'users' as AdminSection, label: 'Gebruikers', icon: Users },
     { id: 'blog' as AdminSection, label: 'Blog', icon: FileText },
+    { id: 'portfolio' as AdminSection, label: 'Portfolio', icon: Car },
   ];
 
   return (
@@ -3738,6 +3940,445 @@ export default function Admin() {
                       </p>
                       <p className="text-xs text-zinc-500 mt-1">
                         {post.publishedAt ? format(new Date(post.publishedAt), "dd MMM yyyy", { locale: nl }) : "Niet gepubliceerd"}
+                      </p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Portfolio Section */}
+          {activeSection === 'portfolio' && (
+            <div className="space-y-6">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                  <h1 className="text-2xl md:text-3xl font-bold text-white mb-2" data-testid="text-portfolio-title">
+                    Portfolio Beheer
+                  </h1>
+                  <p className="text-zinc-400">Beheer je portfolio projecten</p>
+                </div>
+
+                <Dialog open={isPortfolioDialogOpen} onOpenChange={(open) => {
+                  setIsPortfolioDialogOpen(open);
+                  if (!open) resetPortfolioForm();
+                }}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"
+                      data-testid="button-add-portfolio"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Nieuw Project
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-zinc-900 border-zinc-700 rounded-none">
+                    <DialogHeader>
+                      <DialogTitle className="text-white text-xl">
+                        {selectedPortfolioProject ? "Project Bewerken" : "Nieuw Portfolio Project"}
+                      </DialogTitle>
+                    </DialogHeader>
+                    
+                    <div className="space-y-6 py-4">
+                      {/* Title & Slug */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label className="text-zinc-300">Titel</Label>
+                          <Input
+                            value={portfolioTitle}
+                            onChange={(e) => {
+                              setPortfolioTitle(e.target.value);
+                              if (!selectedPortfolioProject) {
+                                setPortfolioSlug(generateSlug(e.target.value));
+                              }
+                            }}
+                            placeholder="Project titel"
+                            className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                            data-testid="input-portfolio-title"
+                          />
+                        </div>
+                        
+                        <div>
+                          <Label className="text-zinc-300">Slug</Label>
+                          <Input
+                            value={portfolioSlug}
+                            onChange={(e) => setPortfolioSlug(e.target.value)}
+                            placeholder="project-slug"
+                            className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                            data-testid="input-portfolio-slug"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Short Description */}
+                      <div>
+                        <Label className="text-zinc-300">Korte Beschrijving</Label>
+                        <Textarea
+                          value={portfolioShortDescription}
+                          onChange={(e) => setPortfolioShortDescription(e.target.value)}
+                          placeholder="Korte samenvatting van het project..."
+                          rows={2}
+                          className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                          data-testid="input-portfolio-short-description"
+                        />
+                      </div>
+
+                      {/* Full Description */}
+                      <div>
+                        <Label className="text-zinc-300">Volledige Beschrijving</Label>
+                        <Textarea
+                          value={portfolioFullDescription}
+                          onChange={(e) => setPortfolioFullDescription(e.target.value)}
+                          placeholder="Gedetailleerde projectbeschrijving..."
+                          rows={6}
+                          className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                          data-testid="input-portfolio-full-description"
+                        />
+                      </div>
+
+                      {/* Vehicle Info */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <Label className="text-zinc-300">Voertuig Merk</Label>
+                          <Input
+                            value={portfolioVehicleMake}
+                            onChange={(e) => setPortfolioVehicleMake(e.target.value)}
+                            placeholder="BMW, Audi, Mercedes..."
+                            className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                            data-testid="input-portfolio-vehicle-make"
+                          />
+                        </div>
+                        
+                        <div>
+                          <Label className="text-zinc-300">Voertuig Model</Label>
+                          <Input
+                            value={portfolioVehicleModel}
+                            onChange={(e) => setPortfolioVehicleModel(e.target.value)}
+                            placeholder="3 Serie, A4, C-Klasse..."
+                            className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                            data-testid="input-portfolio-vehicle-model"
+                          />
+                        </div>
+                        
+                        <div>
+                          <Label className="text-zinc-300">Voertuig Jaar</Label>
+                          <Input
+                            value={portfolioVehicleYear}
+                            onChange={(e) => setPortfolioVehicleYear(e.target.value)}
+                            placeholder="2023"
+                            className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                            data-testid="input-portfolio-vehicle-year"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Category */}
+                      <div>
+                        <Label className="text-zinc-300">Categorie</Label>
+                        <Select value={portfolioCategory} onValueChange={setPortfolioCategory}>
+                          <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white rounded-none" data-testid="select-portfolio-category">
+                            <SelectValue placeholder="Selecteer categorie" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-zinc-800 border-zinc-700">
+                            <SelectItem value="soundupgrade" className="text-white hover:bg-zinc-700">Sound Upgrade</SelectItem>
+                            <SelectItem value="carplay" className="text-white hover:bg-zinc-700">CarPlay</SelectItem>
+                            <SelectItem value="entertainment" className="text-white hover:bg-zinc-700">Entertainment</SelectItem>
+                            <SelectItem value="custom" className="text-white hover:bg-zinc-700">Custom</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Featured Image */}
+                      <div>
+                        <Label className="text-zinc-300">Uitgelichte Afbeelding URL</Label>
+                        <Input
+                          value={portfolioFeaturedImage}
+                          onChange={(e) => setPortfolioFeaturedImage(e.target.value)}
+                          placeholder="https://..."
+                          className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                          data-testid="input-portfolio-featured-image"
+                        />
+                      </div>
+
+                      {/* Images Array */}
+                      <div>
+                        <Label className="text-zinc-300">Afbeeldingen (komma-gescheiden URLs)</Label>
+                        <Textarea
+                          value={portfolioImages}
+                          onChange={(e) => setPortfolioImages(e.target.value)}
+                          placeholder="https://image1.jpg, https://image2.jpg, https://image3.jpg"
+                          rows={2}
+                          className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                          data-testid="input-portfolio-images"
+                        />
+                      </div>
+
+                      {/* Components */}
+                      <div>
+                        <Label className="text-zinc-300">Componenten (komma-gescheiden)</Label>
+                        <Textarea
+                          value={portfolioComponents}
+                          onChange={(e) => setPortfolioComponents(e.target.value)}
+                          placeholder="Alpine ILX-W690D, Focal PS165FXE, Audison Prima AP4.9..."
+                          rows={2}
+                          className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                          data-testid="input-portfolio-components"
+                        />
+                      </div>
+
+                      {/* Toggles */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="flex items-center justify-between p-4 bg-zinc-800">
+                          <div>
+                            <Label className="text-white">Uitgelicht Project</Label>
+                            <p className="text-sm text-zinc-400">Toon op homepage of in uitgelichte sectie</p>
+                          </div>
+                          <Switch
+                            checked={portfolioIsFeatured}
+                            onCheckedChange={setPortfolioIsFeatured}
+                            data-testid="switch-portfolio-featured"
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-between p-4 bg-zinc-800">
+                          <div>
+                            <Label className="text-white">Gepubliceerd</Label>
+                            <p className="text-sm text-zinc-400">Zichtbaar op de website</p>
+                          </div>
+                          <Switch
+                            checked={portfolioIsPublished}
+                            onCheckedChange={setPortfolioIsPublished}
+                            data-testid="switch-portfolio-published"
+                          />
+                        </div>
+                      </div>
+
+                      <Separator className="bg-zinc-700" />
+
+                      <div className="flex justify-end gap-3 pt-4">
+                        <Button 
+                          type="button" 
+                          variant="outline"
+                          onClick={() => {
+                            setIsPortfolioDialogOpen(false);
+                            resetPortfolioForm();
+                          }}
+                          className="bg-transparent border-zinc-600 text-zinc-300 hover:bg-zinc-800 rounded-none"
+                          data-testid="button-cancel-portfolio"
+                        >
+                          Annuleren
+                        </Button>
+                        <Button 
+                          onClick={handleSavePortfolioProject}
+                          disabled={createPortfolioMutation.isPending || updatePortfolioMutation.isPending || !portfolioTitle}
+                          className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"
+                          data-testid="button-save-portfolio"
+                        >
+                          {(createPortfolioMutation.isPending || updatePortfolioMutation.isPending) 
+                            ? "Opslaan..."
+                            : (selectedPortfolioProject ? "Bijwerken" : "Opslaan")
+                          }
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+
+              {/* Portfolio Stats */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-zinc-900 border border-zinc-800 p-4">
+                  <p className="text-xs text-zinc-400 uppercase tracking-wider">Totaal Projecten</p>
+                  <p className="text-2xl font-bold text-white mt-1">{portfolioProjects.length}</p>
+                </div>
+                <div className="bg-zinc-900 border border-zinc-800 p-4">
+                  <p className="text-xs text-zinc-400 uppercase tracking-wider">Gepubliceerd</p>
+                  <p className="text-2xl font-bold text-green-400 mt-1">{portfolioProjects.filter(p => p.isPublished).length}</p>
+                </div>
+                <div className="bg-zinc-900 border border-zinc-800 p-4">
+                  <p className="text-xs text-zinc-400 uppercase tracking-wider">Uitgelicht</p>
+                  <p className="text-2xl font-bold text-[#d0a760] mt-1">{portfolioProjects.filter(p => p.isFeatured).length}</p>
+                </div>
+                <div className="bg-zinc-900 border border-zinc-800 p-4">
+                  <p className="text-xs text-zinc-400 uppercase tracking-wider">Concept</p>
+                  <p className="text-2xl font-bold text-yellow-400 mt-1">{portfolioProjects.filter(p => !p.isPublished).length}</p>
+                </div>
+              </div>
+
+              {/* Portfolio Table - Desktop */}
+              <div className="hidden md:block bg-zinc-900 border border-zinc-800 overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-zinc-800 hover:bg-transparent">
+                      <TableHead className="text-[#d0a760] font-semibold">Project</TableHead>
+                      <TableHead className="text-[#d0a760] font-semibold">Voertuig</TableHead>
+                      <TableHead className="text-[#d0a760] font-semibold">Categorie</TableHead>
+                      <TableHead className="text-[#d0a760] font-semibold">Status</TableHead>
+                      <TableHead className="text-[#d0a760] font-semibold">Aangemaakt</TableHead>
+                      <TableHead className="text-[#d0a760] font-semibold text-right">Acties</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {isLoadingPortfolio ? (
+                      [...Array(5)].map((_, i) => (
+                        <TableRow key={i} className="border-zinc-800">
+                          {[...Array(6)].map((_, j) => (
+                            <TableCell key={j}><div className="h-4 bg-zinc-800 animate-pulse"></div></TableCell>
+                          ))}
+                        </TableRow>
+                      ))
+                    ) : portfolioProjects?.length === 0 ? (
+                      <TableRow className="border-zinc-800">
+                        <TableCell colSpan={6} className="text-center text-zinc-500 py-12">
+                          <Car className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                          <p>Nog geen portfolio projecten</p>
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      portfolioProjects?.map((project: PortfolioProject) => (
+                        <TableRow key={project.id} className="border-zinc-800 hover:bg-zinc-800/50" data-testid={`portfolio-row-${project.id}`}>
+                          <TableCell>
+                            <div className="flex items-center gap-3">
+                              {project.featuredImage && (
+                                <img 
+                                  src={project.featuredImage} 
+                                  alt={project.title}
+                                  className="w-12 h-12 object-cover border border-zinc-700"
+                                />
+                              )}
+                              <div>
+                                <p className="font-medium text-white">{project.title}</p>
+                                {project.isFeatured && (
+                                  <Badge className="bg-[#d0a760]/20 text-[#d0a760] rounded-none text-xs mt-1">
+                                    Uitgelicht
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-zinc-300">
+                            {project.vehicleMake && project.vehicleModel 
+                              ? `${project.vehicleMake} ${project.vehicleModel}${project.vehicleYear ? ` (${project.vehicleYear})` : ''}`
+                              : '-'
+                            }
+                          </TableCell>
+                          <TableCell>
+                            <Badge className="bg-zinc-800 text-zinc-300 rounded-none capitalize">
+                              {project.category || '-'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge className={`rounded-none ${project.isPublished 
+                              ? 'bg-green-500/20 text-green-400' 
+                              : 'bg-yellow-500/20 text-yellow-400'}`}
+                            >
+                              {project.isPublished ? 'Gepubliceerd' : 'Concept'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-zinc-400">
+                            {project.createdAt ? format(new Date(project.createdAt), "dd MMM yyyy", { locale: nl }) : "-"}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              <Button 
+                                size="sm" 
+                                variant="ghost"
+                                onClick={() => handleEditPortfolioProject(project)}
+                                className="h-8 w-8 p-0 text-zinc-400 hover:text-[#d0a760]"
+                                data-testid={`button-edit-portfolio-${project.id}`}
+                              >
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="ghost"
+                                onClick={() => handleDeletePortfolioProject(project)}
+                                className="h-8 w-8 p-0 text-zinc-400 hover:text-red-400"
+                                data-testid={`button-delete-portfolio-${project.id}`}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Portfolio Cards - Mobile */}
+              <div className="md:hidden space-y-3">
+                {isLoadingPortfolio ? (
+                  [...Array(3)].map((_, i) => (
+                    <div key={i} className="bg-zinc-900 border border-zinc-800 p-4 animate-pulse">
+                      <div className="h-5 bg-zinc-800 w-3/4 mb-2"></div>
+                      <div className="h-4 bg-zinc-800 w-1/2"></div>
+                    </div>
+                  ))
+                ) : portfolioProjects?.length === 0 ? (
+                  <div className="bg-zinc-900 border border-zinc-800 p-8 text-center">
+                    <Car className="w-12 h-12 mx-auto mb-4 text-zinc-600" />
+                    <p className="text-zinc-500">Nog geen portfolio projecten</p>
+                  </div>
+                ) : (
+                  portfolioProjects?.map((project: PortfolioProject) => (
+                    <div key={project.id} className="bg-zinc-900 border border-zinc-800 p-4" data-testid={`portfolio-card-${project.id}`}>
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex gap-3">
+                          {project.featuredImage && (
+                            <img 
+                              src={project.featuredImage} 
+                              alt={project.title}
+                              className="w-16 h-16 object-cover border border-zinc-700"
+                            />
+                          )}
+                          <div className="flex-1">
+                            <h3 className="font-medium text-white">{project.title}</h3>
+                            <p className="text-sm text-zinc-400">
+                              {project.vehicleMake && project.vehicleModel 
+                                ? `${project.vehicleMake} ${project.vehicleModel}`
+                                : 'Geen voertuig'
+                              }
+                            </p>
+                            <div className="flex gap-2 mt-1">
+                              <Badge className={`rounded-none text-xs ${project.isPublished 
+                                ? 'bg-green-500/20 text-green-400' 
+                                : 'bg-yellow-500/20 text-yellow-400'}`}
+                              >
+                                {project.isPublished ? 'Gepubliceerd' : 'Concept'}
+                              </Badge>
+                              {project.isFeatured && (
+                                <Badge className="bg-[#d0a760]/20 text-[#d0a760] rounded-none text-xs">
+                                  Uitgelicht
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex gap-1">
+                          <Button 
+                            size="sm" 
+                            variant="ghost"
+                            onClick={() => handleEditPortfolioProject(project)}
+                            className="h-8 w-8 p-0 text-zinc-400 hover:text-[#d0a760]"
+                            data-testid={`button-edit-portfolio-mobile-${project.id}`}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="ghost"
+                            onClick={() => handleDeletePortfolioProject(project)}
+                            className="h-8 w-8 p-0 text-zinc-400 hover:text-red-400"
+                            data-testid={`button-delete-portfolio-mobile-${project.id}`}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      <p className="text-xs text-zinc-500">
+                        {project.createdAt ? format(new Date(project.createdAt), "dd MMM yyyy", { locale: nl }) : "Geen datum"}
                       </p>
                     </div>
                   ))

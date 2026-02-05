@@ -132,6 +132,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
   const menuItems = [
     { href: "/webshop", label: "Producten", highlight: false },
     { href: "/apple-carplay-voor-uw-bmw", label: "BMW/MINI CarPlay", highlight: true },
+    { href: "/portfolio", label: "Portfolio", highlight: false },
     { href: "/montage", label: "Studio", highlight: false },
     { href: "/over-ons", label: "Over Ons", highlight: false },
     { href: "/veelgestelde-vragen", label: "FAQ", highlight: false },
@@ -140,6 +141,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
 
   const mobileMenuItems = [
     { href: "/apple-carplay-voor-uw-bmw", label: "BMW/MINI CarPlay", highlight: true },
+    { href: "/portfolio", label: "Portfolio", highlight: false },
     { href: "/montage", label: "Studio", highlight: false },
     { href: "/over-ons", label: "Over Ons", highlight: false },
     { href: "/veelgestelde-vragen", label: "FAQ", highlight: false },

@@ -333,7 +333,15 @@ export default function ProductPage() {
   const canAddToCart = product.hasVariations ? (selectedVariation && isInStock) : isInStock;
 
   const productDescription = product.shortDescription || product.description?.toString().substring(0, 160) || `Koop ${product.name} bij Car Audio Limburg. Professionele installatie beschikbaar.`;
-  
+
+  const availableTabs: { value: string; label: string; icon: typeof Play }[] = [];
+  if (product.videoUrl) availableTabs.push({ value: 'video', label: 'Video', icon: Play });
+  if (product.description || product.overviewContent) availableTabs.push({ value: 'description', label: 'Beschrijving', icon: FileText });
+  if (product.features && Array.isArray(product.features) && product.features.length > 0) availableTabs.push({ value: 'features', label: 'Kenmerken', icon: Check });
+  if (product.specifications && Object.keys(product.specifications as Record<string, unknown>).filter(k => !['manualUrl', 'techSheetUrl'].includes(k)).length > 0) availableTabs.push({ value: 'specifications', label: 'Specificaties', icon: FileText });
+  if ((product.downloads && Array.isArray(product.downloads) && product.downloads.length > 0) || (product.specifications && ((product.specifications as Record<string, string>).manualUrl || (product.specifications as Record<string, string>).techSheetUrl))) availableTabs.push({ value: 'downloads', label: 'Downloads', icon: DownloadSimple });
+  if (product.boxContent && Array.isArray(product.boxContent) && product.boxContent.length > 0) availableTabs.push({ value: 'box-content', label: 'In de doos', icon: Cube });
+
   return (
     <div className="min-h-screen bg-black" id="main-content">
       <SEO 
@@ -911,7 +919,7 @@ export default function ProductPage() {
           </div>
         </div>
       </section>
-      {/* Product Information Tabs - Dark Section */}
+      {availableTabs.length > 0 && (
       <section className="bg-zinc-950 py-16 md:py-24 border-t border-[#d0a760]/10" data-testid="product-information" id="product-details">
         <div className="container mx-auto px-4">
           <ScrollReveal animation="fade-up">
@@ -920,82 +928,69 @@ export default function ProductPage() {
                 <span className="w-1 h-6 bg-[#d0a760]"></span>
                 Product Details
               </h2>
-              <Tabs defaultValue="description" className="w-full">
+              <Tabs defaultValue={availableTabs[0].value} className="w-full">
                 <TabsList className="flex overflow-x-auto md:w-full justify-start bg-zinc-900/50 border-2 border-zinc-800 rounded-none p-1.5 h-auto gap-1 backdrop-blur-sm scrollbar-hide">
-                  <TabsTrigger 
-                    value="description" 
-                    className="flex-shrink-0 rounded-none px-4 md:px-6 py-3 md:py-3.5 text-xs md:text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black data-[state=active]:shadow-[0_0_20px_rgba(208,167,96,0.3)] flex items-center gap-1.5 md:gap-2 transition-all duration-300 whitespace-nowrap"
-                  >
-                    <Play weight="duotone" className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                    Beschrijving
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="specifications" 
-                    className="flex-shrink-0 rounded-none px-4 md:px-6 py-3 md:py-3.5 text-xs md:text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black data-[state=active]:shadow-[0_0_20px_rgba(208,167,96,0.3)] flex items-center gap-1.5 md:gap-2 transition-all duration-300 whitespace-nowrap"
-                  >
-                    <FileText weight="duotone" className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                    Specificaties
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="box-content" 
-                    className="flex-shrink-0 rounded-none px-4 md:px-6 py-3 md:py-3.5 text-xs md:text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black data-[state=active]:shadow-[0_0_20px_rgba(208,167,96,0.3)] flex items-center gap-1.5 md:gap-2 transition-all duration-300 whitespace-nowrap"
-                  >
-                    <Cube weight="duotone" className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                    In de doos
-                  </TabsTrigger>
+                  {availableTabs.map((tab) => {
+                    const IconComponent = tab.icon;
+                    return (
+                      <TabsTrigger
+                        key={tab.value}
+                        value={tab.value}
+                        className="flex-shrink-0 rounded-none px-4 md:px-6 py-3 md:py-3.5 text-xs md:text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black data-[state=active]:shadow-[0_0_20px_rgba(208,167,96,0.3)] flex items-center gap-1.5 md:gap-2 transition-all duration-300 whitespace-nowrap"
+                      >
+                        <IconComponent weight="duotone" className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                        {tab.label}
+                      </TabsTrigger>
+                    );
+                  })}
                 </TabsList>
 
-                {/* Description Tab - Combined Overview + Features + Video */}
-                <TabsContent value="description" className="mt-6">
-                  <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8">
-                    {product.videoUrl && (
-                      <div className="mb-8">
-                        <div className="aspect-video bg-black rounded-none overflow-hidden">
-                          <iframe
-                            src={product.videoUrl.replace('watch?v=', 'embed/')}
-                            title={`${product.name} video`}
-                            className="w-full h-full"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                          />
-                        </div>
+                {availableTabs.some(t => t.value === 'video') && (
+                  <TabsContent value="video" className="mt-6">
+                    <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8">
+                      <div className="aspect-video bg-black rounded-none overflow-hidden">
+                        <iframe
+                          src={product.videoUrl!.replace('watch?v=', 'embed/')}
+                          title={`${product.name} video`}
+                          className="w-full h-full"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        />
                       </div>
-                    )}
-                    <div className="prose prose-invert max-w-none mb-8">
-                      {product.overviewContent ? (
-                        <div className="text-white/70 leading-relaxed text-lg whitespace-pre-wrap">
-                          {product.overviewContent}
-                        </div>
-                      ) : product.description ? (
-                        <FormattedDescription text={String(product.description)} />
-                      ) : (
-                        <p className="text-white/40 italic">Geen beschrijving beschikbaar.</p>
-                      )}
                     </div>
-                    
-                    {/* Features integrated into description */}
-                    {product.features && Array.isArray(product.features) && product.features.length > 0 && (
-                      <div className="border-t border-zinc-800 pt-8">
-                        <h3 className="text-lg font-semibold text-white mb-4">Belangrijkste kenmerken</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          {(product.features as string[]).map((feature, index) => (
-                            <div key={index} className="flex items-start gap-3 p-3 bg-zinc-800/50">
-                              <Check weight="duotone" className="w-5 h-5 text-[#d0a760] flex-shrink-0 mt-0.5" />
-                              <span className="text-white/80">{String(feature)}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </TabsContent>
+                  </TabsContent>
+                )}
 
-                {/* Specifications Tab - Combined with Downloads */}
-                <TabsContent value="specifications" className="mt-6">
-                  <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8">
-                    {product.specifications && Object.keys(product.specifications as Record<string, unknown>).length > 0 ? (
+                {availableTabs.some(t => t.value === 'description') && (
+                  <TabsContent value="description" className="mt-6">
+                    <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8">
+                      <div className="prose prose-invert max-w-none">
+                        <FormattedDescription text={String(product.overviewContent || product.description)} />
+                      </div>
+                    </div>
+                  </TabsContent>
+                )}
+
+                {availableTabs.some(t => t.value === 'features') && (
+                  <TabsContent value="features" className="mt-6">
+                    <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8">
+                      <h3 className="text-lg font-semibold text-white mb-4">Belangrijkste kenmerken</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {(product.features as string[]).map((feature, index) => (
+                          <div key={index} className="flex items-start gap-3 p-3 bg-zinc-800/50">
+                            <Check weight="duotone" className="w-5 h-5 text-[#d0a760] flex-shrink-0 mt-0.5" />
+                            <span className="text-white/80">{String(feature)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </TabsContent>
+                )}
+
+                {availableTabs.some(t => t.value === 'specifications') && (
+                  <TabsContent value="specifications" className="mt-6">
+                    <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8">
                       <div className="space-y-8">
-                        {/* Render specs by category if structured, or flat if simple */}
                         {(() => {
                           const specs = product.specifications as Record<string, unknown>;
                           const hasNestedSpecs = Object.values(specs).some(v => typeof v === 'object' && v !== null && !Array.isArray(v));
@@ -1046,73 +1041,67 @@ export default function ProductPage() {
                             );
                           }
                         })()}
-                        
-                        {/* Downloads section integrated */}
-                        {((product.downloads && Array.isArray(product.downloads) && product.downloads.length > 0) || 
-                          (product.specifications && (
-                            (product.specifications as Record<string, string>).manualUrl || 
-                            (product.specifications as Record<string, string>).techSheetUrl
-                          ))) && (
-                          <div className="border-t border-zinc-800 pt-8">
-                            <h3 className="text-lg font-semibold text-white mb-4">Downloads</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                              {product.downloads && Array.isArray(product.downloads) ? (product.downloads as { name: string; url: string; type?: string }[]).map((download, index) => (
-                                <a 
-                                  key={index}
-                                  href={download.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex items-center gap-4 p-4 bg-zinc-800/50 border border-zinc-700 hover:border-[#d0a760] transition-colors group"
-                                >
-                                  <FileText weight="duotone" className="w-6 h-6 text-[#d0a760]" />
-                                  <div className="flex-1">
-                                    <p className="font-medium text-white group-hover:text-[#d0a760]">{download.name}</p>
-                                  </div>
-                                  <DownloadSimple weight="duotone" className="w-5 h-5 text-white/30 group-hover:text-[#d0a760]" />
-                                </a>
-                              )) : null}
-                              {product.specifications && (product.specifications as Record<string, string>).manualUrl && (
-                                <a 
-                                  href={(product.specifications as Record<string, string>).manualUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex items-center gap-4 p-4 bg-zinc-800/50 border border-zinc-700 hover:border-[#d0a760] transition-colors group"
-                                >
-                                  <FileText weight="duotone" className="w-6 h-6 text-[#d0a760]" />
-                                  <div className="flex-1">
-                                    <p className="font-medium text-white group-hover:text-[#d0a760]">Handleiding (PDF)</p>
-                                  </div>
-                                  <DownloadSimple weight="duotone" className="w-5 h-5 text-white/30 group-hover:text-[#d0a760]" />
-                                </a>
-                              )}
-                              {product.specifications && (product.specifications as Record<string, string>).techSheetUrl && (
-                                <a 
-                                  href={(product.specifications as Record<string, string>).techSheetUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex items-center gap-4 p-4 bg-zinc-800/50 border border-zinc-700 hover:border-[#d0a760] transition-colors group"
-                                >
-                                  <FileText weight="duotone" className="w-6 h-6 text-[#d0a760]" />
-                                  <div className="flex-1">
-                                    <p className="font-medium text-white group-hover:text-[#d0a760]">Tech Sheet (PDF)</p>
-                                  </div>
-                                  <DownloadSimple weight="duotone" className="w-5 h-5 text-white/30 group-hover:text-[#d0a760]" />
-                                </a>
-                              )}
-                            </div>
-                          </div>
-                        )}
                       </div>
-                    ) : (
-                      <p className="text-white/40 italic text-center py-8">Geen specificaties beschikbaar.</p>
-                    )}
-                  </div>
-                </TabsContent>
+                    </div>
+                  </TabsContent>
+                )}
 
-                {/* Box Content Tab */}
-                <TabsContent value="box-content" className="mt-6">
-                  <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8">
-                    {product.boxContent && Array.isArray(product.boxContent) && product.boxContent.length > 0 ? (
+                {availableTabs.some(t => t.value === 'downloads') && (
+                  <TabsContent value="downloads" className="mt-6">
+                    <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8">
+                      <h3 className="text-lg font-semibold text-white mb-4">Downloads</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {product.downloads && Array.isArray(product.downloads) ? (product.downloads as { name: string; url: string; type?: string }[]).map((download, index) => (
+                          <a 
+                            key={index}
+                            href={download.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-4 p-4 bg-zinc-800/50 border border-zinc-700 hover:border-[#d0a760] transition-colors group"
+                          >
+                            <FileText weight="duotone" className="w-6 h-6 text-[#d0a760]" />
+                            <div className="flex-1">
+                              <p className="font-medium text-white group-hover:text-[#d0a760]">{download.name}</p>
+                            </div>
+                            <DownloadSimple weight="duotone" className="w-5 h-5 text-white/30 group-hover:text-[#d0a760]" />
+                          </a>
+                        )) : null}
+                        {product.specifications && (product.specifications as Record<string, string>).manualUrl ? (
+                          <a 
+                            href={(product.specifications as Record<string, string>).manualUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-4 p-4 bg-zinc-800/50 border border-zinc-700 hover:border-[#d0a760] transition-colors group"
+                          >
+                            <FileText weight="duotone" className="w-6 h-6 text-[#d0a760]" />
+                            <div className="flex-1">
+                              <p className="font-medium text-white group-hover:text-[#d0a760]">Handleiding (PDF)</p>
+                            </div>
+                            <DownloadSimple weight="duotone" className="w-5 h-5 text-white/30 group-hover:text-[#d0a760]" />
+                          </a>
+                        ) : null}
+                        {product.specifications && (product.specifications as Record<string, string>).techSheetUrl ? (
+                          <a 
+                            href={(product.specifications as Record<string, string>).techSheetUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-4 p-4 bg-zinc-800/50 border border-zinc-700 hover:border-[#d0a760] transition-colors group"
+                          >
+                            <FileText weight="duotone" className="w-6 h-6 text-[#d0a760]" />
+                            <div className="flex-1">
+                              <p className="font-medium text-white group-hover:text-[#d0a760]">Tech Sheet (PDF)</p>
+                            </div>
+                            <DownloadSimple weight="duotone" className="w-5 h-5 text-white/30 group-hover:text-[#d0a760]" />
+                          </a>
+                        ) : null}
+                      </div>
+                    </div>
+                  </TabsContent>
+                )}
+
+                {availableTabs.some(t => t.value === 'box-content') && (
+                  <TabsContent value="box-content" className="mt-6">
+                    <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8">
                       <div className="space-y-3">
                         <h3 className="text-lg font-semibold text-white mb-4">Wat zit er in de doos?</h3>
                         <ul className="space-y-3">
@@ -1126,16 +1115,15 @@ export default function ProductPage() {
                           ))}
                         </ul>
                       </div>
-                    ) : (
-                      <p className="text-white/40 italic text-center py-8">Geen inhoud informatie beschikbaar.</p>
-                    )}
-                  </div>
-                </TabsContent>
+                    </div>
+                  </TabsContent>
+                )}
               </Tabs>
             </div>
           </ScrollReveal>
         </div>
       </section>
+      )}
       {/* Related Products / Upsell Section */}
       {filteredRelatedProducts.length > 0 && (
         <section className="bg-zinc-950 py-16 md:py-24 border-t border-[#d0a760]/10" data-testid="related-products">

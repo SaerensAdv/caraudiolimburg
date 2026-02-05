@@ -16,90 +16,106 @@ interface MigrationOption {
 
 const migrationOptions: MigrationOption[] = [
   {
-    id: "full-migration",
-    title: "Volledige Migratie naar Replit",
-    description: "Alle functionaliteit, data en afbeeldingen worden volledig overgezet naar het nieuwe Replit-platform. WordPress wordt volledig uitgefaseerd.",
-    icon: <Zap className="w-8 h-8" />,
+    id: "wp-nl-new-com",
+    title: "WordPress op .nl, Nieuwe webshop op .com",
+    description: "WordPress blijft actief op caraudiolimburg.nl. De nieuwe webshop gaat live op caraudiolimburg.com. 301 redirects sturen relevante pagina's door.",
+    icon: <Globe className="w-8 h-8" />,
     pros: [
-      "Eén centraal platform voor alles",
-      "Snellere laadtijden en betere prestaties",
-      "Geen afhankelijkheid van WordPress hosting",
-      "Moderne technologie stack (React, Node.js)",
-      "Eenvoudiger onderhoud op lange termijn",
-      "Betere schaalbaarheid",
-      "Geen dubbele hosting kosten"
+      "Geen downtime voor bestaande klanten",
+      "Geleidelijke overgang mogelijk",
+      "SEO-waarde van .nl blijft behouden tijdens transitie",
+      "Tijd om nieuwe platform te testen met echte bezoekers",
+      "Bestaande bookmarks en links blijven werken"
     ],
     cons: [
-      "Eenmalige migratie-inspanning vereist",
-      "Alle afbeeldingen moeten gekopieerd worden",
-      "WordPress kennis niet meer nodig/bruikbaar",
-      "Korte overgangsperiode nodig"
+      "Twee domeinen actief = verwarrend voor klanten",
+      "Dubbele hosting en onderhoudskosten",
+      ".com minder bekend in België/Nederland",
+      "301 redirects vereisen extra configuratie",
+      "Split in SEO-autoriteit tussen domeinen"
     ],
-    timeline: "2-4 weken",
+    timeline: "1-2 weken",
+    cost: "gemiddeld"
+  },
+  {
+    id: "wp-com-new-nl",
+    title: "WordPress naar .com, Nieuwe webshop op .nl",
+    description: "WordPress wordt verplaatst naar caraudiolimburg.com (of uitgefaseerd). De nieuwe webshop gaat live op het hoofddomein caraudiolimburg.nl.",
+    icon: <Zap className="w-8 h-8" />,
+    pros: [
+      "Hoofddomein .nl krijgt de nieuwe, snelle webshop",
+      "Beste SEO-strategie: alle autoriteit op .nl",
+      "Klanten vinden direct het nieuwe platform",
+      "Eén primair domein = duidelijke branding",
+      "Toekomstbestendig: WordPress kan later afgesloten"
+    ],
+    cons: [
+      "Vereist DNS-wijziging voor .nl",
+      "Korte overgangperiode met mogelijke downtime",
+      "Oude links/bookmarks naar WordPress breken (tenzij redirects)",
+      "WordPress hosting moet mogelijk aangepast worden"
+    ],
+    timeline: "2-3 weken",
     cost: "gemiddeld",
     recommended: true
   },
   {
-    id: "hybrid",
-    title: "Hybride Oplossing",
-    description: "De webshop draait op Replit, maar afbeeldingen en sommige content blijven op WordPress gehost. Beide systemen werken samen.",
-    icon: <Cloud className="w-8 h-8" />,
+    id: "full-nl-replace",
+    title: "WordPress volledig vervangen op .nl",
+    description: "WordPress op caraudiolimburg.nl wordt volledig uitgeschakeld. De nieuwe webshop neemt het domein direct over. Geen .com nodig.",
+    icon: <Server className="w-8 h-8" />,
     pros: [
-      "Snellere initiële implementatie",
-      "Bestaande WordPress media blijft beschikbaar",
-      "Geleidelijke overgang mogelijk",
-      "Minder directe migratie-inspanning"
+      "Schone, definitieve migratie",
+      "Geen dubbele kosten of verwarring",
+      "Alle SEO-waarde blijft op .nl",
+      "Eenvoudigste eindsituatie",
+      "Geen legacy systeem om te onderhouden"
     ],
     cons: [
-      "Afhankelijk van twee platforms",
-      "WordPress hosting blijft nodig",
-      "Complexere architectuur",
-      "Potentiële performance issues door externe afbeeldingen",
-      "Dubbele onderhoudskosten",
-      "Als WordPress offline gaat, geen afbeeldingen"
+      "Grotere eenmalige inspanning",
+      "Alle content moet klaar zijn voor livegang",
+      "Geen fallback naar oud systeem",
+      "Risico bij onvoorziene problemen"
     ],
-    timeline: "1-2 weken",
+    timeline: "2-4 weken",
     cost: "laag"
   },
   {
-    id: "phased",
-    title: "Gefaseerde Migratie",
-    description: "Stapsgewijze overgang waarbij eerst de webshop live gaat, en daarna geleidelijk alle content en afbeeldingen worden gemigreerd.",
-    icon: <Clock className="w-8 h-8" />,
+    id: "parallel-soft-launch",
+    title: "Soft launch op subdomein (shop.nl)",
+    description: "Nieuwe webshop gaat live op shop.caraudiolimburg.nl of nieuw.caraudiolimburg.nl. WordPress blijft op hoofddomein totdat alles getest is.",
+    icon: <Cloud className="w-8 h-8" />,
     pros: [
-      "Laag risico door stapsgewijze aanpak",
-      "Meer tijd om alles te testen",
-      "Flexibiliteit in prioritering",
-      "Business continuïteit gewaarborgd",
-      "Mogelijkheid om feedback te verwerken"
+      "Laag risico: WordPress blijft de 'productie' site",
+      "Uitgebreid testen met echte gebruikers mogelijk",
+      "Geen haast om alles in één keer af te ronden",
+      "Selectief verkeer doorsturen voor A/B testing"
     ],
     cons: [
-      "Langere totale doorlooptijd",
-      "Tijdelijk twee systemen beheren",
-      "Meer coördinatie nodig",
-      "Verwarrend voor eindgebruikers tijdens overgang"
+      "Subdomein krijgt minder SEO-autoriteit",
+      "Klanten kunnen verward raken over welke site 'echt' is",
+      "Uiteindelijk nog steeds migratie naar hoofddomein nodig",
+      "Langere totale doorlooptijd"
     ],
-    timeline: "4-8 weken",
-    cost: "gemiddeld"
+    timeline: "1-2 weken (soft launch), daarna definitieve migratie",
+    cost: "laag"
   },
   {
-    id: "wordpress-only",
+    id: "keep-wordpress",
     title: "Blijven bij WordPress",
-    description: "Geen migratie uitvoeren en doorgaan met het bestaande WordPress systeem. Eventueel wel optimalisaties doorvoeren.",
-    icon: <Server className="w-8 h-8" />,
+    description: "Geen migratie uitvoeren. De huidige WordPress webshop blijft actief op .nl. De nieuwe Replit webshop wordt niet gebruikt.",
+    icon: <Clock className="w-8 h-8" />,
     pros: [
-      "Geen migratie-inspanning",
-      "Bekende technologie",
-      "Veel plugins beschikbaar",
-      "Grote community"
+      "Geen migratie-inspanning nodig",
+      "Bekende omgeving en workflows",
+      "Bestaande plugins en thema's blijven werken"
     ],
     cons: [
-      "Beperkte aanpasbaarheid",
-      "Tragere performance",
-      "Beveiligingsrisico's door plugins",
-      "Hogere hosting kosten bij groei",
-      "Geen moderne webshop features",
-      "Investering in nieuwe platform verloren"
+      "Investering in nieuw platform verloren",
+      "WordPress blijft trager dan moderne oplossing",
+      "Beperktere mogelijkheden voor toekomstige features",
+      "Hogere beveiligingsrisico's door plugins",
+      "Onderhoud blijft nodig voor updates"
     ],
     timeline: "N.v.t.",
     cost: "laag"
@@ -306,17 +322,21 @@ export default function MigrationOptions() {
                   <Zap className="w-8 h-8 text-amber-400" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-white mb-2">Volledige Migratie naar Replit</h3>
+                  <h3 className="text-xl font-bold text-white mb-2">WordPress naar .com, Nieuwe webshop op .nl</h3>
                   <p className="text-zinc-300 mb-4">
-                    Op basis van de huidige situatie adviseren wij een volledige migratie. De webshop is al volledig operationeel 
-                    op het nieuwe platform, en de WordPress afbeeldingen zijn succesvol gekoppeld. De volgende stap is het 
-                    kopiëren van alle afbeeldingen naar het nieuwe platform zodat er geen afhankelijkheid meer is van de 
-                    oude WordPress hosting.
+                    Voor de beste SEO-resultaten en klantervaring adviseren wij de nieuwe webshop live te zetten op 
+                    caraudiolimburg.nl (het hoofddomein). WordPress kan tijdelijk naar .com verplaatst worden als backup, 
+                    of direct uitgefaseerd worden. Dit zorgt voor:
                   </p>
+                  <ul className="text-zinc-300 mb-4 space-y-1">
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400" /> Alle SEO-autoriteit blijft op het hoofddomein</li>
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400" /> Klanten vinden direct de nieuwe, snelle webshop</li>
+                    <li className="flex items-center gap-2"><Check className="w-4 h-4 text-green-400" /> Duidelijke branding met één primair domein</li>
+                  </ul>
                   <div className="flex flex-wrap gap-4">
                     <div className="flex items-center gap-2 text-sm text-zinc-400">
                       <Clock className="w-4 h-4" />
-                      Doorlooptijd: 2-4 weken
+                      Doorlooptijd: 2-3 weken
                     </div>
                     <div className="flex items-center gap-2 text-sm text-zinc-400">
                       <Euro className="w-4 h-4" />
@@ -324,7 +344,7 @@ export default function MigrationOptions() {
                     </div>
                     <div className="flex items-center gap-2 text-sm text-zinc-400">
                       <Shield className="w-4 h-4" />
-                      Risico: Laag
+                      Risico: Laag tot gemiddeld
                     </div>
                   </div>
                 </div>
@@ -336,7 +356,7 @@ export default function MigrationOptions() {
         <div>
           <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
             <ArrowRight className="w-6 h-6 text-amber-400" />
-            Volgende Stappen
+            Volgende Stappen (bij gekozen optie)
           </h2>
           <Card className="bg-zinc-900/50 border-zinc-800">
             <CardContent className="p-6">
@@ -344,29 +364,43 @@ export default function MigrationOptions() {
                 <li className="flex items-start gap-4">
                   <span className="flex-shrink-0 w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">1</span>
                   <div>
-                    <h4 className="font-semibold text-white">Keuze migratiestrategie</h4>
-                    <p className="text-zinc-400 text-sm">Bespreken welke optie het beste past bij de wensen en planning</p>
+                    <h4 className="font-semibold text-white">Keuze domein-strategie</h4>
+                    <p className="text-zinc-400 text-sm">Bepalen welk domein (.nl / .com / subdomein) voor welk platform</p>
                   </div>
                 </li>
                 <li className="flex items-start gap-4">
                   <span className="flex-shrink-0 w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">2</span>
                   <div>
-                    <h4 className="font-semibold text-white">Afbeeldingen downloaden en uploaden</h4>
-                    <p className="text-zinc-400 text-sm">Alle WordPress afbeeldingen lokaal opslaan in het nieuwe systeem</p>
+                    <h4 className="font-semibold text-white">Afbeeldingen migreren</h4>
+                    <p className="text-zinc-400 text-sm">WordPress afbeeldingen downloaden en uploaden naar het nieuwe platform</p>
                   </div>
                 </li>
                 <li className="flex items-start gap-4">
                   <span className="flex-shrink-0 w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">3</span>
                   <div>
-                    <h4 className="font-semibold text-white">DNS en domein overzetten</h4>
-                    <p className="text-zinc-400 text-sm">caraudiolimburg.nl laten verwijzen naar het nieuwe platform</p>
+                    <h4 className="font-semibold text-white">301 Redirects instellen</h4>
+                    <p className="text-zinc-400 text-sm">Oude URLs doorverwijzen naar nieuwe locaties (SEO behoud)</p>
                   </div>
                 </li>
                 <li className="flex items-start gap-4">
                   <span className="flex-shrink-0 w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">4</span>
                   <div>
-                    <h4 className="font-semibold text-white">WordPress uitfaseren</h4>
-                    <p className="text-zinc-400 text-sm">Oude hosting opzeggen na succesvolle overgang</p>
+                    <h4 className="font-semibold text-white">DNS-wijzigingen doorvoeren</h4>
+                    <p className="text-zinc-400 text-sm">Domein(en) koppelen aan de juiste platforms</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-4">
+                  <span className="flex-shrink-0 w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">5</span>
+                  <div>
+                    <h4 className="font-semibold text-white">Testen en monitoren</h4>
+                    <p className="text-zinc-400 text-sm">Controleren of alles werkt, verkeer monitoren, SEO-rankings checken</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-4">
+                  <span className="flex-shrink-0 w-8 h-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">6</span>
+                  <div>
+                    <h4 className="font-semibold text-white">WordPress uitfaseren (optioneel)</h4>
+                    <p className="text-zinc-400 text-sm">Na succesvolle overgang: oude hosting opzeggen of als archief behouden</p>
                   </div>
                 </li>
               </ol>

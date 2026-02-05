@@ -365,9 +365,24 @@ export default function ProductPage() {
           </nav>
         </div>
       </div>
+      {/* Mobile Product Title - Above images */}
+      <div className="md:hidden pt-16 px-4 pb-2 bg-black">
+        <Badge className="bg-[#d0a760]/10 text-[#d0a760] border-[#d0a760]/20 rounded-none mb-3 inline-flex">
+          Premium Audio
+        </Badge>
+        <h1 className="text-xl font-bold text-white" data-testid="mobile-product-title">
+          {product.name}
+        </h1>
+        {product.shortDescription && (
+          <p className="text-sm text-white/50 mt-2" data-testid="mobile-product-short-description">
+            {product.shortDescription}
+          </p>
+        )}
+      </div>
+
       {/* Product Section - Black */}
-      <section className="pt-16 md:pt-0 py-8 md:py-24 pb-36 md:pb-24">
-        <div className="container mx-auto px-4 mt-[32px] mb-[48px]">
+      <section className="pt-2 md:pt-0 py-8 md:py-24 pb-52 md:pb-24">
+        <div className="container mx-auto px-4 mt-0 md:mt-[32px] mb-[48px]">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 lg:gap-16">
             {/* Product Images - Mobile Swipeable Gallery */}
             <ScrollReveal animation="fade-right">
@@ -537,8 +552,8 @@ export default function ProductPage() {
             {/* Product Details */}
             <ScrollReveal animation="fade-left">
               <div className="space-y-4 md:space-y-6 px-4 md:px-0" data-testid="product-details">
-                {/* Header */}
-                <div>
+                {/* Header - Desktop only (mobile shows above images) */}
+                <div className="hidden md:block">
                   <div className="flex items-center justify-between mb-3">
                     <Badge className="bg-[#d0a760]/10 text-[#d0a760] border-[#d0a760]/20 rounded-none">
                       Premium Audio
@@ -546,7 +561,7 @@ export default function ProductPage() {
                     {/* Desktop wishlist button */}
                     <button
                       onClick={() => setIsWishlisted(!isWishlisted)}
-                      className="hidden md:block p-2 hover:bg-white/5 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d0a760]"
+                      className="p-2 hover:bg-white/5 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d0a760]"
                       data-testid="button-wishlist"
                       aria-label={isWishlisted ? "Verwijderen uit verlanglijst" : "Toevoegen aan verlanglijst"}
                       aria-pressed={isWishlisted}
@@ -555,12 +570,12 @@ export default function ProductPage() {
                     </button>
                   </div>
                   
-                  <h1 className="text-2xl md:text-4xl font-bold text-white mb-2 md:mb-3" data-testid="product-title">
+                  <h1 className="text-4xl font-bold text-white mb-3" data-testid="product-title">
                     {product.name}
                   </h1>
                   
                   {product.shortDescription && (
-                    <p className="text-base md:text-lg text-white/50" data-testid="product-short-description">
+                    <p className="text-lg text-white/50" data-testid="product-short-description">
                       {product.shortDescription}
                     </p>
                   )}
@@ -1206,8 +1221,8 @@ export default function ProductPage() {
           </ScrollReveal>
         </div>
       </section>
-      {/* Footer - Desktop only */}
-      <div className="hidden md:block">
+      {/* Footer */}
+      <div className="pb-44 md:pb-0">
         <Footer />
       </div>
       {/* Mobile Sticky Bottom Action Bar */}

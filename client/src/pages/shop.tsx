@@ -889,12 +889,10 @@ export default function Shop() {
         </div>
       </section>
 
-      {/* Footer - Desktop only */}
-      <div className="hidden md:block">
-        <Footer />
-      </div>
+      {/* Footer */}
+      <Footer />
       
-      {/* Mobile Bottom Spacer for potential future bottom nav */}
+      {/* Mobile Bottom Spacer */}
       <div className="md:hidden h-4 safe-area-bottom" />
       
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />

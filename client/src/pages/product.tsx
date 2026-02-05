@@ -7,6 +7,7 @@ import { CartSidebar } from "@/components/CartSidebar";
 import { ImageLightbox } from "@/components/ImageLightbox";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
@@ -36,7 +37,14 @@ import {
   Minus,
   CreditCard,
   FileText,
-  Download
+  Download,
+  Play,
+  Box,
+  Puzzle,
+  Star,
+  Mail,
+  Calendar,
+  ExternalLink
 } from "lucide-react";
 import { SiApplepay, SiGooglepay, SiRevolut, SiKlarna } from "react-icons/si";
 import type { Product } from "@shared/schema";
@@ -766,98 +774,294 @@ export default function ProductPage() {
           </div>
         </div>
       </section>
-      {/* Product Information - White Section */}
-      <section className="bg-white py-16 md:py-24" data-testid="product-information">
+      {/* Product Information Tabs - Dark Section */}
+      <section className="bg-zinc-950 py-12 md:py-20 border-t border-white/5" data-testid="product-information">
         <div className="container mx-auto px-4">
           <ScrollReveal animation="fade-up">
-            <div className="max-w-4xl mx-auto">
-              {/* Description */}
-              {product.description && (
-                <div className="mb-12">
-                  <h2 className="text-2xl font-bold text-black mb-6">Beschrijving</h2>
-                  <div className="text-black/70 leading-relaxed text-lg">
-                    <p>{String(product.description)}</p>
-                  </div>
-                </div>
-              )}
+            <div className="max-w-5xl mx-auto">
+              <Tabs defaultValue="overview" className="w-full">
+                <TabsList className="w-full justify-start bg-zinc-900 border border-zinc-800 rounded-none p-1 h-auto overflow-x-auto flex-nowrap scrollbar-hide">
+                  <TabsTrigger 
+                    value="overview" 
+                    className="rounded-none px-4 py-3 text-sm font-medium text-white/60 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black whitespace-nowrap flex items-center gap-2"
+                  >
+                    <Play className="w-4 h-4" />
+                    <span className="hidden sm:inline">Overview</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="specifications" 
+                    className="rounded-none px-4 py-3 text-sm font-medium text-white/60 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black whitespace-nowrap flex items-center gap-2"
+                  >
+                    <FileText className="w-4 h-4" />
+                    <span className="hidden sm:inline">Specificaties</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="box-content" 
+                    className="rounded-none px-4 py-3 text-sm font-medium text-white/60 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black whitespace-nowrap flex items-center gap-2"
+                  >
+                    <Box className="w-4 h-4" />
+                    <span className="hidden sm:inline">Inhoud</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="accessories" 
+                    className="rounded-none px-4 py-3 text-sm font-medium text-white/60 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black whitespace-nowrap flex items-center gap-2"
+                  >
+                    <Puzzle className="w-4 h-4" />
+                    <span className="hidden sm:inline">Accessoires</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="features" 
+                    className="rounded-none px-4 py-3 text-sm font-medium text-white/60 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black whitespace-nowrap flex items-center gap-2"
+                  >
+                    <Star className="w-4 h-4" />
+                    <span className="hidden sm:inline">Kenmerken</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="downloads" 
+                    className="rounded-none px-4 py-3 text-sm font-medium text-white/60 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black whitespace-nowrap flex items-center gap-2"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span className="hidden sm:inline">Downloads</span>
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="support" 
+                    className="rounded-none px-4 py-3 text-sm font-medium text-white/60 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black whitespace-nowrap flex items-center gap-2"
+                  >
+                    <Headphones className="w-4 h-4" />
+                    <span className="hidden sm:inline">Contact</span>
+                  </TabsTrigger>
+                </TabsList>
 
-              {/* Features */}
-              {product.features && Array.isArray(product.features) && product.features.length > 0 ? (
-                <div className="mb-12">
-                  <h2 className="text-2xl font-bold text-black mb-6">Kenmerken</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {(product.features as unknown[]).map((feature, index) => (
-                      <div key={index} className="flex items-start gap-3 p-4 bg-zinc-50 border border-zinc-200">
-                        <Check className="w-5 h-5 text-[#d0a760] flex-shrink-0 mt-0.5" />
-                        <span className="text-black/80">{String(feature)}</span>
+                {/* Overview Tab */}
+                <TabsContent value="overview" className="mt-6">
+                  <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8">
+                    {product.videoUrl && (
+                      <div className="mb-8">
+                        <div className="aspect-video bg-black rounded-none overflow-hidden">
+                          <iframe
+                            src={product.videoUrl.replace('watch?v=', 'embed/')}
+                            title={`${product.name} video`}
+                            className="w-full h-full"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        </div>
                       </div>
-                    ))}
+                    )}
+                    <div className="prose prose-invert max-w-none">
+                      {product.overviewContent ? (
+                        <div className="text-white/70 leading-relaxed text-lg whitespace-pre-wrap">
+                          {product.overviewContent}
+                        </div>
+                      ) : product.description ? (
+                        <div className="text-white/70 leading-relaxed text-lg">
+                          <p>{String(product.description)}</p>
+                        </div>
+                      ) : (
+                        <p className="text-white/40 italic">Geen beschrijving beschikbaar.</p>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ) : null}
+                </TabsContent>
 
-              {/* Specifications */}
-              {product.specifications && (
-                <div className="mb-12">
-                  <h2 className="text-2xl font-bold text-black mb-6">Specificaties</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {Object.entries(product.specifications as Record<string, string | number | boolean>)
-                      .filter(([key]) => !['manualUrl', 'techSheetUrl'].includes(key))
-                      .map(([key, value]) => (
-                      <div key={key} className="p-4 bg-zinc-50 border border-zinc-200">
-                        <p className="text-xs text-black/40 uppercase tracking-wider mb-1">{key}</p>
-                        <p className="text-lg font-medium text-black">{String(value)}</p>
+                {/* Specifications Tab */}
+                <TabsContent value="specifications" className="mt-6">
+                  <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8">
+                    {product.specifications && Object.keys(product.specifications as Record<string, unknown>).length > 0 ? (
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <tbody>
+                            {Object.entries(product.specifications as Record<string, string | number | boolean>)
+                              .filter(([key]) => !['manualUrl', 'techSheetUrl'].includes(key))
+                              .map(([key, value], index) => (
+                                <tr key={key} className={index % 2 === 0 ? 'bg-zinc-800/50' : ''}>
+                                  <td className="px-4 py-3 text-white/50 text-sm font-medium uppercase tracking-wider w-1/3">
+                                    {key}
+                                  </td>
+                                  <td className="px-4 py-3 text-white font-medium">
+                                    {String(value)}
+                                  </td>
+                                </tr>
+                              ))}
+                          </tbody>
+                        </table>
                       </div>
-                    ))}
+                    ) : (
+                      <p className="text-white/40 italic text-center py-8">Geen specificaties beschikbaar.</p>
+                    )}
                   </div>
-                </div>
-              )}
+                </TabsContent>
 
-              {/* Documentation Downloads */}
-              {product.specifications && (
-                (product.specifications as Record<string, string>).manualUrl || 
-                (product.specifications as Record<string, string>).techSheetUrl
-              ) && (
-                <div>
-                  <h2 className="text-2xl font-bold text-black mb-6">Documentatie</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {(product.specifications as Record<string, string>).manualUrl && (
-                      <a 
-                        href={(product.specifications as Record<string, string>).manualUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-4 p-4 bg-zinc-50 border border-zinc-200 hover:border-[#d0a760] hover:bg-zinc-100 transition-colors group"
-                      >
-                        <div className="p-3 bg-[#d0a760]/10 group-hover:bg-[#d0a760]/20 transition-colors">
-                          <FileText className="w-6 h-6 text-[#d0a760]" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-medium text-black group-hover:text-[#d0a760] transition-colors">Handleiding</p>
-                          <p className="text-sm text-black/50">Installatie & gebruikershandleiding (PDF)</p>
-                        </div>
-                        <Download className="w-5 h-5 text-black/30 group-hover:text-[#d0a760] transition-colors" />
-                      </a>
-                    )}
-                    {(product.specifications as Record<string, string>).techSheetUrl && (
-                      <a 
-                        href={(product.specifications as Record<string, string>).techSheetUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-4 p-4 bg-zinc-50 border border-zinc-200 hover:border-[#d0a760] hover:bg-zinc-100 transition-colors group"
-                      >
-                        <div className="p-3 bg-[#d0a760]/10 group-hover:bg-[#d0a760]/20 transition-colors">
-                          <FileText className="w-6 h-6 text-[#d0a760]" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-medium text-black group-hover:text-[#d0a760] transition-colors">Technische Specificaties</p>
-                          <p className="text-sm text-black/50">Gedetailleerde tech sheet (PDF)</p>
-                        </div>
-                        <Download className="w-5 h-5 text-black/30 group-hover:text-[#d0a760] transition-colors" />
-                      </a>
+                {/* Box Content Tab */}
+                <TabsContent value="box-content" className="mt-6">
+                  <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8">
+                    {product.boxContent && Array.isArray(product.boxContent) && product.boxContent.length > 0 ? (
+                      <div className="space-y-3">
+                        <h3 className="text-lg font-semibold text-white mb-4">Wat zit er in de doos?</h3>
+                        <ul className="space-y-3">
+                          {(product.boxContent as (string | { item: string; quantity?: number })[]).map((item, index) => (
+                            <li key={index} className="flex items-start gap-3 p-3 bg-zinc-800/50 border border-zinc-700">
+                              <Box className="w-5 h-5 text-[#d0a760] flex-shrink-0 mt-0.5" />
+                              <span className="text-white/80">
+                                {typeof item === 'string' ? item : `${item.quantity ? `${item.quantity}x ` : ''}${item.item}`}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : (
+                      <p className="text-white/40 italic text-center py-8">Geen inhoud informatie beschikbaar.</p>
                     )}
                   </div>
-                </div>
-              )}
+                </TabsContent>
+
+                {/* Accessories Tab */}
+                <TabsContent value="accessories" className="mt-6">
+                  <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8">
+                    {product.accessories && Array.isArray(product.accessories) && product.accessories.length > 0 ? (
+                      <div className="space-y-4">
+                        <h3 className="text-lg font-semibold text-white mb-4">Bijbehorende Accessoires</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {(product.accessories as (string | { productId?: string; name: string; description?: string })[]).map((accessory, index) => (
+                            <div key={index} className="flex items-start gap-3 p-4 bg-zinc-800/50 border border-zinc-700 hover:border-[#d0a760]/50 transition-colors">
+                              <Puzzle className="w-5 h-5 text-[#d0a760] flex-shrink-0 mt-0.5" />
+                              <div>
+                                <p className="text-white font-medium">
+                                  {typeof accessory === 'string' ? accessory : accessory.name}
+                                </p>
+                                {typeof accessory !== 'string' && accessory.description && (
+                                  <p className="text-white/50 text-sm mt-1">{accessory.description}</p>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-white/40 italic text-center py-8">Geen accessoires beschikbaar voor dit product.</p>
+                    )}
+                  </div>
+                </TabsContent>
+
+                {/* Features Tab */}
+                <TabsContent value="features" className="mt-6">
+                  <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8">
+                    {product.features && Array.isArray(product.features) && product.features.length > 0 ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {(product.features as string[]).map((feature, index) => (
+                          <div key={index} className="flex items-start gap-3 p-4 bg-zinc-800/50 border border-zinc-700">
+                            <div className="p-2 bg-[#d0a760]/10 flex-shrink-0">
+                              <Check className="w-4 h-4 text-[#d0a760]" />
+                            </div>
+                            <span className="text-white/80 pt-1">{String(feature)}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-white/40 italic text-center py-8">Geen kenmerken beschikbaar.</p>
+                    )}
+                  </div>
+                </TabsContent>
+
+                {/* Downloads Tab */}
+                <TabsContent value="downloads" className="mt-6">
+                  <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8">
+                    {(product.downloads && Array.isArray(product.downloads) && product.downloads.length > 0) || 
+                     (product.specifications && (
+                       (product.specifications as Record<string, string>).manualUrl || 
+                       (product.specifications as Record<string, string>).techSheetUrl
+                     )) ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {product.downloads && Array.isArray(product.downloads) ? (product.downloads as { name: string; url: string; type?: string }[]).map((download, index) => (
+                          <a 
+                            key={index}
+                            href={download.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-4 p-4 bg-zinc-800/50 border border-zinc-700 hover:border-[#d0a760] hover:bg-zinc-800 transition-colors group"
+                          >
+                            <div className="p-3 bg-[#d0a760]/10 group-hover:bg-[#d0a760]/20 transition-colors">
+                              <FileText className="w-6 h-6 text-[#d0a760]" />
+                            </div>
+                            <div className="flex-1">
+                              <p className="font-medium text-white group-hover:text-[#d0a760] transition-colors">{download.name}</p>
+                              {download.type && (
+                                <p className="text-sm text-white/50">{download.type}</p>
+                              )}
+                            </div>
+                            <Download className="w-5 h-5 text-white/30 group-hover:text-[#d0a760] transition-colors" />
+                          </a>
+                        )) : null}
+                        {product.specifications && (product.specifications as Record<string, string>).manualUrl ? (
+                          <a 
+                            href={(product.specifications as Record<string, string>).manualUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-4 p-4 bg-zinc-800/50 border border-zinc-700 hover:border-[#d0a760] hover:bg-zinc-800 transition-colors group"
+                          >
+                            <div className="p-3 bg-[#d0a760]/10 group-hover:bg-[#d0a760]/20 transition-colors">
+                              <FileText className="w-6 h-6 text-[#d0a760]" />
+                            </div>
+                            <div className="flex-1">
+                              <p className="font-medium text-white group-hover:text-[#d0a760] transition-colors">Handleiding</p>
+                              <p className="text-sm text-white/50">Installatie & gebruikershandleiding (PDF)</p>
+                            </div>
+                            <Download className="w-5 h-5 text-white/30 group-hover:text-[#d0a760] transition-colors" />
+                          </a>
+                        ) : null}
+                        {product.specifications && (product.specifications as Record<string, string>).techSheetUrl ? (
+                          <a 
+                            href={(product.specifications as Record<string, string>).techSheetUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-4 p-4 bg-zinc-800/50 border border-zinc-700 hover:border-[#d0a760] hover:bg-zinc-800 transition-colors group"
+                          >
+                            <div className="p-3 bg-[#d0a760]/10 group-hover:bg-[#d0a760]/20 transition-colors">
+                              <FileText className="w-6 h-6 text-[#d0a760]" />
+                            </div>
+                            <div className="flex-1">
+                              <p className="font-medium text-white group-hover:text-[#d0a760] transition-colors">Technische Specificaties</p>
+                              <p className="text-sm text-white/50">Gedetailleerde tech sheet (PDF)</p>
+                            </div>
+                            <Download className="w-5 h-5 text-white/30 group-hover:text-[#d0a760] transition-colors" />
+                          </a>
+                        ) : null}
+                      </div>
+                    ) : (
+                      <p className="text-white/40 italic text-center py-8">Geen downloads beschikbaar.</p>
+                    )}
+                  </div>
+                </TabsContent>
+
+                {/* Support/Contact Tab */}
+                <TabsContent value="support" className="mt-6">
+                  <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8">
+                    <div className="text-center max-w-2xl mx-auto">
+                      <div className="inline-flex items-center justify-center p-4 bg-[#d0a760]/10 mb-6">
+                        <Headphones className="w-10 h-10 text-[#d0a760]" />
+                      </div>
+                      <h3 className="text-2xl font-bold text-white mb-4">Hulp nodig bij dit product?</h3>
+                      <p className="text-white/60 mb-8">
+                        Onze experts staan klaar om al je vragen te beantwoorden. Neem contact met ons op of plan direct een afspraak voor installatie.
+                      </p>
+                      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <Link href="/contact">
+                          <Button className="w-full sm:w-auto bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none px-8 py-6">
+                            <Mail className="w-5 h-5 mr-2" />
+                            Neem Contact Op
+                          </Button>
+                        </Link>
+                        <Link href="/afspraak-maken">
+                          <Button variant="outline" className="w-full sm:w-auto border-white/20 text-white hover:bg-white/10 rounded-none px-8 py-6">
+                            <Calendar className="w-5 h-5 mr-2" />
+                            Plan een Afspraak
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+              </Tabs>
             </div>
           </ScrollReveal>
         </div>

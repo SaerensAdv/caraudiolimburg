@@ -49,11 +49,20 @@ function PortfolioOverview() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("all");
 
+  const apiUrl = selectedCategory === "all" 
+    ? "/api/portfolio" 
+    : `/api/portfolio?category=${selectedCategory}`;
+
   const { data: projects, isLoading } = useQuery<PortfolioProject[]>({
-    queryKey: ["/api/portfolio", { category: selectedCategory === "all" ? undefined : selectedCategory }],
+    queryKey: ["/api/portfolio", selectedCategory],
+    queryFn: async () => {
+      const response = await fetch(apiUrl);
+      if (!response.ok) throw new Error("Failed to fetch projects");
+      return response.json();
+    },
   });
 
-  const filteredProjects = projects?.filter(p => p.isPublished) || [];
+  const filteredProjects = projects || [];
 
   return (
     <div className="min-h-screen bg-black" id="main-content">

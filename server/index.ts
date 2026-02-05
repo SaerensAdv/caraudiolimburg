@@ -245,6 +245,9 @@ const shortCacheOptions = {
 app.use('/products', express.static(path.join(process.cwd(), 'public', 'products'), staticCacheOptions));
 app.use('/public/products', express.static(path.join(process.cwd(), 'public', 'products'), staticCacheOptions));
 
+// Serve PDF downloads (manuals, tech sheets, etc.)
+app.use('/downloads', express.static(path.join(process.cwd(), 'public', 'downloads'), staticCacheOptions));
+
 // Serve blog images
 app.use('/blog-images', express.static(path.join(process.cwd(), 'public', 'blog-images'), staticCacheOptions));
 

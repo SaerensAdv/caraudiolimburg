@@ -118,7 +118,18 @@ Door een bestelling te plaatsen of een afspraak te maken, gaat u akkoord met dez
                   <strong>Car Audio Limburg</strong>
                 </p>
                 <p className="text-white/60 text-sm">
-                  Dr. Nolenslaan 157c, 6136 GM Sittard | KvK: 12345678 | BTW: NL123456789B01
+                  Dr. Nolenslaan 157c, 6136 GM Sittard | KvK: 69446415 | BTW: NL857877355B01
+                </p>
+                <p className="text-white/40 text-xs mt-2">
+                  Online geschillenbeslechting:{" "}
+                  <a 
+                    href="https://ec.europa.eu/consumers/odr/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-[#d0a760] hover:underline"
+                  >
+                    https://ec.europa.eu/consumers/odr/
+                  </a>
                 </p>
               </div>
             </ScrollReveal>

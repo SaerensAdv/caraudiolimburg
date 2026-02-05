@@ -123,6 +123,20 @@ export function Footer() {
               </a>
             </div>
           </div>
+          <div className="text-center mt-4 pt-4 border-t border-zinc-800/50">
+            <p className="text-xs text-white/40">
+              Online geschillenbeslechting:{" "}
+              <a 
+                href="https://ec.europa.eu/consumers/odr/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-[#d0a760] hover:underline"
+                data-testid="footer-link-odr"
+              >
+                https://ec.europa.eu/consumers/odr/
+              </a>
+            </p>
+          </div>
         </div>
       </div>
     </footer>

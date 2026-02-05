@@ -903,7 +903,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/quote-requests', isAuthenticated, async (req, res) => {
+  app.get('/api/quote-requests', isAdmin, async (req, res) => {
     try {
       const quotes = await storage.getQuoteRequests();
       res.json(quotes);
@@ -988,24 +988,58 @@ ${message || 'Geen aanvullende informatie'}`
     }
     
     try {
-      const { amount } = req.body;
+      const userId = (req as any).user.id;
       
-      console.log("Creating payment intent with amount:", amount);
-      console.log("User ID:", (req as any).user.id);
-      console.log("Stripe configured:", !!stripe);
+      // Server-side price validation - fetch cart items from database
+      const cartItems = await storage.getCartItems(userId);
       
-      if (!amount || amount <= 0) {
-        return res.status(400).json({ message: "Invalid amount provided" });
+      if (!cartItems || cartItems.length === 0) {
+        return res.status(400).json({ message: "Cart is empty" });
+      }
+      
+      // Calculate total from actual product prices in database
+      let subtotal = 0;
+      let hasInstallation = false;
+      
+      for (const cartItem of cartItems) {
+        const product = await storage.getProduct(cartItem.productId);
+        if (!product) {
+          return res.status(400).json({ message: `Product not found: ${cartItem.productId}` });
+        }
+        
+        let price = parseFloat(product.price);
+        
+        // Handle variations if present
+        if (cartItem.variationId) {
+          const variation = await storage.getProductVariation(cartItem.variationId);
+          if (variation) {
+            price = parseFloat(variation.price);
+          }
+        }
+        
+        subtotal += price * cartItem.quantity;
+        
+        if (cartItem.needsInstallation) {
+          hasInstallation = true;
+        }
+      }
+      
+      const installationFee = hasInstallation ? 89 : 0;
+      const shipping = subtotal >= 50 ? 0 : 5.95;
+      const total = subtotal + installationFee + shipping;
+      
+      if (total <= 0) {
+        return res.status(400).json({ message: "Invalid cart total" });
       }
       
       const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(amount * 100), // Convert to cents
+        amount: Math.round(total * 100), // Convert to cents
         currency: "eur",
         automatic_payment_methods: {
           enabled: true,
         },
         metadata: {
-          userId: (req as any).user.id,
+          userId: userId,
         },
       });
       res.json({ clientSecret: paymentIntent.client_secret });

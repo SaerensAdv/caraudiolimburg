@@ -1,12 +1,37 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { Express } from "express";
+import { Express, Request, Response, NextFunction } from "express";
 import session from "express-session";
 import { randomBytes } from "crypto";
 import bcrypt from "bcrypt";
 import { storage } from "./storage";
 import type { User as DatabaseUser } from "@shared/schema";
 import connectPg from "connect-pg-simple";
+
+// Simple rate limiter
+const loginAttempts = new Map<string, { count: number; resetTime: number }>();
+
+function rateLimiter(maxAttempts: number, windowMs: number) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const ip = req.ip || req.socket.remoteAddress || 'unknown';
+    const now = Date.now();
+    const record = loginAttempts.get(ip);
+    
+    if (!record || now > record.resetTime) {
+      loginAttempts.set(ip, { count: 1, resetTime: now + windowMs });
+      return next();
+    }
+    
+    if (record.count >= maxAttempts) {
+      return res.status(429).json({ message: 'Te veel pogingen. Probeer later opnieuw.' });
+    }
+    
+    record.count++;
+    next();
+  };
+}
+
+const authRateLimiter = rateLimiter(5, 15 * 60 * 1000); // 5 attempts per 15 minutes
 
 declare global {
   namespace Express {
@@ -34,14 +59,19 @@ export function setupAuth(app: Express) {
     ttl: 7 * 24 * 60 * 60, // 7 days
   });
 
+  if (!process.env.SESSION_SECRET) {
+    throw new Error('SESSION_SECRET environment variable is required');
+  }
+
   const sessionSettings: session.SessionOptions = {
-    secret: process.env.SESSION_SECRET || 'fallback-secret-key',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store: sessionStore,
     cookie: {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     },
   };
@@ -101,7 +131,7 @@ export function setupAuth(app: Express) {
   });
 
   // Email/Password Registration
-  app.post('/api/auth/register', async (req, res, next) => {
+  app.post('/api/auth/register', authRateLimiter, async (req, res, next) => {
     try {
       const { email, password, firstName, lastName } = req.body;
 
@@ -135,7 +165,7 @@ export function setupAuth(app: Express) {
   });
 
   // Email/Password Login
-  app.post('/api/auth/login', (req, res, next) => {
+  app.post('/api/auth/login', authRateLimiter, (req, res, next) => {
     passport.authenticate('local', (err: any, user: any, info: any) => {
       if (err) {
         return res.status(500).json({ message: "Login fout" });

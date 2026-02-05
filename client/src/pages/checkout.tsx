@@ -103,6 +103,7 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems, isGuest = false }: 
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const {
     register,
@@ -339,12 +340,35 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems, isGuest = false }: 
             </div>
           </div>
 
+          <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8">
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={acceptedTerms}
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                className="mt-1 w-5 h-5 accent-[#d0a760] bg-black border-zinc-700"
+                data-testid="checkbox-terms"
+              />
+              <span className="text-sm text-white/80">
+                Ik ga akkoord met de{" "}
+                <a 
+                  href="/algemene-voorwaarden" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-[#d0a760] hover:underline"
+                >
+                  algemene voorwaarden
+                </a>
+              </span>
+            </label>
+          </div>
+
           <div className="hidden lg:block">
             <Button
               type="submit"
               size="lg"
               className="w-full bg-[#d0a760] hover:bg-[#b8954e] text-black font-semibold h-14 rounded-none text-lg"
-              disabled={!stripe || isProcessing}
+              disabled={!stripe || isProcessing || !acceptedTerms}
               data-testid="button-place-order"
             >
               {isProcessing ? (
@@ -467,7 +491,7 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems, isGuest = false }: 
           form="checkout-form"
           size="lg"
           className="w-full bg-[#d0a760] hover:bg-[#b8954e] text-black font-semibold h-14 rounded-none text-lg"
-          disabled={!stripe || isProcessing}
+          disabled={!stripe || isProcessing || !acceptedTerms}
           data-testid="button-place-order-mobile"
           onClick={handleSubmit(onSubmit)}
         >

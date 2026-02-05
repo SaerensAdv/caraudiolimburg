@@ -28,6 +28,7 @@ import Voorwaarden from "@/pages/voorwaarden";
 import Blog from "@/pages/blog";
 import BlogPostPage from "@/pages/blog-post";
 import DemoTools from "@/pages/demo-tools";
+import MigrationOptions from "@/pages/migration-options";
 import { useState, useEffect } from "react";
 
 function ScrollToTop() {
@@ -90,6 +91,7 @@ function Router() {
       <Route path="/blog/:slug" component={BlogPostPage} />
       <Route path="/demo-tools" component={DemoTools} />
       <Route path="/integraties" component={DemoTools} />
+      <Route path="/migration-options" component={MigrationOptions} />
       <Route component={NotFound} />
     </Switch>
   );

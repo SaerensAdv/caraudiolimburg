@@ -581,6 +581,36 @@ export type InsertBlogCategory = z.infer<typeof insertBlogCategorySchema>;
 export type BlogPost = typeof blogPosts.$inferSelect;
 export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
 
+// Portfolio projects - showcase completed installation work
+export const portfolioProjects = pgTable("portfolio_projects", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: varchar("title").notNull(),
+  slug: varchar("slug").notNull().unique(),
+  shortDescription: text("short_description"),
+  fullDescription: text("full_description"),
+  vehicleMake: varchar("vehicle_make"),
+  vehicleModel: varchar("vehicle_model"),
+  vehicleYear: varchar("vehicle_year"),
+  category: varchar("category"), // soundupgrade, carplay, entertainment, custom
+  images: jsonb("images").$type<string[]>().default([]),
+  featuredImage: varchar("featured_image"),
+  components: jsonb("components").$type<string[]>().default([]), // list of installed components
+  isFeatured: boolean("is_featured").default(false),
+  isPublished: boolean("is_published").default(true),
+  publishedAt: timestamp("published_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertPortfolioProjectSchema = createInsertSchema(portfolioProjects).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type PortfolioProject = typeof portfolioProjects.$inferSelect;
+export type InsertPortfolioProject = z.infer<typeof insertPortfolioProjectSchema>;
+
 // ClickUp configuration for scheduled jobs
 export const clickupConfig = pgTable("clickup_config", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),

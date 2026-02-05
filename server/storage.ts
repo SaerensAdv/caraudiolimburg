@@ -15,6 +15,7 @@ import {
   wishlists,
   blogPosts,
   blogCategories,
+  portfolioProjects,
   type User,
   type UpsertUser,
   type Product,
@@ -48,6 +49,8 @@ import {
   type ProductVehicleCompatibility,
   type InsertProductVehicleCompatibility,
   type ProductVariation,
+  type PortfolioProject,
+  type InsertPortfolioProject,
   type InsertProductVariation,
 } from "@shared/schema";
 import { db } from "./db";
@@ -997,6 +1000,76 @@ export class DatabaseStorage implements IStorage {
     await db
       .delete(productVariations)
       .where(eq(productVariations.productId, productId));
+  }
+
+  // Portfolio project operations
+  async getPortfolioProjects(options: {
+    category?: string;
+    featured?: boolean;
+    published?: boolean;
+    limit?: number;
+    offset?: number;
+  } = {}): Promise<PortfolioProject[]> {
+    const conditions = [];
+    
+    if (options.category) {
+      conditions.push(eq(portfolioProjects.category, options.category));
+    }
+    if (options.featured !== undefined) {
+      conditions.push(eq(portfolioProjects.isFeatured, options.featured));
+    }
+    if (options.published !== undefined) {
+      conditions.push(eq(portfolioProjects.isPublished, options.published));
+    }
+
+    let query = db.select().from(portfolioProjects);
+    
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions)) as any;
+    }
+    
+    query = query.orderBy(desc(portfolioProjects.publishedAt)) as any;
+    
+    if (options.limit) {
+      query = query.limit(options.limit) as any;
+    }
+    if (options.offset) {
+      query = query.offset(options.offset) as any;
+    }
+
+    return await query;
+  }
+
+  async getPortfolioProject(id: string): Promise<PortfolioProject | undefined> {
+    const [project] = await db.select().from(portfolioProjects).where(eq(portfolioProjects.id, id));
+    return project;
+  }
+
+  async getPortfolioProjectBySlug(slug: string): Promise<PortfolioProject | undefined> {
+    const [project] = await db.select().from(portfolioProjects).where(eq(portfolioProjects.slug, slug));
+    return project;
+  }
+
+  async createPortfolioProject(project: InsertPortfolioProject): Promise<PortfolioProject> {
+    const [newProject] = await db.insert(portfolioProjects).values(project).returning();
+    return newProject;
+  }
+
+  async updatePortfolioProject(id: string, updates: Partial<InsertPortfolioProject>): Promise<PortfolioProject | undefined> {
+    const [updated] = await db
+      .update(portfolioProjects)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(portfolioProjects.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deletePortfolioProject(id: string): Promise<boolean> {
+    const result = await db
+      .delete(portfolioProjects)
+      .where(eq(portfolioProjects.id, id))
+      .returning();
+    return result.length > 0;
   }
 }
 

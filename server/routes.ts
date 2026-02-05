@@ -2279,6 +2279,88 @@ ${message || 'Geen aanvullende informatie'}`
   }
 
   // ============================================
+  // Portfolio Routes - Public
+  // ============================================
+
+  // Get all portfolio projects (public)
+  app.get('/api/portfolio', async (req, res) => {
+    try {
+      const { category, featured, limit, offset } = req.query;
+      const projects = await storage.getPortfolioProjects({
+        category: category as string,
+        featured: featured === 'true' ? true : undefined,
+        published: true,
+        limit: limit ? parseInt(limit as string) : undefined,
+        offset: offset ? parseInt(offset as string) : undefined,
+      });
+      res.json(projects);
+    } catch (error) {
+      console.error("Error fetching portfolio projects:", error);
+      res.status(500).json({ message: "Failed to fetch portfolio projects" });
+    }
+  });
+
+  // Get single portfolio project by slug (public)
+  app.get('/api/portfolio/:slug', async (req, res) => {
+    try {
+      const project = await storage.getPortfolioProjectBySlug(req.params.slug);
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+      res.json(project);
+    } catch (error) {
+      console.error("Error fetching portfolio project:", error);
+      res.status(500).json({ message: "Failed to fetch portfolio project" });
+    }
+  });
+
+  // Admin portfolio routes
+  app.get('/api/admin/portfolio', isAdmin, async (req: any, res) => {
+    try {
+      const projects = await storage.getPortfolioProjects({});
+      res.json(projects);
+    } catch (error) {
+      console.error("Error fetching portfolio projects:", error);
+      res.status(500).json({ message: "Failed to fetch portfolio projects" });
+    }
+  });
+
+  app.post('/api/admin/portfolio', isAdmin, async (req: any, res) => {
+    try {
+      const project = await storage.createPortfolioProject(req.body);
+      res.status(201).json(project);
+    } catch (error: any) {
+      console.error("Error creating portfolio project:", error);
+      res.status(500).json({ message: error.message || "Failed to create portfolio project" });
+    }
+  });
+
+  app.put('/api/admin/portfolio/:id', isAdmin, async (req: any, res) => {
+    try {
+      const project = await storage.updatePortfolioProject(req.params.id, req.body);
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+      res.json(project);
+    } catch (error: any) {
+      console.error("Error updating portfolio project:", error);
+      res.status(500).json({ message: error.message || "Failed to update portfolio project" });
+    }
+  });
+
+  app.delete('/api/admin/portfolio/:id', isAdmin, async (req: any, res) => {
+    try {
+      const deleted = await storage.deletePortfolioProject(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+      res.json({ message: "Portfolio project deleted" });
+    } catch (error) {
+      console.error("Error deleting portfolio project:", error);
+      res.status(500).json({ message: "Failed to delete portfolio project" });
+    }
+  });
+
   // Blog Routes - Public
   // ============================================
 

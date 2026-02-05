@@ -627,7 +627,7 @@ export default function ProductPage() {
                 )}
 
                 {/* Price - Mobile compact, Desktop full - Enhanced visibility */}
-                <div className="py-6 md:py-8 border-y border-[#d0a760]/20 bg-gradient-to-r from-[#d0a760]/5 via-transparent to-[#d0a760]/5" data-testid="product-pricing">
+                <div className="py-6 md:py-8 border-y border-[#d0a760]/20 bg-zinc-900/50 -mx-4 px-4 md:mx-0 md:px-0 md:bg-gradient-to-r md:from-[#d0a760]/5 md:via-transparent md:to-[#d0a760]/5" data-testid="product-pricing">
                   <div className="flex items-baseline gap-3 md:gap-4 mb-3 md:mb-4">
                     <span className="text-4xl md:text-5xl font-bold text-white drop-shadow-[0_0_20px_rgba(208,167,96,0.3)]">
                       €{currentPrice.toFixed(0)}

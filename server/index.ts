@@ -251,6 +251,9 @@ app.use('/downloads', express.static(path.join(process.cwd(), 'public', 'downloa
 // Serve blog images
 app.use('/blog-images', express.static(path.join(process.cwd(), 'public', 'blog-images'), staticCacheOptions));
 
+// Serve portfolio images
+app.use('/portfolio', express.static(path.join(process.cwd(), 'public', 'portfolio'), staticCacheOptions));
+
 // Serve attached assets (stock images, etc.)
 app.use('/attached_assets', express.static(path.join(process.cwd(), 'attached_assets'), shortCacheOptions));
 

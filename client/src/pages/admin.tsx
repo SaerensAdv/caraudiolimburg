@@ -1558,6 +1558,66 @@ export default function Admin() {
                     {isOptimizing ? "Optimaliseren..." : "Optimaliseer Afbeeldingen"}
                   </Button>
 
+                  <Button
+                    variant="outline"
+                    onClick={async () => {
+                      try {
+                        const response = await fetch('/api/admin/export-data', { credentials: 'include' });
+                        const data = await response.json();
+                        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `car-audio-limburg-export-${new Date().toISOString().split('T')[0]}.json`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                        toast({ title: "Export succesvol", description: "Data is gedownload als JSON bestand." });
+                      } catch (error) {
+                        toast({ title: "Export mislukt", description: "Er ging iets mis bij het exporteren.", variant: "destructive" });
+                      }
+                    }}
+                    className="bg-green-600/20 border-green-600/50 text-green-400 hover:bg-green-600/30 hover:text-green-300 rounded-none"
+                    data-testid="button-export-data"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Export Data
+                  </Button>
+
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept=".json"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        try {
+                          const text = await file.text();
+                          const importData = JSON.parse(text);
+                          const response = await apiRequest('POST', '/api/admin/import-data', importData);
+                          const result = await response.json();
+                          toast({ 
+                            title: "Import succesvol", 
+                            description: `Producten: ${result.results.products.imported} nieuw, ${result.results.products.updated} bijgewerkt` 
+                          });
+                          queryClient.invalidateQueries({ queryKey: ['/api/admin/products'] });
+                          queryClient.invalidateQueries({ queryKey: ['/api/products'] });
+                        } catch (error) {
+                          toast({ title: "Import mislukt", description: "Controleer het JSON bestand.", variant: "destructive" });
+                        }
+                        e.target.value = '';
+                      }}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      data-testid="input-import-data"
+                    />
+                    <Button
+                      variant="outline"
+                      className="bg-blue-600/20 border-blue-600/50 text-blue-400 hover:bg-blue-600/30 hover:text-blue-300 rounded-none"
+                    >
+                      <Upload className="w-4 h-4 mr-2" />
+                      Import Data
+                    </Button>
+                  </div>
+
                   <Dialog open={isProductDialogOpen} onOpenChange={(open) => {
                     setIsProductDialogOpen(open);
                     if (!open) {

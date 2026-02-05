@@ -3112,6 +3112,183 @@ Sitemap: https://caraudiolimburg.com/sitemap.xml
     }
   });
 
+  // Data Export endpoint - exports all data for migration
+  app.get('/api/admin/export-data', isAdmin, async (req: any, res) => {
+    try {
+      const [categories, brands, vehicleMakes, products] = await Promise.all([
+        storage.getCategories(),
+        storage.getBrands(),
+        storage.getVehicleMakes(),
+        storage.getProducts()
+      ]);
+
+      // Get all vehicle models for all makes
+      const vehicleModelsPromises = vehicleMakes.map(make => storage.getVehicleModels(make.id));
+      const vehicleModelsArrays = await Promise.all(vehicleModelsPromises);
+      const vehicleModels = vehicleModelsArrays.flat();
+
+      // Get all product variations and compatibility
+      const productVariationsData: any[] = [];
+      const productCompatibilityData: any[] = [];
+      
+      for (const product of products) {
+        const variations = await storage.getProductVariations(product.id);
+        const compatibility = await storage.getProductVehicleCompatibility(product.id);
+        productVariationsData.push(...variations);
+        productCompatibilityData.push(...compatibility);
+      }
+
+      const exportData = {
+        exportDate: new Date().toISOString(),
+        version: "1.0",
+        data: {
+          categories,
+          brands,
+          vehicleMakes,
+          vehicleModels,
+          products,
+          productVariations: productVariationsData,
+          productCompatibility: productCompatibilityData
+        }
+      };
+
+      res.setHeader('Content-Disposition', 'attachment; filename=car-audio-limburg-export.json');
+      res.json(exportData);
+    } catch (error: any) {
+      console.error("Error exporting data:", error);
+      res.status(500).json({ message: error.message || "Failed to export data" });
+    }
+  });
+
+  // Data Import endpoint - imports data from export JSON
+  app.post('/api/admin/import-data', isAdmin, async (req: any, res) => {
+    try {
+      const { data } = req.body;
+      
+      if (!data) {
+        return res.status(400).json({ message: "No data provided" });
+      }
+
+      const results = {
+        categories: { imported: 0, skipped: 0 },
+        brands: { imported: 0, skipped: 0 },
+        vehicleMakes: { imported: 0, skipped: 0 },
+        vehicleModels: { imported: 0, skipped: 0 },
+        products: { imported: 0, updated: 0 },
+        productVariations: { imported: 0, skipped: 0 },
+        productCompatibility: { imported: 0, skipped: 0 }
+      };
+
+      // Import categories (skip if exists)
+      if (data.categories) {
+        for (const cat of data.categories) {
+          try {
+            const existing = await storage.getCategory(cat.id);
+            if (!existing) {
+              await storage.createCategory(cat);
+              results.categories.imported++;
+            } else {
+              results.categories.skipped++;
+            }
+          } catch {
+            results.categories.skipped++;
+          }
+        }
+      }
+
+      // Import brands (skip if exists)
+      if (data.brands) {
+        for (const brand of data.brands) {
+          try {
+            const existing = await storage.getBrand(brand.id);
+            if (!existing) {
+              await storage.createBrand(brand);
+              results.brands.imported++;
+            } else {
+              results.brands.skipped++;
+            }
+          } catch {
+            results.brands.skipped++;
+          }
+        }
+      }
+
+      // Import vehicle makes (skip if exists)
+      if (data.vehicleMakes) {
+        for (const make of data.vehicleMakes) {
+          try {
+            await storage.createVehicleMake(make);
+            results.vehicleMakes.imported++;
+          } catch {
+            results.vehicleMakes.skipped++;
+          }
+        }
+      }
+
+      // Import vehicle models (skip if exists)
+      if (data.vehicleModels) {
+        for (const model of data.vehicleModels) {
+          try {
+            await storage.createVehicleModel(model);
+            results.vehicleModels.imported++;
+          } catch {
+            results.vehicleModels.skipped++;
+          }
+        }
+      }
+
+      // Import products (update if exists, create if new)
+      if (data.products) {
+        for (const product of data.products) {
+          try {
+            const existing = await storage.getProduct(product.id);
+            if (existing) {
+              await storage.updateProduct(product.id, product);
+              results.products.updated++;
+            } else {
+              await storage.createProduct(product);
+              results.products.imported++;
+            }
+          } catch (err) {
+            console.error("Error importing product:", product.id, err);
+          }
+        }
+      }
+
+      // Import product variations (skip if exists)
+      if (data.productVariations) {
+        for (const variation of data.productVariations) {
+          try {
+            await storage.createProductVariation(variation);
+            results.productVariations.imported++;
+          } catch {
+            results.productVariations.skipped++;
+          }
+        }
+      }
+
+      // Import product compatibility (skip if exists)
+      if (data.productCompatibility) {
+        for (const compat of data.productCompatibility) {
+          try {
+            await storage.setProductVehicleCompatibility(compat.productId, [{ makeId: compat.makeId, modelId: compat.modelId }]);
+            results.productCompatibility.imported++;
+          } catch {
+            results.productCompatibility.skipped++;
+          }
+        }
+      }
+
+      res.json({ 
+        message: "Import completed successfully",
+        results 
+      });
+    } catch (error: any) {
+      console.error("Error importing data:", error);
+      res.status(500).json({ message: error.message || "Failed to import data" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

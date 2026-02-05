@@ -796,15 +796,29 @@ export default function ProductPage() {
             <div className="max-w-4xl mx-auto">
               {/* Description Text - Above Accordions */}
               {product.description && (
-                <div className="mb-8">
+                <div className="mb-10">
                   {product.shortDescription && (
-                    <p className="text-black/80 text-lg mb-4">
+                    <p className="text-black/80 text-base mb-6 leading-relaxed">
                       {product.shortDescription}
                     </p>
                   )}
-                  <p className="text-black/70 leading-relaxed text-base">
-                    {String(product.description)}
-                  </p>
+                  <div className="prose prose-zinc prose-p:text-black/70 prose-p:leading-relaxed prose-p:mb-4 prose-headings:text-black prose-headings:font-semibold prose-strong:text-black/80 max-w-none">
+                    {String(product.description).split('\n\n').map((paragraph, index) => {
+                      const trimmed = paragraph.trim();
+                      if (!trimmed) return null;
+                      
+                      return (
+                        <p key={index}>
+                          {trimmed.split('\n').map((line, lineIndex, arr) => (
+                            <span key={lineIndex}>
+                              {line}
+                              {lineIndex < arr.length - 1 && <br />}
+                            </span>
+                          ))}
+                        </p>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
 

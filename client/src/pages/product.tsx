@@ -660,38 +660,40 @@ export default function ProductPage() {
                     <div className="flex flex-wrap items-center gap-2 pt-2">
                       <span className="text-white/40 text-xs">Betaalmethodes:</span>
                       <div className="flex flex-wrap items-center gap-1.5">
-                        <div className="bg-[#1A1F71] p-1.5 rounded" title="Visa">
-                          <SiVisa className="w-6 h-4 text-white" />
+                        <div className="bg-[#1A1F71] px-2 py-1.5 rounded flex items-center justify-center" title="Visa">
+                          <SiVisa className="w-7 h-5 text-white" />
                         </div>
-                        <div className="bg-zinc-800 p-1.5 rounded" title="Mastercard">
-                          <SiMastercard className="w-5 h-4" />
+                        <div className="bg-zinc-800 px-2 py-1.5 rounded flex items-center justify-center" title="Mastercard">
+                          <SiMastercard className="w-6 h-5" />
                         </div>
-                        <div className="bg-black p-1 rounded" title="Apple Pay">
-                          <SiApplepay className="w-6 h-5 text-white" />
+                        <div className="bg-black px-2 py-1.5 rounded flex items-center justify-center" title="Apple Pay">
+                          <SiApplepay className="w-8 h-5 text-white" />
                         </div>
-                        <div className="bg-white p-1 rounded" title="Google Pay">
-                          <SiGooglepay className="w-6 h-5" />
+                        <div className="bg-white px-2 py-1.5 rounded flex items-center justify-center" title="Google Pay">
+                          <SiGooglepay className="w-8 h-5" />
                         </div>
-                        <div className="bg-black p-1.5 rounded" title="Revolut Pay">
-                          <SiRevolut className="w-4 h-4 text-white" />
+                        <div className="bg-black px-2 py-1.5 rounded flex items-center justify-center" title="Revolut Pay">
+                          <SiRevolut className="w-5 h-5 text-white" />
                         </div>
-                        <div className="bg-[#005498] p-1 rounded" title="Bancontact">
-                          <svg viewBox="0 0 40 24" className="w-6 h-4" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="40" height="24" rx="2" fill="#005498"/>
-                            <path d="M8 8h6v8H8V8z" fill="#FFD800"/>
-                            <path d="M14 8h6v8h-6V8z" fill="#005498"/>
-                            <path d="M20 8h12v2H20V8zM20 12h12v2H20v-2z" fill="white"/>
+                        <div className="bg-white px-2 py-1.5 rounded flex items-center justify-center" title="Bancontact">
+                          <svg viewBox="0 0 100 32" className="w-10 h-5" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="16" cy="16" r="14" fill="#005498"/>
+                            <circle cx="28" cy="16" r="14" fill="#FFD800"/>
+                            <path d="M22 6.5a14 14 0 0 0 0 19" fill="#005498"/>
+                            <text x="48" y="22" fill="#005498" fontSize="14" fontWeight="bold" fontFamily="Arial, sans-serif">BC</text>
                           </svg>
                         </div>
-                        <div className="bg-white p-1 rounded" title="iDEAL">
-                          <svg viewBox="0 0 40 24" className="w-6 h-4" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 6c-3.3 0-6 2.7-6 6s2.7 6 6 6h16c3.3 0 6-2.7 6-6s-2.7-6-6-6H12z" fill="#CC0066"/>
-                            <path d="M12 8c-2.2 0-4 1.8-4 4s1.8 4 4 4h16c2.2 0 4-1.8 4-4s-1.8-4-4-4H12z" fill="white"/>
-                            <text x="14" y="14" fill="#CC0066" fontSize="6" fontWeight="bold" fontFamily="Arial">iDEAL</text>
+                        <div className="bg-white px-2 py-1.5 rounded flex items-center justify-center" title="iDEAL">
+                          <svg viewBox="0 0 50 20" className="w-10 h-5" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="0" y="0" width="50" height="20" rx="2" fill="white"/>
+                            <circle cx="10" cy="10" r="8" fill="#CC0066"/>
+                            <circle cx="10" cy="10" r="5" fill="white"/>
+                            <circle cx="10" cy="10" r="2" fill="#CC0066"/>
+                            <text x="22" y="14" fill="#CC0066" fontSize="10" fontWeight="bold" fontFamily="Arial, sans-serif">iDEAL</text>
                           </svg>
                         </div>
-                        <div className="bg-[#FFB3C7] p-1 rounded" title="Klarna">
-                          <SiKlarna className="w-5 h-4 text-[#0A0B09]" />
+                        <div className="bg-[#FFB3C7] px-2 py-1.5 rounded flex items-center justify-center" title="Klarna">
+                          <SiKlarna className="w-6 h-5 text-[#0A0B09]" />
                         </div>
                       </div>
                     </div>

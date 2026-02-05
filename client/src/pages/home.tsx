@@ -213,48 +213,50 @@ export default function Home() {
 
       {/* Trust Indicators Bar - Compact */}
       <section className="py-6 bg-zinc-950 border-y border-zinc-800">
-        <div className="container px-8 md:px-16 lg:px-24 mx-auto">
-          <div className="flex flex-wrap justify-center md:justify-between items-center gap-6 md:gap-4">
-            <div className="flex items-center gap-3 group">
+        <div className="container mx-auto relative">
+          <div className="md:px-16 lg:px-24 flex overflow-x-auto gap-6 pb-2 md:pb-0 snap-x snap-mandatory scrollbar-hide -mx-0 px-4 md:mx-0 md:flex-wrap md:justify-between md:overflow-visible">
+            <div className="flex items-center gap-3 group snap-start flex-shrink-0 min-w-[160px] md:min-w-0 md:flex-shrink">
               <div className="w-10 h-10 bg-[#d0a760]/10 flex items-center justify-center group-hover:bg-[#d0a760]/20 transition-colors duration-300">
                 <Truck className="w-5 h-5 text-[#d0a760]" />
               </div>
               <div>
-                <p className="text-white text-sm font-medium">Gratis Verzending</p>
-                <p className="text-white/50 text-xs">Vanaf €100</p>
+                <p className="text-white text-sm font-medium whitespace-nowrap">Gratis Verzending</p>
+                <p className="text-white/50 text-xs whitespace-nowrap">Vanaf €100</p>
               </div>
             </div>
             
-            <div className="flex items-center gap-3 group">
+            <div className="flex items-center gap-3 group snap-start flex-shrink-0 min-w-[160px] md:min-w-0 md:flex-shrink">
               <div className="w-10 h-10 bg-[#d0a760]/10 flex items-center justify-center group-hover:bg-[#d0a760]/20 transition-colors duration-300">
                 <ShieldCheck className="w-5 h-5 text-[#d0a760]" />
               </div>
               <div>
-                <p className="text-white text-sm font-medium">2 Jaar Garantie</p>
-                <p className="text-white/50 text-xs">Op alle installaties</p>
+                <p className="text-white text-sm font-medium whitespace-nowrap">2 Jaar Garantie</p>
+                <p className="text-white/50 text-xs whitespace-nowrap">Op alle installaties</p>
               </div>
             </div>
             
-            <div className="flex items-center gap-3 group">
+            <div className="flex items-center gap-3 group snap-start flex-shrink-0 min-w-[160px] md:min-w-0 md:flex-shrink">
               <div className="w-10 h-10 bg-[#d0a760]/10 flex items-center justify-center group-hover:bg-[#d0a760]/20 transition-colors duration-300">
                 <BadgeCheck className="w-5 h-5 text-[#d0a760]" />
               </div>
               <div>
-                <p className="text-white text-sm font-medium">Trusted Shops</p>
-                <p className="text-white/50 text-xs">Geverifieerde reviews</p>
+                <p className="text-white text-sm font-medium whitespace-nowrap">Trusted Shops</p>
+                <p className="text-white/50 text-xs whitespace-nowrap">Geverifieerde reviews</p>
               </div>
             </div>
             
-            <div className="flex items-center gap-3 group">
+            <div className="flex items-center gap-3 group snap-start flex-shrink-0 min-w-[160px] md:min-w-0 md:flex-shrink">
               <div className="w-10 h-10 bg-[#d0a760]/10 flex items-center justify-center group-hover:bg-[#d0a760]/20 transition-colors duration-300">
                 <Headphones className="w-5 h-5 text-[#d0a760]" />
               </div>
               <div>
-                <p className="text-white text-sm font-medium">Persoonlijk Advies</p>
-                <p className="text-white/50 text-xs">Deskundig & eerlijk</p>
+                <p className="text-white text-sm font-medium whitespace-nowrap">Persoonlijk Advies</p>
+                <p className="text-white/50 text-xs whitespace-nowrap">Deskundig & eerlijk</p>
               </div>
             </div>
           </div>
+          {/* Fade gradient indicator - mobile only */}
+          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-zinc-950 to-transparent pointer-events-none md:hidden" />
         </div>
       </section>
 

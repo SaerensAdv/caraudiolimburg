@@ -42,7 +42,7 @@ import {
   Cube,
   Sparkle
 } from "@phosphor-icons/react";
-import { SiApplepay, SiGooglepay, SiRevolut, SiKlarna } from "react-icons/si";
+import { SiApplepay, SiGooglepay, SiRevolut, SiKlarna, SiVisa, SiMastercard } from "react-icons/si";
 import type { Product } from "@shared/schema";
 
 type ProductVariation = {
@@ -660,8 +660,11 @@ export default function ProductPage() {
                     <div className="flex flex-wrap items-center gap-2 pt-2">
                       <span className="text-white/40 text-xs">Betaalmethodes:</span>
                       <div className="flex flex-wrap items-center gap-1.5">
-                        <div className="bg-zinc-800 p-1.5 rounded" title="Kaarten (Visa, Mastercard)">
-                          <CreditCard weight="duotone" className="w-4 h-4 text-white" />
+                        <div className="bg-[#1A1F71] p-1.5 rounded" title="Visa">
+                          <SiVisa className="w-6 h-4 text-white" />
+                        </div>
+                        <div className="bg-zinc-800 p-1.5 rounded" title="Mastercard">
+                          <SiMastercard className="w-5 h-4" />
                         </div>
                         <div className="bg-black p-1 rounded" title="Apple Pay">
                           <SiApplepay className="w-6 h-5 text-white" />
@@ -672,11 +675,20 @@ export default function ProductPage() {
                         <div className="bg-black p-1.5 rounded" title="Revolut Pay">
                           <SiRevolut className="w-4 h-4 text-white" />
                         </div>
-                        <div className="bg-[#005498] px-1.5 py-1 rounded" title="Bancontact">
-                          <span className="text-[10px] font-bold text-white">BC</span>
+                        <div className="bg-[#005498] p-1 rounded" title="Bancontact">
+                          <svg viewBox="0 0 40 24" className="w-6 h-4" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="40" height="24" rx="2" fill="#005498"/>
+                            <path d="M8 8h6v8H8V8z" fill="#FFD800"/>
+                            <path d="M14 8h6v8h-6V8z" fill="#005498"/>
+                            <path d="M20 8h12v2H20V8zM20 12h12v2H20v-2z" fill="white"/>
+                          </svg>
                         </div>
-                        <div className="bg-[#CC0066] px-1.5 py-1 rounded" title="iDEAL">
-                          <span className="text-[10px] font-bold text-white">iDEAL</span>
+                        <div className="bg-white p-1 rounded" title="iDEAL">
+                          <svg viewBox="0 0 40 24" className="w-6 h-4" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 6c-3.3 0-6 2.7-6 6s2.7 6 6 6h16c3.3 0 6-2.7 6-6s-2.7-6-6-6H12z" fill="#CC0066"/>
+                            <path d="M12 8c-2.2 0-4 1.8-4 4s1.8 4 4 4h16c2.2 0 4-1.8 4-4s-1.8-4-4-4H12z" fill="white"/>
+                            <text x="14" y="14" fill="#CC0066" fontSize="6" fontWeight="bold" fontFamily="Arial">iDEAL</text>
+                          </svg>
                         </div>
                         <div className="bg-[#FFB3C7] p-1 rounded" title="Klarna">
                           <SiKlarna className="w-5 h-4 text-[#0A0B09]" />

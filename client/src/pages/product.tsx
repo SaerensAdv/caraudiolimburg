@@ -678,9 +678,9 @@ export default function ProductPage() {
                     )}
                     
                     {/* Payment Methods */}
-                    <div className="flex flex-wrap items-center gap-2 pt-2">
-                      <span className="text-white/40 text-xs">Betaalmethodes:</span>
-                      <div className="flex flex-wrap items-center gap-1.5">
+                    <div className="flex items-center gap-2 pt-2 overflow-x-auto scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+                      <span className="text-white/40 text-xs whitespace-nowrap flex-shrink-0">Betaalmethodes:</span>
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
                         <div className="bg-[#1A1F71] px-2 py-1.5 rounded flex items-center justify-center" title="Visa">
                           <SiVisa className="w-7 h-5 text-white" />
                         </div>

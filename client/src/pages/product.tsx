@@ -61,6 +61,56 @@ type ProductVariation = {
   isDefault: boolean | null;
 };
 
+function FormattedDescription({ text }: { text: string }) {
+  const blocks = text.split(/\n\n+/);
+  
+  return (
+    <div className="space-y-6">
+      {blocks.map((block, blockIndex) => {
+        const lines = block.split('\n').filter(l => l.trim());
+        const bulletLines = lines.filter(l => /^[•\-\*]\s/.test(l.trim()));
+        const nonBulletLines = lines.filter(l => !/^[•\-\*]\s/.test(l.trim()));
+        
+        if (bulletLines.length > 0) {
+          const headerLine = nonBulletLines.length > 0 && nonBulletLines[0].trim().endsWith(':') ? nonBulletLines[0].trim() : null;
+          return (
+            <div key={blockIndex}>
+              {headerLine && (
+                <h3 className="text-white font-semibold text-base mb-3">{headerLine}</h3>
+              )}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                {bulletLines.map((line, i) => {
+                  const cleanLine = line.trim().replace(/^[•\-\*]\s*/, '');
+                  return (
+                    <div key={i} className="flex items-start gap-3 p-3 bg-zinc-800/50 border border-zinc-700/50">
+                      <Check weight="duotone" className="w-4 h-4 text-[#d0a760] flex-shrink-0 mt-0.5" />
+                      <span className="text-white/80 text-sm">{cleanLine}</span>
+                    </div>
+                  );
+                })}
+              </div>
+              {nonBulletLines.filter(l => l !== headerLine?.replace(':', '') + ':' && l.trim() !== headerLine).map((line, i) => (
+                <p key={`extra-${i}`} className="text-white/70 leading-relaxed text-base mt-3">{line}</p>
+              ))}
+            </div>
+          );
+        }
+        
+        return (
+          <div key={blockIndex}>
+            {lines.map((line, i) => {
+              if (line.trim().endsWith(':') && line.trim().length < 60) {
+                return <h3 key={i} className="text-white font-semibold text-base mb-1">{line.trim()}</h3>;
+              }
+              return <p key={i} className="text-white/70 leading-relaxed text-base">{line}</p>;
+            })}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 type ProductWithVariations = Product & {
   variations?: ProductVariation[];
 };
@@ -917,9 +967,7 @@ export default function ProductPage() {
                           {product.overviewContent}
                         </div>
                       ) : product.description ? (
-                        <div className="text-white/70 leading-relaxed text-lg">
-                          <p>{String(product.description)}</p>
-                        </div>
+                        <FormattedDescription text={String(product.description)} />
                       ) : (
                         <p className="text-white/40 italic">Geen beschrijving beschikbaar.</p>
                       )}

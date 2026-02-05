@@ -763,6 +763,19 @@ export default function ProductPage() {
                     </StaggerItem>
                   </StaggerContainer>
                 </div>
+                
+                {/* Product Description - Visible directly under product info */}
+                {(product.description || product.overviewContent) && (
+                  <div className="pt-6 border-t border-white/10 mt-6" data-testid="product-description-preview">
+                    <div className="text-white/70 leading-relaxed">
+                      {product.overviewContent ? (
+                        <p className="whitespace-pre-wrap">{product.overviewContent}</p>
+                      ) : (
+                        <p>{String(product.description)}</p>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </ScrollReveal>
           </div>

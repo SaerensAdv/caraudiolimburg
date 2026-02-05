@@ -15,6 +15,7 @@ import { useGuestCart } from "@/lib/guestCart";
 import { ScrollReveal, StaggerContainer, StaggerItem } from "@/components/ScrollAnimations";
 import { SEO } from "@/components/SEO";
 import { ProductSchema, BreadcrumbSchema } from "@/components/StructuredData";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { 
   Heart, 
   ShoppingCart, 
@@ -573,15 +574,17 @@ export default function ProductPage() {
                   <div className="mt-3 md:mt-4 space-y-3">
                     {isInStock ? (
                       <div className="flex flex-col gap-1">
-                        <span className="inline-flex items-center gap-2 text-green-500 text-sm font-medium">
-                          <span className="w-2 h-2 bg-green-500 animate-pulse" />
-                          Op voorraad
+                        <div className="flex items-center gap-2">
+                          <span className="inline-flex items-center gap-2 text-green-500 text-sm font-medium">
+                            <span className="w-2 h-2 bg-green-500 animate-pulse" />
+                            Op voorraad
+                          </span>
                           {effectiveStock !== null && effectiveStock <= 5 && effectiveStock > 0 && (
-                            <span className="text-orange-400 text-xs font-normal ml-1">
-                              - Nog {effectiveStock} beschikbaar!
-                            </span>
+                            <Badge className="bg-teal-500/20 text-teal-400 border-teal-500/30 rounded-sm text-xs px-2 py-0.5">
+                              Nog maar {effectiveStock} op voorraad!
+                            </Badge>
                           )}
-                        </span>
+                        </div>
                         <span className="text-white/50 text-xs flex items-center gap-1">
                           <Truck className="w-3 h-3" />
                           Bestel voor 16:00, morgen in huis
@@ -622,6 +625,26 @@ export default function ProductPage() {
                           <SiKlarna className="w-5 h-4 text-[#0A0B09]" />
                         </div>
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Trust Badges Row */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2 pt-4 border-t border-white/10">
+                    <div className="flex items-center gap-2 text-white/70">
+                      <Truck className="w-4 h-4 text-[#d0a760]" />
+                      <span className="text-xs">Gratis vanaf €50</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-white/70">
+                      <Shield className="w-4 h-4 text-[#d0a760]" />
+                      <span className="text-xs">Veilig betalen</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-white/70">
+                      <Wrench className="w-4 h-4 text-[#d0a760]" />
+                      <span className="text-xs">Prof. installatie</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-white/70">
+                      <Check className="w-4 h-4 text-[#d0a760]" />
+                      <span className="text-xs">100% authentiek</span>
                     </div>
                   </div>
                 </div>
@@ -766,98 +789,157 @@ export default function ProductPage() {
           </div>
         </div>
       </section>
-      {/* Product Information - White Section */}
+      {/* Product Information - White Section with Accordion */}
       <section className="bg-white py-16 md:py-24" data-testid="product-information">
         <div className="container mx-auto px-4">
           <ScrollReveal animation="fade-up">
             <div className="max-w-4xl mx-auto">
-              {/* Description */}
-              {product.description && (
-                <div className="mb-12">
-                  <h2 className="text-2xl font-bold text-black mb-6">Beschrijving</h2>
-                  <div className="text-black/70 leading-relaxed text-lg">
-                    <p>{String(product.description)}</p>
-                  </div>
-                </div>
-              )}
+              <Accordion type="single" collapsible defaultValue="beschrijving" className="w-full">
+                {/* Beschrijving Accordion Item */}
+                {product.description ? (
+                  <AccordionItem value="beschrijving" className="border-zinc-200">
+                    <AccordionTrigger className="text-black text-lg font-semibold hover:text-rose-600 hover:no-underline py-5">
+                      Beschrijving
+                    </AccordionTrigger>
+                    <AccordionContent className="text-black/70 leading-relaxed text-base pb-6">
+                      <p>{String(product.description)}</p>
+                      
+                      {/* Features within description */}
+                      {product.features && Array.isArray(product.features) && product.features.length > 0 ? (
+                        <div className="mt-6">
+                          <p className="font-semibold text-black mb-4">Kenmerken:</p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {(product.features as string[]).map((feature, index) => (
+                              <div key={index} className="flex items-start gap-3 p-3 bg-zinc-50 border border-zinc-200">
+                                <Check className="w-5 h-5 text-[#d0a760] flex-shrink-0 mt-0.5" />
+                                <span className="text-black/80 text-sm">{String(feature)}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : null}
+                    </AccordionContent>
+                  </AccordionItem>
+                ) : null}
 
-              {/* Features */}
-              {product.features && Array.isArray(product.features) && product.features.length > 0 ? (
-                <div className="mb-12">
-                  <h2 className="text-2xl font-bold text-black mb-6">Kenmerken</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {(product.features as unknown[]).map((feature, index) => (
-                      <div key={index} className="flex items-start gap-3 p-4 bg-zinc-50 border border-zinc-200">
-                        <Check className="w-5 h-5 text-[#d0a760] flex-shrink-0 mt-0.5" />
-                        <span className="text-black/80">{String(feature)}</span>
+                {/* Technische Specificaties Accordion Item */}
+                {product.specifications ? (
+                  <AccordionItem value="specificaties" className="border-zinc-200">
+                    <AccordionTrigger className="text-black text-lg font-semibold hover:text-rose-600 hover:no-underline py-5">
+                      Technische Specificaties
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {Object.entries(product.specifications as Record<string, string | number | boolean>)
+                          .filter(([key]) => !['manualUrl', 'techSheetUrl'].includes(key))
+                          .map(([key, value]) => (
+                          <div key={key} className="p-4 bg-zinc-50 border border-zinc-200">
+                            <p className="text-xs text-black/40 uppercase tracking-wider mb-1">{key}</p>
+                            <p className="text-base font-medium text-black">{String(value)}</p>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
-              ) : null}
+                      
+                      {/* Documentation Downloads */}
+                      {(
+                        (product.specifications as Record<string, string>).manualUrl || 
+                        (product.specifications as Record<string, string>).techSheetUrl
+                      ) && (
+                        <div className="mt-6">
+                          <p className="font-semibold text-black mb-4">Documentatie:</p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {(product.specifications as Record<string, string>).manualUrl && (
+                              <a 
+                                href={(product.specifications as Record<string, string>).manualUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-4 p-4 bg-zinc-50 border border-zinc-200 hover:border-[#d0a760] hover:bg-zinc-100 transition-colors group"
+                              >
+                                <div className="p-3 bg-[#d0a760]/10 group-hover:bg-[#d0a760]/20 transition-colors">
+                                  <FileText className="w-5 h-5 text-[#d0a760]" />
+                                </div>
+                                <div className="flex-1">
+                                  <p className="font-medium text-black text-sm group-hover:text-[#d0a760] transition-colors">Handleiding</p>
+                                  <p className="text-xs text-black/50">PDF download</p>
+                                </div>
+                                <Download className="w-4 h-4 text-black/30 group-hover:text-[#d0a760] transition-colors" />
+                              </a>
+                            )}
+                            {(product.specifications as Record<string, string>).techSheetUrl && (
+                              <a 
+                                href={(product.specifications as Record<string, string>).techSheetUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-4 p-4 bg-zinc-50 border border-zinc-200 hover:border-[#d0a760] hover:bg-zinc-100 transition-colors group"
+                              >
+                                <div className="p-3 bg-[#d0a760]/10 group-hover:bg-[#d0a760]/20 transition-colors">
+                                  <FileText className="w-5 h-5 text-[#d0a760]" />
+                                </div>
+                                <div className="flex-1">
+                                  <p className="font-medium text-black text-sm group-hover:text-[#d0a760] transition-colors">Tech Sheet</p>
+                                  <p className="text-xs text-black/50">PDF download</p>
+                                </div>
+                                <Download className="w-4 h-4 text-black/30 group-hover:text-[#d0a760] transition-colors" />
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </AccordionContent>
+                  </AccordionItem>
+                ) : null}
 
-              {/* Specifications */}
-              {product.specifications && (
-                <div className="mb-12">
-                  <h2 className="text-2xl font-bold text-black mb-6">Specificaties</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {Object.entries(product.specifications as Record<string, string | number | boolean>)
-                      .filter(([key]) => !['manualUrl', 'techSheetUrl'].includes(key))
-                      .map(([key, value]) => (
-                      <div key={key} className="p-4 bg-zinc-50 border border-zinc-200">
-                        <p className="text-xs text-black/40 uppercase tracking-wider mb-1">{key}</p>
-                        <p className="text-lg font-medium text-black">{String(value)}</p>
+                {/* Inbouwservice Accordion Item */}
+                <AccordionItem value="inbouwservice" className="border-zinc-200">
+                  <AccordionTrigger className="text-black text-lg font-semibold hover:text-rose-600 hover:no-underline py-5">
+                    Inbouwservice
+                  </AccordionTrigger>
+                  <AccordionContent className="pb-6">
+                    <div className="bg-zinc-50 border border-zinc-200 p-6">
+                      <div className="flex items-start gap-4 mb-4">
+                        <div className="p-3 bg-[#d0a760]/10">
+                          <Wrench className="w-6 h-6 text-[#d0a760]" />
+                        </div>
+                        <div>
+                          <p className="font-semibold text-black text-lg mb-2">Professionele Installatie</p>
+                          <p className="text-black/70 leading-relaxed">
+                            Ben je niet zo handig? Geen probleem! Wij installeren dit product vakkundig voor je. 
+                            Onze gecertificeerde monteurs hebben jarenlange ervaring met car audio installaties.
+                          </p>
+                        </div>
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Documentation Downloads */}
-              {product.specifications && (
-                (product.specifications as Record<string, string>).manualUrl || 
-                (product.specifications as Record<string, string>).techSheetUrl
-              ) && (
-                <div>
-                  <h2 className="text-2xl font-bold text-black mb-6">Documentatie</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {(product.specifications as Record<string, string>).manualUrl && (
-                      <a 
-                        href={(product.specifications as Record<string, string>).manualUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-4 p-4 bg-zinc-50 border border-zinc-200 hover:border-[#d0a760] hover:bg-zinc-100 transition-colors group"
-                      >
-                        <div className="p-3 bg-[#d0a760]/10 group-hover:bg-[#d0a760]/20 transition-colors">
-                          <FileText className="w-6 h-6 text-[#d0a760]" />
+                      
+                      <div className="border-t border-zinc-200 pt-4 mt-4">
+                        <p className="text-black font-medium mb-3">Neem contact met ons op:</p>
+                        <div className="space-y-2 text-black/70">
+                          <p className="flex items-center gap-2">
+                            <span className="font-medium">Telefoon:</span> 
+                            <a href="tel:+31852733625" className="hover:text-[#d0a760] transition-colors">085 273 36 25</a>
+                          </p>
+                          <p className="flex items-center gap-2">
+                            <span className="font-medium">E-mail:</span> 
+                            <a href="mailto:info@caraudiolimburg.nl" className="hover:text-[#d0a760] transition-colors">info@caraudiolimburg.nl</a>
+                          </p>
+                          <p className="flex items-center gap-2">
+                            <span className="font-medium">WhatsApp:</span> 
+                            <a href="https://wa.me/31852733625" className="hover:text-[#d0a760] transition-colors">+31 85 273 36 25</a>
+                          </p>
                         </div>
-                        <div className="flex-1">
-                          <p className="font-medium text-black group-hover:text-[#d0a760] transition-colors">Handleiding</p>
-                          <p className="text-sm text-black/50">Installatie & gebruikershandleiding (PDF)</p>
-                        </div>
-                        <Download className="w-5 h-5 text-black/30 group-hover:text-[#d0a760] transition-colors" />
-                      </a>
-                    )}
-                    {(product.specifications as Record<string, string>).techSheetUrl && (
-                      <a 
-                        href={(product.specifications as Record<string, string>).techSheetUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-4 p-4 bg-zinc-50 border border-zinc-200 hover:border-[#d0a760] hover:bg-zinc-100 transition-colors group"
-                      >
-                        <div className="p-3 bg-[#d0a760]/10 group-hover:bg-[#d0a760]/20 transition-colors">
-                          <FileText className="w-6 h-6 text-[#d0a760]" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-medium text-black group-hover:text-[#d0a760] transition-colors">Technische Specificaties</p>
-                          <p className="text-sm text-black/50">Gedetailleerde tech sheet (PDF)</p>
-                        </div>
-                        <Download className="w-5 h-5 text-black/30 group-hover:text-[#d0a760] transition-colors" />
-                      </a>
-                    )}
-                  </div>
-                </div>
-              )}
+                      </div>
+                      
+                      <div className="mt-4">
+                        <a 
+                          href="/booking" 
+                          className="inline-flex items-center gap-2 bg-[#d0a760] text-black px-6 py-3 font-medium hover:bg-[#d0a760]/90 transition-colors"
+                        >
+                          <Wrench className="w-4 h-4" />
+                          Afspraak maken
+                        </a>
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </div>
           </ScrollReveal>
         </div>

@@ -220,7 +220,7 @@ export default function Cart() {
               <p className="text-zinc-400 mb-8 leading-relaxed">
                 Ontdek ons premium assortiment car audio producten en begin met winkelen!
               </p>
-              <Link href="/shop">
+              <Link href="/webshop">
                 <Button 
                   className="bg-[#d0a760] text-black hover:bg-[#b8954e] rounded-none px-8 py-6 text-lg font-semibold transition-all duration-200 hover:scale-[1.02] shadow-lg shadow-[#d0a760]/20"
                   data-testid="button-continue-shopping"
@@ -245,7 +245,7 @@ export default function Cart() {
       <div className="container px-4 md:px-8 lg:px-16 mx-auto py-8 md:py-12 flex-1">
         <ScrollReveal>
           <div className="mb-8">
-            <Link href="/shop">
+            <Link href="/webshop">
               <Button 
                 variant="ghost" 
                 className="text-zinc-400 hover:text-white hover:bg-zinc-800/50 p-0 px-2 mb-4 transition-colors"
@@ -561,7 +561,7 @@ export default function Cart() {
             </ScrollReveal>
 
             <ScrollReveal delay={400}>
-              <Link href="/shop">
+              <Link href="/webshop">
                 <Button 
                   variant="outline" 
                   className="w-full border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white hover:border-zinc-600 rounded-none py-6 transition-all" 

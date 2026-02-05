@@ -316,7 +316,7 @@ export default function ProductPage() {
       <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-lg border-b border-white/10 safe-area-top">
         <div className="flex items-center justify-between px-4 h-14">
           <button 
-            onClick={() => navigate("/shop")}
+            onClick={() => navigate("/webshop")}
             className="min-w-[44px] min-h-[44px] flex items-center justify-center -ml-2 hover:bg-white/10 transition-colors active:scale-95"
             data-testid="mobile-back-button"
             aria-label="Terug naar shop"
@@ -359,7 +359,7 @@ export default function ProductPage() {
           <nav className="flex items-center gap-2 text-sm" data-testid="breadcrumb">
             <Link href="/" className="text-white/40 hover:text-[#d0a760] transition-colors">Home</Link>
             <span className="text-white/20">/</span>
-            <Link href="/shop" className="text-white/40 hover:text-[#d0a760] transition-colors">Shop</Link>
+            <Link href="/webshop" className="text-white/40 hover:text-[#d0a760] transition-colors">Shop</Link>
             <span className="text-white/20">/</span>
             <span className="text-white">{product.name}</span>
           </nav>

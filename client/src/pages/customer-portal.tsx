@@ -544,7 +544,7 @@ export default function CustomerPortal() {
                         <Package className="w-6 h-6 text-[#d0a760]" />
                         Mijn Bestellingen
                       </h2>
-                      <Link href="/shop">
+                      <Link href="/webshop">
                         <Button 
                           className="bg-[#d0a760] text-black hover:bg-[#b8954e] rounded-none text-sm"
                           data-testid="button-new-order"
@@ -708,7 +708,7 @@ export default function CustomerPortal() {
                         <p className="text-zinc-500 mb-6 max-w-md mx-auto">
                           Ontdek onze premium car audio producten en plaats uw eerste bestelling.
                         </p>
-                        <Link href="/shop">
+                        <Link href="/webshop">
                           <Button
                             className="bg-[#d0a760] text-black hover:bg-[#b8954e] rounded-none px-8"
                             data-testid="button-shop-now"
@@ -878,7 +878,7 @@ export default function CustomerPortal() {
                         <Heart className="w-6 h-6 text-[#d0a760]" />
                         Mijn Favorieten
                       </h2>
-                      <Link href="/shop">
+                      <Link href="/webshop">
                         <Button 
                           className="bg-[#d0a760] text-black hover:bg-[#b8954e] rounded-none text-sm"
                           data-testid="button-browse-products"
@@ -952,7 +952,7 @@ export default function CustomerPortal() {
                         <p className="text-zinc-500 mb-6 max-w-md mx-auto">
                           Voeg producten toe aan je favorieten om ze later gemakkelijk terug te vinden.
                         </p>
-                        <Link href="/shop">
+                        <Link href="/webshop">
                           <Button
                             className="bg-[#d0a760] text-black hover:bg-[#b8954e] rounded-none px-8"
                             data-testid="button-browse-shop"

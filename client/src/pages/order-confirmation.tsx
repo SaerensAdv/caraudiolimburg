@@ -133,7 +133,7 @@ export default function OrderConfirmationPage() {
                     Opnieuw proberen
                   </Button>
                 </Link>
-                <Link href="/shop">
+                <Link href="/webshop">
                   <Button variant="outline" className="border-zinc-700 text-white hover:bg-zinc-800 hover:text-white rounded-none px-8 py-6">
                     Terug naar Shop
                   </Button>
@@ -184,7 +184,7 @@ export default function OrderConfirmationPage() {
                 Neem contact met ons op als je hulp nodig hebt.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href="/shop">
+                <Link href="/webshop">
                   <Button className="bg-[#d0a760] text-black hover:bg-[#b8954e] rounded-none px-8 py-6">
                     Terug naar Shop
                   </Button>
@@ -350,7 +350,7 @@ export default function OrderConfirmationPage() {
 
               <ScrollReveal delay={400}>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Link href="/shop">
+                  <Link href="/webshop">
                     <Button className="bg-[#d0a760] text-black hover:bg-[#b8954e] rounded-none px-8 py-6 text-lg font-semibold w-full sm:w-auto">
                       <ShoppingBag className="w-5 h-5 mr-2" />
                       Verder winkelen

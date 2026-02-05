@@ -752,7 +752,7 @@ export default function Checkout() {
                   Voeg producten toe aan je winkelwagen om door te gaan met afrekenen.
                 </p>
                 <Button 
-                  onClick={() => window.location.href = '/shop'}
+                  onClick={() => window.location.href = '/webshop'}
                   className="bg-[#d0a760] hover:bg-[#b8954e] text-black font-semibold h-12 px-8 rounded-none transition-all hover:scale-[1.02]"
                   data-testid="button-shop"
                 >

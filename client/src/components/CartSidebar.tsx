@@ -228,7 +228,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                   <p className="text-sm text-white/60 mb-4">
                     Voeg wat geweldige producten toe!
                   </p>
-                  <Link href="/shop">
+                  <Link href="/webshop">
                     <Button onClick={onClose} className="bg-[#d0a760] text-black hover:bg-[#b8954e]" data-testid="button-continue-shopping-empty">
                       Ga naar shop
                     </Button>
@@ -395,7 +395,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                     </Button>
                   </Link>
 
-                  <Link href="/shop">
+                  <Link href="/webshop">
                     <Button 
                       variant="ghost" 
                       className="w-full text-white/60 hover:text-white hover:bg-white/5"

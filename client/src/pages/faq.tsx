@@ -362,7 +362,7 @@ export default function FAQ() {
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
-                <Link href="/shop">
+                <Link href="/webshop">
                   <Button 
                     variant="outline"
                     className="border-zinc-700 text-white hover:bg-zinc-800 hover:border-[#d0a760] rounded-none px-8 py-6 min-h-[52px] text-base"

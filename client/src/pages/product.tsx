@@ -789,39 +789,27 @@ export default function ProductPage() {
           </div>
         </div>
       </section>
-      {/* Product Information - White Section with Accordion */}
+      {/* Product Information - White Section with Description + Accordions */}
       <section className="bg-white py-16 md:py-24" data-testid="product-information">
         <div className="container mx-auto px-4">
           <ScrollReveal animation="fade-up">
             <div className="max-w-4xl mx-auto">
-              <Accordion type="single" collapsible defaultValue="beschrijving" className="w-full">
-                {/* Beschrijving Accordion Item */}
-                {product.description ? (
-                  <AccordionItem value="beschrijving" className="border-zinc-200">
-                    <AccordionTrigger className="text-black text-lg font-semibold hover:text-rose-600 hover:no-underline py-5">
-                      Beschrijving
-                    </AccordionTrigger>
-                    <AccordionContent className="text-black/70 leading-relaxed text-base pb-6">
-                      <p>{String(product.description)}</p>
-                      
-                      {/* Features within description */}
-                      {product.features && Array.isArray(product.features) && product.features.length > 0 ? (
-                        <div className="mt-6">
-                          <p className="font-semibold text-black mb-4">Kenmerken:</p>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            {(product.features as string[]).map((feature, index) => (
-                              <div key={index} className="flex items-start gap-3 p-3 bg-zinc-50 border border-zinc-200">
-                                <Check className="w-5 h-5 text-[#d0a760] flex-shrink-0 mt-0.5" />
-                                <span className="text-black/80 text-sm">{String(feature)}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      ) : null}
-                    </AccordionContent>
-                  </AccordionItem>
-                ) : null}
+              {/* Description Text - Above Accordions */}
+              {product.description && (
+                <div className="mb-8">
+                  {product.shortDescription && (
+                    <p className="text-black/80 text-lg mb-4">
+                      {product.shortDescription}
+                    </p>
+                  )}
+                  <p className="text-black/70 leading-relaxed text-base">
+                    {String(product.description)}
+                  </p>
+                </div>
+              )}
 
+              {/* Accordion Sections */}
+              <Accordion type="single" collapsible className="w-full border-t border-zinc-200">
                 {/* Technische Specificaties Accordion Item */}
                 {product.specifications ? (
                   <AccordionItem value="specificaties" className="border-zinc-200">
@@ -885,6 +873,25 @@ export default function ProductPage() {
                           </div>
                         </div>
                       )}
+                    </AccordionContent>
+                  </AccordionItem>
+                ) : null}
+
+                {/* Kenmerken Accordion Item */}
+                {product.features && Array.isArray(product.features) && product.features.length > 0 ? (
+                  <AccordionItem value="kenmerken" className="border-zinc-200">
+                    <AccordionTrigger className="text-black text-lg font-semibold hover:text-rose-600 hover:no-underline py-5">
+                      Kenmerken
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-6">
+                      <ul className="space-y-2">
+                        {(product.features as string[]).map((feature, index) => (
+                          <li key={index} className="flex items-start gap-3 text-black/70">
+                            <span className="text-rose-500 mt-1">•</span>
+                            <span>{String(feature)}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </AccordionContent>
                   </AccordionItem>
                 ) : null}

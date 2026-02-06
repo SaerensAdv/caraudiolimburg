@@ -989,7 +989,7 @@ export default function ProductPage() {
 
                 {availableTabs.some(t => t.value === 'specifications') && (
                   <TabsContent value="specifications" className="mt-6">
-                    <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8">
+                    <div className="bg-zinc-900 border border-zinc-800 p-3 sm:p-6 md:p-8 overflow-hidden">
                       <div className="space-y-8">
                         {(() => {
                           const specs = product.specifications as Record<string, unknown>;
@@ -1009,12 +1009,12 @@ export default function ProductPage() {
                                   return (
                                     <div key={category}>
                                       <h3 className="text-lg font-semibold text-[#d0a760] mb-4">{categoryLabels[category] || category}</h3>
-                                      <table className="w-full">
+                                      <table className="w-full table-fixed">
                                         <tbody>
                                           {Object.entries(values as Record<string, string | number>).map(([key, value], index) => (
                                             <tr key={key} className={index % 2 === 0 ? 'bg-zinc-800/50' : ''}>
-                                              <td className="px-4 py-3 text-white/50 text-sm font-medium w-1/2">{key}</td>
-                                              <td className="px-4 py-3 text-white font-medium">{String(value)}</td>
+                                              <td className="px-2 sm:px-4 py-3 text-white/50 text-xs sm:text-sm font-medium w-[40%] break-words">{key}</td>
+                                              <td className="px-2 sm:px-4 py-3 text-white font-medium text-sm break-words">{String(value)}</td>
                                             </tr>
                                           ))}
                                         </tbody>
@@ -1026,14 +1026,14 @@ export default function ProductPage() {
                               });
                           } else {
                             return (
-                              <table className="w-full">
+                              <table className="w-full table-fixed">
                                 <tbody>
                                   {Object.entries(specs)
                                     .filter(([key]) => !['manualUrl', 'techSheetUrl'].includes(key))
                                     .map(([key, value], index) => (
                                       <tr key={key} className={index % 2 === 0 ? 'bg-zinc-800/50' : ''}>
-                                        <td className="px-4 py-3 text-white/50 text-sm font-medium uppercase tracking-wider w-1/3">{key}</td>
-                                        <td className="px-4 py-3 text-white font-medium">{String(value)}</td>
+                                        <td className="px-2 sm:px-4 py-3 text-white/50 text-xs sm:text-sm font-medium uppercase tracking-wider w-[35%] break-words">{key}</td>
+                                        <td className="px-2 sm:px-4 py-3 text-white font-medium text-sm break-words">{String(value)}</td>
                                       </tr>
                                     ))}
                                 </tbody>

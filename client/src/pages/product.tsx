@@ -61,7 +61,7 @@ type ProductVariation = {
   isDefault: boolean | null;
 };
 
-function FormattedDescription({ text }: { text: string }) {
+function FormattedDescription({ text, hasFeatures = false }: { text: string; hasFeatures?: boolean }) {
   const blocks = text.split(/\n\n+/);
   
   return (
@@ -72,6 +72,17 @@ function FormattedDescription({ text }: { text: string }) {
         const nonBulletLines = lines.filter(l => !/^[•\-\*]\s/.test(l.trim()));
         
         if (bulletLines.length > 0) {
+          if (hasFeatures) {
+            const remainingLines = nonBulletLines.filter(l => !(l.trim().endsWith(':') && l.trim().length < 60));
+            if (remainingLines.length === 0) return null;
+            return (
+              <div key={blockIndex}>
+                {remainingLines.map((line, i) => (
+                  <p key={i} className="text-white/70 leading-relaxed text-base">{line}</p>
+                ))}
+              </div>
+            );
+          }
           const headerLine = nonBulletLines.length > 0 && nonBulletLines[0].trim().endsWith(':') ? nonBulletLines[0].trim() : null;
           return (
             <div key={blockIndex}>
@@ -965,7 +976,7 @@ export default function ProductPage() {
                   <TabsContent value="description" className="mt-6">
                     <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8">
                       <div className="prose prose-invert max-w-none">
-                        <FormattedDescription text={String(product.overviewContent || product.description)} />
+                        <FormattedDescription text={String(product.overviewContent || product.description)} hasFeatures={Array.isArray(product.features) && (product.features as string[]).length > 0} />
                       </div>
                     </div>
                   </TabsContent>

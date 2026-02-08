@@ -45,6 +45,9 @@ export default function Shop() {
   const [inStockOnly, setInStockOnly] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(
+    typeof window !== 'undefined' && window.innerWidth < 768 ? 10 : 15
+  );
 
   const [location, navigate] = useLocation();
   const searchString = useSearch();
@@ -60,11 +63,18 @@ export default function Shop() {
   }, [searchString]);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+    };
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  useEffect(() => {
+    setVisibleCount(isMobile ? 10 : 15);
+  }, [search, selectedCategory, selectedBrand, selectedMake, sortBy, priceRange, inStockOnly, isMobile]);
 
   const { data: categories } = useQuery<Category[]>({
     queryKey: ["/api/categories"],
@@ -159,6 +169,9 @@ export default function Shop() {
   };
 
   const sortedProducts = sortProducts(products as Product[] || []);
+  const visibleProducts = sortedProducts.slice(0, visibleCount);
+  const hasMore = sortedProducts.length > visibleCount;
+  const loadMoreCount = isMobile ? 10 : 15;
 
   const activeCategoryName = useMemo(() => {
     if (selectedCategory === 'all-categories' || !categories) return null;
@@ -714,14 +727,32 @@ export default function Shop() {
             </div>
           ) : sortedProducts && sortedProducts.length > 0 ? (
             viewMode === 'grid' ? (
+              <>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
-                {sortedProducts.map((product: Product) => (
+                {visibleProducts.map((product: Product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
               </div>
+              {hasMore && (
+                <div className="flex flex-col items-center mt-10 gap-3">
+                  <p className="text-white/40 text-sm">
+                    {visibleCount} van {sortedProducts.length} producten getoond
+                  </p>
+                  <Button
+                    onClick={() => setVisibleCount(prev => prev + loadMoreCount)}
+                    variant="outline"
+                    className="border-[#d0a760]/30 text-[#d0a760] hover:bg-[#d0a760]/10 hover:border-[#d0a760] rounded-none px-8 py-3"
+                    data-testid="load-more-btn"
+                  >
+                    Meer producten laden
+                  </Button>
+                </div>
+              )}
+              </>
             ) : (
+              <>
               <div className="space-y-4">
-                {sortedProducts.map((product: Product) => (
+                {visibleProducts.map((product: Product) => (
                   <div key={product.id}>
                     <article 
                       className="bg-zinc-900 border border-zinc-800 hover:border-[#d0a760]/30 transition-all duration-300 group"
@@ -798,6 +829,22 @@ export default function Shop() {
                   </div>
                 ))}
               </div>
+              {hasMore && (
+                <div className="flex flex-col items-center mt-10 gap-3">
+                  <p className="text-white/40 text-sm">
+                    {visibleCount} van {sortedProducts.length} producten getoond
+                  </p>
+                  <Button
+                    onClick={() => setVisibleCount(prev => prev + loadMoreCount)}
+                    variant="outline"
+                    className="border-[#d0a760]/30 text-[#d0a760] hover:bg-[#d0a760]/10 hover:border-[#d0a760] rounded-none px-8 py-3"
+                    data-testid="load-more-btn"
+                  >
+                    Meer producten laden
+                  </Button>
+                </div>
+              )}
+              </>
             )
           ) : (
             <div className="text-center py-24">

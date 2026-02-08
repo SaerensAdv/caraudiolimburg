@@ -464,7 +464,7 @@ export default function ProductPage() {
                       role="button"
                       tabIndex={0}
                       aria-label="Klik om afbeelding te vergroten"
-                      className="relative aspect-square bg-zinc-900 md:border md:border-zinc-800 md:cursor-zoom-in group overflow-hidden touch-pan-y focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d0a760]"
+                      className="relative bg-zinc-900 md:border md:border-zinc-800 md:cursor-zoom-in group overflow-hidden touch-pan-y focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d0a760] flex items-center justify-center min-h-[300px] max-h-[600px] md:min-h-[400px] md:max-h-[700px]"
                       onClick={() => setIsLightboxOpen(true)}
                       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsLightboxOpen(true); } }}
                       onTouchStart={images.length > 1 ? onTouchStart : undefined}
@@ -480,7 +480,7 @@ export default function ProductPage() {
                         decoding="async"
                         fetchPriority={selectedImageIndex === 0 ? "high" : "low"}
                         loading={selectedImageIndex === 0 ? "eager" : "lazy"}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 select-none"
+                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 select-none"
                         draggable={false}
                       />
                       

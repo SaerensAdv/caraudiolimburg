@@ -80,6 +80,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { format } from "date-fns";
 import { nl } from "date-fns/locale";
 import type { Product, Order, Booking, QuoteRequest, User, BlogPost, BlogCategory, VehicleMake, VehicleModel } from "@shared/schema";
@@ -138,6 +139,9 @@ export default function Admin() {
   const [specifications, setSpecifications] = useState<Record<string, any>>({});
   const [newSpecKey, setNewSpecKey] = useState('');
   const [newSpecValue, setNewSpecValue] = useState('');
+  const [productFormTab, setProductFormTab] = useState('algemeen');
+  const [editingSpecKey, setEditingSpecKey] = useState<string | null>(null);
+  const [newImageUrl, setNewImageUrl] = useState('');
   const [productSearch, setProductSearch] = useState('');
   const [productCategoryFilter, setProductCategoryFilter] = useState('');
   const [productBrandFilter, setProductBrandFilter] = useState('');
@@ -385,6 +389,7 @@ export default function Admin() {
       setNewBoxItem('');
       setNewDownloadName('');
       setNewDownloadUrl('');
+      setNewImageUrl('');
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
@@ -504,6 +509,7 @@ export default function Admin() {
       setNewBoxItem('');
       setNewDownloadName('');
       setNewDownloadUrl('');
+      setNewImageUrl('');
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
@@ -1833,6 +1839,9 @@ export default function Admin() {
                       setVehicleCompatibilityOpen(false);
                       setHasVariations(false);
                       setProductVariations([]);
+                      setProductFormTab('algemeen');
+                      setEditingSpecKey(null);
+                      setNewImageUrl('');
                     }
                   }}>
                     <DialogTrigger asChild>
@@ -1844,7 +1853,7 @@ export default function Admin() {
                         Product Toevoegen
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-zinc-900 border-zinc-700 rounded-none">
+                    <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-zinc-900 border-zinc-700 rounded-none">
                       <DialogHeader>
                         <DialogTitle className="text-white text-xl">
                           {selectedProduct ? "Product Bewerken" : "Nieuw Product"}
@@ -1852,535 +1861,643 @@ export default function Admin() {
                       </DialogHeader>
                       
                       <form onSubmit={handleSubmit(onSubmitProduct)} className="space-y-6 py-4">
-                        {/* Basic Info */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <Label htmlFor="name" className="text-zinc-300">Naam</Label>
-                            <Input
-                              {...register("name")}
-                              placeholder="Product naam"
-                              className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
-                              data-testid="input-product-name"
-                            />
-                            {errors.name && (
-                              <p className="text-sm text-red-400 mt-1">{errors.name.message}</p>
-                            )}
-                          </div>
-                          
-                          <div>
-                            <Label htmlFor="slug" className="text-zinc-300">Slug</Label>
-                            <Input
-                              {...register("slug")}
-                              placeholder="product-slug"
-                              className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
-                              data-testid="input-product-slug"
-                            />
-                          </div>
-                        </div>
+                        <Tabs value={productFormTab} onValueChange={setProductFormTab}>
+                          <TabsList className="w-full bg-zinc-800 border border-zinc-700 p-1 flex flex-wrap h-auto gap-1">
+                            <TabsTrigger value="algemeen" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Algemeen</TabsTrigger>
+                            <TabsTrigger value="beschrijving" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Beschrijving</TabsTrigger>
+                            <TabsTrigger value="media" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Media</TabsTrigger>
+                            <TabsTrigger value="specificaties" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Specificaties</TabsTrigger>
+                            <TabsTrigger value="kenmerken" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Kenmerken</TabsTrigger>
+                            <TabsTrigger value="compatibiliteit" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Compatibiliteit</TabsTrigger>
+                            <TabsTrigger value="instellingen" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Instellingen</TabsTrigger>
+                          </TabsList>
 
-                        <div>
-                          <Label htmlFor="shortDescription" className="text-zinc-300">Korte beschrijving</Label>
-                          <Input
-                            {...register("shortDescription")}
-                            placeholder="Korte productbeschrijving"
-                            className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
-                            data-testid="input-short-description"
-                          />
-                        </div>
+                          {/* Tab 1: Algemeen */}
+                          <TabsContent value="algemeen" className="space-y-4 mt-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                <Label htmlFor="name" className="text-zinc-300">Naam</Label>
+                                <Input
+                                  {...register("name")}
+                                  placeholder="Product naam"
+                                  className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                                  data-testid="input-product-name"
+                                />
+                                {errors.name && (
+                                  <p className="text-sm text-red-400 mt-1">{errors.name.message}</p>
+                                )}
+                              </div>
+                              <div>
+                                <Label htmlFor="slug" className="text-zinc-300">Slug</Label>
+                                <Input
+                                  {...register("slug")}
+                                  placeholder="product-slug"
+                                  className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                                  data-testid="input-product-slug"
+                                />
+                              </div>
+                            </div>
 
-                        <div>
-                          <Label htmlFor="description" className="text-zinc-300">Beschrijving</Label>
-                          <Textarea
-                            {...register("description")}
-                            placeholder="Volledige productbeschrijving"
-                            rows={4}
-                            className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
-                            data-testid="input-description"
-                          />
-                        </div>
+                            <div>
+                              <Label htmlFor="sku" className="text-zinc-300">SKU</Label>
+                              <Input
+                                {...register("sku")}
+                                placeholder="SKU123"
+                                className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                                data-testid="input-sku"
+                              />
+                            </div>
 
-                        {/* Pricing */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div>
-                            <Label htmlFor="price" className="text-zinc-300">Prijs (€)</Label>
-                            <Input
-                              {...register("price")}
-                              type="number"
-                              step="0.01"
-                              placeholder="0.00"
-                              className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
-                              data-testid="input-price"
-                            />
-                            {errors.price && (
-                              <p className="text-sm text-red-400 mt-1">{errors.price.message}</p>
-                            )}
-                          </div>
-                          
-                          <div>
-                            <Label htmlFor="originalPrice" className="text-zinc-300">Originele prijs (€)</Label>
-                            <Input
-                              {...register("originalPrice")}
-                              type="number"
-                              step="0.01"
-                              placeholder="0.00"
-                              className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
-                              data-testid="input-original-price"
-                            />
-                          </div>
-                          
-                          <div>
-                            <Label htmlFor="stock" className="text-zinc-300">Voorraad</Label>
-                            <Input
-                              {...register("stock", { valueAsNumber: true })}
-                              type="number"
-                              placeholder="0"
-                              className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
-                              data-testid="input-stock"
-                            />
-                          </div>
-                        </div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              <div>
+                                <Label className="text-zinc-300">Categorie</Label>
+                                <Select value={watch("categoryId") || ""} onValueChange={(value) => setValue("categoryId", value)}>
+                                  <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white rounded-none" data-testid="select-category">
+                                    <SelectValue placeholder="Selecteer categorie" />
+                                  </SelectTrigger>
+                                  <SelectContent className="bg-zinc-800 border-zinc-700">
+                                    {categories?.map((category: any) => (
+                                      <SelectItem key={category.id} value={category.id} className="text-white hover:bg-zinc-700">
+                                        {category.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div>
+                                <Label className="text-zinc-300">Merk</Label>
+                                <Select value={watch("brandId") || ""} onValueChange={(value) => setValue("brandId", value)}>
+                                  <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white rounded-none" data-testid="select-brand">
+                                    <SelectValue placeholder="Selecteer merk" />
+                                  </SelectTrigger>
+                                  <SelectContent className="bg-zinc-800 border-zinc-700">
+                                    {brands?.map((brand: any) => (
+                                      <SelectItem key={brand.id} value={brand.id} className="text-white hover:bg-zinc-700">
+                                        {brand.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div>
+                                <Label className="text-zinc-300">Upsell Categorie</Label>
+                                <Select value={watch("upsellCategoryId") || ""} onValueChange={(value) => setValue("upsellCategoryId", value)}>
+                                  <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white rounded-none" data-testid="select-upsell-category">
+                                    <SelectValue placeholder="Selecteer upsell categorie" />
+                                  </SelectTrigger>
+                                  <SelectContent className="bg-zinc-800 border-zinc-700">
+                                    {categories?.map((category: any) => (
+                                      <SelectItem key={category.id} value={category.id} className="text-white hover:bg-zinc-700">
+                                        {category.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
 
-                        {/* Category & Brand */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div>
-                            <Label className="text-zinc-300">Categorie</Label>
-                            <Select onValueChange={(value) => setValue("categoryId", value)}>
-                              <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white rounded-none" data-testid="select-category">
-                                <SelectValue placeholder="Selecteer categorie" />
-                              </SelectTrigger>
-                              <SelectContent className="bg-zinc-800 border-zinc-700">
-                                {categories?.map((category: any) => (
-                                  <SelectItem key={category.id} value={category.id} className="text-white hover:bg-zinc-700">
-                                    {category.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          
-                          <div>
-                            <Label className="text-zinc-300">Merk</Label>
-                            <Select onValueChange={(value) => setValue("brandId", value)}>
-                              <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white rounded-none" data-testid="select-brand">
-                                <SelectValue placeholder="Selecteer merk" />
-                              </SelectTrigger>
-                              <SelectContent className="bg-zinc-800 border-zinc-700">
-                                {brands?.map((brand: any) => (
-                                  <SelectItem key={brand.id} value={brand.id} className="text-white hover:bg-zinc-700">
-                                    {brand.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          
-                          <div>
-                            <Label htmlFor="sku" className="text-zinc-300">SKU</Label>
-                            <Input
-                              {...register("sku")}
-                              placeholder="SKU123"
-                              className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
-                              data-testid="input-sku"
-                            />
-                          </div>
-                        </div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              <div>
+                                <Label htmlFor="price" className="text-zinc-300">Prijs (€)</Label>
+                                <Input
+                                  {...register("price")}
+                                  type="number"
+                                  step="0.01"
+                                  placeholder="0.00"
+                                  className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                                  data-testid="input-price"
+                                />
+                                {errors.price && (
+                                  <p className="text-sm text-red-400 mt-1">{errors.price.message}</p>
+                                )}
+                              </div>
+                              <div>
+                                <Label htmlFor="originalPrice" className="text-zinc-300">Originele prijs (€)</Label>
+                                <Input
+                                  {...register("originalPrice")}
+                                  type="number"
+                                  step="0.01"
+                                  placeholder="0.00"
+                                  className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                                  data-testid="input-original-price"
+                                />
+                              </div>
+                              <div>
+                                <Label htmlFor="stock" className="text-zinc-300">Voorraad</Label>
+                                <Input
+                                  {...register("stock", { valueAsNumber: true })}
+                                  type="number"
+                                  placeholder="0"
+                                  className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                                  data-testid="input-stock"
+                                />
+                              </div>
+                            </div>
+                          </TabsContent>
 
-                        {/* Images */}
-                        <div>
-                          <Label className="text-zinc-300">Afbeeldingen</Label>
-                          <div className="mt-2 border-2 border-dashed border-zinc-700 p-4 text-center hover:border-[#d0a760] transition-colors">
-                            <input
-                              type="file"
-                              accept="image/*"
-                              multiple
-                              onChange={handleImageUpload}
-                              className="hidden"
-                              id="image-upload"
-                              data-testid="input-image-upload"
-                            />
-                            <label htmlFor="image-upload" className="cursor-pointer">
-                              <Upload className="w-8 h-8 text-zinc-500 mx-auto mb-2" />
-                              <p className="text-sm text-zinc-400">
-                                {isUploading ? "Uploaden..." : "Klik om afbeeldingen te uploaden"}
-                              </p>
-                            </label>
-                          </div>
-                          
-                          {productImages.length > 0 && (
-                            <div className="mt-4 grid grid-cols-4 gap-2">
-                              {productImages.map((url, index) => (
-                                <div 
-                                  key={index} 
-                                  className={`relative aspect-square border-2 ${
-                                    index === primaryImageIndex 
-                                      ? 'border-[#d0a760]' 
-                                      : 'border-zinc-700'
-                                  }`}
+                          {/* Tab 2: Beschrijving */}
+                          <TabsContent value="beschrijving" className="space-y-4 mt-4">
+                            <div>
+                              <Label htmlFor="shortDescription" className="text-zinc-300">Korte beschrijving</Label>
+                              <Input
+                                {...register("shortDescription")}
+                                placeholder="Korte productbeschrijving"
+                                className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                                data-testid="input-short-description"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="description" className="text-zinc-300">Beschrijving</Label>
+                              <Textarea
+                                {...register("description")}
+                                placeholder="Volledige productbeschrijving"
+                                rows={4}
+                                className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                                data-testid="input-description"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-zinc-300">Uitgebreide Beschrijving (Overview)</Label>
+                              <Textarea
+                                placeholder="Uitgebreide productbeschrijving..."
+                                value={overviewContent}
+                                onChange={(e) => setOverviewContent(e.target.value)}
+                                rows={8}
+                                className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760] mt-2 resize-y"
+                                data-testid="input-overview-content"
+                              />
+                            </div>
+                          </TabsContent>
+
+                          {/* Tab 3: Media */}
+                          <TabsContent value="media" className="space-y-4 mt-4">
+                            <div>
+                              <div className="flex items-center justify-between mb-2">
+                                <Label className="text-zinc-300">Afbeeldingen</Label>
+                                {productImages.length > 0 && (
+                                  <Badge className="bg-zinc-800 text-zinc-300 rounded-none">
+                                    {productImages.length} afbeelding{productImages.length !== 1 ? 'en' : ''}
+                                  </Badge>
+                                )}
+                              </div>
+                              <div className="mt-2 border-2 border-dashed border-zinc-700 p-4 text-center hover:border-[#d0a760] transition-colors">
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  multiple
+                                  onChange={handleImageUpload}
+                                  className="hidden"
+                                  id="image-upload"
+                                  data-testid="input-image-upload"
+                                />
+                                <label htmlFor="image-upload" className="cursor-pointer">
+                                  <Upload className="w-8 h-8 text-zinc-500 mx-auto mb-2" />
+                                  <p className="text-sm text-zinc-400">
+                                    {isUploading ? "Uploaden..." : "Klik om afbeeldingen te uploaden"}
+                                  </p>
+                                </label>
+                              </div>
+
+                              <div className="flex gap-2 mt-3">
+                                <Input
+                                  placeholder="Afbeelding URL toevoegen..."
+                                  value={newImageUrl}
+                                  onChange={(e) => setNewImageUrl(e.target.value)}
+                                  className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                                  data-testid="input-image-url"
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                      e.preventDefault();
+                                      if (newImageUrl.trim()) {
+                                        setProductImages([...productImages, newImageUrl.trim()]);
+                                        setNewImageUrl('');
+                                      }
+                                    }
+                                  }}
+                                />
+                                <Button
+                                  type="button"
+                                  onClick={() => {
+                                    if (newImageUrl.trim()) {
+                                      setProductImages([...productImages, newImageUrl.trim()]);
+                                      setNewImageUrl('');
+                                    }
+                                  }}
+                                  className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"
                                 >
-                                  <img
-                                    src={url}
-                                    alt={`Product ${index + 1}`}
-                                    className="w-full h-full object-cover"
-                                  />
-                                  <div className="absolute top-1 right-1 flex gap-1">
-                                    <button
-                                      type="button"
-                                      onClick={() => setPrimaryImageIndex(index)}
-                                      className={`w-6 h-6 flex items-center justify-center ${
+                                  <Plus className="w-4 h-4" />
+                                </Button>
+                              </div>
+                              
+                              {productImages.length > 0 && (
+                                <div className="mt-4 grid grid-cols-4 gap-2">
+                                  {productImages.map((url, index) => (
+                                    <div 
+                                      key={index} 
+                                      className={`relative aspect-square border-2 group ${
                                         index === primaryImageIndex 
-                                          ? 'bg-[#d0a760] text-black' 
-                                          : 'bg-zinc-800 text-white'
+                                          ? 'border-[#d0a760]' 
+                                          : 'border-zinc-700'
                                       }`}
                                     >
-                                      <Star className="w-3 h-3" />
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={() => {
-                                        const newImages = productImages.filter((_, i) => i !== index);
-                                        setProductImages(newImages);
-                                        if (primaryImageIndex >= newImages.length) {
-                                          setPrimaryImageIndex(Math.max(0, newImages.length - 1));
-                                        }
-                                      }}
-                                      className="w-6 h-6 bg-red-500/80 text-white flex items-center justify-center"
+                                      <img
+                                        src={url}
+                                        alt={`Product ${index + 1}`}
+                                        className="w-full h-full object-cover"
+                                      />
+                                      {index === primaryImageIndex && (
+                                        <div className="absolute bottom-0 left-0 right-0 bg-[#d0a760] text-black text-[10px] text-center py-0.5 font-semibold">
+                                          HOOFD
+                                        </div>
+                                      )}
+                                      <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button
+                                          type="button"
+                                          onClick={() => setPrimaryImageIndex(index)}
+                                          className={`w-6 h-6 flex items-center justify-center ${
+                                            index === primaryImageIndex 
+                                              ? 'bg-[#d0a760] text-black' 
+                                              : 'bg-zinc-800/90 text-white hover:bg-[#d0a760] hover:text-black'
+                                          }`}
+                                          title="Instellen als hoofdafbeelding"
+                                        >
+                                          <Star className="w-3 h-3" />
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            const newImages = productImages.filter((_, i) => i !== index);
+                                            setProductImages(newImages);
+                                            if (primaryImageIndex >= newImages.length) {
+                                              setPrimaryImageIndex(Math.max(0, newImages.length - 1));
+                                            }
+                                          }}
+                                          className="w-6 h-6 bg-red-500/80 text-white flex items-center justify-center hover:bg-red-600"
+                                          title="Verwijderen"
+                                        >
+                                          <X className="w-3 h-3" />
+                                        </button>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+
+                            <div>
+                              <Label className="text-zinc-300">Video URL (YouTube)</Label>
+                              <Input
+                                placeholder="https://www.youtube.com/watch?v=..."
+                                value={videoUrl}
+                                onChange={(e) => setVideoUrl(e.target.value)}
+                                className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760] mt-2"
+                                data-testid="input-video-url"
+                              />
+                              {videoUrl && videoUrl.includes('youtube.com/watch?v=') && (
+                                <div className="mt-3">
+                                  <p className="text-zinc-400 text-xs mb-2">YouTube Preview:</p>
+                                  <img
+                                    src={`https://img.youtube.com/vi/${videoUrl.split('v=')[1]?.split('&')[0]}/mqdefault.jpg`}
+                                    alt="YouTube Thumbnail"
+                                    className="w-48 h-auto border border-zinc-700"
+                                  />
+                                </div>
+                              )}
+                              {videoUrl && videoUrl.includes('youtu.be/') && (
+                                <div className="mt-3">
+                                  <p className="text-zinc-400 text-xs mb-2">YouTube Preview:</p>
+                                  <img
+                                    src={`https://img.youtube.com/vi/${videoUrl.split('youtu.be/')[1]?.split('?')[0]}/mqdefault.jpg`}
+                                    alt="YouTube Thumbnail"
+                                    className="w-48 h-auto border border-zinc-700"
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          </TabsContent>
+
+                          {/* Tab 4: Specificaties */}
+                          <TabsContent value="specificaties" className="space-y-4 mt-4">
+                            <div>
+                              <Label className="text-zinc-300">Specificaties</Label>
+                              <div className="flex gap-2 mt-2">
+                                <Input
+                                  placeholder="Naam"
+                                  value={newSpecKey}
+                                  onChange={(e) => setNewSpecKey(e.target.value)}
+                                  className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                                  data-testid="input-spec-key"
+                                />
+                                <Input
+                                  placeholder="Waarde"
+                                  value={newSpecValue}
+                                  onChange={(e) => setNewSpecValue(e.target.value)}
+                                  className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                                  data-testid="input-spec-value"
+                                />
+                                <Button
+                                  type="button"
+                                  onClick={() => {
+                                    if (newSpecKey.trim() && newSpecValue.trim()) {
+                                      setSpecifications({
+                                        ...specifications,
+                                        [newSpecKey.trim()]: newSpecValue.trim()
+                                      });
+                                      setNewSpecKey('');
+                                      setNewSpecValue('');
+                                    }
+                                  }}
+                                  className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"
+                                  data-testid="button-add-specification"
+                                >
+                                  <Plus className="w-4 h-4" />
+                                </Button>
+                              </div>
+                              
+                              {Object.keys(specifications).length > 0 && (
+                                <div className="mt-2 space-y-1">
+                                  {Object.entries(specifications).map(([key, value], index) => (
+                                    <div
+                                      key={index}
+                                      className="flex items-center justify-between bg-zinc-800 px-3 py-2"
                                     >
-                                      <X className="w-3 h-3" />
-                                    </button>
-                                  </div>
+                                      <span className="text-sm text-zinc-300 flex-1">
+                                        <strong className="text-white">{key}:</strong>{' '}
+                                        {editingSpecKey === key ? (
+                                          <input
+                                            type="text"
+                                            defaultValue={String(value)}
+                                            autoFocus
+                                            className="bg-zinc-700 border border-zinc-600 text-white px-2 py-0.5 text-sm rounded-none focus:border-[#d0a760] outline-none"
+                                            onBlur={(e) => {
+                                              if (e.target.value.trim()) {
+                                                setSpecifications({ ...specifications, [key]: e.target.value.trim() });
+                                              }
+                                              setEditingSpecKey(null);
+                                            }}
+                                            onKeyDown={(e) => {
+                                              if (e.key === 'Enter') {
+                                                const target = e.target as HTMLInputElement;
+                                                if (target.value.trim()) {
+                                                  setSpecifications({ ...specifications, [key]: target.value.trim() });
+                                                }
+                                                setEditingSpecKey(null);
+                                              } else if (e.key === 'Escape') {
+                                                setEditingSpecKey(null);
+                                              }
+                                            }}
+                                          />
+                                        ) : (
+                                          <span
+                                            className="cursor-pointer hover:text-[#d0a760] transition-colors"
+                                            onClick={() => setEditingSpecKey(key)}
+                                            title="Klik om te bewerken"
+                                          >
+                                            {String(value)}
+                                          </span>
+                                        )}
+                                      </span>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const newSpecs = { ...specifications };
+                                          delete newSpecs[key];
+                                          setSpecifications(newSpecs);
+                                        }}
+                                        className="text-zinc-400 hover:text-red-400 ml-2"
+                                        data-testid={`button-remove-spec-${key}`}
+                                      >
+                                        <X className="w-4 h-4" />
+                                      </button>
+                                    </div>
+                                  ))}
                                 </div>
-                              ))}
+                              )}
                             </div>
-                          )}
-                        </div>
+                          </TabsContent>
 
-                        {/* Features */}
-                        <div>
-                          <Label className="text-zinc-300">Kenmerken</Label>
-                          <div className="flex gap-2 mt-2">
-                            <Input
-                              value={newFeature}
-                              onChange={(e) => setNewFeature(e.target.value)}
-                              placeholder="Kenmerk toevoegen"
-                              className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
-                              data-testid="input-new-feature"
-                            />
-                            <Button
-                              type="button"
-                              onClick={() => {
-                                if (newFeature.trim()) {
-                                  setFeatures([...features, newFeature.trim()]);
-                                  setNewFeature('');
-                                }
-                              }}
-                              className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"
-                              data-testid="button-add-feature"
-                            >
-                              <Plus className="w-4 h-4" />
-                            </Button>
-                          </div>
-                          
-                          {features.length > 0 && (
-                            <div className="mt-2 flex flex-wrap gap-2">
-                              {features.map((feature, index) => (
-                                <Badge 
-                                  key={index} 
-                                  className="bg-zinc-800 text-zinc-300 hover:bg-zinc-700 rounded-none pr-1"
+                          {/* Tab 5: Kenmerken */}
+                          <TabsContent value="kenmerken" className="space-y-6 mt-4">
+                            <div>
+                              <Label className="text-zinc-300">Kenmerken</Label>
+                              <div className="flex gap-2 mt-2">
+                                <Input
+                                  value={newFeature}
+                                  onChange={(e) => setNewFeature(e.target.value)}
+                                  placeholder="Kenmerk toevoegen"
+                                  className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                                  data-testid="input-new-feature"
+                                />
+                                <Button
+                                  type="button"
+                                  onClick={() => {
+                                    if (newFeature.trim()) {
+                                      setFeatures([...features, newFeature.trim()]);
+                                      setNewFeature('');
+                                    }
+                                  }}
+                                  className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"
+                                  data-testid="button-add-feature"
                                 >
-                                  {feature}
-                                  <button
-                                    type="button"
-                                    onClick={() => setFeatures(features.filter((_, i) => i !== index))}
-                                    className="ml-2 hover:text-red-400"
-                                  >
-                                    <X className="w-3 h-3" />
-                                  </button>
-                                </Badge>
-                              ))}
+                                  <Plus className="w-4 h-4" />
+                                </Button>
+                              </div>
+                              
+                              {features.length > 0 && (
+                                <div className="mt-2 flex flex-wrap gap-2">
+                                  {features.map((feature, index) => (
+                                    <Badge 
+                                      key={index} 
+                                      className="bg-zinc-800 text-zinc-300 hover:bg-zinc-700 rounded-none pr-1"
+                                    >
+                                      {feature}
+                                      <button
+                                        type="button"
+                                        onClick={() => setFeatures(features.filter((_, i) => i !== index))}
+                                        className="ml-2 hover:text-red-400"
+                                      >
+                                        <X className="w-3 h-3" />
+                                      </button>
+                                    </Badge>
+                                  ))}
+                                </div>
+                              )}
                             </div>
-                          )}
-                        </div>
 
-                        {/* Specifications */}
-                        <div>
-                          <Label className="text-zinc-300">Specificaties</Label>
-                          <div className="flex gap-2 mt-2">
-                            <Input
-                              placeholder="Naam"
-                              value={newSpecKey}
-                              onChange={(e) => setNewSpecKey(e.target.value)}
-                              className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
-                              data-testid="input-spec-key"
-                            />
-                            <Input
-                              placeholder="Waarde"
-                              value={newSpecValue}
-                              onChange={(e) => setNewSpecValue(e.target.value)}
-                              className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
-                              data-testid="input-spec-value"
-                            />
-                            <Button
-                              type="button"
-                              onClick={() => {
-                                if (newSpecKey.trim() && newSpecValue.trim()) {
-                                  setSpecifications({
-                                    ...specifications,
-                                    [newSpecKey.trim()]: newSpecValue.trim()
-                                  });
-                                  setNewSpecKey('');
-                                  setNewSpecValue('');
-                                }
-                              }}
-                              className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"
-                              data-testid="button-add-specification"
-                            >
-                              <Plus className="w-4 h-4" />
-                            </Button>
-                          </div>
-                          
-                          {Object.keys(specifications).length > 0 && (
-                            <div className="mt-2 space-y-1">
-                              {Object.entries(specifications).map(([key, value], index) => (
-                                <div
-                                  key={index}
-                                  className="flex items-center justify-between bg-zinc-800 px-3 py-2"
+                            <Separator className="bg-zinc-700" />
+
+                            <div>
+                              <Label className="text-zinc-300">Inhoud van de doos</Label>
+                              <div className="flex gap-2 mt-2">
+                                <Input
+                                  placeholder="Item toevoegen..."
+                                  value={newBoxItem}
+                                  onChange={(e) => setNewBoxItem(e.target.value)}
+                                  className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
+                                  data-testid="input-new-box-item"
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                      e.preventDefault();
+                                      if (newBoxItem.trim()) {
+                                        setBoxContent([...boxContent, newBoxItem.trim()]);
+                                        setNewBoxItem('');
+                                      }
+                                    }
+                                  }}
+                                />
+                                <Button
+                                  type="button"
+                                  onClick={() => {
+                                    if (newBoxItem.trim()) {
+                                      setBoxContent([...boxContent, newBoxItem.trim()]);
+                                      setNewBoxItem('');
+                                    }
+                                  }}
+                                  className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"
+                                  data-testid="button-add-box-item"
                                 >
-                                  <span className="text-sm text-zinc-300">
-                                    <strong className="text-white">{key}:</strong> {String(value)}
-                                  </span>
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const newSpecs = { ...specifications };
-                                      delete newSpecs[key];
-                                      setSpecifications(newSpecs);
+                                  <Plus className="w-4 h-4" />
+                                </Button>
+                              </div>
+                              
+                              {boxContent.length > 0 && (
+                                <div className="mt-2 space-y-1">
+                                  {boxContent.map((item, index) => (
+                                    <div
+                                      key={index}
+                                      className="flex items-center justify-between bg-zinc-800 px-3 py-2"
+                                    >
+                                      <span className="text-sm text-zinc-300">{item}</span>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setBoxContent(boxContent.filter((_, i) => i !== index));
+                                        }}
+                                        className="text-zinc-400 hover:text-red-400"
+                                        data-testid={`button-remove-box-item-${index}`}
+                                      >
+                                        <X className="w-4 h-4" />
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+
+                            <Separator className="bg-zinc-700" />
+
+                            <div>
+                              <Label className="text-zinc-300">Downloads (handleidingen, tech sheets, etc.)</Label>
+                              <div className="flex flex-wrap gap-2 mt-2">
+                                <div className="relative">
+                                  <input
+                                    type="file"
+                                    accept=".pdf"
+                                    onChange={async (e) => {
+                                      const file = e.target.files?.[0];
+                                      if (!file) return;
+                                      
+                                      const formData = new FormData();
+                                      formData.append('file', file);
+                                      
+                                      try {
+                                        const response = await fetch('/api/upload/pdf', {
+                                          method: 'POST',
+                                          credentials: 'include',
+                                          body: formData,
+                                        });
+                                        
+                                        if (!response.ok) throw new Error('Upload failed');
+                                        
+                                        const result = await response.json();
+                                        const fileName = file.name.replace('.pdf', '').replace(/_/g, ' ');
+                                        setDownloads([...downloads, { name: fileName, url: result.url }]);
+                                        toast({ title: "PDF geüpload", description: file.name });
+                                      } catch (error) {
+                                        toast({ title: "Upload mislukt", variant: "destructive" });
+                                      }
+                                      e.target.value = '';
                                     }}
-                                    className="text-zinc-400 hover:text-red-400"
-                                    data-testid={`button-remove-spec-${key}`}
-                                  >
-                                    <X className="w-4 h-4" />
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Video URL */}
-                        <div>
-                          <Label className="text-zinc-300">Video URL (YouTube)</Label>
-                          <Input
-                            placeholder="https://www.youtube.com/watch?v=..."
-                            value={videoUrl}
-                            onChange={(e) => setVideoUrl(e.target.value)}
-                            className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760] mt-2"
-                            data-testid="input-video-url"
-                          />
-                          {videoUrl && videoUrl.includes('youtube.com/watch?v=') && (
-                            <div className="mt-3">
-                              <p className="text-zinc-400 text-xs mb-2">YouTube Preview:</p>
-                              <img
-                                src={`https://img.youtube.com/vi/${videoUrl.split('v=')[1]?.split('&')[0]}/mqdefault.jpg`}
-                                alt="YouTube Thumbnail"
-                                className="w-48 h-auto border border-zinc-700"
-                              />
-                            </div>
-                          )}
-                          {videoUrl && videoUrl.includes('youtu.be/') && (
-                            <div className="mt-3">
-                              <p className="text-zinc-400 text-xs mb-2">YouTube Preview:</p>
-                              <img
-                                src={`https://img.youtube.com/vi/${videoUrl.split('youtu.be/')[1]?.split('?')[0]}/mqdefault.jpg`}
-                                alt="YouTube Thumbnail"
-                                className="w-48 h-auto border border-zinc-700"
-                              />
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Overview Content */}
-                        <div>
-                          <Label className="text-zinc-300">Uitgebreide Beschrijving (Overview)</Label>
-                          <Textarea
-                            placeholder="Uitgebreide productbeschrijving..."
-                            value={overviewContent}
-                            onChange={(e) => setOverviewContent(e.target.value)}
-                            rows={8}
-                            className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760] mt-2 resize-y"
-                            data-testid="input-overview-content"
-                          />
-                        </div>
-
-                        {/* Box Content */}
-                        <div>
-                          <Label className="text-zinc-300">Inhoud van de doos</Label>
-                          <div className="flex gap-2 mt-2">
-                            <Input
-                              placeholder="Item toevoegen..."
-                              value={newBoxItem}
-                              onChange={(e) => setNewBoxItem(e.target.value)}
-                              className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
-                              data-testid="input-new-box-item"
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                  e.preventDefault();
-                                  if (newBoxItem.trim()) {
-                                    setBoxContent([...boxContent, newBoxItem.trim()]);
-                                    setNewBoxItem('');
-                                  }
-                                }
-                              }}
-                            />
-                            <Button
-                              type="button"
-                              onClick={() => {
-                                if (newBoxItem.trim()) {
-                                  setBoxContent([...boxContent, newBoxItem.trim()]);
-                                  setNewBoxItem('');
-                                }
-                              }}
-                              className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"
-                              data-testid="button-add-box-item"
-                            >
-                              <Plus className="w-4 h-4" />
-                            </Button>
-                          </div>
-                          
-                          {boxContent.length > 0 && (
-                            <div className="mt-2 space-y-1">
-                              {boxContent.map((item, index) => (
-                                <div
-                                  key={index}
-                                  className="flex items-center justify-between bg-zinc-800 px-3 py-2"
-                                >
-                                  <span className="text-sm text-zinc-300">{item}</span>
-                                  <button
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    data-testid="input-pdf-upload"
+                                  />
+                                  <Button
                                     type="button"
-                                    onClick={() => {
-                                      setBoxContent(boxContent.filter((_, i) => i !== index));
-                                    }}
-                                    className="text-zinc-400 hover:text-red-400"
-                                    data-testid={`button-remove-box-item-${index}`}
+                                    variant="outline"
+                                    className="bg-blue-600/20 border-blue-600/50 text-blue-400 hover:bg-blue-600/30 hover:text-blue-300 rounded-none"
                                   >
-                                    <X className="w-4 h-4" />
-                                  </button>
+                                    <Upload className="w-4 h-4 mr-2" />
+                                    PDF Uploaden
+                                  </Button>
                                 </div>
-                              ))}
+                                <span className="text-zinc-500 self-center">of handmatig:</span>
+                                <Input
+                                  placeholder="Naam"
+                                  value={newDownloadName}
+                                  onChange={(e) => setNewDownloadName(e.target.value)}
+                                  className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760] w-32"
+                                  data-testid="input-download-name"
+                                />
+                                <Input
+                                  placeholder="URL"
+                                  value={newDownloadUrl}
+                                  onChange={(e) => setNewDownloadUrl(e.target.value)}
+                                  className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760] flex-1 min-w-32"
+                                  data-testid="input-download-url"
+                                />
+                                <Button
+                                  type="button"
+                                  onClick={() => {
+                                    if (newDownloadName.trim() && newDownloadUrl.trim()) {
+                                      setDownloads([...downloads, { name: newDownloadName.trim(), url: newDownloadUrl.trim() }]);
+                                      setNewDownloadName('');
+                                      setNewDownloadUrl('');
+                                    }
+                                  }}
+                                  className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"
+                                  data-testid="button-add-download"
+                                >
+                                  <Plus className="w-4 h-4" />
+                                </Button>
+                              </div>
+                              
+                              {downloads.length > 0 && (
+                                <div className="mt-2 space-y-1">
+                                  {downloads.map((download, index) => (
+                                    <div
+                                      key={index}
+                                      className="flex items-center justify-between bg-zinc-800 px-3 py-2"
+                                    >
+                                      <div className="flex items-center gap-2 text-sm">
+                                        <Download className="w-4 h-4 text-[#d0a760]" />
+                                        <span className="text-white font-medium">{download.name}</span>
+                                        <span className="text-zinc-500">-</span>
+                                        <span className="text-zinc-400 text-xs truncate max-w-48">{download.url}</span>
+                                      </div>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          setDownloads(downloads.filter((_, i) => i !== index));
+                                        }}
+                                        className="text-zinc-400 hover:text-red-400"
+                                        data-testid={`button-remove-download-${index}`}
+                                      >
+                                        <X className="w-4 h-4" />
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
                             </div>
-                          )}
-                        </div>
+                          </TabsContent>
 
-                        {/* Downloads */}
-                        <div>
-                          <Label className="text-zinc-300">Downloads (handleidingen, tech sheets, etc.)</Label>
-                          <div className="flex flex-wrap gap-2 mt-2">
-                            <div className="relative">
-                              <input
-                                type="file"
-                                accept=".pdf"
-                                onChange={async (e) => {
-                                  const file = e.target.files?.[0];
-                                  if (!file) return;
-                                  
-                                  const formData = new FormData();
-                                  formData.append('file', file);
-                                  
-                                  try {
-                                    const response = await fetch('/api/upload/pdf', {
-                                      method: 'POST',
-                                      credentials: 'include',
-                                      body: formData,
-                                    });
-                                    
-                                    if (!response.ok) throw new Error('Upload failed');
-                                    
-                                    const result = await response.json();
-                                    const fileName = file.name.replace('.pdf', '').replace(/_/g, ' ');
-                                    setDownloads([...downloads, { name: fileName, url: result.url }]);
-                                    toast({ title: "PDF geüpload", description: file.name });
-                                  } catch (error) {
-                                    toast({ title: "Upload mislukt", variant: "destructive" });
-                                  }
-                                  e.target.value = '';
-                                }}
-                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                data-testid="input-pdf-upload"
-                              />
-                              <Button
-                                type="button"
-                                variant="outline"
-                                className="bg-blue-600/20 border-blue-600/50 text-blue-400 hover:bg-blue-600/30 hover:text-blue-300 rounded-none"
+                          {/* Tab 6: Compatibiliteit */}
+                          <TabsContent value="compatibiliteit" className="space-y-6 mt-4">
+                            <div className="space-y-3">
+                              <Collapsible
+                                open={vehicleCompatibilityOpen}
+                                onOpenChange={setVehicleCompatibilityOpen}
                               >
-                                <Upload className="w-4 h-4 mr-2" />
-                                PDF Uploaden
-                              </Button>
-                            </div>
-                            <span className="text-zinc-500 self-center">of handmatig:</span>
-                            <Input
-                              placeholder="Naam"
-                              value={newDownloadName}
-                              onChange={(e) => setNewDownloadName(e.target.value)}
-                              className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760] w-32"
-                              data-testid="input-download-name"
-                            />
-                            <Input
-                              placeholder="URL"
-                              value={newDownloadUrl}
-                              onChange={(e) => setNewDownloadUrl(e.target.value)}
-                              className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760] flex-1 min-w-32"
-                              data-testid="input-download-url"
-                            />
-                            <Button
-                              type="button"
-                              onClick={() => {
-                                if (newDownloadName.trim() && newDownloadUrl.trim()) {
-                                  setDownloads([...downloads, { name: newDownloadName.trim(), url: newDownloadUrl.trim() }]);
-                                  setNewDownloadName('');
-                                  setNewDownloadUrl('');
-                                }
-                              }}
-                              className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"
-                              data-testid="button-add-download"
-                            >
-                              <Plus className="w-4 h-4" />
-                            </Button>
-                          </div>
-                          
-                          {downloads.length > 0 && (
-                            <div className="mt-2 space-y-1">
-                              {downloads.map((download, index) => (
-                                <div
-                                  key={index}
-                                  className="flex items-center justify-between bg-zinc-800 px-3 py-2"
-                                >
-                                  <div className="flex items-center gap-2 text-sm">
-                                    <Download className="w-4 h-4 text-[#d0a760]" />
-                                    <span className="text-white font-medium">{download.name}</span>
-                                    <span className="text-zinc-500">-</span>
-                                    <span className="text-zinc-400 text-xs truncate max-w-48">{download.url}</span>
-                                  </div>
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      setDownloads(downloads.filter((_, i) => i !== index));
-                                    }}
-                                    className="text-zinc-400 hover:text-red-400"
-                                    data-testid={`button-remove-download-${index}`}
-                                  >
-                                    <X className="w-4 h-4" />
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Vehicle Compatibility */}
-                        <div className="space-y-3">
-                          <Collapsible
-                            open={vehicleCompatibilityOpen}
-                            onOpenChange={setVehicleCompatibilityOpen}
-                          >
                             <CollapsibleTrigger asChild>
                               <button
                                 type="button"
@@ -2508,193 +2625,197 @@ export default function Admin() {
                                 )}
                               </div>
                             </CollapsibleContent>
-                          </Collapsible>
-                        </div>
-
-                        <Separator className="bg-zinc-700" />
-
-                        {/* Settings */}
-                        <div className="space-y-4">
-                          <Label className="text-zinc-300 text-base font-semibold">Instellingen</Label>
-                          
-                          <div className="flex items-center justify-between p-4 bg-zinc-800">
-                            <div>
-                              <Label className="text-white">Uitgelicht product</Label>
-                              <p className="text-sm text-zinc-400">Toon op homepage</p>
+                              </Collapsible>
                             </div>
-                            <Switch
-                              checked={isFeatured || false}
-                              onCheckedChange={(checked) => setValue("isFeatured", checked)}
-                              data-testid="switch-featured"
-                            />
-                          </div>
 
-                          <div className="flex items-center justify-between p-4 bg-zinc-800">
-                            <div>
-                              <Label className="text-white">Installatie service</Label>
-                              <p className="text-sm text-zinc-400">Bied installatie aan</p>
-                            </div>
-                            <Switch
-                              checked={canHaveInstallation || false}
-                              onCheckedChange={(checked) => {
-                                setValue("canHaveInstallation", checked);
-                                if (!checked) setValue("installationPrice", "");
-                              }}
-                              data-testid="switch-installation"
-                            />
-                          </div>
+                            <Separator className="bg-zinc-700" />
 
-                          {canHaveInstallation && (
-                            <div className="p-4 bg-zinc-800">
-                              <Label htmlFor="installationPrice" className="text-zinc-300">Installatie prijs (€)</Label>
-                              <Input
-                                {...register("installationPrice")}
-                                type="number"
-                                step="0.01"
-                                placeholder="0.00"
-                                className="mt-2 bg-zinc-700 border-zinc-600 text-white rounded-none focus:border-[#d0a760]"
-                                data-testid="input-installation-price"
-                              />
-                            </div>
-                          )}
-
-                          <div className="flex items-center justify-between p-4 bg-zinc-800">
-                            <div>
-                              <Label className="text-white">Heeft variaties (bijv. opslagcapaciteit)</Label>
-                              <p className="text-sm text-zinc-400">Bied verschillende opties aan</p>
-                            </div>
-                            <Switch
-                              checked={hasVariations || false}
-                              onCheckedChange={(checked) => {
-                                setHasVariations(checked);
-                                if (!checked) setProductVariations([]);
-                              }}
-                              data-testid="switch-has-variations"
-                            />
-                          </div>
-
-                          {hasVariations && (
-                            <div className="p-4 bg-zinc-800 space-y-4">
-                              <Label className="text-zinc-300 font-semibold">Productvariaties</Label>
-                              
-                              {productVariations.length > 0 && (
-                                <div className="border border-zinc-700 overflow-hidden">
-                                  <Table>
-                                    <TableHeader>
-                                      <TableRow className="border-zinc-700 hover:bg-transparent">
-                                        <TableHead className="text-[#d0a760] font-semibold">Label</TableHead>
-                                        <TableHead className="text-[#d0a760] font-semibold">Prijs</TableHead>
-                                        <TableHead className="text-[#d0a760] font-semibold">Voorraad</TableHead>
-                                        <TableHead className="text-[#d0a760] font-semibold">SKU</TableHead>
-                                        <TableHead className="text-[#d0a760] font-semibold text-right">Acties</TableHead>
-                                      </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                      {productVariations.map((variation, index) => (
-                                        <TableRow key={index} className="border-zinc-700">
-                                          <TableCell className="text-white">{variation.label}</TableCell>
-                                          <TableCell className="text-white">€{variation.price}</TableCell>
-                                          <TableCell className="text-white">{variation.stock}</TableCell>
-                                          <TableCell className="text-zinc-400">{variation.sku || '-'}</TableCell>
-                                          <TableCell className="text-right">
-                                            <Button
-                                              type="button"
-                                              variant="ghost"
-                                              size="sm"
-                                              onClick={() => {
-                                                setProductVariations(productVariations.filter((_, i) => i !== index));
-                                              }}
-                                              className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
-                                              data-testid={`button-delete-variation-${index}`}
-                                            >
-                                              <Trash2 className="w-4 h-4" />
-                                            </Button>
-                                          </TableCell>
+                            {hasVariations && (
+                              <div className="p-4 bg-zinc-800 space-y-4">
+                                <Label className="text-zinc-300 font-semibold">Productvariaties</Label>
+                                
+                                {productVariations.length > 0 && (
+                                  <div className="border border-zinc-700 overflow-hidden">
+                                    <Table>
+                                      <TableHeader>
+                                        <TableRow className="border-zinc-700 hover:bg-transparent">
+                                          <TableHead className="text-[#d0a760] font-semibold">Label</TableHead>
+                                          <TableHead className="text-[#d0a760] font-semibold">Prijs</TableHead>
+                                          <TableHead className="text-[#d0a760] font-semibold">Voorraad</TableHead>
+                                          <TableHead className="text-[#d0a760] font-semibold">SKU</TableHead>
+                                          <TableHead className="text-[#d0a760] font-semibold text-right">Acties</TableHead>
                                         </TableRow>
-                                      ))}
-                                    </TableBody>
-                                  </Table>
-                                </div>
-                              )}
-                              
-                              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                                <div>
-                                  <Label className="text-zinc-400 text-sm">Label</Label>
-                                  <Input
-                                    type="text"
-                                    value={newVariationLabel}
-                                    onChange={(e) => setNewVariationLabel(e.target.value)}
-                                    placeholder="bijv. 128GB"
-                                    className="bg-zinc-700 border-zinc-600 text-white rounded-none focus:border-[#d0a760]"
-                                    data-testid="input-variation-label"
-                                  />
-                                </div>
-                                <div>
-                                  <Label className="text-zinc-400 text-sm">Prijs (€)</Label>
-                                  <Input
-                                    type="number"
-                                    step="0.01"
-                                    value={newVariationPrice}
-                                    onChange={(e) => setNewVariationPrice(e.target.value)}
-                                    placeholder="0.00"
-                                    className="bg-zinc-700 border-zinc-600 text-white rounded-none focus:border-[#d0a760]"
-                                    data-testid="input-variation-price"
-                                  />
-                                </div>
-                                <div>
-                                  <Label className="text-zinc-400 text-sm">Voorraad</Label>
-                                  <Input
-                                    type="number"
-                                    value={newVariationStock}
-                                    onChange={(e) => setNewVariationStock(parseInt(e.target.value) || 0)}
-                                    placeholder="0"
-                                    className="bg-zinc-700 border-zinc-600 text-white rounded-none focus:border-[#d0a760]"
-                                    data-testid="input-variation-stock"
-                                  />
-                                </div>
-                                <div>
-                                  <Label className="text-zinc-400 text-sm">SKU</Label>
-                                  <Input
-                                    type="text"
-                                    value={newVariationSku}
-                                    onChange={(e) => setNewVariationSku(e.target.value)}
-                                    placeholder="SKU-001"
-                                    className="bg-zinc-700 border-zinc-600 text-white rounded-none focus:border-[#d0a760]"
-                                    data-testid="input-variation-sku"
-                                  />
-                                </div>
-                                <div className="flex items-end">
-                                  <Button
-                                    type="button"
-                                    onClick={() => {
-                                      if (newVariationLabel && newVariationPrice) {
-                                        setProductVariations([
-                                          ...productVariations,
-                                          {
-                                            label: newVariationLabel,
-                                            price: newVariationPrice,
-                                            stock: newVariationStock,
-                                            sku: newVariationSku || undefined,
-                                            sortOrder: productVariations.length
-                                          }
-                                        ]);
-                                        setNewVariationLabel('');
-                                        setNewVariationPrice('');
-                                        setNewVariationStock(0);
-                                        setNewVariationSku('');
-                                      }
-                                    }}
-                                    className="w-full bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"
-                                    data-testid="button-add-variation"
-                                  >
-                                    <Plus className="w-4 h-4 mr-1" />
-                                    Variatie Toevoegen
-                                  </Button>
+                                      </TableHeader>
+                                      <TableBody>
+                                        {productVariations.map((variation, index) => (
+                                          <TableRow key={index} className="border-zinc-700">
+                                            <TableCell className="text-white">{variation.label}</TableCell>
+                                            <TableCell className="text-white">€{variation.price}</TableCell>
+                                            <TableCell className="text-white">{variation.stock}</TableCell>
+                                            <TableCell className="text-zinc-400">{variation.sku || '-'}</TableCell>
+                                            <TableCell className="text-right">
+                                              <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => {
+                                                  setProductVariations(productVariations.filter((_, i) => i !== index));
+                                                }}
+                                                className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                                                data-testid={`button-delete-variation-${index}`}
+                                              >
+                                                <Trash2 className="w-4 h-4" />
+                                              </Button>
+                                            </TableCell>
+                                          </TableRow>
+                                        ))}
+                                      </TableBody>
+                                    </Table>
+                                  </div>
+                                )}
+                                
+                                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                                  <div>
+                                    <Label className="text-zinc-400 text-sm">Label</Label>
+                                    <Input
+                                      type="text"
+                                      value={newVariationLabel}
+                                      onChange={(e) => setNewVariationLabel(e.target.value)}
+                                      placeholder="bijv. 128GB"
+                                      className="bg-zinc-700 border-zinc-600 text-white rounded-none focus:border-[#d0a760]"
+                                      data-testid="input-variation-label"
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label className="text-zinc-400 text-sm">Prijs (€)</Label>
+                                    <Input
+                                      type="number"
+                                      step="0.01"
+                                      value={newVariationPrice}
+                                      onChange={(e) => setNewVariationPrice(e.target.value)}
+                                      placeholder="0.00"
+                                      className="bg-zinc-700 border-zinc-600 text-white rounded-none focus:border-[#d0a760]"
+                                      data-testid="input-variation-price"
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label className="text-zinc-400 text-sm">Voorraad</Label>
+                                    <Input
+                                      type="number"
+                                      value={newVariationStock}
+                                      onChange={(e) => setNewVariationStock(parseInt(e.target.value) || 0)}
+                                      placeholder="0"
+                                      className="bg-zinc-700 border-zinc-600 text-white rounded-none focus:border-[#d0a760]"
+                                      data-testid="input-variation-stock"
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label className="text-zinc-400 text-sm">SKU</Label>
+                                    <Input
+                                      type="text"
+                                      value={newVariationSku}
+                                      onChange={(e) => setNewVariationSku(e.target.value)}
+                                      placeholder="SKU-001"
+                                      className="bg-zinc-700 border-zinc-600 text-white rounded-none focus:border-[#d0a760]"
+                                      data-testid="input-variation-sku"
+                                    />
+                                  </div>
+                                  <div className="flex items-end">
+                                    <Button
+                                      type="button"
+                                      onClick={() => {
+                                        if (newVariationLabel && newVariationPrice) {
+                                          setProductVariations([
+                                            ...productVariations,
+                                            {
+                                              label: newVariationLabel,
+                                              price: newVariationPrice,
+                                              stock: newVariationStock,
+                                              sku: newVariationSku || undefined,
+                                              sortOrder: productVariations.length
+                                            }
+                                          ]);
+                                          setNewVariationLabel('');
+                                          setNewVariationPrice('');
+                                          setNewVariationStock(0);
+                                          setNewVariationSku('');
+                                        }
+                                      }}
+                                      className="w-full bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"
+                                      data-testid="button-add-variation"
+                                    >
+                                      <Plus className="w-4 h-4 mr-1" />
+                                      Variatie Toevoegen
+                                    </Button>
+                                  </div>
                                 </div>
                               </div>
+                            )}
+
+                            {!hasVariations && (
+                              <p className="text-zinc-500 text-sm">Schakel variaties in via de Instellingen tab om variaties toe te voegen.</p>
+                            )}
+                          </TabsContent>
+
+                          {/* Tab 7: Instellingen */}
+                          <TabsContent value="instellingen" className="space-y-4 mt-4">
+                            <div className="flex items-center justify-between p-4 bg-zinc-800">
+                              <div>
+                                <Label className="text-white">Uitgelicht product</Label>
+                                <p className="text-sm text-zinc-400">Toon op homepage</p>
+                              </div>
+                              <Switch
+                                checked={isFeatured || false}
+                                onCheckedChange={(checked) => setValue("isFeatured", checked)}
+                                data-testid="switch-featured"
+                              />
                             </div>
-                          )}
-                        </div>
+
+                            <div className="flex items-center justify-between p-4 bg-zinc-800">
+                              <div>
+                                <Label className="text-white">Installatie service</Label>
+                                <p className="text-sm text-zinc-400">Bied installatie aan</p>
+                              </div>
+                              <Switch
+                                checked={canHaveInstallation || false}
+                                onCheckedChange={(checked) => {
+                                  setValue("canHaveInstallation", checked);
+                                  if (!checked) setValue("installationPrice", "");
+                                }}
+                                data-testid="switch-installation"
+                              />
+                            </div>
+
+                            {canHaveInstallation && (
+                              <div className="p-4 bg-zinc-800">
+                                <Label htmlFor="installationPrice" className="text-zinc-300">Installatie prijs (€)</Label>
+                                <Input
+                                  {...register("installationPrice")}
+                                  type="number"
+                                  step="0.01"
+                                  placeholder="0.00"
+                                  className="mt-2 bg-zinc-700 border-zinc-600 text-white rounded-none focus:border-[#d0a760]"
+                                  data-testid="input-installation-price"
+                                />
+                              </div>
+                            )}
+
+                            <div className="flex items-center justify-between p-4 bg-zinc-800">
+                              <div>
+                                <Label className="text-white">Heeft variaties (bijv. opslagcapaciteit)</Label>
+                                <p className="text-sm text-zinc-400">Bied verschillende opties aan</p>
+                              </div>
+                              <Switch
+                                checked={hasVariations || false}
+                                onCheckedChange={(checked) => {
+                                  setHasVariations(checked);
+                                  if (!checked) setProductVariations([]);
+                                }}
+                                data-testid="switch-has-variations"
+                              />
+                            </div>
+                          </TabsContent>
+                        </Tabs>
 
                         <div className="flex justify-end gap-3 pt-4">
                           <Button 

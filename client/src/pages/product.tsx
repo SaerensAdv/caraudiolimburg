@@ -972,7 +972,26 @@ export default function ProductPage() {
                     <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8">
                       <div className="aspect-video bg-black rounded-none overflow-hidden">
                         <iframe
-                          src={product.videoUrl!.replace('watch?v=', 'embed/')}
+                          src={(() => {
+                            const url = product.videoUrl!;
+                            try {
+                              const parsed = new URL(url);
+                              let videoId = '';
+                              if (parsed.hostname.includes('youtu.be')) {
+                                videoId = parsed.pathname.slice(1);
+                              } else if (parsed.searchParams.has('v')) {
+                                videoId = parsed.searchParams.get('v')!;
+                              } else if (parsed.pathname.includes('/embed/')) {
+                                return url;
+                              }
+                              if (videoId) {
+                                const start = parsed.searchParams.get('t')?.replace('s', '') || parsed.searchParams.get('start');
+                                const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}`;
+                                return start ? `${embedUrl}?start=${start}` : embedUrl;
+                              }
+                            } catch {}
+                            return url.replace('watch?v=', 'embed/');
+                          })()}
                           title={`${product.name} video`}
                           className="w-full h-full"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

@@ -190,7 +190,7 @@ export function ProductCard({ product, featured = false, brandName }: ProductCar
                 height={300}
                 loading="lazy"
                 decoding="async"
-                className={`group-hover:scale-105 transition-transform duration-500 ${hasValidImage ? 'w-full h-full object-cover' : 'max-w-full max-h-full object-contain'}`}
+                className={`group-hover:scale-105 transition-transform duration-500 ${hasValidImage ? 'w-full h-full object-contain' : 'max-w-full max-h-full object-contain'}`}
                 onError={() => setImageError(true)}
               />
             </div>

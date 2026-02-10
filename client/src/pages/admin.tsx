@@ -390,6 +390,8 @@ export default function Admin() {
       setNewDownloadName('');
       setNewDownloadUrl('');
       setNewImageUrl('');
+      setProductFormTab('algemeen');
+      setEditingSpecKey(null);
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {
@@ -510,6 +512,8 @@ export default function Admin() {
       setNewDownloadName('');
       setNewDownloadUrl('');
       setNewImageUrl('');
+      setProductFormTab('algemeen');
+      setEditingSpecKey(null);
     },
     onError: (error) => {
       if (isUnauthorizedError(error)) {

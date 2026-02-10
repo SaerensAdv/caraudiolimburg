@@ -43,7 +43,7 @@ import {
   Sparkle
 } from "@phosphor-icons/react";
 import { SiRevolut, SiKlarna, SiVisa } from "react-icons/si";
-import type { Product } from "@shared/schema";
+import type { Product, SiteSettings } from "@shared/schema";
 
 import bancontactLogo from "@assets/Bancontact-Original-logo-RGB_1770317016482.png";
 import googlePayLogo from "@assets/Google_Pay_Logo.svg_1770317053129.png";
@@ -200,6 +200,12 @@ export default function ProductPage() {
     enabled: !!slug,
   });
 
+  const { data: siteSettings } = useQuery<SiteSettings>({
+    queryKey: ["/api/site-settings"],
+  });
+
+  const installationEnabled = siteSettings?.installationServiceEnabled ?? true;
+
   // Fetch related products based on category
   const { data: relatedProducts = [] } = useQuery<Product[]>({
     queryKey: ["/api/products", { categoryId: product?.categoryId, limit: 4 }],
@@ -334,7 +340,7 @@ export default function ProductPage() {
     : (product.originalPrice ? parseFloat(product.originalPrice) : null);
   const discount = originalPrice ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100) : null;
   const images = product.images || [];
-  const installationPrice = product.installationPrice ? parseFloat(product.installationPrice) : null;
+  const installationPrice = (installationEnabled && product.installationPrice) ? parseFloat(product.installationPrice) : null;
   
   // Determine stock based on variation or product
   const effectiveStock = product.hasVariations && selectedVariation 
@@ -805,7 +811,7 @@ export default function ProductPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className={`grid gap-4 ${installationEnabled ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'}`}>
                     <Button
                       size="lg"
                       className="bg-[#d0a760] text-black hover:bg-[#c49650] rounded-none h-16 text-lg font-semibold shadow-[0_0_30px_rgba(208,167,96,0.4)] hover:shadow-[0_0_40px_rgba(208,167,96,0.6)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
@@ -817,6 +823,7 @@ export default function ProductPage() {
                       {addToCartMutation.isPending ? "Toevoegen..." : "In Winkelwagen"}
                     </Button>
                     
+                    {installationEnabled && (
                     <Button
                       variant="outline"
                       size="lg"
@@ -835,6 +842,7 @@ export default function ProductPage() {
                         </span>
                       )}
                     </Button>
+                    )}
                   </div>
                   
                   {/* Installation Bundle Highlight */}
@@ -868,10 +876,12 @@ export default function ProductPage() {
                       <ShieldCheck weight="duotone" className="w-4 h-4 text-[#d0a760]" />
                       <span className="text-white text-xs font-medium">2 Jaar Garantie</span>
                     </div>
+                    {installationEnabled && (
                     <div className="flex items-center gap-2 px-3 py-2.5 bg-zinc-900/80 border border-zinc-700 whitespace-nowrap flex-shrink-0 hover:border-[#d0a760]/50 transition-colors">
                       <Trophy weight="duotone" className="w-4 h-4 text-[#d0a760]" />
                       <span className="text-white text-xs font-medium">Prof. Installatie</span>
                     </div>
+                    )}
                   </div>
                   
                   {/* Desktop: Full grid with stagger and enhanced styling */}
@@ -900,6 +910,7 @@ export default function ProductPage() {
                       </div>
                     </StaggerItem>
                     
+                    {installationEnabled && (
                     <StaggerItem>
                       <div className="flex items-center gap-4 p-5 bg-gradient-to-r from-zinc-900 to-zinc-900/50 border border-zinc-700 hover:border-[#d0a760]/40 transition-all duration-300 group">
                         <div className="p-3 bg-[#d0a760]/10 group-hover:bg-[#d0a760]/20 transition-colors">
@@ -911,6 +922,7 @@ export default function ProductPage() {
                         </div>
                       </div>
                     </StaggerItem>
+                    )}
                   </StaggerContainer>
                   
                   {/* Scroll to description indicator - Desktop only */}
@@ -1255,6 +1267,7 @@ export default function ProductPage() {
                 >
                   <a href="/contact">Stel een Vraag</a>
                 </Button>
+                {installationEnabled && (
                 <Button 
                   asChild
                   variant="outline"
@@ -1262,6 +1275,7 @@ export default function ProductPage() {
                 >
                   <a href="/booking">Plan Installatie</a>
                 </Button>
+                )}
               </div>
             </div>
           </ScrollReveal>
@@ -1326,7 +1340,7 @@ export default function ProductPage() {
           </div>
           
           {/* Action buttons row */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className={`grid gap-3 ${installationEnabled ? 'grid-cols-2' : 'grid-cols-1'}`}>
             <Button
               className="bg-[#d0a760] text-black hover:bg-[#c49650] active:scale-[0.97] rounded-none h-14 text-sm font-bold shadow-[0_0_25px_rgba(208,167,96,0.4)] transition-all duration-200"
               onClick={() => addToCartMutation.mutate({ needsInstallation: false, authenticated: isAuthenticated })}
@@ -1334,9 +1348,10 @@ export default function ProductPage() {
               data-testid="mobile-button-add-to-cart"
             >
               <ShoppingCart weight="duotone" className="w-4 h-4 mr-1.5" />
-              {addToCartMutation.isPending ? "..." : "In Wagen"}
+              {addToCartMutation.isPending ? "..." : "In Winkelwagen"}
             </Button>
             
+            {installationEnabled && (
             <Button
               variant="outline"
               className="border-2 border-[#d0a760] text-[#d0a760] hover:bg-[#d0a760] hover:text-black active:scale-[0.97] rounded-none h-14 text-sm font-bold transition-all duration-200 flex flex-col items-center justify-center py-1"
@@ -1354,6 +1369,7 @@ export default function ProductPage() {
                 </span>
               )}
             </Button>
+            )}
           </div>
         </div>
       </div>

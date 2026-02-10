@@ -52,6 +52,8 @@ import {
   type PortfolioProject,
   type InsertPortfolioProject,
   type InsertProductVariation,
+  siteSettings,
+  type SiteSettings,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, or, desc, asc, like, inArray } from "drizzle-orm";
@@ -193,6 +195,10 @@ export interface IStorage {
   updateProductVariation(id: string, updates: Partial<InsertProductVariation>): Promise<ProductVariation | undefined>;
   deleteProductVariation(id: string): Promise<boolean>;
   deleteProductVariationsByProductId(productId: string): Promise<void>;
+
+  // Site settings operations
+  getSiteSettings(): Promise<SiteSettings>;
+  updateSiteSettings(updates: Partial<Pick<SiteSettings, 'installationServiceEnabled'>>): Promise<SiteSettings>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1070,6 +1076,25 @@ export class DatabaseStorage implements IStorage {
       .where(eq(portfolioProjects.id, id))
       .returning();
     return result.length > 0;
+  }
+
+  async getSiteSettings(): Promise<SiteSettings> {
+    const [settings] = await db.select().from(siteSettings).limit(1);
+    if (!settings) {
+      const [newSettings] = await db.insert(siteSettings).values({ installationServiceEnabled: true }).returning();
+      return newSettings;
+    }
+    return settings;
+  }
+
+  async updateSiteSettings(updates: Partial<Pick<SiteSettings, 'installationServiceEnabled'>>): Promise<SiteSettings> {
+    const current = await this.getSiteSettings();
+    const [updated] = await db
+      .update(siteSettings)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(siteSettings.id, current.id))
+      .returning();
+    return updated;
   }
 }
 

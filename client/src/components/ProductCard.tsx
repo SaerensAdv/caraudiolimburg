@@ -11,7 +11,7 @@ import { ShoppingCart, Wrench, Eye, Heart } from "lucide-react";
 import { ProductQuickView } from "@/components/ProductQuickView";
 import { useAuth } from "@/hooks/useAuth";
 import { useGuestCart } from "@/lib/guestCart";
-import type { Product } from "@shared/schema";
+import type { Product, SiteSettings } from "@shared/schema";
 import carAudioLogo from "@assets/Caraudiolimburg-logo_1757008375383_1757016657436.png";
 import fordFiestaImage from "@assets/ford-fiesta-real.webp";
 import audisonImage from "@assets/audison-real.webp";
@@ -33,6 +33,11 @@ export function ProductCard({ product, featured = false, brandName }: ProductCar
   
   // Check if product has a valid image
   const hasValidImage = product.images && product.images.length > 0 && product.images[product.primaryImageIndex || 0] && !imageError;
+
+  const { data: siteSettings } = useQuery<SiteSettings>({
+    queryKey: ["/api/site-settings"],
+  });
+  const installationEnabled = siteSettings?.installationServiceEnabled ?? true;
 
   const { data: wishlistStatus } = useQuery<{ inWishlist: boolean }>({
     queryKey: ["/api/wishlist/check", product.id],
@@ -289,7 +294,7 @@ export function ProductCard({ product, featured = false, brandName }: ProductCar
                 <span className="sm:hidden">+</span>
               </Button>
               
-              {product.installationPrice && (
+              {installationEnabled && product.installationPrice && (
                 <Button 
                   onClick={() => handleAddToCart(true)}
                   disabled={addToCartMutation.isPending}

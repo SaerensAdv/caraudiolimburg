@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import type { Category, Brand, VehicleMake } from "@shared/schema";
+import type { Category, Brand, VehicleMake, SiteSettings } from "@shared/schema";
 import { Car } from "lucide-react";
 import { 
   Monitor, 
@@ -70,6 +70,11 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
     queryKey: ["/api/vehicle-makes"],
     staleTime: 5 * 60 * 1000,
   });
+
+  const { data: siteSettings } = useQuery<SiteSettings>({
+    queryKey: ["/api/site-settings"],
+  });
+  const installationEnabled = siteSettings?.installationServiceEnabled ?? true;
 
   useEffect(() => {
     if (isOpen) {
@@ -246,6 +251,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
               </div>
             </Link>
 
+            {installationEnabled && (
             <div className="mt-4 p-4 bg-gradient-to-br from-[#d0a760]/10 to-transparent border border-[#d0a760]/20">
               <div className="flex items-start gap-3">
                 <div className="w-10 h-10 bg-[#d0a760]/20 flex items-center justify-center flex-shrink-0">
@@ -261,6 +267,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
                 </div>
               </div>
             </div>
+            )}
           </div>
         </div>
 

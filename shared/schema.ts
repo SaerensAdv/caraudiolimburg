@@ -638,5 +638,14 @@ export const insertClickupConfigSchema = createInsertSchema(clickupConfig).omit(
 export type ClickupConfig = typeof clickupConfig.$inferSelect;
 export type InsertClickupConfig = z.infer<typeof insertClickupConfigSchema>;
 
+// Site settings table (single-row config)
+export const siteSettings = pgTable("site_settings", {
+  id: varchar("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  installationServiceEnabled: boolean("installation_service_enabled").default(true).notNull(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type SiteSettings = typeof siteSettings.$inferSelect;
+
 // Re-export chat models for Gemini integration
 export * from "./models/chat";

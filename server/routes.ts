@@ -2361,6 +2361,30 @@ ${message || 'Geen aanvullende informatie'}`
     }
   });
 
+  // Site Settings Routes
+  // ============================================
+
+  app.get('/api/site-settings', async (req, res) => {
+    try {
+      const settings = await storage.getSiteSettings();
+      res.json(settings);
+    } catch (error) {
+      console.error("Error fetching site settings:", error);
+      res.status(500).json({ message: "Failed to fetch site settings" });
+    }
+  });
+
+  app.put('/api/admin/site-settings', isAdmin, async (req: any, res) => {
+    try {
+      const { installationServiceEnabled } = req.body;
+      const updated = await storage.updateSiteSettings({ installationServiceEnabled });
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating site settings:", error);
+      res.status(500).json({ message: "Failed to update site settings" });
+    }
+  });
+
   // Blog Routes - Public
   // ============================================
 

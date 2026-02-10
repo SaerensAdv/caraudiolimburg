@@ -2,14 +2,14 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { X, ShoppingCart, Wrench, ChevronLeft, ChevronRight, Eye } from "lucide-react";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { useGuestCart } from "@/lib/guestCart";
-import type { Product } from "@shared/schema";
+import type { Product, SiteSettings } from "@shared/schema";
 
 interface ProductQuickViewProps {
   product: Product;
@@ -23,6 +23,11 @@ export function ProductQuickView({ product, isOpen, onClose }: ProductQuickViewP
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { isAuthenticated } = useAuth();
   const { addItem: addToGuestCart } = useGuestCart();
+  
+  const { data: siteSettings } = useQuery<SiteSettings>({
+    queryKey: ["/api/site-settings"],
+  });
+  const installationEnabled = siteSettings?.installationServiceEnabled ?? true;
 
   const addToCartMutation = useMutation({
     mutationFn: async ({ productId, needsInstallation, authenticated }: { productId: string; needsInstallation: boolean; authenticated: boolean }) => {
@@ -241,7 +246,7 @@ export function ProductQuickView({ product, isOpen, onClose }: ProductQuickViewP
                     In Winkelmand
                   </Button>
 
-                  {product.installationPrice && (
+                  {installationEnabled && product.installationPrice && (
                     <Button
                       onClick={() => handleAddToCart(true)}
                       disabled={addToCartMutation.isPending}

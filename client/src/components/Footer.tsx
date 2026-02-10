@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
+import type { SiteSettings } from "@shared/schema";
 import whiteLogoUrl from "@assets/CAL white_1758369495328.png";
 import saerensLogoUrl from "@assets/Saerens_Advertising_1764900190628.png";
 import iconLogoUrl from "@assets/CAR_1765257768308.png";
@@ -56,6 +58,10 @@ function AccordionSection({
 
 export function Footer() {
   const [openSection, setOpenSection] = useState<string | null>(null);
+  const { data: siteSettings } = useQuery<SiteSettings>({
+    queryKey: ["/api/site-settings"],
+  });
+  const installationEnabled = siteSettings?.installationServiceEnabled ?? true;
 
   const toggleSection = (section: string) => {
     setOpenSection(openSection === section ? null : section);
@@ -106,7 +112,9 @@ export function Footer() {
             testId="footer-accordion-services"
           >
             <ul className="space-y-3 text-sm">
+              {installationEnabled && (
               <li><Link href="/montage" className="text-white/60 hover:text-[#d0a760] transition-colors">Inbouwstudio</Link></li>
+              )}
               <li><Link href="/portfolio" className="text-white/60 hover:text-[#d0a760] transition-colors">Portfolio</Link></li>
               <li><Link href="/apple-carplay-voor-uw-bmw" className="text-white/60 hover:text-[#d0a760] transition-colors">BMW/MINI CarPlay</Link></li>
               <li><Link href="/blog" className="text-white/60 hover:text-[#d0a760] transition-colors">Kenniscentrum</Link></li>
@@ -302,7 +310,9 @@ export function Footer() {
             <div data-testid="footer-services">
               <h4 className="text-[#d0a760] text-sm font-medium tracking-wider uppercase mb-6">Services</h4>
               <ul className="space-y-3 text-sm">
+                {installationEnabled && (
                 <li><Link href="/montage" className="group text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-flex items-center gap-2" data-testid="footer-link-studio"><span className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-[#d0a760] after:transition-all after:duration-300 group-hover:after:w-full">Inbouwstudio</span></Link></li>
+                )}
                 <li><Link href="/portfolio" className="group text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-flex items-center gap-2" data-testid="footer-link-portfolio"><span className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-[#d0a760] after:transition-all after:duration-300 group-hover:after:w-full">Portfolio</span></Link></li>
                 <li><Link href="/apple-carplay-voor-uw-bmw" className="group text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-flex items-center gap-2" data-testid="footer-link-carplay"><span className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-[#d0a760] after:transition-all after:duration-300 group-hover:after:w-full">BMW/MINI CarPlay</span></Link></li>
                 <li><Link href="/blog" className="group text-white/60 hover:text-[#d0a760] transition-all duration-300 inline-flex items-center gap-2" data-testid="footer-link-blog"><span className="relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-[#d0a760] after:transition-all after:duration-300 group-hover:after:w-full">Kenniscentrum</span></Link></li>

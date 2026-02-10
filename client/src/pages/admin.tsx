@@ -83,7 +83,7 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { format } from "date-fns";
 import { nl } from "date-fns/locale";
-import type { Product, Order, Booking, QuoteRequest, User, BlogPost, BlogCategory, VehicleMake, VehicleModel } from "@shared/schema";
+import type { Product, Order, Booking, QuoteRequest, User, BlogPost, BlogCategory, VehicleMake, VehicleModel, SiteSettings } from "@shared/schema";
 import { Link } from "wouter";
 
 import logoImage from "@assets/CAL white_1758369495328.png";
@@ -103,7 +103,7 @@ const productFormSchema = insertProductSchema.extend({
 
 type ProductFormData = z.infer<typeof productFormSchema>;
 
-type AdminSection = 'dashboard' | 'products' | 'orders' | 'bookings' | 'quotes' | 'users' | 'blog' | 'portfolio';
+type AdminSection = 'dashboard' | 'products' | 'orders' | 'bookings' | 'quotes' | 'users' | 'blog' | 'portfolio' | 'settings';
 
 interface PortfolioProject {
   id: string;
@@ -255,6 +255,32 @@ export default function Admin() {
   const { data: portfolioProjects = [], isLoading: isLoadingPortfolio } = useQuery<PortfolioProject[]>({
     queryKey: ["/api/admin/portfolio"],
     enabled: isAuthenticated && user?.role === 'admin',
+  });
+
+  // Site Settings
+  const { data: siteSettings } = useQuery<SiteSettings>({
+    queryKey: ["/api/site-settings"],
+    enabled: isAuthenticated && user?.role === 'admin',
+  });
+
+  const updateSiteSettingsMutation = useMutation({
+    mutationFn: async (data: { installationServiceEnabled: boolean }) => {
+      await apiRequest("PUT", "/api/admin/site-settings", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/site-settings"] });
+      toast({
+        title: "Instellingen opgeslagen",
+        description: "De site-instellingen zijn bijgewerkt.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Fout",
+        description: "Kon instellingen niet opslaan.",
+        variant: "destructive",
+      });
+    },
   });
 
   // Portfolio state
@@ -1319,6 +1345,7 @@ export default function Admin() {
     { id: 'users' as AdminSection, label: 'Gebruikers', icon: Users },
     { id: 'blog' as AdminSection, label: 'Blog', icon: FileText },
     { id: 'portfolio' as AdminSection, label: 'Portfolio', icon: Car },
+    { id: 'settings' as AdminSection, label: 'Instellingen', icon: Settings },
   ];
 
   return (
@@ -4508,6 +4535,37 @@ export default function Admin() {
                     </div>
                   ))
                 )}
+              </div>
+            </div>
+          )}
+          {activeSection === 'settings' && (
+            <div className="space-y-6">
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2" data-testid="text-settings-title">
+                  Site Instellingen
+                </h1>
+                <p className="text-zinc-400">Beheer globale instellingen voor de webshop</p>
+              </div>
+
+              <div className="bg-zinc-900 border border-zinc-800 p-6 space-y-6">
+                <h2 className="text-lg font-semibold text-white">Services</h2>
+                
+                <div className="flex items-center justify-between p-4 bg-zinc-800">
+                  <div>
+                    <Label className="text-white text-base">Installatie Service</Label>
+                    <p className="text-sm text-zinc-400 mt-1">
+                      Schakel de installatie-service in of uit op de hele website. 
+                      Als uitgeschakeld worden alle installatie-knoppen, prijzen en de boekingspagina verborgen.
+                    </p>
+                  </div>
+                  <Switch
+                    checked={siteSettings?.installationServiceEnabled ?? true}
+                    onCheckedChange={(checked) => {
+                      updateSiteSettingsMutation.mutate({ installationServiceEnabled: checked });
+                    }}
+                    data-testid="switch-global-installation"
+                  />
+                </div>
               </div>
             </div>
           )}

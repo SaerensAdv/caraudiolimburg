@@ -9,7 +9,7 @@ import { SearchAutocomplete } from "@/components/SearchAutocomplete";
 import { useGuestCart } from "@/lib/guestCart";
 import logoUrl from "@assets/Caraudiolimburg-logo_1757008375383.png";
 import whiteLogoUrl from "@assets/CAL white_1758369495328.png";
-import type { Category, Brand } from "@shared/schema";
+import type { Category, Brand, SiteSettings } from "@shared/schema";
 import { 
   ShoppingCart,
   User,
@@ -38,6 +38,11 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
   const megaMenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { isAuthenticated, user } = useAuth();
   const [location] = useLocation();
+
+  const { data: siteSettings } = useQuery<SiteSettings>({
+    queryKey: ["/api/site-settings"],
+  });
+  const installationEnabled = siteSettings?.installationServiceEnabled ?? true;
 
   const isActiveLink = (href: string) => {
     if (href === "/webshop") {
@@ -133,7 +138,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
     { href: "/webshop", label: "Producten", highlight: false },
     { href: "/apple-carplay-voor-uw-bmw", label: "BMW/MINI CarPlay", highlight: true },
     { href: "/portfolio", label: "Portfolio", highlight: false },
-    { href: "/montage", label: "Studio", highlight: false },
+    ...(installationEnabled ? [{ href: "/montage", label: "Studio", highlight: false }] : []),
     { href: "/over-ons", label: "Over Ons", highlight: false },
     { href: "/veelgestelde-vragen", label: "FAQ", highlight: false },
     { href: "/contact", label: "Contact", highlight: false },
@@ -142,7 +147,7 @@ export function Header({ onCartOpen, logoSrc, variant = 'default' }: HeaderProps
   const mobileMenuItems = [
     { href: "/apple-carplay-voor-uw-bmw", label: "BMW/MINI CarPlay", highlight: true },
     { href: "/portfolio", label: "Portfolio", highlight: false },
-    { href: "/montage", label: "Studio", highlight: false },
+    ...(installationEnabled ? [{ href: "/montage", label: "Studio", highlight: false }] : []),
     { href: "/over-ons", label: "Over Ons", highlight: false },
     { href: "/veelgestelde-vragen", label: "FAQ", highlight: false },
     { href: "/contact", label: "Contact", highlight: false },

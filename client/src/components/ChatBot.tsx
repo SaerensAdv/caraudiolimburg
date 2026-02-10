@@ -129,7 +129,7 @@ export function ChatBot() {
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
             className={`fixed right-4 z-50 w-[380px] max-w-[calc(100vw-2rem)] overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.4),0_0_0_1px_rgba(208,167,96,0.2)] transition-all duration-300 ${
-              hasStickyBar ? 'bottom-60' : 'bottom-24'
+              hasStickyBar ? 'bottom-60' : 'bottom-36 md:bottom-24'
             }`}
             data-testid="chatbot-window"
           >
@@ -236,8 +236,8 @@ export function ChatBot() {
 
       <motion.button
         onClick={() => handleToggle(!isOpen)}
-        className={`fixed right-6 z-50 w-14 h-14 bg-gradient-to-br from-[#d0a760] to-[#a88540] shadow-[0_4px_20px_rgba(208,167,96,0.4)] flex items-center justify-center group transition-all duration-300 ${
-          hasStickyBar ? 'bottom-44' : 'bottom-6'
+        className={`fixed right-4 md:right-6 z-50 w-12 h-12 md:w-14 md:h-14 bg-gradient-to-br from-[#d0a760] to-[#a88540] shadow-[0_4px_20px_rgba(208,167,96,0.4)] flex items-center justify-center group transition-all duration-300 ${
+          hasStickyBar ? 'bottom-44' : 'bottom-20 md:bottom-6'
         }`}
         whileHover={{ scale: 1.05, boxShadow: "0 6px 30px rgba(208,167,96,0.5)" }}
         whileTap={{ scale: 0.95 }}
@@ -254,7 +254,7 @@ export function ChatBot() {
               transition={{ duration: 0.15 }}
               className="relative z-10"
             >
-              <X className="w-6 h-6 text-[#0a0a0a]" />
+              <X className="w-5 h-5 md:w-6 md:h-6 text-[#0a0a0a]" />
             </motion.div>
           ) : (
             <motion.div
@@ -265,7 +265,7 @@ export function ChatBot() {
               transition={{ duration: 0.15 }}
               className="relative z-10"
             >
-              <MessageCircle className="w-6 h-6 text-[#0a0a0a]" />
+              <MessageCircle className="w-5 h-5 md:w-6 md:h-6 text-[#0a0a0a]" />
             </motion.div>
           )}
         </AnimatePresence>

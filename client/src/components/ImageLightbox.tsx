@@ -113,7 +113,7 @@ export function ImageLightbox({ images, isOpen, initialIndex, onClose }: ImageLi
           <img
             src={images[currentIndex]}
             alt={`Product afbeelding ${currentIndex + 1}`}
-            className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+            className="max-w-full max-h-full object-contain rounded-lg shadow-2xl bg-white"
             data-testid={`lightbox-image-${currentIndex}`}
           />
         </div>
@@ -131,19 +131,18 @@ export function ImageLightbox({ images, isOpen, initialIndex, onClose }: ImageLi
             {images.map((image, index) => (
               <button
                 key={index}
-                className={`flex-shrink-0 w-16 h-16 rounded-lg border-2 transition-all duration-200 ${
+                className={`flex-shrink-0 w-16 h-16 rounded-lg border-2 transition-all duration-200 bg-white overflow-hidden ${
                   index === currentIndex 
                     ? 'border-primary shadow-lg scale-110' 
                     : 'border-white/30 hover:border-white/60'
                 }`}
-                style={{ backgroundImage: `url(${image})` }}
                 onClick={(e) => {
                   e.stopPropagation();
                   setCurrentIndex(index);
                 }}
                 data-testid={`lightbox-thumbnail-${index}`}
               >
-                <div className="w-full h-full bg-cover bg-center rounded-md" style={{ backgroundImage: `url(${image})` }} />
+                <img src={image} alt={`Thumbnail ${index + 1}`} className="w-full h-full object-contain" />
               </button>
             ))}
           </div>

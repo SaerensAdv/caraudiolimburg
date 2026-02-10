@@ -470,7 +470,7 @@ export default function ProductPage() {
                       role="button"
                       tabIndex={0}
                       aria-label="Klik om afbeelding te vergroten"
-                      className="relative bg-zinc-900 md:border md:border-zinc-800 md:cursor-zoom-in group overflow-hidden touch-pan-y focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d0a760] flex items-center justify-center min-h-[300px] max-h-[600px] md:min-h-[400px] md:max-h-[700px]"
+                      className="relative bg-white md:border md:border-zinc-800 md:cursor-zoom-in group overflow-hidden touch-pan-y focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d0a760] flex items-center justify-center min-h-[300px] max-h-[600px] md:min-h-[400px] md:max-h-[700px]"
                       onClick={() => setIsLightboxOpen(true)}
                       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsLightboxOpen(true); } }}
                       onTouchStart={images.length > 1 ? onTouchStart : undefined}
@@ -566,7 +566,7 @@ export default function ProductPage() {
                           {images.map((image, index) => (
                             <button
                               key={index}
-                              className={`flex-shrink-0 w-16 h-16 bg-zinc-900 border-2 transition-all duration-300 overflow-hidden snap-start ${
+                              className={`flex-shrink-0 w-16 h-16 bg-white border-2 transition-all duration-300 overflow-hidden snap-start ${
                                 index === selectedImageIndex 
                                   ? 'border-[#d0a760]' 
                                   : 'border-zinc-800'
@@ -581,7 +581,7 @@ export default function ProductPage() {
                                 height={64}
                                 loading="lazy"
                                 decoding="async"
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-contain bg-white"
                               />
                             </button>
                           ))}
@@ -591,7 +591,7 @@ export default function ProductPage() {
                           {images.map((image, index) => (
                             <button
                               key={index}
-                              className={`aspect-square bg-zinc-900 border-2 transition-all duration-300 overflow-hidden ${
+                              className={`aspect-square bg-white border-2 transition-all duration-300 overflow-hidden ${
                                 index === selectedImageIndex 
                                   ? 'border-[#d0a760]' 
                                   : 'border-zinc-800 hover:border-white/30'
@@ -606,7 +606,7 @@ export default function ProductPage() {
                                 height={100}
                                 loading="lazy"
                                 decoding="async"
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-contain"
                               />
                             </button>
                           ))}
@@ -1168,7 +1168,7 @@ export default function ProductPage() {
                 {filteredRelatedProducts.map((relatedProduct) => (
                   <Link key={relatedProduct.id} href={`/webshop/${relatedProduct.slug}`}>
                     <div className="group cursor-pointer flex-shrink-0 w-[calc(50vw-24px)] snap-start" data-testid={`related-product-${relatedProduct.id}`}>
-                    <div className="relative aspect-square bg-zinc-900 border border-zinc-700 mb-3 overflow-hidden group-hover:border-[#d0a760]/50 transition-all duration-300">
+                    <div className="relative aspect-square bg-white border border-zinc-700 mb-3 overflow-hidden group-hover:border-[#d0a760]/50 transition-all duration-300">
                       {relatedProduct.images && relatedProduct.images[0] ? (
                         <img 
                           src={relatedProduct.images[0]} 
@@ -1177,7 +1177,7 @@ export default function ProductPage() {
                           height={180}
                           loading="lazy"
                           decoding="async"
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain"
                         />
                       ) : (
                         <div className="flex items-center justify-center h-full">
@@ -1211,7 +1211,7 @@ export default function ProductPage() {
               {filteredRelatedProducts.map((relatedProduct) => (
                 <Link key={relatedProduct.id} href={`/webshop/${relatedProduct.slug}`}>
                   <div className="group cursor-pointer" data-testid={`related-product-desktop-${relatedProduct.id}`}>
-                    <div className="relative aspect-square bg-zinc-900 border border-zinc-700 mb-4 overflow-hidden group-hover:border-[#d0a760]/50 transition-all duration-300 group-hover:shadow-[0_0_20px_rgba(208,167,96,0.15)]">
+                    <div className="relative aspect-square bg-white border border-zinc-700 mb-4 overflow-hidden group-hover:border-[#d0a760]/50 transition-all duration-300 group-hover:shadow-[0_0_20px_rgba(208,167,96,0.15)]">
                       {relatedProduct.images && relatedProduct.images[0] ? (
                         <img 
                           src={relatedProduct.images[0]} 
@@ -1220,7 +1220,7 @@ export default function ProductPage() {
                           height={200}
                           loading="lazy"
                           decoding="async"
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
                         />
                       ) : (
                         <div className="flex items-center justify-center h-full">

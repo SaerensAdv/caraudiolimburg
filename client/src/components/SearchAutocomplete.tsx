@@ -164,12 +164,12 @@ export function SearchAutocomplete({ variant = 'desktop', onNavigate }: SearchAu
                       className="w-full flex items-center gap-3 px-3 py-2 hover:bg-white/10 transition-colors text-left"
                       data-testid={`search-product-${product.id}`}
                     >
-                      <div className="w-10 h-10 bg-white/5 flex-shrink-0 overflow-hidden">
+                      <div className="w-10 h-10 bg-white flex-shrink-0 overflow-hidden">
                         {product.imageUrl ? (
                           <img 
                             src={product.imageUrl} 
                             alt={product.name}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-contain"
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-white/20">

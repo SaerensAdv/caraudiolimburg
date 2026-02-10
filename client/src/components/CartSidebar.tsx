@@ -251,7 +251,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                         <CardContent className="p-4">
                           <div className="flex items-center space-x-3">
                             {/* Product Image */}
-                            <div className="w-16 h-16 bg-zinc-800 flex-shrink-0">
+                            <div className="w-16 h-16 bg-white flex-shrink-0">
                               <img 
                                 src={product?.images?.[product.primaryImageIndex || 0] || carAudioLogo}
                                 alt={product?.name || "Product"} 
@@ -259,7 +259,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                                 height={64}
                                 loading="lazy"
                                 decoding="async"
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-contain"
                                 onError={(e) => {
                                   e.currentTarget.src = carAudioLogo;
                                 }}

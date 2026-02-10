@@ -123,7 +123,7 @@ export function ProductQuickView({ product, isOpen, onClose }: ProductQuickViewP
         <div className="flex-1 overflow-y-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
             {/* Image Section */}
-            <div className="relative bg-zinc-800 aspect-square">
+            <div className="relative bg-white aspect-square">
               {images.length > 0 ? (
                 <img 
                   src={images[currentImageIndex]} 

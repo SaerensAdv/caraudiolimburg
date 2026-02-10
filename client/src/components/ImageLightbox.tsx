@@ -60,7 +60,7 @@ export function ImageLightbox({ images, isOpen, initialIndex, onClose }: ImageLi
       onClick={onClose}
       data-testid="lightbox-overlay"
     >
-      <div className="relative max-w-7xl max-h-full w-full h-full flex items-center justify-center p-4">
+      <div className="relative w-full h-full flex items-center justify-center p-8 md:p-12">
         {/* Close Button */}
         <Button
           variant="ghost"
@@ -107,13 +107,15 @@ export function ImageLightbox({ images, isOpen, initialIndex, onClose }: ImageLi
 
         {/* Main Image */}
         <div 
-          className="relative flex items-center justify-center w-full h-full"
+          className="relative flex items-center justify-center"
+          style={{ maxWidth: '80vw', maxHeight: '80vh' }}
           onClick={(e) => e.stopPropagation()}
         >
           <img
             src={images[currentIndex]}
             alt={`Product afbeelding ${currentIndex + 1}`}
-            className="max-w-full max-h-full object-contain rounded-lg shadow-2xl bg-white"
+            className="object-contain rounded-lg shadow-2xl bg-white"
+            style={{ maxWidth: '80vw', maxHeight: '80vh' }}
             data-testid={`lightbox-image-${currentIndex}`}
           />
         </div>

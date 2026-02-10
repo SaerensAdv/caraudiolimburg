@@ -6,8 +6,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { VerticalScrollProgress } from "@/components/ScrollProgress";
 import { PageLoader } from "@/components/PageTransition";
-import { ChatBot } from "@/components/ChatBot";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { lazy, Suspense, useState, useEffect } from "react";
+
+const ChatBot = lazy(() => import("@/components/ChatBot").then(m => ({ default: m.ChatBot })));
 
 import Home from "@/pages/home";
 import NotFound from "@/pages/not-found";
@@ -151,7 +153,8 @@ function App() {
           <Toaster />
           <VerticalScrollProgress />
           <Router />
-          <ChatBot />
+          <Suspense fallback={null}><ChatBot /></Suspense>
+          <MobileBottomNav />
         </div>
       </TooltipProvider>
     </QueryClientProvider>

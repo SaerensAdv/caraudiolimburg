@@ -478,7 +478,6 @@ export default function ProductPage() {
                         width={600}
                         height={600}
                         decoding="async"
-                        fetchPriority={selectedImageIndex === 0 ? "high" : "low"}
                         loading={selectedImageIndex === 0 ? "eager" : "lazy"}
                         className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 select-none"
                         draggable={false}
@@ -754,22 +753,22 @@ export default function ProductPage() {
                           <SiVisa className="w-7 h-5 text-white" />
                         </div>
                         <div className="bg-white px-1.5 py-1 rounded flex items-center justify-center" title="Mastercard">
-                          <img src={mastercardLogo} alt="Mastercard" className="h-5 w-auto" />
+                          <img src={mastercardLogo} alt="Mastercard" loading="lazy" decoding="async" className="h-5 w-auto" />
                         </div>
                         <div className="bg-black px-2 py-1.5 rounded flex items-center justify-center" title="Apple Pay">
-                          <img src={applePayLogo} alt="Apple Pay" className="h-4 w-auto invert" />
+                          <img src={applePayLogo} alt="Apple Pay" loading="lazy" decoding="async" className="h-4 w-auto invert" />
                         </div>
                         <div className="bg-white px-2 py-1.5 rounded flex items-center justify-center" title="Google Pay">
-                          <img src={googlePayLogo} alt="Google Pay" className="h-5 w-auto" />
+                          <img src={googlePayLogo} alt="Google Pay" loading="lazy" decoding="async" className="h-5 w-auto" />
                         </div>
                         <div className="bg-black px-2 py-1.5 rounded flex items-center justify-center" title="Revolut Pay">
                           <SiRevolut className="w-5 h-5 text-white" />
                         </div>
                         <div className="bg-white px-1.5 py-1 rounded flex items-center justify-center" title="Bancontact">
-                          <img src={bancontactLogo} alt="Bancontact" className="h-6 w-auto" />
+                          <img src={bancontactLogo} alt="Bancontact" loading="lazy" decoding="async" className="h-6 w-auto" />
                         </div>
                         <div className="bg-white px-1.5 py-1 rounded flex items-center justify-center" title="iDEAL">
-                          <img src={idealLogo} alt="iDEAL" className="h-6 w-auto" />
+                          <img src={idealLogo} alt="iDEAL" loading="lazy" decoding="async" className="h-6 w-auto" />
                         </div>
                         <div className="bg-[#FFB3C7] px-2 py-1.5 rounded flex items-center justify-center" title="Klarna">
                           <SiKlarna className="w-6 h-5 text-[#0A0B09]" />

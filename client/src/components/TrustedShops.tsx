@@ -238,6 +238,8 @@ export function TrustedShopsBadgeLink({ className = '' }: { className?: string }
         <img 
           src={trustedShopsLogo}
           alt="Trusted Shops" 
+          loading="lazy"
+          decoding="async"
           className="w-full h-full object-contain"
         />
       </div>

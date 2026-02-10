@@ -552,6 +552,8 @@ export default function Home() {
           <img 
             src={studioImage2} 
             alt="" 
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover scale-110"
           />
         </Parallax>
@@ -892,6 +894,7 @@ export default function Home() {
       </section>
 
       <Footer />
+      <div className="md:hidden h-16" />
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </div>
   );

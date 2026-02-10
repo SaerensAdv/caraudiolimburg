@@ -137,6 +137,8 @@ export default function Login() {
                 <img 
                   src={calLogoDark} 
                   alt="Car Audio Limburg" 
+                  loading="lazy"
+                  decoding="async"
                   className="h-10 mx-auto cursor-pointer"
                   data-testid="img-logo-mobile"
                 />
@@ -364,6 +366,8 @@ export default function Login() {
             <img 
               src={calLogo} 
               alt="Car Audio Limburg" 
+              loading="lazy"
+              decoding="async"
               className="h-14 mb-12 cursor-pointer"
               data-testid="img-logo"
             />

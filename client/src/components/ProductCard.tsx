@@ -20,9 +20,10 @@ import audiA3Image from "@assets/audi-a3.png";
 interface ProductCardProps {
   product: Product;
   featured?: boolean;
+  brandName?: string;
 }
 
-export function ProductCard({ product, featured = false }: ProductCardProps) {
+export function ProductCard({ product, featured = false, brandName }: ProductCardProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
@@ -232,6 +233,12 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
         </Link>
 
         <CardContent className="p-3 sm:p-5 flex flex-col flex-grow">
+          {brandName && (
+            <p className="text-[#d0a760] text-[10px] sm:text-xs font-semibold uppercase tracking-wider mb-1" data-testid={`product-brand-${product.id}`}>
+              {brandName}
+            </p>
+          )}
+          
           <Link href={`/webshop/${product.slug}`}>
             <h3 className="text-white font-medium mb-1 sm:mb-2 group-hover:text-[#d0a760] transition-all duration-300 cursor-pointer line-clamp-2 min-h-[2.5rem] sm:min-h-[3rem] text-[13px] sm:text-[15px] leading-snug" data-testid={`product-title-${product.id}`}>
               {product.name}
@@ -242,10 +249,19 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
             {product.shortDescription || '\u00A0'}
           </p>
 
+          {product.stock !== undefined && product.stock !== null && (
+            <div className="flex items-center gap-2 mb-2 sm:mb-4 text-[10px] sm:text-xs" data-testid={`product-stock-${product.id}`}>
+              <div className={`w-2 h-2 rounded-full ${product.stock > 0 ? 'bg-green-500' : 'bg-orange-500'}`} />
+              <span className={`${product.stock > 0 ? 'text-green-400' : 'text-orange-400'}`}>
+                {product.stock > 0 ? 'Op voorraad' : 'Op aanvraag'}
+              </span>
+            </div>
+          )}
+
           <div className="mt-auto">
-            <div className="flex items-center justify-between mb-2 sm:mb-4">
-              <div className="flex items-baseline gap-1 sm:gap-2">
-                <span className="text-lg sm:text-2xl font-bold text-[#d0a760] tracking-tight" data-testid={`product-price-${product.id}`}>
+            <div className="mb-2 sm:mb-4">
+              <div className="flex items-baseline gap-1 sm:gap-2 mb-1">
+                <span className="text-2xl sm:text-3xl font-bold text-[#d0a760] tracking-tight" data-testid={`product-price-${product.id}`}>
                   €{currentPrice.toLocaleString('nl-NL', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                 </span>
                 {originalPrice && (
@@ -253,6 +269,10 @@ export function ProductCard({ product, featured = false }: ProductCardProps) {
                     €{originalPrice.toFixed(0)}
                   </span>
                 )}
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] sm:text-xs text-white/50">per stuk</span>
+                <span className="text-[10px] sm:text-xs text-white/40">incl. BTW</span>
               </div>
             </div>
 

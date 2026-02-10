@@ -191,6 +191,17 @@ export default function Shop() {
     return byId?.name || null;
   }, [selectedBrand, brands]);
 
+  const activeMakeName = useMemo(() => {
+    if (selectedMake === 'all-makes' || !vehicleMakes) return null;
+    const make = (vehicleMakes as VehicleMake[]).find(m => m.id === selectedMake);
+    return make?.name || null;
+  }, [selectedMake, vehicleMakes]);
+
+  const brandMap = useMemo(() => {
+    if (!brands) return {};
+    return Object.fromEntries((brands as Brand[]).map(b => [b.id, b.name]));
+  }, [brands]);
+
   const seoTitle = useMemo(() => {
     if (activeCategoryName && activeBrandName) {
       return `${activeBrandName} ${activeCategoryName} | Producten`;
@@ -716,6 +727,102 @@ export default function Shop() {
       {/* Products Grid - Dark Section */}
       <main className="bg-zinc-950 py-16" role="main">
         <div className="container mx-auto px-4">
+          {/* Active Filter Chips */}
+          {activeFiltersCount > 0 && (
+            <div className="mb-8 pb-6 border-b border-white/10">
+              <div className="flex flex-wrap items-center gap-2">
+                {search && (
+                  <div className="bg-white/10 border border-white/20 text-white px-3 py-1.5 text-sm flex items-center gap-2 rounded-none">
+                    <span className="text-white/80">Zoeken: {search}</span>
+                    <button
+                      onClick={() => setSearch("")}
+                      className="text-white/40 hover:text-white transition-colors"
+                      aria-label="Wis zoekterm"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+                
+                {activeCategoryName && (
+                  <div className="bg-white/10 border border-white/20 text-white px-3 py-1.5 text-sm flex items-center gap-2 rounded-none">
+                    <span className="text-white/80">{activeCategoryName}</span>
+                    <button
+                      onClick={() => setSelectedCategory("all-categories")}
+                      className="text-white/40 hover:text-white transition-colors"
+                      aria-label="Verwijder categorie filter"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+                
+                {activeBrandName && (
+                  <div className="bg-white/10 border border-white/20 text-white px-3 py-1.5 text-sm flex items-center gap-2 rounded-none">
+                    <span className="text-white/80">{activeBrandName}</span>
+                    <button
+                      onClick={() => setSelectedBrand("all-brands")}
+                      className="text-white/40 hover:text-white transition-colors"
+                      aria-label="Verwijder merk filter"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+                
+                {activeMakeName && (
+                  <div className="bg-white/10 border border-white/20 text-white px-3 py-1.5 text-sm flex items-center gap-2 rounded-none">
+                    <span className="text-white/80">{activeMakeName}</span>
+                    <button
+                      onClick={() => setSelectedMake("all-makes")}
+                      className="text-white/40 hover:text-white transition-colors"
+                      aria-label="Verwijder automerk filter"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+                
+                {isPriceRangeModified && (
+                  <div className="bg-white/10 border border-white/20 text-white px-3 py-1.5 text-sm flex items-center gap-2 rounded-none">
+                    <span className="text-white/80">€{priceRange[0].toLocaleString('nl-NL')} - €{priceRange[1].toLocaleString('nl-NL')}</span>
+                    <button
+                      onClick={() => setPriceRange([0, 5000])}
+                      className="text-white/40 hover:text-white transition-colors"
+                      aria-label="Verwijder prijs filter"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+                
+                {inStockOnly && (
+                  <div className="bg-white/10 border border-white/20 text-white px-3 py-1.5 text-sm flex items-center gap-2 rounded-none">
+                    <span className="text-white/80">Op voorraad</span>
+                    <button
+                      onClick={() => setInStockOnly(false)}
+                      className="text-white/40 hover:text-white transition-colors"
+                      aria-label="Verwijder voorraad filter"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+                
+                {activeFiltersCount >= 2 && (
+                  <Button
+                    onClick={clearFilters}
+                    variant="outline"
+                    className="border-white/20 text-white hover:bg-white/10 hover:text-white rounded-none text-sm ml-auto"
+                    data-testid="button-clear-all-chips"
+                  >
+                    Wis alles
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
+          
           {isLoadingProducts ? (
             <div className={viewMode === 'grid' 
               ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6"
@@ -730,7 +837,7 @@ export default function Shop() {
               <>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
                 {visibleProducts.map((product: Product) => (
-                  <ProductCard key={product.id} product={product} />
+                  <ProductCard key={product.id} product={product} brandName={brandMap[product.brandId || '']} />
                 ))}
               </div>
               {hasMore && (
@@ -781,6 +888,11 @@ export default function Shop() {
                         <div className="flex-1 p-6">
                           <div className="flex justify-between items-start mb-4">
                             <div>
+                              {brandMap[product.brandId || ''] && (
+                                <p className="text-[#d0a760] text-xs font-semibold uppercase tracking-wider mb-1">
+                                  {brandMap[product.brandId || '']}
+                                </p>
+                              )}
                               <h2 className="text-xl font-semibold text-white mb-2 group-hover:text-[#d0a760] transition-colors">
                                 <a href={`/webshop/${product.slug}`}>{product.name}</a>
                               </h2>
@@ -940,7 +1052,7 @@ export default function Shop() {
       <Footer />
       
       {/* Mobile Bottom Spacer */}
-      <div className="md:hidden h-4 safe-area-bottom" />
+      <div className="md:hidden h-20 safe-area-bottom" />
       
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </div>

@@ -155,6 +155,8 @@ export default function AppleCarPlayBMW() {
           <img 
             src={bmwCarPlay1} 
             alt="BMW CarPlay Dashboard"
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover opacity-40"
           />
         </div>
@@ -331,6 +333,8 @@ export default function AppleCarPlayBMW() {
                 <img
                   src={galleryImages[selectedImage].src}
                   alt={galleryImages[selectedImage].alt}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
                 />
                 {selectedImage === 4 && (
@@ -359,6 +363,8 @@ export default function AppleCarPlayBMW() {
                       <img
                         src={image.src}
                         alt={image.alt}
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover"
                       />
                     </div>

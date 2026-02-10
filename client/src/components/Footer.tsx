@@ -194,7 +194,7 @@ export function Footer() {
           {/* Mobile Bottom Bar */}
           <div className="border-t border-zinc-800 pt-6">
             <div className="flex items-center gap-2 mb-3">
-              <img src={iconLogoUrl} alt="" className="w-4 h-4" />
+              <img src={iconLogoUrl} alt="" loading="lazy" decoding="async" className="w-4 h-4" />
               <p className="text-xs text-white/40">2026 Car Audio Limburg</p>
             </div>
             <div className="flex items-center space-x-4 text-xs">
@@ -212,6 +212,8 @@ export function Footer() {
                 <img 
                   src={saerensLogoUrl} 
                   alt="Saerens Agency" 
+                  loading="lazy"
+                  decoding="async"
                   className="h-3 w-auto opacity-50"
                 />
               </a>
@@ -348,7 +350,7 @@ export function Footer() {
           <div className="border-t border-zinc-800 pt-8">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <div className="flex items-center gap-2">
-                <img src={iconLogoUrl} alt="" className="w-4 h-4" />
+                <img src={iconLogoUrl} alt="" loading="lazy" decoding="async" className="w-4 h-4" />
                 <p className="text-sm text-white/40">2026 Car Audio Limburg. Alle rechten voorbehouden.</p>
               </div>
               <div className="flex items-center space-x-6 mt-4 md:mt-0">
@@ -366,6 +368,8 @@ export function Footer() {
                   <img 
                     src={saerensLogoUrl} 
                     alt="Saerens Agency" 
+                    loading="lazy"
+                    decoding="async"
                     className="h-4 w-auto opacity-50 group-hover:opacity-80 transition-opacity"
                   />
                 </a>

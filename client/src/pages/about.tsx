@@ -305,6 +305,8 @@ export default function About() {
                   <img 
                     src={studioImage1} 
                     alt="Car Audio Limburg Studio" 
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
                   />
                 </div>
@@ -314,6 +316,8 @@ export default function About() {
                   <img 
                     src={studioImage2} 
                     alt="Car Audio Limburg Werkplaats" 
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
                   />
                 </div>
@@ -323,6 +327,8 @@ export default function About() {
                   <img 
                     src={studioImage3} 
                     alt="Car Audio Limburg Showroom" 
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
                   />
                 </div>

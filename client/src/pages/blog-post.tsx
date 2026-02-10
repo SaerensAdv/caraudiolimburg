@@ -257,6 +257,8 @@ export default function BlogPostPage() {
             <img
               src={post.featuredImage}
               alt={post.title}
+              loading="lazy"
+              decoding="async"
               className="absolute inset-0 w-full h-full object-cover"
               data-testid="hero-image"
             />
@@ -322,6 +324,8 @@ export default function BlogPostPage() {
                       <img 
                         src={post.author.profileImageUrl} 
                         alt={authorName}
+                        loading="lazy"
+                        decoding="async"
                         className="w-10 h-10 rounded-none object-cover border border-[#d0a760]"
                       />
                     ) : (
@@ -400,6 +404,8 @@ export default function BlogPostPage() {
                             <img
                               src={relatedPost.featuredImage}
                               alt={relatedPost.title}
+                              loading="lazy"
+                              decoding="async"
                               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                             />
                           ) : (

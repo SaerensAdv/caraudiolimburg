@@ -247,7 +247,7 @@ export default function Contact() {
                   </div>
                   <p className="text-white/50 text-sm mb-8">Vul het formulier in en we nemen zo snel mogelijk contact met je op. Geen vraag is te gek!</p>
                   
-                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                  <form id="contact-form" onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="firstName" className="text-white/80 flex items-center gap-2">
@@ -457,7 +457,7 @@ export default function Contact() {
 
                 {/* Appointment Card */}
                 <ScrollReveal direction="right" delay={300}>
-                  <Link href="/booking" className="block group">
+                  <a href="#contact-form" className="block group">
                     <div className="bg-zinc-950 border border-zinc-800 p-8 hover:border-[#d0a760]/50 transition-all duration-300 group-hover:bg-zinc-900">
                       <div className="flex items-start gap-6">
                         <div className="w-14 h-14 flex-shrink-0 flex items-center justify-center border border-[#d0a760] text-[#d0a760] group-hover:bg-[#d0a760] group-hover:text-black transition-colors duration-300">
@@ -465,13 +465,13 @@ export default function Contact() {
                         </div>
                         <div className="flex-1">
                           <h3 className="text-xl font-medium text-white mb-2">Kom Langs in de Showroom</h3>
-                          <p className="text-white/60 mb-3">Plan een afspraak en ervaar onze producten zelf. We nemen alle tijd voor je!</p>
-                          <span className="text-[#d0a760] font-medium">Plan je bezoek →</span>
+                          <p className="text-white/60 mb-3">Neem contact op en ervaar onze producten zelf. We nemen alle tijd voor je!</p>
+                          <span className="text-[#d0a760] font-medium">Stuur ons een bericht →</span>
                         </div>
                         <ArrowRight className="h-6 w-6 text-white/40 group-hover:text-[#d0a760] group-hover:translate-x-1 transition-all duration-300" />
                       </div>
                     </div>
-                  </Link>
+                  </a>
                 </ScrollReveal>
 
                 {/* Quote Card */}

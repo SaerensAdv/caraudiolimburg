@@ -1039,7 +1039,7 @@ export default function Shop() {
                   variant="outline"
                   className="border-black text-black hover:bg-black hover:text-white rounded-none px-8 py-6 text-lg"
                 >
-                  <a href="/booking">Bezoek onze showroom</a>
+                  <a href="/contact">Neem contact op</a>
                 </Button>
               </div>
             </div>

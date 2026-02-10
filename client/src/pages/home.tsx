@@ -143,13 +143,13 @@ export default function Home() {
                     <ArrowRight weight="duotone" className="w-5 h-5 ml-2" />
                   </Button>
                 </Link>
-                <Link href="/booking">
+                <Link href="/contact">
                   <Button 
                     variant="outline"
                     className="border-white/30 text-white hover:bg-white/10 hover:border-white/50 rounded-none px-8 py-6 text-base transition-all duration-300"
                     data-testid="button-book-appointment"
                   >
-                    Plan Afspraak
+                    Neem Contact Op
                   </Button>
                 </Link>
               </div>
@@ -706,9 +706,9 @@ export default function Home() {
                       <span className="text-[#d0a760] font-medium">vanaf €299</span>
                     </div>
                   </div>
-                  <Link href="/booking">
+                  <Link href="/contact">
                     <Button className="w-full bg-[#d0a760] text-black hover:bg-[#d0a760]/90 hover:shadow-md hover:shadow-[#d0a760]/30 hover:scale-[1.02] rounded-none font-medium transition-all duration-300" data-testid="button-book-installation">
-                      Plan Jouw Afspraak
+                      Neem Contact Op
                       <ArrowRight weight="duotone" className="w-4 h-4 ml-2" />
                     </Button>
                   </Link>

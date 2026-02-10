@@ -33,7 +33,7 @@ const Blog = lazy(() => import("@/pages/blog"));
 const BlogPostPage = lazy(() => import("@/pages/blog-post"));
 const DemoTools = lazy(() => import("@/pages/demo-tools"));
 const MigrationOptions = lazy(() => import("@/pages/migration-options"));
-const Booking = lazy(() => import("@/pages/booking"));
+
 const Portfolio = lazy(() => import("@/pages/portfolio"));
 
 function RouteLoadingFallback() {
@@ -118,7 +118,7 @@ function Router() {
         <Route path="/demo-tools" component={DemoTools} />
         <Route path="/integraties" component={DemoTools} />
         <Route path="/migration-options" component={MigrationOptions} />
-        <Route path="/booking" component={Booking} />
+
         <Route path="/portfolio" component={Portfolio} />
         <Route path="/portfolio/:slug" component={Portfolio} />
         <Route component={NotFound} />

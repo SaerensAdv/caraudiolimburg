@@ -27,7 +27,7 @@ export function MobileBottomNav() {
     return location.startsWith(path);
   };
 
-  const hideOnPaths = ["/admin", "/checkout", "/order-confirmation", "/booking"];
+  const hideOnPaths = ["/admin", "/checkout", "/order-confirmation"];
   const hideOnProductDetail = location.startsWith("/webshop/") && location !== "/webshop";
   if (hideOnPaths.some((p) => location.startsWith(p)) || hideOnProductDetail) return null;
 

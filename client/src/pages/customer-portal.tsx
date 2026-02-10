@@ -730,12 +730,12 @@ export default function CustomerPortal() {
                         <Calendar className="w-6 h-6 text-[#d0a760]" />
                         Mijn Afspraken
                       </h2>
-                      <Link href="/booking">
+                      <Link href="/contact">
                         <Button 
                           className="bg-[#d0a760] text-black hover:bg-[#b8954e] rounded-none text-sm"
                           data-testid="button-new-booking"
                         >
-                          <span className="hidden sm:inline">Nieuwe afspraak</span>
+                          <span className="hidden sm:inline">Contact opnemen</span>
                           <Calendar className="w-4 h-4 sm:ml-2" />
                         </Button>
                       </Link>
@@ -856,13 +856,13 @@ export default function CustomerPortal() {
                         <p className="text-zinc-500 mb-6 max-w-md mx-auto">
                           Boek een installatie-afspraak voor professionele montage van uw audio systeem.
                         </p>
-                        <Link href="/booking">
+                        <Link href="/contact">
                           <Button
                             className="bg-[#d0a760] text-black hover:bg-[#b8954e] rounded-none px-8"
                             data-testid="button-book-appointment"
                           >
                             <Calendar className="h-4 w-4 mr-2" />
-                            Afspraak maken
+                            Contact opnemen
                           </Button>
                         </Link>
                       </div>

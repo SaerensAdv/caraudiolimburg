@@ -1273,7 +1273,7 @@ export default function ProductPage() {
                   variant="outline"
                   className="border-white/30 text-white hover:bg-white/10 hover:border-white/50 rounded-none px-10 py-6 text-base font-medium hover:scale-[1.02] transition-all duration-300"
                 >
-                  <a href="/booking">Plan Installatie</a>
+                  <a href="/contact">Neem Contact Op</a>
                 </Button>
                 )}
               </div>

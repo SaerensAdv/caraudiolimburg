@@ -111,7 +111,6 @@ export default function Shop() {
       categoryId: selectedCategoryId,
       brandId: selectedBrandId,
       vehicleMakeId: selectedMake.startsWith('all-') ? '' : selectedMake,
-      limit: 50,
     }],
   });
 

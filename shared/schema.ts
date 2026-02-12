@@ -122,6 +122,7 @@ export const productVariations = pgTable("product_variations", {
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   originalPrice: decimal("original_price", { precision: 10, scale: 2 }),
   images: text("images").array(),
+  specifications: jsonb("specifications").$type<Record<string, string>>(),
   stock: integer("stock").default(0),
   sortOrder: integer("sort_order").default(0),
   isDefault: boolean("is_default").default(false),

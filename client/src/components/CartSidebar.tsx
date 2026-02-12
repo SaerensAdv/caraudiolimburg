@@ -66,6 +66,10 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
         ...item,
         id: `guest-${item.productId}-${item.variationId || 'default'}`,
         product,
+        variation: item.variationId ? {
+          label: item.variationLabel || null,
+          price: item.variationPrice || null,
+        } : null,
       };
     }).filter(item => item.product);
   }, [isAuthenticated, allProducts, guestCartItems]);
@@ -165,7 +169,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
   // Calculate totals
   const subtotal = displayItems.reduce((sum: number, item: any) => {
-    const price = parseFloat(item.product?.price || "0");
+    const price = item.variation?.price ? parseFloat(item.variation.price) : parseFloat(item.product?.price || "0");
     return sum + (price * item.quantity);
   }, 0) || 0;
 
@@ -271,10 +275,15 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                               <h4 className="font-medium text-white text-sm mb-1 truncate" data-testid={`cart-product-name-${item.id}`}>
                                 {product?.name || "Onbekend product"}
                               </h4>
+                              {item.variation?.label && (
+                                <p className="text-[#d0a760]/70 text-xs mb-1 truncate">
+                                  {item.variation.label}
+                                </p>
+                              )}
                               
                               <div className="flex items-center space-x-2 mb-2">
                                 <span className="font-bold text-[#d0a760] text-sm" data-testid={`cart-product-price-${item.id}`}>
-                                  €{price.toFixed(2)}
+                                  €{(item.variation?.price ? parseFloat(item.variation.price) : price).toFixed(2)}
                                 </span>
                                 {originalPrice && (
                                   <span className="text-xs text-white/40 line-through">

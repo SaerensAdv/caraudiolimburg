@@ -63,6 +63,10 @@ export default function Cart() {
         ...item,
         id: `guest-${item.productId}-${item.variationId || 'default'}`,
         product,
+        variation: item.variationId ? {
+          label: item.variationLabel || null,
+          price: item.variationPrice || null,
+        } : null,
       };
     }).filter(item => item.product);
   }, [isAuthenticated, allProducts, guestCartItems]);
@@ -189,7 +193,7 @@ export default function Cart() {
 
   const totalItems = displayItems.reduce((sum: number, item: any) => sum + item.quantity, 0) || 0;
   const subtotal = displayItems.reduce((sum: number, item: any) => {
-    const price = parseFloat(item.product?.price || "0");
+    const price = item.variation?.price ? parseFloat(item.variation.price) : parseFloat(item.product?.price || "0");
     return sum + (price * item.quantity);
   }, 0) || 0;
   
@@ -198,8 +202,11 @@ export default function Cart() {
   const total = subtotal + installationFee + shipping;
   
   const totalSavings = displayItems.reduce((sum: number, item: any) => {
-    const originalPrice = item.product?.originalPrice ? parseFloat(item.product.originalPrice) : null;
-    const price = parseFloat(item.product?.price || "0");
+    const hasVariation = !!item.variation?.price;
+    const originalPrice = hasVariation 
+      ? (item.variation?.originalPrice ? parseFloat(item.variation.originalPrice) : null)
+      : (item.product?.originalPrice ? parseFloat(item.product.originalPrice) : null);
+    const price = hasVariation ? parseFloat(item.variation.price) : parseFloat(item.product?.price || "0");
     if (originalPrice && originalPrice > price) {
       return sum + ((originalPrice - price) * item.quantity);
     }
@@ -311,6 +318,9 @@ export default function Cart() {
                                   {product?.name || "Onbekend product"}
                                 </h3>
                               </Link>
+                              {item.variation?.label && (
+                                <p className="text-[#d0a760]/70 text-sm mt-0.5">{item.variation.label}</p>
+                              )}
                               <Button
                                 variant="ghost"
                                 size="sm"

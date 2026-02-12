@@ -113,7 +113,7 @@ export const products = pgTable("products", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Product variations (e.g., different storage capacities with different prices)
+// Product variations (e.g., different car models with different prices/images)
 export const productVariations = pgTable("product_variations", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   productId: varchar("product_id").notNull().references(() => products.id, { onDelete: 'cascade' }),
@@ -121,9 +121,11 @@ export const productVariations = pgTable("product_variations", {
   sku: varchar("sku"),
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   originalPrice: decimal("original_price", { precision: 10, scale: 2 }),
+  images: text("images").array(),
   stock: integer("stock").default(0),
   sortOrder: integer("sort_order").default(0),
   isDefault: boolean("is_default").default(false),
+  isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

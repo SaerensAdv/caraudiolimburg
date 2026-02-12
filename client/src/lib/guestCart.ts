@@ -5,6 +5,8 @@ export interface GuestCartItem {
   quantity: number;
   needsInstallation: boolean;
   variationId?: string | null;
+  variationLabel?: string | null;
+  variationPrice?: string | null;
 }
 
 interface GuestCart {

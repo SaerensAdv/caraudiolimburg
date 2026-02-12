@@ -56,9 +56,11 @@ type ProductVariation = {
   label: string;
   price: string;
   originalPrice?: string | null;
+  images?: string[] | null;
   stock: number | null;
   sortOrder: number | null;
   isDefault: boolean | null;
+  isActive?: boolean | null;
 };
 
 function FormattedDescription({ text, hasFeatures = false }: { text: string; hasFeatures?: boolean }) {
@@ -217,11 +219,16 @@ export default function ProductPage() {
     .filter(p => p.id !== product?.id)
     .slice(0, 4);
 
-  // Initialize default variation when product loads
+  // Initialize default variation when product loads (only active ones)
   useEffect(() => {
     if (product?.hasVariations && product.variations && product.variations.length > 0) {
-      const defaultVariation = product.variations.find(v => v.isDefault) || product.variations[0];
-      setSelectedVariation(defaultVariation);
+      const activeVariations = product.variations.filter(v => v.isActive !== false);
+      if (activeVariations.length > 0) {
+        const defaultVariation = activeVariations.find(v => v.isDefault) || null;
+        setSelectedVariation(defaultVariation);
+      } else {
+        setSelectedVariation(null);
+      }
     } else {
       setSelectedVariation(null);
     }
@@ -248,6 +255,8 @@ export default function ProductPage() {
           quantity,
           needsInstallation,
           variationId: selectedVariation?.id || null,
+          variationLabel: selectedVariation?.label || null,
+          variationPrice: selectedVariation?.price || null,
         });
       }
     },
@@ -339,7 +348,10 @@ export default function ProductPage() {
     ? (selectedVariation.originalPrice ? parseFloat(selectedVariation.originalPrice) : null)
     : (product.originalPrice ? parseFloat(product.originalPrice) : null);
   const discount = originalPrice ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100) : null;
-  const images = product.images || [];
+  const baseImages = product.images || [];
+  const images = (product.hasVariations && selectedVariation?.images && selectedVariation.images.length > 0)
+    ? selectedVariation.images
+    : baseImages;
   const installationPrice = (installationEnabled && product.installationPrice) ? parseFloat(product.installationPrice) : null;
   
   // Determine stock based on variation or product
@@ -656,46 +668,55 @@ export default function ProductPage() {
                 </div>
 
 
-                {/* Variation Selector */}
+                {/* Variation Selector - Dropdown style */}
                 {product.hasVariations && product.variations && product.variations.length > 0 && (
                   <div className="py-4 border-b border-white/10" data-testid="variation-selector">
-                    <p className="text-white/60 text-sm mb-3">Kies een optie:</p>
-                    <div className="flex flex-wrap gap-2 gap-y-3">
-                      {product.variations
-                        .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
-                        .map((variation) => {
-                          const variationStock = variation.stock;
-                          const isOutOfStock = variationStock === null || variationStock <= 0;
-                          const isSelected = selectedVariation?.id === variation.id;
-                          
-                          return (
-                            <button
-                              key={variation.id}
-                              onClick={() => setSelectedVariation(variation)}
-                              disabled={isOutOfStock}
-                              className={`
-                                min-h-[44px] px-4 py-2 border-2 transition-all duration-200
-                                ${isSelected 
-                                  ? 'border-[#d0a760] bg-[#d0a760]/10 text-white' 
-                                  : 'border-zinc-700 bg-zinc-800 text-white/80 hover:border-zinc-500'
-                                }
-                                ${isOutOfStock 
-                                  ? 'opacity-40 cursor-not-allowed line-through' 
-                                  : 'cursor-pointer'
-                                }
-                              `}
-                              data-testid={`variation-${variation.id}`}
-                            >
-                              <span className="font-medium">{variation.label}</span>
-                              <span className="block text-xs text-white/50 mt-0.5">
-                                €{parseFloat(variation.price).toFixed(0)}
-                              </span>
-                            </button>
-                          );
-                        })}
+                    <label className="text-white font-semibold text-sm mb-2 block">
+                      Selecteer uw automodel:
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={selectedVariation?.id || ""}
+                        onChange={(e) => {
+                          const variation = product.variations?.find(v => v.id === e.target.value);
+                          setSelectedVariation(variation || null);
+                          setSelectedImageIndex(0);
+                        }}
+                        className="w-full h-14 px-4 pr-12 bg-zinc-900 border-2 border-zinc-700 text-white text-base font-medium appearance-none cursor-pointer rounded-none focus:border-[#d0a760] focus:outline-none focus:ring-1 focus:ring-[#d0a760]/50 transition-colors"
+                        data-testid="variation-dropdown"
+                      >
+                        <option value="" disabled>
+                          — Selecteer een optie —
+                        </option>
+                        {product.variations
+                          .filter(v => v.isActive !== false)
+                          .sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0))
+                          .map((variation) => {
+                            const isOutOfStock = variation.stock === null || variation.stock <= 0;
+                            return (
+                              <option
+                                key={variation.id}
+                                value={variation.id}
+                                disabled={isOutOfStock}
+                              >
+                                {variation.label}{isOutOfStock ? " (Niet op voorraad)" : ""}{parseFloat(variation.price) !== currentPrice || !selectedVariation ? ` — €${parseFloat(variation.price).toFixed(0)}` : ""}
+                              </option>
+                            );
+                          })}
+                      </select>
+                      <CaretDown weight="bold" className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#d0a760] pointer-events-none" />
                     </div>
                     {product.hasVariations && !selectedVariation && (
-                      <p className="text-orange-400 text-xs mt-2">Selecteer een optie om door te gaan</p>
+                      <p className="text-[#d0a760]/80 text-xs mt-2 flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 bg-[#d0a760] animate-pulse" />
+                        Selecteer een optie om door te gaan
+                      </p>
+                    )}
+                    {selectedVariation && (
+                      <p className="text-green-500/80 text-xs mt-2 flex items-center gap-1.5">
+                        <Check weight="bold" className="w-3.5 h-3.5" />
+                        {selectedVariation.label} geselecteerd
+                      </p>
                     )}
                   </div>
                 )}

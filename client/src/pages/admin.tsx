@@ -147,11 +147,12 @@ export default function Admin() {
   const [productBrandFilter, setProductBrandFilter] = useState('');
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [hasVariations, setHasVariations] = useState(false);
-  const [productVariations, setProductVariations] = useState<Array<{id?: string; label: string; price: string; originalPrice?: string; stock: number; sku?: string; sortOrder: number;}>>([]);
+  const [productVariations, setProductVariations] = useState<Array<{id?: string; label: string; price: string; originalPrice?: string; stock: number; sku?: string; sortOrder: number; specifications?: Record<string, string>}>>([]);
   const [newVariationLabel, setNewVariationLabel] = useState('');
   const [newVariationPrice, setNewVariationPrice] = useState('');
   const [newVariationStock, setNewVariationStock] = useState(0);
   const [newVariationSku, setNewVariationSku] = useState('');
+  const [newVariationSpecs, setNewVariationSpecs] = useState('');
   const [videoUrl, setVideoUrl] = useState('');
   const [overviewContent, setOverviewContent] = useState('');
   const [boxContent, setBoxContent] = useState<string[]>([]);
@@ -386,7 +387,8 @@ export default function Admin() {
             originalPrice: variation.originalPrice || null,
             stock: variation.stock,
             sku: variation.sku || null,
-            sortOrder: variation.sortOrder
+            sortOrder: variation.sortOrder,
+            specifications: variation.specifications || null
           });
         }
       }
@@ -488,7 +490,8 @@ export default function Admin() {
               originalPrice: variation.originalPrice || null,
               stock: variation.stock,
               sku: variation.sku || null,
-              sortOrder: variation.sortOrder
+              sortOrder: variation.sortOrder,
+              specifications: variation.specifications || null
             });
           } else {
             await apiRequest("POST", `/api/products/${selectedProduct.id}/variations`, {
@@ -497,7 +500,8 @@ export default function Admin() {
               originalPrice: variation.originalPrice || null,
               stock: variation.stock,
               sku: variation.sku || null,
-              sortOrder: variation.sortOrder
+              sortOrder: variation.sortOrder,
+              specifications: variation.specifications || null
             });
           }
         }
@@ -1297,7 +1301,8 @@ export default function Admin() {
             originalPrice: v.originalPrice?.toString() || undefined,
             stock: v.stock || 0,
             sku: v.sku || undefined,
-            sortOrder: v.sortOrder || 0
+            sortOrder: v.sortOrder || 0,
+            specifications: v.specifications || undefined
           })));
         } else {
           setProductVariations([]);
@@ -2680,7 +2685,12 @@ export default function Admin() {
                                       <TableBody>
                                         {productVariations.map((variation, index) => (
                                           <TableRow key={index} className="border-zinc-700">
-                                            <TableCell className="text-white">{variation.label}</TableCell>
+                                            <TableCell className="text-white">
+                                              {variation.label}
+                                              {variation.specifications && Object.keys(variation.specifications).length > 0 && (
+                                                <span className="ml-2 text-[#d0a760]/60 text-xs">({Object.keys(variation.specifications).length} specs)</span>
+                                              )}
+                                            </TableCell>
                                             <TableCell className="text-white">€{variation.price}</TableCell>
                                             <TableCell className="text-white">{variation.stock}</TableCell>
                                             <TableCell className="text-zinc-400">{variation.sku || '-'}</TableCell>
@@ -2751,11 +2761,33 @@ export default function Admin() {
                                       data-testid="input-variation-sku"
                                     />
                                   </div>
-                                  <div className="flex items-end">
+                                  <div className="col-span-2 md:col-span-5">
+                                    <Label className="text-zinc-400 text-sm">Specificaties (optioneel, één per regel: Sleutel: Waarde)</Label>
+                                    <textarea
+                                      value={newVariationSpecs}
+                                      onChange={(e) => setNewVariationSpecs(e.target.value)}
+                                      placeholder={"Scherm: 10.25 inch\nConnector: Quadlock\niDrive: CIC / NBT"}
+                                      rows={3}
+                                      className="w-full mt-1 px-3 py-2 bg-zinc-700 border border-zinc-600 text-white text-sm rounded-none focus:border-[#d0a760] focus:outline-none resize-none"
+                                      data-testid="input-variation-specs"
+                                    />
+                                  </div>
+                                  <div className="flex items-end col-span-2 md:col-span-5">
                                     <Button
                                       type="button"
                                       onClick={() => {
                                         if (newVariationLabel && newVariationPrice) {
+                                          const specs: Record<string, string> = {};
+                                          if (newVariationSpecs.trim()) {
+                                            newVariationSpecs.split('\n').forEach(line => {
+                                              const colonIdx = line.indexOf(':');
+                                              if (colonIdx > 0) {
+                                                const key = line.substring(0, colonIdx).trim();
+                                                const val = line.substring(colonIdx + 1).trim();
+                                                if (key && val) specs[key] = val;
+                                              }
+                                            });
+                                          }
                                           setProductVariations([
                                             ...productVariations,
                                             {
@@ -2763,13 +2795,15 @@ export default function Admin() {
                                               price: newVariationPrice,
                                               stock: newVariationStock,
                                               sku: newVariationSku || undefined,
-                                              sortOrder: productVariations.length
+                                              sortOrder: productVariations.length,
+                                              specifications: Object.keys(specs).length > 0 ? specs : undefined
                                             }
                                           ]);
                                           setNewVariationLabel('');
                                           setNewVariationPrice('');
                                           setNewVariationStock(0);
                                           setNewVariationSku('');
+                                          setNewVariationSpecs('');
                                         }
                                       }}
                                       className="w-full bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"

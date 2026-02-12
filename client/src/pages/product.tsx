@@ -57,6 +57,7 @@ type ProductVariation = {
   price: string;
   originalPrice?: string | null;
   images?: string[] | null;
+  specifications?: Record<string, string> | null;
   stock: number | null;
   sortOrder: number | null;
   isDefault: boolean | null;
@@ -717,6 +718,18 @@ export default function ProductPage() {
                         <Check weight="bold" className="w-3.5 h-3.5" />
                         {selectedVariation.label} geselecteerd
                       </p>
+                    )}
+                    {selectedVariation?.specifications && Object.keys(selectedVariation.specifications).length > 0 && (
+                      <div className="mt-3 bg-zinc-900/80 border border-zinc-800 p-3" data-testid="variation-specs">
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+                          {Object.entries(selectedVariation.specifications).map(([key, value]) => (
+                            <div key={key} className="flex justify-between col-span-2 sm:col-span-1">
+                              <span className="text-white/50 text-xs">{key}</span>
+                              <span className="text-white text-xs font-medium">{value}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     )}
                   </div>
                 )}

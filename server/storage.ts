@@ -290,15 +290,18 @@ export class DatabaseStorage implements IStorage {
     }
     
     if (options.search) {
-      const searchTerm = `%${options.search}%`;
-      const searchCondition = or(
-        ilike(products.name, searchTerm),
-        ilike(products.description, searchTerm),
-        ilike(products.sku, searchTerm),
-        sql`EXISTS (SELECT 1 FROM ${brands} WHERE ${brands.id} = ${products.brandId} AND ${ilike(brands.name, searchTerm)})`
-      );
-      if (searchCondition) {
-        conditions.push(searchCondition);
+      const words = options.search.trim().split(/\s+/).filter(w => w.length > 0);
+      if (words.length > 0) {
+        const wordConditions = words.map(word => {
+          const term = `%${word}%`;
+          return or(
+            ilike(products.name, term),
+            ilike(products.description, term),
+            ilike(products.sku, term),
+            sql`EXISTS (SELECT 1 FROM ${brands} WHERE ${brands.id} = ${products.brandId} AND ${ilike(brands.name, term)})`
+          );
+        });
+        conditions.push(and(...wordConditions)!);
       }
     }
 

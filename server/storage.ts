@@ -12,6 +12,7 @@ import {
   quoteRequests,
   productVehicleCompatibility,
   productVariations,
+  productUpsells,
   wishlists,
   blogPosts,
   blogCategories,
@@ -195,6 +196,9 @@ export interface IStorage {
   updateProductVariation(id: string, updates: Partial<InsertProductVariation>): Promise<ProductVariation | undefined>;
   deleteProductVariation(id: string): Promise<boolean>;
   deleteProductVariationsByProductId(productId: string): Promise<void>;
+
+  // Product upsell operations
+  getProductUpsells(productId: string): Promise<(Product & { upsellLabel?: string | null })[]>;
 
   // Site settings operations
   getSiteSettings(): Promise<SiteSettings>;
@@ -1030,6 +1034,27 @@ export class DatabaseStorage implements IStorage {
     await db
       .delete(productVariations)
       .where(eq(productVariations.productId, productId));
+  }
+
+  // Product upsell operations
+  async getProductUpsells(productId: string): Promise<(Product & { upsellLabel?: string | null })[]> {
+    const upsellLinks = await db
+      .select({
+        product: products,
+        label: productUpsells.label,
+      })
+      .from(productUpsells)
+      .innerJoin(products, eq(productUpsells.upsellProductId, products.id))
+      .where(and(
+        eq(productUpsells.productId, productId),
+        eq(products.isActive, true)
+      ))
+      .orderBy(asc(productUpsells.sortOrder));
+
+    return upsellLinks.map(link => ({
+      ...link.product,
+      upsellLabel: link.label,
+    }));
   }
 
   // Portfolio project operations

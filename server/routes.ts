@@ -663,6 +663,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Product upsells routes
+  app.get('/api/products/:productId/upsells', async (req, res) => {
+    try {
+      const productId = req.params.productId;
+      const upsells = await storage.getProductUpsells(productId);
+      res.json(upsells);
+    } catch (error) {
+      console.error("Error fetching product upsells:", error);
+      res.status(500).json({ message: "Failed to fetch product upsells" });
+    }
+  });
+
   // Product variation routes
   app.get('/api/products/:productId/variations', async (req, res) => {
     try {

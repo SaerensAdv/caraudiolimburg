@@ -130,6 +130,16 @@ export const productVariations = pgTable("product_variations", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Product upsells (cross-sell / upsell links between products)
+export const productUpsells = pgTable("product_upsells", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  productId: varchar("product_id").notNull().references(() => products.id, { onDelete: 'cascade' }),
+  upsellProductId: varchar("upsell_product_id").notNull().references(() => products.id, { onDelete: 'cascade' }),
+  sortOrder: integer("sort_order").default(0),
+  label: varchar("label"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Product vehicle compatibility
 export const productVehicleCompatibility = pgTable("product_vehicle_compatibility", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -314,6 +324,8 @@ export const productsRelations = relations(products, ({ one, many }) => ({
   }),
   compatibility: many(productVehicleCompatibility),
   variations: many(productVariations),
+  upsells: many(productUpsells, { relationName: "productUpsells" }),
+  upsellTargets: many(productUpsells, { relationName: "upsellTargets" }),
   cartItems: many(cartItems),
   orderItems: many(orderItems),
 }));
@@ -337,6 +349,19 @@ export const productVariationsRelations = relations(productVariations, ({ one })
   product: one(products, {
     fields: [productVariations.productId],
     references: [products.id],
+  }),
+}));
+
+export const productUpsellsRelations = relations(productUpsells, ({ one }) => ({
+  product: one(products, {
+    fields: [productUpsells.productId],
+    references: [products.id],
+    relationName: "productUpsells",
+  }),
+  upsellProduct: one(products, {
+    fields: [productUpsells.upsellProductId],
+    references: [products.id],
+    relationName: "upsellTargets",
   }),
 }));
 
@@ -577,6 +602,8 @@ export type InsertProductVehicleCompatibility = z.infer<typeof insertProductVehi
 
 export type ProductVariation = typeof productVariations.$inferSelect;
 export type InsertProductVariation = z.infer<typeof insertProductVariationSchema>;
+
+export type ProductUpsell = typeof productUpsells.$inferSelect;
 
 export type BlogCategory = typeof blogCategories.$inferSelect;
 export type InsertBlogCategory = z.infer<typeof insertBlogCategorySchema>;

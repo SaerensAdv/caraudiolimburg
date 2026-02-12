@@ -209,6 +209,12 @@ export default function ProductPage() {
 
   const installationEnabled = siteSettings?.installationServiceEnabled ?? true;
 
+  // Fetch upsell products for this product
+  const { data: upsellProducts = [] } = useQuery<(Product & { upsellLabel?: string | null })[]>({
+    queryKey: [`/api/products/${product?.id}/upsells`],
+    enabled: !!product?.id,
+  });
+
   // Fetch related products based on category
   const { data: relatedProducts = [] } = useQuery<Product[]>({
     queryKey: ["/api/products", { categoryId: product?.categoryId, limit: 4 }],
@@ -1199,6 +1205,125 @@ export default function ProductPage() {
         </div>
       </section>
       )}
+      {/* Upsell / Recommended Accessories Section */}
+      {upsellProducts.length > 0 && (
+        <section className="bg-black py-16 md:py-24 border-t border-[#d0a760]/10" data-testid="upsell-products">
+          <div className="container mx-auto px-4">
+            <ScrollReveal animation="fade-up">
+              <div className="text-center mb-12">
+                <h2 className="text-2xl md:text-3xl font-bold text-white mb-4 flex items-center justify-center gap-3">
+                  <span className="w-8 h-0.5 bg-[#d0a760]"></span>
+                  Aanbevolen Accessoires
+                  <span className="w-8 h-0.5 bg-[#d0a760]"></span>
+                </h2>
+                <p className="text-white/50">Maak uw installatie compleet met deze accessoires</p>
+              </div>
+            </ScrollReveal>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+              {upsellProducts.map((upsell) => (
+                <ScrollReveal key={upsell.id} animation="fade-up">
+                  <div className="bg-zinc-900 border border-zinc-800 hover:border-[#d0a760]/30 transition-all duration-300 group" data-testid={`upsell-product-${upsell.id}`}>
+                    <Link href={`/webshop/${upsell.slug}`}>
+                      <div className="relative aspect-[4/3] bg-white overflow-hidden">
+                        {upsell.images && upsell.images[0] ? (
+                          <img
+                            src={upsell.images[0]}
+                            alt={upsell.name}
+                            width={300}
+                            height={225}
+                            loading="lazy"
+                            decoding="async"
+                            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                          />
+                        ) : (
+                          <div className="flex items-center justify-center h-full">
+                            <Package weight="duotone" className="w-12 h-12 text-white/10" />
+                          </div>
+                        )}
+                        {upsell.upsellLabel && (
+                          <div className="absolute top-3 left-3">
+                            <Badge className="bg-[#d0a760] text-black text-xs font-medium px-2 py-1 rounded-none">
+                              {upsell.upsellLabel}
+                            </Badge>
+                          </div>
+                        )}
+                      </div>
+                    </Link>
+                    <div className="p-4 space-y-3">
+                      <Link href={`/webshop/${upsell.slug}`}>
+                        <h3 className="text-white font-semibold text-sm line-clamp-2 group-hover:text-[#d0a760] transition-colors cursor-pointer">
+                          {upsell.name}
+                        </h3>
+                      </Link>
+                      {upsell.shortDescription && (
+                        <p className="text-white/40 text-xs line-clamp-2">{upsell.shortDescription}</p>
+                      )}
+                      <div className="flex items-center justify-between pt-1">
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-[#d0a760] font-bold text-lg">€{parseFloat(upsell.price).toFixed(0)}</span>
+                          {upsell.hasVariations && (
+                            <span className="text-white/30 text-xs">vanaf</span>
+                          )}
+                        </div>
+                        {!upsell.hasVariations ? (
+                          <Button
+                            size="sm"
+                            className="bg-[#d0a760] text-black hover:bg-[#c49a50] rounded-none text-xs px-3 h-8"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              const doAdd = async () => {
+                                if (isAuthenticated) {
+                                  await apiRequest("POST", "/api/cart", {
+                                    productId: upsell.id,
+                                    quantity: 1,
+                                    needsInstallation: false,
+                                    variationId: null,
+                                  });
+                                  queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
+                                } else {
+                                  addToGuestCart({
+                                    productId: upsell.id,
+                                    quantity: 1,
+                                    needsInstallation: false,
+                                    variationId: null,
+                                    variationLabel: null,
+                                    variationPrice: null,
+                                  });
+                                }
+                                toast({
+                                  title: "Toegevoegd",
+                                  description: `${upsell.name} is toegevoegd aan je winkelwagen.`,
+                                });
+                                setIsCartOpen(true);
+                              };
+                              doAdd();
+                            }}
+                          >
+                            <ShoppingCart weight="bold" className="w-3.5 h-3.5 mr-1" />
+                            Toevoegen
+                          </Button>
+                        ) : (
+                          <Link href={`/webshop/${upsell.slug}`}>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="border-[#d0a760]/30 text-[#d0a760] hover:bg-[#d0a760]/10 rounded-none text-xs px-3 h-8"
+                            >
+                              Bekijk opties
+                            </Button>
+                          </Link>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </ScrollReveal>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Related Products / Upsell Section */}
       {filteredRelatedProducts.length > 0 && (
         <section className="bg-zinc-950 py-16 md:py-24 border-t border-[#d0a760]/10" data-testid="related-products">

@@ -45,7 +45,7 @@ import promoVideo from "@assets/Verkorte-Video-Car-Audio-Limburg-Studio-1_175823
 
 export default function Home() {
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [selectedVehicle, setSelectedVehicle] = useState<{make: string; model: string; year: number} | null>(null);
+  const [selectedVehicle, setSelectedVehicle] = useState<{makeId: string; makeName: string; modelId: string; modelName: string; year: number} | null>(null);
   const [showIntro, setShowIntro] = useState(false);
   const recommendationsRef = useRef<HTMLDivElement>(null);
 
@@ -62,7 +62,10 @@ export default function Home() {
   };
 
   const { data: featuredProducts, isLoading: isLoadingProducts } = useQuery({
-    queryKey: ["/api/products", { featured: true, limit: 4 }],
+    queryKey: ["/api/products", selectedVehicle 
+      ? { vehicleMakeId: selectedVehicle.makeId, vehicleModelId: selectedVehicle.modelId, vehicleYear: selectedVehicle.year.toString() }
+      : { featured: true, limit: 4 }
+    ],
   });
 
   const { data: categories } = useQuery({
@@ -73,8 +76,8 @@ export default function Home() {
     queryKey: ["/api/etrusted/service-reviews", { limit: 6 }],
   });
 
-  const handleVehicleSelect = (make: string, model: string, year: number) => {
-    setSelectedVehicle({ make, model, year });
+  const handleVehicleSelect = (selection: {makeId: string; makeName: string; modelId: string; modelName: string; year: number}) => {
+    setSelectedVehicle(selection);
     setTimeout(() => {
       recommendationsRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, 100);
@@ -175,10 +178,10 @@ export default function Home() {
                 <span className="text-[#d0a760] text-sm font-medium tracking-wider uppercase">Speciaal voor jou geselecteerd</span>
               </div>
               <h2 className="text-3xl md:text-4xl font-light text-white mb-4">
-                Upgrades voor jouw {selectedVehicle.make} {selectedVehicle.model}
+                Upgrades voor jouw {selectedVehicle.makeName} {selectedVehicle.modelName}
               </h2>
               <p className="text-white/60 text-lg mb-12">
-                Op basis van jouw {selectedVehicle.year} {selectedVehicle.make} {selectedVehicle.model} hebben wij deze producten voor je uitgezocht
+                Op basis van jouw {selectedVehicle.year} {selectedVehicle.makeName} {selectedVehicle.modelName} hebben wij deze producten voor je uitgezocht
               </p>
             </ScrollReveal>
 

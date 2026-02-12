@@ -52,14 +52,22 @@ export default function Shop() {
   const [location, navigate] = useLocation();
   const searchString = useSearch();
 
+  const [selectedModelId, setSelectedModelId] = useState<string>("");
+  const [selectedYear, setSelectedYear] = useState<string>("");
+
   useEffect(() => {
     const params = new URLSearchParams(searchString || '');
     const categoryParam = params.get('category');
     const brandParam = params.get('brand');
+    const vehicleMakeParam = params.get('vehicleMakeId');
+    const vehicleModelParam = params.get('vehicleModelId');
+    const vehicleYearParam = params.get('vehicleYear');
     
-    // Always update state based on URL params (including resetting when empty)
     setSelectedCategory(categoryParam || 'all-categories');
     setSelectedBrand(brandParam || 'all-brands');
+    if (vehicleMakeParam) setSelectedMake(vehicleMakeParam);
+    if (vehicleModelParam) setSelectedModelId(vehicleModelParam);
+    if (vehicleYearParam) setSelectedYear(vehicleYearParam);
   }, [searchString]);
 
   useEffect(() => {
@@ -111,6 +119,8 @@ export default function Shop() {
       categoryId: selectedCategoryId,
       brandId: selectedBrandId,
       vehicleMakeId: selectedMake.startsWith('all-') ? '' : selectedMake,
+      vehicleModelId: selectedModelId || '',
+      vehicleYear: selectedYear || '',
     }],
   });
 
@@ -123,6 +133,8 @@ export default function Shop() {
     setSelectedCategory("all-categories");
     setSelectedBrand("all-brands");
     setSelectedMake("all-makes");
+    setSelectedModelId("");
+    setSelectedYear("");
     setPriceRange([0, 5000]);
     setInStockOnly(false);
     setSortBy("name");

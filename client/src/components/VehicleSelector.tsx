@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -28,13 +28,17 @@ export function VehicleSelector() {
     enabled: !!selectedMake,
   });
 
+  useEffect(() => {
+    setSelectedModel("");
+  }, [selectedMake]);
+
   const handleSearch = () => {
     const searchParams = new URLSearchParams();
     if (selectedMake) searchParams.set("vehicleMakeId", selectedMake);
     if (selectedModel) searchParams.set("vehicleModelId", selectedModel);
     if (selectedYear) searchParams.set("vehicleYear", selectedYear);
     
-    setLocation(`/shop?${searchParams.toString()}`);
+    setLocation(`/webshop?${searchParams.toString()}`);
   };
 
   const currentYear = new Date().getFullYear();

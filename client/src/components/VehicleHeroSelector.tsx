@@ -11,13 +11,21 @@ import {
 import { ArrowRight, Car, Loader2 } from "lucide-react";
 import type { VehicleMake, VehicleModel } from "@shared/schema";
 
+interface VehicleSelection {
+  makeId: string;
+  makeName: string;
+  modelId: string;
+  modelName: string;
+  year: number;
+}
+
 interface VehicleHeroSelectorProps {
-  onVehicleSelect?: (make: string, model: string, year: number) => void;
+  onVehicleSelect?: (selection: VehicleSelection) => void;
 }
 
 export function VehicleHeroSelector({ onVehicleSelect }: VehicleHeroSelectorProps) {
   const [selectedMakeId, setSelectedMakeId] = useState<string>("");
-  const [selectedModel, setSelectedModel] = useState<string>("");
+  const [selectedModelId, setSelectedModelId] = useState<string>("");
   const [selectedYear, setSelectedYear] = useState<string>("");
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -34,15 +42,22 @@ export function VehicleHeroSelector({ onVehicleSelect }: VehicleHeroSelectorProp
   });
 
   useEffect(() => {
-    setSelectedModel("");
+    setSelectedModelId("");
   }, [selectedMakeId]);
 
   const handleSearch = () => {
-    if (selectedMakeId && selectedModel && selectedYear) {
+    if (selectedMakeId && selectedModelId && selectedYear) {
       const makeName = vehicleMakes?.find(m => m.id === selectedMakeId)?.name || "";
+      const modelName = vehicleModels?.find(m => m.id === selectedModelId)?.name || "";
       setIsAnimating(true);
       setTimeout(() => {
-        onVehicleSelect?.(makeName, selectedModel, parseInt(selectedYear));
+        onVehicleSelect?.({
+          makeId: selectedMakeId,
+          makeName,
+          modelId: selectedModelId,
+          modelName,
+          year: parseInt(selectedYear),
+        });
         const recommendationsSection = document.getElementById('vehicle-recommendations');
         if (recommendationsSection) {
           recommendationsSection.scrollIntoView({ behavior: 'smooth' });
@@ -51,7 +66,7 @@ export function VehicleHeroSelector({ onVehicleSelect }: VehicleHeroSelectorProp
     }
   };
 
-  const isComplete = selectedMakeId && selectedModel && selectedYear;
+  const isComplete = selectedMakeId && selectedModelId && selectedYear;
 
   return (
     <div className={`transition-all duration-500 ${isAnimating ? 'scale-95 opacity-80' : ''}`}>
@@ -85,7 +100,7 @@ export function VehicleHeroSelector({ onVehicleSelect }: VehicleHeroSelectorProp
           </SelectContent>
         </Select>
 
-        <Select value={selectedModel} onValueChange={setSelectedModel} disabled={!selectedMakeId}>
+        <Select value={selectedModelId} onValueChange={setSelectedModelId} disabled={!selectedMakeId}>
           <SelectTrigger 
             className="w-full sm:w-44 bg-white/10 backdrop-blur-sm border-white/20 text-white rounded-none h-12 focus:border-[#d0a760] hover:bg-white/15 transition-colors disabled:opacity-50"
             data-testid="select-hero-vehicle-model"
@@ -100,7 +115,7 @@ export function VehicleHeroSelector({ onVehicleSelect }: VehicleHeroSelectorProp
             {vehicleModels?.map((model) => (
               <SelectItem 
                 key={model.id} 
-                value={model.name} 
+                value={model.id} 
                 className="text-white hover:bg-[#d0a760]/20 focus:bg-[#d0a760]/20 cursor-pointer"
               >
                 {model.name}
@@ -109,7 +124,7 @@ export function VehicleHeroSelector({ onVehicleSelect }: VehicleHeroSelectorProp
           </SelectContent>
         </Select>
 
-        <Select value={selectedYear} onValueChange={setSelectedYear} disabled={!selectedModel}>
+        <Select value={selectedYear} onValueChange={setSelectedYear} disabled={!selectedModelId}>
           <SelectTrigger 
             className="w-full sm:w-32 bg-white/10 backdrop-blur-sm border-white/20 text-white rounded-none h-12 focus:border-[#d0a760] hover:bg-white/15 transition-colors disabled:opacity-50"
             data-testid="select-hero-vehicle-year"

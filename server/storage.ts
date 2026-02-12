@@ -56,7 +56,7 @@ import {
   type SiteSettings,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, or, desc, asc, like, inArray } from "drizzle-orm";
+import { eq, and, or, desc, asc, like, ilike, inArray, sql } from "drizzle-orm";
 
 export interface IStorage {
   // User operations
@@ -290,13 +290,34 @@ export class DatabaseStorage implements IStorage {
     }
     
     if (options.search) {
+      const searchTerm = `%${options.search}%`;
       const searchCondition = or(
-        like(products.name, `%${options.search}%`),
-        like(products.description, `%${options.search}%`)
+        ilike(products.name, searchTerm),
+        ilike(products.description, searchTerm),
+        ilike(products.sku, searchTerm),
+        sql`EXISTS (SELECT 1 FROM ${brands} WHERE ${brands.id} = ${products.brandId} AND ${ilike(brands.name, searchTerm)})`
       );
       if (searchCondition) {
         conditions.push(searchCondition);
       }
+    }
+
+    if (options.vehicleMakeId) {
+      conditions.push(
+        sql`EXISTS (SELECT 1 FROM ${productVehicleCompatibility} WHERE ${productVehicleCompatibility.productId} = ${products.id} AND ${productVehicleCompatibility.makeId} = ${options.vehicleMakeId})`
+      );
+    }
+
+    if (options.vehicleModelId) {
+      conditions.push(
+        sql`EXISTS (SELECT 1 FROM ${productVehicleCompatibility} WHERE ${productVehicleCompatibility.productId} = ${products.id} AND ${productVehicleCompatibility.modelId} = ${options.vehicleModelId})`
+      );
+    }
+
+    if (options.vehicleYear) {
+      conditions.push(
+        sql`EXISTS (SELECT 1 FROM ${productVehicleCompatibility} WHERE ${productVehicleCompatibility.productId} = ${products.id} AND (${productVehicleCompatibility.yearFrom} IS NULL OR ${productVehicleCompatibility.yearFrom} <= ${options.vehicleYear}) AND (${productVehicleCompatibility.yearTo} IS NULL OR ${productVehicleCompatibility.yearTo} >= ${options.vehicleYear}))`
+      );
     }
 
     // Build query step by step to avoid TypeScript issues
@@ -850,8 +871,8 @@ export class DatabaseStorage implements IStorage {
     if (options.search) {
       conditions.push(
         or(
-          like(blogPosts.title, `%${options.search}%`),
-          like(blogPosts.excerpt, `%${options.search}%`)
+          ilike(blogPosts.title, `%${options.search}%`),
+          ilike(blogPosts.excerpt, `%${options.search}%`)
         )
       );
     }

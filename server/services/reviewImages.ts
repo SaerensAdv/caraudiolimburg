@@ -76,12 +76,12 @@ export function getAllCachedReviewImageUrls(): string[] {
 }
 
 const PORTRAIT_PROMPTS = [
-  "Professional headshot portrait of a friendly Dutch man in his 30s, short brown hair, slight smile, wearing a casual polo shirt, neutral grey background, soft studio lighting, high quality photo",
-  "Professional headshot portrait of a confident Belgian woman in her 40s, blonde hair, warm smile, wearing a dark blazer, neutral background, soft lighting, high quality photo",
-  "Professional headshot portrait of a young Dutch man in his 20s, dark hair, friendly expression, wearing a t-shirt, neutral grey background, natural lighting, high quality photo",
-  "Professional headshot portrait of a mature Dutch man in his 50s, grey hair, glasses, kind smile, wearing a button-down shirt, neutral background, studio lighting, high quality photo",
-  "Professional headshot portrait of a Dutch woman in her 30s, brown hair in ponytail, cheerful smile, wearing a sweater, neutral grey background, soft lighting, high quality photo",
-  "Professional headshot portrait of a Belgian man in his 40s, beard, friendly expression, wearing a casual jacket, neutral background, natural lighting, high quality photo",
+  "Candid smartphone selfie of a friendly Dutch man in his late 50s, short grey hair, relaxed smile, wearing a casual button-up shirt, taken outdoors in soft daylight, slightly blurred background of a parking lot, natural look, no studio lighting, realistic everyday photo",
+  "Casual photo of a cheerful Limburgish man in his 40s, short dark blond hair, broad grin, wearing a simple hoodie, taken in a living room with warm lamp light in background, natural imperfect framing, realistic mobile phone quality",
+  "Natural photo of a sporty Dutch man in his mid 30s, short dark hair, light stubble, slight smirk, wearing a dark t-shirt, taken outside near a car on a cloudy day, relaxed pose, realistic everyday snapshot quality",
+  "Candid portrait of a friendly older Dutch man in his early 60s, grey hair, reading glasses on forehead, warm genuine smile, wearing a polo shirt, taken in a garage workshop setting, natural overhead lighting, realistic amateur photo",
+  "Natural selfie of a fit Dutch man in his late 30s, buzz cut brown hair, clean shaven, friendly expression, wearing a simple crew neck sweater, taken indoors with window light, slightly off-center framing, realistic phone camera quality",
+  "Casual snapshot of a Belgian man in his mid 40s, short brown hair with some grey at temples, neat short beard, relaxed smile, wearing a zip-up jacket, taken outdoors on a sunny day, natural lighting, realistic everyday photo quality",
 ];
 
 export async function generatePortrait(index: number): Promise<string> {

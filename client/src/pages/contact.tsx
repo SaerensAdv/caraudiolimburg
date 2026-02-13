@@ -62,8 +62,14 @@ export default function Contact() {
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) throw new Error('Failed to submit');
+
       toast({
         title: "✓ Bedankt voor je bericht!",
         description: (
@@ -73,7 +79,7 @@ export default function Contact() {
           </div>
         ),
       });
-      
+
       reset();
     } catch (error) {
       toast({

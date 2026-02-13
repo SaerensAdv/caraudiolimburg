@@ -41,3 +41,12 @@ integrations = ["javascript_database:1.0.0", "javascript_stripe:1.0.0", "javascr
 [[ports]]
 localPort = 5000
 externalPort = 80
+
+[userenv]
+
+[userenv.shared]
+TEAMLEADER_CF_MERK = ""
+TEAMLEADER_CF_KENTEKEN = ""
+TEAMLEADER_CF_MODEL = ""
+TEAMLEADER_CF_VIN = ""
+TEAMLEADER_CF_BOUWJAAR = ""

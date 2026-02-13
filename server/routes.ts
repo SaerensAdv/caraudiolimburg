@@ -982,11 +982,92 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Contact form route
+  app.post('/api/contact', async (req, res) => {
+    try {
+      const { firstName, lastName, email, phone, subject, message } = req.body;
+
+      if (!lastName || !email) {
+        return res.status(400).json({ message: "Achternaam en e-mail zijn verplicht" });
+      }
+
+      // Save locally first (always succeeds)
+      const contactRequest = await storage.createQuoteRequest({
+        firstName: firstName || '',
+        lastName,
+        email,
+        phone: phone || '',
+        vehicleMake: 'Contact',
+        vehicleModel: subject || 'Algemeen',
+        vehicleYear: new Date().getFullYear(),
+        description: `Contactformulier:\n\nOnderwerp: ${subject || 'Geen onderwerp'}\n\n${message || 'Geen bericht'}`,
+      });
+
+      // Then try Teamleader sync (best-effort)
+      try {
+        const teamleader = await import('./services/teamleader');
+        if (teamleader.isConfigured()) {
+          const contactIdTl = await teamleader.createContact({
+            firstName: firstName || '',
+            lastName,
+            email,
+            phone: phone || '',
+            country: 'NL',
+          });
+
+          if (contactIdTl) {
+            await teamleader.createDeal({
+              contactIdTl,
+              title: `Website Contact - ${firstName || ''} ${lastName}`,
+              summary: `Onderwerp: ${subject || 'Geen onderwerp'}\n\nBericht:\n${message || 'Geen bericht'}`,
+            });
+          }
+        }
+      } catch (tlError) {
+        console.error("Teamleader sync failed (contact form):", tlError);
+      }
+
+      res.json({ success: true, id: contactRequest.id });
+    } catch (error) {
+      console.error("Error processing contact form:", error);
+      res.status(500).json({ message: "Er is een fout opgetreden" });
+    }
+  });
+
   // Quote request routes
   app.post('/api/quote-requests', async (req, res) => {
     try {
       const quoteData = insertQuoteRequestSchema.parse(req.body);
       const quote = await storage.createQuoteRequest(quoteData);
+
+      try {
+        const teamleader = await import('./services/teamleader');
+        if (teamleader.isConfigured()) {
+          const contactId = await teamleader.createContact({
+            firstName: quoteData.firstName,
+            lastName: quoteData.lastName,
+            email: quoteData.email,
+            phone: quoteData.phone,
+            country: 'NL',
+          });
+
+          if (contactId) {
+            await teamleader.createDeal({
+              contactId,
+              title: `Offerte - ${quoteData.firstName} ${quoteData.lastName}`,
+              summary: quoteData.description || '',
+              customFields: {
+                merk: quoteData.vehicleMake,
+                model: quoteData.vehicleModel,
+                bouwjaar: String(quoteData.vehicleYear),
+              },
+            });
+          }
+        }
+      } catch (tlError) {
+        console.error("Teamleader sync failed (quote form):", tlError);
+      }
+
       res.json(quote);
     } catch (error) {
       console.error("Error creating quote request:", error);
@@ -1061,7 +1142,37 @@ ${message || 'Geen aanvullende informatie'}`
       };
 
       const quote = await storage.createQuoteRequest(quoteData);
-      
+
+      try {
+        const teamleader = await import('./services/teamleader');
+        if (teamleader.isConfigured()) {
+          const contactId = await teamleader.createContact({
+            firstName,
+            lastName,
+            email,
+            phone,
+            country: 'NL',
+          });
+
+          if (contactId) {
+            await teamleader.createDeal({
+              contactId,
+              title: `BMW CarPlay - ${firstName} ${lastName}`,
+              summary: `BMW/MINI CarPlay Activatie - ${model} (${year})\nVIN: ${vin}\n${license ? 'Kenteken: ' + license : ''}\n\n${message || ''}`,
+              customFields: {
+                merk: model.toLowerCase().includes('bmw') ? 'BMW' : 'MINI',
+                kenteken: license || '',
+                model: model,
+                vin: vin,
+                bouwjaar: String(year),
+              },
+            });
+          }
+        }
+      } catch (tlError) {
+        console.error("Teamleader sync failed (BMW CarPlay quote):", tlError);
+      }
+
       res.status(201).json({
         message: "Offerteverzoek succesvol verstuurd! We nemen binnen 24 uur contact met je op.",
         quoteId: quote.id
@@ -3452,6 +3563,70 @@ Sitemap: https://caraudiolimburg.com/sitemap.xml`);
     } catch (error: any) {
       console.error("Error importing data:", error);
       res.status(500).json({ message: error.message || "Failed to import data" });
+    }
+  });
+
+  // Teamleader OAuth2 routes
+  app.get('/api/teamleader/auth-url', isAdmin, async (req: any, res) => {
+    try {
+      const teamleader = await import('./services/teamleader');
+      const { url, state } = teamleader.getAuthorizationUrl();
+      // Store state in session for validation
+      req.session.teamleaderOAuthState = state;
+      await new Promise<void>((resolve, reject) => {
+        req.session.save((err: any) => err ? reject(err) : resolve());
+      });
+      res.json({ url });
+    } catch (error: any) {
+      console.error("Error getting Teamleader auth URL:", error);
+      res.status(500).json({ message: error.message || "Failed to get authorization URL" });
+    }
+  });
+
+  app.get('/api/teamleader/callback', isAdmin, async (req: any, res) => {
+    try {
+      const { code, state } = req.query;
+      
+      // Validate state
+      const expectedState = req.session?.teamleaderOAuthState;
+      if (!state || state !== expectedState) {
+        return res.status(403).send('Ongeldige OAuth state. Probeer opnieuw.');
+      }
+      
+      // Clear state from session
+      delete req.session.teamleaderOAuthState;
+      
+      if (!code || typeof code !== 'string') {
+        return res.status(400).json({ message: "Authorization code is required" });
+      }
+      const teamleader = await import('./services/teamleader');
+      await teamleader.exchangeCodeForTokens(code);
+      res.redirect('/admin?section=settings&teamleader=connected');
+    } catch (error: any) {
+      console.error("Error in Teamleader callback:", error);
+      res.redirect('/admin?section=settings&teamleader=error');
+    }
+  });
+
+  app.get('/api/teamleader/status', isAdmin, async (req, res) => {
+    try {
+      const teamleader = await import('./services/teamleader');
+      const status = await teamleader.getConnectionStatus();
+      res.json(status);
+    } catch (error) {
+      console.error("Error checking Teamleader status:", error);
+      res.status(500).json({ message: "Failed to check connection status" });
+    }
+  });
+
+  app.post('/api/teamleader/disconnect', isAdmin, async (req, res) => {
+    try {
+      const teamleader = await import('./services/teamleader');
+      await teamleader.disconnect();
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error disconnecting Teamleader:", error);
+      res.status(500).json({ message: "Failed to disconnect" });
     }
   });
 

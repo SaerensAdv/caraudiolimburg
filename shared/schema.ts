@@ -677,5 +677,17 @@ export const siteSettings = pgTable("site_settings", {
 
 export type SiteSettings = typeof siteSettings.$inferSelect;
 
+// Teamleader Focus OAuth2 tokens
+export const teamleaderTokens = pgTable("teamleader_tokens", {
+  id: varchar("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  accessToken: text("access_token").notNull(),
+  refreshToken: text("refresh_token").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type TeamleaderToken = typeof teamleaderTokens.$inferSelect;
+
 // Re-export chat models for Gemini integration
 export * from "./models/chat";

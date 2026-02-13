@@ -125,6 +125,99 @@ interface PortfolioProject {
   updatedAt: Date;
 }
 
+function TeamleaderSettings() {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const { data: teamleaderStatus, isLoading: isLoadingTlStatus } = useQuery<{ connected: boolean; expiresAt?: string }>({
+    queryKey: ["/api/teamleader/status"],
+  });
+
+  const connectMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch('/api/teamleader/auth-url', { credentials: 'include' });
+      if (!res.ok) throw new Error('Failed to get auth URL');
+      const data = await res.json();
+      return data.url;
+    },
+    onSuccess: (url: string) => {
+      window.open(url, '_blank');
+    },
+    onError: () => {
+      toast({ title: "Fout", description: "Kon de autorisatie-URL niet ophalen.", variant: "destructive" });
+    },
+  });
+
+  const disconnectMutation = useMutation({
+    mutationFn: async () => {
+      await apiRequest("POST", "/api/teamleader/disconnect");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/teamleader/status"] });
+      toast({ title: "Ontkoppeld", description: "Teamleader Focus is ontkoppeld." });
+    },
+    onError: () => {
+      toast({ title: "Fout", description: "Kon niet ontkoppelen.", variant: "destructive" });
+    },
+  });
+
+  return (
+    <div className="bg-zinc-900 border border-zinc-800 p-6 space-y-6 mt-6">
+      <h2 className="text-lg font-semibold text-white">Integraties</h2>
+
+      <div className="flex items-center justify-between p-4 bg-zinc-800">
+        <div className="flex-1">
+          <Label className="text-white text-base">Teamleader Focus</Label>
+          <p className="text-sm text-zinc-400 mt-1">
+            Synchroniseer contactformulieren en offerteaanvragen automatisch naar Teamleader Focus CRM.
+          </p>
+          <div className="mt-2 flex items-center gap-2">
+            {isLoadingTlStatus ? (
+              <span className="text-xs text-zinc-500">Laden...</span>
+            ) : teamleaderStatus?.connected ? (
+              <>
+                <span className="inline-block w-2 h-2 rounded-full bg-green-500" />
+                <span className="text-xs text-green-400">Verbonden</span>
+                {teamleaderStatus.expiresAt && (
+                  <span className="text-xs text-zinc-500 ml-2">
+                    Token geldig tot: {new Date(teamleaderStatus.expiresAt).toLocaleDateString('nl-NL')}
+                  </span>
+                )}
+              </>
+            ) : (
+              <>
+                <span className="inline-block w-2 h-2 rounded-full bg-zinc-500" />
+                <span className="text-xs text-zinc-400">Niet verbonden</span>
+              </>
+            )}
+          </div>
+        </div>
+        <div className="flex gap-2 ml-4">
+          {teamleaderStatus?.connected ? (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => disconnectMutation.mutate()}
+              disabled={disconnectMutation.isPending}
+            >
+              {disconnectMutation.isPending ? "Bezig..." : "Ontkoppelen"}
+            </Button>
+          ) : (
+            <Button
+              size="sm"
+              className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90"
+              onClick={() => connectMutation.mutate()}
+              disabled={connectMutation.isPending}
+            >
+              {connectMutation.isPending ? "Bezig..." : "Koppelen"}
+            </Button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Admin() {
   const [activeSection, setActiveSection] = useState<AdminSection>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -4601,6 +4694,8 @@ export default function Admin() {
                   />
                 </div>
               </div>
+
+              <TeamleaderSettings />
             </div>
           )}
         </div>

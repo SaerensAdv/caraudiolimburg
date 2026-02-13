@@ -1,6 +1,6 @@
 import { useStripe, Elements, PaymentElement, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -18,6 +18,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useGuestCart, clearGuestCart } from '@/lib/guestCart';
 import type { Product } from '@shared/schema';
+import { trackBeginCheckout } from '@/lib/dataLayer';
 import { 
   Wrench, 
   Lock, 
@@ -149,6 +150,22 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems, isGuest = false }: 
     },
     mode: "onBlur",
   });
+
+  const checkoutTrackedRef = useRef(false);
+  useEffect(() => {
+    if (checkoutTrackedRef.current || !cartItems || cartItems.length === 0) return;
+    checkoutTrackedRef.current = true;
+    trackBeginCheckout(
+      cartItems.map((item: any) => ({
+        id: item.product?.id || item.productId,
+        name: item.product?.name || '',
+        price: item.variationPrice || item.product?.price || '0',
+        quantity: item.quantity,
+        sku: item.product?.sku,
+      })),
+      orderTotal,
+    );
+  }, [cartItems, orderTotal]);
 
   const email = watch("email");
   const firstName = watch("firstName");

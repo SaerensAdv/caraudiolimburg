@@ -499,7 +499,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         vehicleYear,
         limit,
         offset,
-        featured
+        featured,
+        ids
       } = req.query;
 
       const products = await storage.getProducts({
@@ -512,6 +513,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         limit: limit ? parseInt(limit as string) : undefined,
         offset: offset ? parseInt(offset as string) : undefined,
         featured: featured === 'true',
+        ids: ids ? (ids as string).split(',') : undefined,
       });
 
       res.json(products);
@@ -3208,115 +3210,71 @@ ${message || 'Geen aanvullende informatie'}`
 
   // Robots.txt route
   app.get('/robots.txt', (req, res) => {
-    const robotsTxt = `User-agent: *
+    res.setHeader('Content-Type', 'text/plain');
+    res.send(`User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /api/
-Disallow: /my-account
-Disallow: /checkout
-Disallow: /cart
-
-Sitemap: https://caraudiolimburg.com/sitemap.xml
-`;
-
-    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-    res.setHeader('Cache-Control', 'public, max-age=86400');
-    res.send(robotsTxt);
+Sitemap: https://caraudiolimburg.com/sitemap.xml`);
   });
 
-  // Sitemap.xml route - dynamic XML sitemap for SEO
   app.get('/sitemap.xml', async (req, res) => {
     try {
-      const baseUrl = 'https://caraudiolimburg.com';
-      const now = new Date().toISOString().split('T')[0];
+      const BASE_URL = 'https://caraudiolimburg.com';
 
-      // Fetch dynamic content from database
-      const [activeProducts, publishedBlogPosts, allCategories] = await Promise.all([
-        storage.getProducts({ limit: 10000 }),
-        storage.getPublishedBlogPostsForSitemap(),
+      const [allProducts, allCategories, allBrands, blogPosts] = await Promise.all([
+        storage.getProducts({}),
         storage.getCategories(),
+        storage.getBrands(),
+        storage.getPublishedBlogPostsForSitemap().catch(() => []),
       ]);
 
-      // Static pages with monthly changefreq and 0.5 priority
       const staticPages = [
-        '/shop',
-        '/about',
-        '/contact',
-        '/faq',
-        '/blog',
-        '/studio',
-        '/privacy',
-        '/voorwaarden',
+        { loc: '/', changefreq: 'daily', priority: '1.0' },
+        { loc: '/webshop', changefreq: 'daily', priority: '0.9' },
+        { loc: '/contact', changefreq: 'monthly', priority: '0.6' },
+        { loc: '/over-ons', changefreq: 'monthly', priority: '0.5' },
+        { loc: '/faq', changefreq: 'monthly', priority: '0.5' },
+        { loc: '/blog', changefreq: 'weekly', priority: '0.7' },
+        { loc: '/afspraak-maken', changefreq: 'monthly', priority: '0.6' },
+        { loc: '/studio', changefreq: 'monthly', priority: '0.5' },
       ];
 
-      let xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>${baseUrl}/</loc>
-    <lastmod>${now}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>`;
+      let urls = staticPages.map(
+        (p) => `  <url>\n    <loc>${BASE_URL}${p.loc}</loc>\n    <changefreq>${p.changefreq}</changefreq>\n    <priority>${p.priority}</priority>\n  </url>`
+      );
 
-      // Static pages
-      for (const page of staticPages) {
-        xml += `
-  <url>
-    <loc>${baseUrl}${page}</loc>
-    <lastmod>${now}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>`;
+      for (const product of allProducts) {
+        if (product.slug) {
+          urls.push(`  <url>\n    <loc>${BASE_URL}/webshop/${product.slug}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>`);
+        }
       }
 
-      // Categories
       for (const category of allCategories) {
-        xml += `
-  <url>
-    <loc>${baseUrl}/shop?category=${category.slug}</loc>
-    <lastmod>${now}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>`;
+        if (category.slug) {
+          urls.push(`  <url>\n    <loc>${BASE_URL}/webshop?category=${category.slug}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`);
+        }
       }
 
-      // Products
-      for (const product of activeProducts) {
-        const lastmod = product.updatedAt 
-          ? new Date(product.updatedAt).toISOString().split('T')[0] 
-          : now;
-        xml += `
-  <url>
-    <loc>${baseUrl}/product/${product.slug}</loc>
-    <lastmod>${lastmod}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.7</priority>
-  </url>`;
+      for (const brand of allBrands) {
+        if (brand.slug) {
+          urls.push(`  <url>\n    <loc>${BASE_URL}/webshop?brand=${brand.slug}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`);
+        }
       }
 
-      // Blog posts
-      for (const post of publishedBlogPosts) {
-        const lastmod = post.updatedAt 
-          ? new Date(post.updatedAt).toISOString().split('T')[0] 
-          : now;
-        xml += `
-  <url>
-    <loc>${baseUrl}/blog/${post.slug}</loc>
-    <lastmod>${lastmod}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>`;
+      for (const post of blogPosts) {
+        if (post.slug) {
+          urls.push(`  <url>\n    <loc>${BASE_URL}/blog/${post.slug}</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>`);
+        }
       }
 
-      xml += `
-</urlset>`;
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>`;
 
-      res.setHeader('Content-Type', 'application/xml; charset=utf-8');
-      res.setHeader('Cache-Control', 'public, max-age=3600');
+      res.setHeader('Content-Type', 'application/xml');
       res.send(xml);
     } catch (error) {
-      console.error("Error generating sitemap:", error);
-      res.status(500).send('<?xml version="1.0" encoding="UTF-8"?><error>Failed to generate sitemap</error>');
+      console.error('Error generating sitemap:', error);
+      res.status(500).send('Error generating sitemap');
     }
   });
 

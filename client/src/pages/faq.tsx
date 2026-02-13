@@ -131,7 +131,7 @@ export default function FAQ() {
       <SEO 
         title="Veelgestelde Vragen (FAQ)"
         description="Vind antwoorden op veelgestelde vragen over car audio producten, verzending, retourneren en professionele installatie bij Car Audio Limburg."
-        canonical="/veelgestelde-vragen"
+        canonical="/faq"
         keywords="FAQ, veelgestelde vragen, car audio, installatie, verzending, retourneren"
       />
       <FAQSchema items={faqItems} />

@@ -81,6 +81,7 @@ export interface IStorage {
     limit?: number;
     offset?: number;
     featured?: boolean;
+    ids?: string[];
   }): Promise<Product[]>;
   getProduct(id: string): Promise<Product | undefined>;
   getProductBySlug(slug: string): Promise<Product | undefined>;
@@ -280,6 +281,7 @@ export class DatabaseStorage implements IStorage {
     limit?: number;
     offset?: number;
     featured?: boolean;
+    ids?: string[];
   } = {}): Promise<Product[]> {
     const conditions = [eq(products.isActive, true)];
 
@@ -293,6 +295,10 @@ export class DatabaseStorage implements IStorage {
     
     if (options.featured) {
       conditions.push(eq(products.isFeatured, true));
+    }
+
+    if (options.ids && options.ids.length > 0) {
+      conditions.push(inArray(products.id, options.ids));
     }
     
     if (options.search) {

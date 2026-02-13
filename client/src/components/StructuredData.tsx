@@ -127,6 +127,8 @@ interface ProductSchemaProps {
   ratingValue?: number;
   url?: string;
   condition?: 'NewCondition' | 'UsedCondition' | 'RefurbishedCondition';
+  category?: string;
+  mpn?: string;
 }
 
 export function ProductSchema({
@@ -142,6 +144,8 @@ export function ProductSchema({
   ratingValue,
   url,
   condition = 'NewCondition',
+  category,
+  mpn,
 }: ProductSchemaProps) {
   const availabilityMap = {
     InStock: 'https://schema.org/InStock',
@@ -189,6 +193,14 @@ export function ProductSchema({
 
   if (sku) {
     data.sku = sku;
+  }
+
+  if (category) {
+    data.category = category;
+  }
+
+  if (mpn) {
+    data.mpn = mpn;
   }
 
   if (reviewCount && ratingValue) {
@@ -303,6 +315,41 @@ export function FAQSchema({ items }: FAQSchemaProps) {
   return <JsonLd data={data} />;
 }
 
+interface ItemListSchemaProps {
+  items: Array<{
+    name: string;
+    url: string;
+    image?: string;
+    position: number;
+  }>;
+  name?: string;
+}
+
+export function ItemListSchema({ items, name }: ItemListSchemaProps) {
+  const data: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: items.slice(0, 10).map((item) => {
+      const listItem: Record<string, unknown> = {
+        '@type': 'ListItem',
+        position: item.position,
+        name: item.name,
+        url: item.url.startsWith('http') ? item.url : `${SITE_URL}${item.url}`,
+      };
+      if (item.image) {
+        listItem.image = item.image.startsWith('http') ? item.image : `${SITE_URL}${item.image}`;
+      }
+      return listItem;
+    }),
+  };
+
+  if (name) {
+    data.name = name;
+  }
+
+  return <JsonLd data={data} />;
+}
+
 export function WebSiteSchema() {
   const data = {
     '@context': 'https://schema.org',
@@ -314,7 +361,7 @@ export function WebSiteSchema() {
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: `${SITE_URL}/shop?search={search_term_string}`,
+        urlTemplate: `${SITE_URL}/webshop?search={search_term_string}`,
       },
       'query-input': 'required name=search_term_string',
     },

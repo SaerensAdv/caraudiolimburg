@@ -12,6 +12,7 @@ import { ProductQuickView } from "@/components/ProductQuickView";
 import { useAuth } from "@/hooks/useAuth";
 import { useGuestCart } from "@/lib/guestCart";
 import type { Product, SiteSettings } from "@shared/schema";
+import { trackSelectItem } from "@/lib/dataLayer";
 import carAudioLogo from "@assets/Caraudiolimburg-logo_1757008375383_1757016657436.png";
 import fordFiestaImage from "@assets/ford-fiesta-real.webp";
 import audisonImage from "@assets/audison-real.webp";
@@ -180,7 +181,15 @@ export function ProductCard({ product, featured = false, brandName }: ProductCar
   return (
     <>
       <Card className={`bg-zinc-900 border-zinc-800 hover:border-[#d0a760]/70 transition-all duration-300 ease-out group overflow-hidden rounded-none hover:-translate-y-3 hover:shadow-[0_20px_50px_-12px_rgba(208,167,96,0.25)] h-full flex flex-col relative before:absolute before:inset-0 before:opacity-0 hover:before:opacity-100 before:bg-gradient-to-t before:from-[#d0a760]/5 before:to-transparent before:transition-opacity before:duration-300 before:pointer-events-none ${featured ? 'animated-gold-border' : ''}`} data-testid={`product-card-${product.id}`}>
-        <Link href={`/webshop/${product.slug}`}>
+        <Link href={`/webshop/${product.slug}`} onClick={() => {
+        trackSelectItem({
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          brand: brandName,
+          sku: product.sku,
+        });
+      }}>
           <div className="relative overflow-hidden">
             <div className={`aspect-square flex items-center justify-center ${hasValidImage ? 'bg-white' : 'bg-zinc-800 p-8'}`}>
               <img 

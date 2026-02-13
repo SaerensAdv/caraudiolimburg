@@ -34,7 +34,7 @@ export default function Booking() {
       <SEO 
         title="Afspraak Maken - Professionele Car Audio Installatie"
         description="Boek online je installatie-afspraak bij Car Audio Limburg. Gecertificeerde monteurs, 2 jaar garantie, en OEM-look resultaat. Snel en professioneel!"
-        canonical="/booking"
+        canonical="/afspraak-maken"
         keywords="afspraak maken, car audio installatie, inbouw, montage, Sittard, carplay inbouwen, speakers inbouwen"
       />
       <LocalBusinessSchema />

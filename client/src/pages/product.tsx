@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useParams, Link, useLocation } from "wouter";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Header } from "@/components/Header";
@@ -31,6 +31,7 @@ import {
   Package,
   Clock,
   Trophy,
+  Warning,
   ShareNetwork,
   X,
   Plus,
@@ -44,7 +45,9 @@ import {
   Star
 } from "@phosphor-icons/react";
 import { SiRevolut, SiKlarna, SiVisa } from "react-icons/si";
-import type { Product, SiteSettings } from "@shared/schema";
+import type { Product, SiteSettings, Brand, Category } from "@shared/schema";
+import { trackViewItem, trackAddToCart } from "@/lib/dataLayer";
+import { addRecentlyViewed } from "@/lib/recentlyViewed";
 
 import bancontactLogo from "@assets/Bancontact-Original-logo-RGB_1770317016482.png";
 import googlePayLogo from "@assets/Google_Pay_Logo.svg_1770317053129.png";
@@ -226,12 +229,38 @@ export default function ProductPage() {
     queryKey: ["/api/etrusted/aggregate"],
   });
 
+  const { data: brands } = useQuery<Brand[]>({
+    queryKey: ["/api/brands"],
+  });
+
+  const { data: categories } = useQuery<Category[]>({
+    queryKey: ["/api/categories"],
+  });
+
+  const brandName = brands?.find(b => b.id === product?.brandId)?.name;
+  const categoryName = categories?.find(c => c.id === product?.categoryId)?.name;
+  const categorySlug = categories?.find(c => c.id === product?.categoryId)?.slug;
+
   // Filter out current product from related products
   const filteredRelatedProducts = relatedProducts
     .filter(p => p.id !== product?.id)
     .slice(0, 4);
 
   // Initialize default variation when product loads (only active ones)
+  useEffect(() => {
+    if (!product) return;
+    addRecentlyViewed(product.id);
+    const price = selectedVariation ? selectedVariation.price : product.price;
+    trackViewItem({
+      id: product.id,
+      name: product.name,
+      price,
+      brand: brandName,
+      category: categoryName,
+      sku: product.sku,
+    });
+  }, [product?.id, brandName, categoryName]);
+
   useEffect(() => {
     if (product?.hasVariations && product.variations && product.variations.length > 0) {
       const activeVariations = product.variations.filter(v => v.isActive !== false);
@@ -275,6 +304,18 @@ export default function ProductPage() {
     onSuccess: (_, variables) => {
       if (variables.authenticated) {
         queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
+      }
+      if (product) {
+        const price = selectedVariation ? selectedVariation.price : product.price;
+        trackAddToCart({
+          id: product.id,
+          name: product.name,
+          price,
+          brand: brandName,
+          category: categoryName,
+          quantity,
+          sku: product.sku,
+        });
       }
       toast({
         title: "Product toegevoegd",
@@ -386,7 +427,7 @@ export default function ProductPage() {
   return (
     <div className="min-h-screen bg-black" id="main-content">
       <SEO 
-        title={product.name}
+        title={brandName && !product.name.includes(brandName) ? `${brandName} ${product.name}` : product.name}
         description={productDescription}
         canonical={`/webshop/${product.slug}`}
         ogImage={images[0] || undefined}
@@ -398,12 +439,18 @@ export default function ProductPage() {
         image={images.length > 0 ? images : ['https://caraudiolimburg.com/og-image.jpg']}
         price={currentPrice}
         availability={isInStock ? 'InStock' : 'OutOfStock'}
+        brand={brandName}
         sku={product.sku || product.id}
+        mpn={product.sku || undefined}
+        category={categoryName}
         url={`/webshop/${product.slug}`}
+        reviewCount={etrustedAggregate?.enabled && etrustedAggregate?.count ? etrustedAggregate.count : undefined}
+        ratingValue={etrustedAggregate?.enabled && etrustedAggregate?.rating ? etrustedAggregate.rating : undefined}
       />
       <BreadcrumbSchema items={[
         { name: "Home", url: "/" },
         { name: "Producten", url: "/webshop" },
+        ...(categoryName && categorySlug ? [{ name: categoryName, url: `/webshop?category=${categorySlug}` }] : []),
         { name: product.name, url: `/webshop/${product.slug}` }
       ]} />
       
@@ -793,28 +840,44 @@ export default function ProductPage() {
 
                   <div className="mt-3 md:mt-4 space-y-3">
                     {isInStock ? (
-                      <div className="flex flex-col gap-1">
-                        <span className="inline-flex items-center gap-2 text-green-500 text-sm font-medium">
-                          <span className="w-2 h-2 bg-green-500 animate-pulse" />
-                          Op voorraad
-                          {effectiveStock !== null && effectiveStock <= 5 && effectiveStock > 0 && (
-                            <span className="text-orange-400 text-xs font-normal ml-1">
-                              - Nog {effectiveStock} beschikbaar!
-                            </span>
-                          )}
-                        </span>
+                      <div className="flex flex-col gap-1.5">
+                        {effectiveStock !== null && effectiveStock >= 1 && effectiveStock <= 5 ? (
+                          <span className="inline-flex items-center gap-2 text-amber-500 text-sm font-medium">
+                            <Warning weight="duotone" className="w-4 h-4" />
+                            Nog maar {effectiveStock} op voorraad
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-2 text-green-500 text-sm font-medium">
+                            <Check weight="duotone" className="w-4 h-4" />
+                            Op voorraad
+                          </span>
+                        )}
+                        {currentPrice >= 50 && (
+                          <span className="inline-flex items-center gap-2 text-[#d0a760] text-xs font-medium">
+                            <Truck weight="duotone" className="w-3.5 h-3.5" />
+                            Gratis verzending
+                          </span>
+                        )}
                         <span className="text-white/50 text-xs flex items-center gap-1">
-                          <Truck weight="duotone" className="w-3 h-3" />
+                          <Clock weight="duotone" className="w-3 h-3" />
                           Bestel voor 16:00, morgen in huis
                         </span>
                       </div>
                     ) : (
-                      <span className="inline-flex items-center gap-2 text-orange-500 text-sm">
-                        <Clock weight="duotone" className="w-4 h-4" />
-                        {product.hasVariations && !selectedVariation 
-                          ? "Selecteer een optie" 
-                          : "Niet op voorraad"}
-                      </span>
+                      <div className="flex flex-col gap-1.5">
+                        <span className="inline-flex items-center gap-2 text-red-500 text-sm font-medium">
+                          <Clock weight="duotone" className="w-4 h-4" />
+                          {product.hasVariations && !selectedVariation 
+                            ? "Selecteer een optie" 
+                            : "Niet op voorraad"}
+                        </span>
+                        {currentPrice >= 50 && (
+                          <span className="inline-flex items-center gap-2 text-[#d0a760] text-xs font-medium">
+                            <Truck weight="duotone" className="w-3.5 h-3.5" />
+                            Gratis verzending
+                          </span>
+                        )}
+                      </div>
                     )}
                     
                     {/* Payment Methods */}

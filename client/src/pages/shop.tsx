@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation, useSearch, Link } from "wouter";
 import { Header } from "@/components/Header";
@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { SEO } from "@/components/SEO";
-import { BreadcrumbSchema } from "@/components/StructuredData";
+import { BreadcrumbSchema, ItemListSchema } from "@/components/StructuredData";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -25,12 +25,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Filter, X, ChevronDown, Grid, Car, Volume2, Settings, ChevronRight, LayoutGrid, List, SlidersHorizontal, ArrowLeft, ShoppingCart, Home as HomeIcon, Package } from "lucide-react";
+import { Search, Filter, X, ChevronDown, Grid, Car, Volume2, Settings, ChevronRight, LayoutGrid, List, SlidersHorizontal, ArrowLeft, ShoppingCart, Home as HomeIcon, Package, Clock } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { Product, Category, Brand, VehicleMake } from "@shared/schema";
 import { ProductAudioSkeleton } from "@/components/AudioSkeletons";
 import { ScrollReveal, StaggerContainer, StaggerItem, ParallaxSection } from "@/components/ScrollAnimations";
+import { trackViewItemList } from "@/lib/dataLayer";
+import { getRecentlyViewed } from "@/lib/recentlyViewed";
 
 export default function Shop() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -128,6 +130,21 @@ export default function Shop() {
     queryKey: ["/api/vehicle-makes"],
   });
 
+  const recentlyViewedIds = useMemo(() => getRecentlyViewed().slice(0, 6), []);
+
+  const { data: recentlyViewedProducts } = useQuery<Product[]>({
+    queryKey: ["/api/products", { ids: recentlyViewedIds.join(',') }],
+    enabled: recentlyViewedIds.length > 0,
+  });
+
+  const sortedRecentlyViewed = useMemo(() => {
+    if (!recentlyViewedProducts || recentlyViewedProducts.length === 0) return [];
+    const productMap = new Map(recentlyViewedProducts.map(p => [p.id, p]));
+    return recentlyViewedIds
+      .map(id => productMap.get(id))
+      .filter((p): p is Product => !!p);
+  }, [recentlyViewedProducts, recentlyViewedIds]);
+
   const clearFilters = () => {
     setSearch("");
     setSelectedCategory("all-categories");
@@ -186,7 +203,6 @@ export default function Shop() {
 
   const activeCategoryName = useMemo(() => {
     if (selectedCategory === 'all-categories' || !categories) return null;
-    // Try matching by slug first, then by ID
     const bySlug = (categories as Category[]).find(c => c.slug === selectedCategory);
     if (bySlug) return bySlug.name;
     const byId = (categories as Category[]).find(c => c.id === selectedCategory);
@@ -195,7 +211,6 @@ export default function Shop() {
 
   const activeBrandName = useMemo(() => {
     if (selectedBrand === 'all-brands' || !brands) return null;
-    // Try matching by slug first, then by ID
     const bySlug = (brands as Brand[]).find(b => b.slug === selectedBrand);
     if (bySlug) return bySlug.name;
     const byId = (brands as Brand[]).find(b => b.id === selectedBrand);
@@ -212,6 +227,27 @@ export default function Shop() {
     if (!brands) return {};
     return Object.fromEntries((brands as Brand[]).map(b => [b.id, b.name]));
   }, [brands]);
+
+  const lastTrackedListRef = useRef<string>('');
+  useEffect(() => {
+    if (!sortedProducts || sortedProducts.length === 0) return;
+    const listName = activeCategoryName || activeBrandName || 'Alle producten';
+    const listId = selectedCategoryId || selectedBrandId || 'all';
+    const trackingKey = `${listId}-${sortedProducts.length}-${sortBy}`;
+    if (lastTrackedListRef.current === trackingKey) return;
+    lastTrackedListRef.current = trackingKey;
+    trackViewItemList(
+      sortedProducts.map(p => ({
+        id: p.id,
+        name: p.name,
+        price: p.price,
+        brand: brandMap[p.brandId || ''],
+        sku: p.sku,
+      })),
+      listId,
+      listName,
+    );
+  }, [sortedProducts, activeCategoryName, activeBrandName, selectedCategoryId, selectedBrandId, sortBy, brandMap]);
 
   const seoTitle = useMemo(() => {
     if (activeCategoryName && activeBrandName) {
@@ -265,6 +301,17 @@ export default function Shop() {
         keywords="car audio, speakers, versterkers, head units, Alpine, Audison, Focal, Hertz"
       />
       <BreadcrumbSchema items={breadcrumbItems} />
+      {visibleProducts.length > 0 && (
+        <ItemListSchema
+          name={seoTitle}
+          items={visibleProducts.slice(0, 10).map((product: Product, index: number) => ({
+            name: product.name,
+            url: `/webshop/${product.slug}`,
+            image: product.images?.[0] || undefined,
+            position: index + 1,
+          }))}
+        />
+      )}
       
       {/* Desktop Header */}
       <div className="hidden md:block">
@@ -834,6 +881,22 @@ export default function Shop() {
             </div>
           )}
           
+          {sortedRecentlyViewed.length > 0 && (
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-4">
+                <Clock className="w-5 h-5 text-[#d0a760]" />
+                <h2 className="text-lg font-semibold text-white">Recent bekeken</h2>
+              </div>
+              <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+                {sortedRecentlyViewed.map((product: Product) => (
+                  <div key={product.id} className="flex-shrink-0 w-[160px] sm:w-[180px]">
+                    <ProductCard product={product} brandName={brandMap[product.brandId || '']} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {isLoadingProducts ? (
             <div className={viewMode === 'grid' 
               ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6"

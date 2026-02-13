@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation, Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Header } from "@/components/Header";
@@ -22,6 +22,7 @@ import {
   Calendar
 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
+import { trackPurchase } from "@/lib/dataLayer";
 
 export default function OrderConfirmationPage() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -111,7 +112,26 @@ export default function OrderConfirmationPage() {
     enabled: !!paymentIntentId && redirectStatus === 'succeeded',
   });
 
-  // Show payment failed/cancelled message
+  const purchaseTrackedRef = useRef(false);
+  useEffect(() => {
+    if (purchaseTrackedRef.current || !orderData || !orderData.orderNumber) return;
+    purchaseTrackedRef.current = true;
+    const items = (orderData.items || []).map((item: any) => ({
+      id: item.productId || item.product?.id || '',
+      name: item.product?.name || item.productName || '',
+      price: item.price || '0',
+      quantity: item.quantity || 1,
+      sku: item.product?.sku,
+    }));
+    trackPurchase(
+      orderData.orderNumber,
+      parseFloat(orderData.total || '0'),
+      parseFloat(orderData.taxAmount || '0'),
+      0,
+      items,
+    );
+  }, [orderData]);
+
   if (paymentFailed) {
     return (
       <div className="min-h-screen bg-black flex flex-col">

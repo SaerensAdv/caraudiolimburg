@@ -294,7 +294,7 @@ export default function CinematicIntro({ onComplete }: CinematicIntroProps) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 2, duration: 0.8 }}
                 >
-                  Fabriekskwaliteit installatie
+                  Premium kwaliteit
                 </motion.p>
               </div>
             </motion.div>

@@ -45,6 +45,11 @@ export default function Cart() {
   const queryClient = useQueryClient();
   const { items: guestCartItems, updateQuantity: updateGuestQuantity, removeItem: removeGuestItem } = useGuestCart();
 
+  const { data: siteSettings } = useQuery({
+    queryKey: ['/api/site-settings'],
+  });
+  const installationEnabled = siteSettings?.installationServiceEnabled ?? true;
+
   const { data: cartItems, isLoading: cartLoading } = useQuery<CartItemWithProduct[]>({
     queryKey: ["/api/cart"],
     enabled: isAuthenticated,
@@ -197,7 +202,7 @@ export default function Cart() {
     return sum + (price * item.quantity);
   }, 0) || 0;
   
-  const installationFee = displayItems.some((item: any) => item.needsInstallation) ? 89 : 0;
+  const installationFee = installationEnabled && displayItems.some((item: any) => item.needsInstallation) ? 89 : 0;
   const shipping = subtotal >= 50 ? 0 : 5.95;
   const total = subtotal + installationFee + shipping;
   
@@ -339,7 +344,7 @@ export default function Cart() {
                               </p>
                             )}
 
-                            {item.needsInstallation && (
+                            {installationEnabled && item.needsInstallation && (
                               <Badge className="text-xs bg-[#d0a760]/20 text-[#d0a760] border-[#d0a760]/30 rounded-none mb-3">
                                 <Wrench className="w-3 h-3 mr-1" />
                                 Inclusief installatie
@@ -416,7 +421,7 @@ export default function Cart() {
                       <span className="text-white font-medium" data-testid="subtotal">€{subtotal.toFixed(2)}</span>
                     </div>
                     
-                    {installationFee > 0 && (
+                    {installationEnabled && installationFee > 0 && (
                       <div className="flex justify-between items-center">
                         <span className="text-zinc-400 flex items-center gap-2">
                           <Wrench className="w-4 h-4 text-[#d0a760]" />

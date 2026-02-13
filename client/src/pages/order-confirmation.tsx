@@ -224,6 +224,11 @@ export default function OrderConfirmationPage() {
     );
   }
 
+  const { data: siteSettings } = useQuery({
+    queryKey: ['/api/site-settings'],
+  });
+  const installationEnabled = siteSettings?.installationServiceEnabled ?? true;
+
   const steps = [
     {
       icon: Package,
@@ -237,12 +242,12 @@ export default function OrderConfirmationPage() {
       description: "Je ontvangt een track & trace code zodra je pakket onderweg is.",
       color: "#d0a760"
     },
-    {
+    ...(installationEnabled ? [{
       icon: Wrench,
       title: "Installatie (indien van toepassing)",
       description: "Als je installatie hebt gekozen, nemen we binnen 2 werkdagen contact met je op.",
       color: "#d0a760"
-    }
+    }] : [])
   ];
 
   return (

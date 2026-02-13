@@ -84,6 +84,11 @@ export default function Home() {
     queryKey: ["/api/review-images"],
   });
 
+  const { data: siteSettings } = useQuery({
+    queryKey: ['/api/site-settings'],
+  });
+  const installationEnabled = siteSettings?.installationServiceEnabled ?? true;
+
   const handleVehicleSelect = (selection: {makeId: string; makeName: string; modelId: string; modelName: string; year: number}) => {
     setSelectedVehicle(selection);
     setTimeout(() => {
@@ -95,10 +100,10 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-black scroll-smooth" id="main-content">
       <SEO 
-        title="Car Audio Limburg | Premium Autoradio & Installatie"
-        description="Car Audio Limburg - Uw specialist in premium car audio systemen, Apple CarPlay, Android Auto en professionele installatie. Bezoek onze studio in Geleen, Limburg."
+        title="Car Audio Limburg | Premium Car Audio Specialist"
+        description="Car Audio Limburg - Uw specialist in premium car audio systemen, Apple CarPlay, Android Auto en dashcam systemen. Topmerken als Alpine, Audison, Hertz en Focal."
         canonical="/"
-        keywords="car audio, autoradio, Alpine, Audison, Focal, Hertz, installatie, Limburg"
+        keywords="car audio, autoradio, Alpine, Audison, Focal, Hertz, Limburg, webshop"
       />
       <OrganizationSchema />
       <LocalBusinessSchema />
@@ -263,7 +268,7 @@ export default function Home() {
               </div>
               <div>
                 <p className="text-white text-sm font-medium whitespace-nowrap">2 Jaar Garantie</p>
-                <p className="text-white/50 text-xs whitespace-nowrap">Op alle installaties</p>
+                <p className="text-white/50 text-xs whitespace-nowrap">{installationEnabled ? 'Op alle installaties' : 'Op alle producten'}</p>
               </div>
             </div>
             
@@ -308,6 +313,7 @@ export default function Home() {
                 </p>
               </div>
               
+              {installationEnabled && (
               <div className="text-center md:text-left group snap-start flex-shrink-0 w-[260px] md:w-auto md:flex-shrink">
                 <div className="w-12 h-12 bg-[#d0a760]/10 flex items-center justify-center mb-4 mx-auto md:mx-0 group-hover:bg-[#d0a760]/20 group-hover:scale-110 transition-all duration-300">
                   <Wrench weight="duotone" className="w-6 h-6 text-[#d0a760]" />
@@ -317,6 +323,7 @@ export default function Home() {
                   Onze gecertificeerde monteurs zorgen met 25+ jaar ervaring voor een perfect resultaat in jouw auto.
                 </p>
               </div>
+              )}
               
               <div className="text-center md:text-left group snap-start flex-shrink-0 w-[260px] md:w-auto md:flex-shrink">
                 <div className="w-12 h-12 bg-[#d0a760]/10 flex items-center justify-center mb-4 mx-auto md:mx-0 group-hover:bg-[#d0a760]/20 group-hover:scale-110 transition-all duration-300">
@@ -357,8 +364,8 @@ export default function Home() {
                 </h2>
                 <p className="text-white/60 text-lg leading-relaxed mb-8">
                   Bij Car Audio Limburg delen we onze liefde voor auto's en muziek graag met jou. 
-                  Met vakkundige installatie zorgen we ervoor dat elke upgrade eruitziet alsof hij 
-                  rechtstreeks van de fabriek komt. Jouw tevredenheid is waar wij voor gaan.
+                  Met premium merken en persoonlijk advies helpen we je aan de perfecte 
+                  audio-ervaring in jouw auto. Jouw tevredenheid is waar wij voor gaan.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Link href="/webshop" className="w-full sm:w-auto">
@@ -662,6 +669,7 @@ export default function Home() {
       </section>
 
       {/* Installation Services - WHITE continued */}
+      {installationEnabled && (
       <section className="py-24 md:py-32 bg-white">
         <div className="container px-8 md:px-16 lg:px-24 mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -750,6 +758,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      )}
 
 
       {/* Quote Section - BLACK */}

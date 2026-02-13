@@ -23,7 +23,7 @@ export function OrganizationSchema() {
     name: 'Car Audio Limburg',
     url: SITE_URL,
     logo: `${SITE_URL}/logo-transparent.png`,
-    description: 'Specialist in premium car audio systemen, professionele installatie en dashcam systemen.',
+    description: 'Specialist in premium car audio systemen en dashcam systemen. Alpine, Audison, Hertz, Focal en meer.',
     address: {
       '@type': 'PostalAddress',
       addressLocality: 'Geleen',
@@ -53,7 +53,7 @@ export function LocalBusinessSchema({ openingHours }: LocalBusinessSchemaProps) 
     name: 'Car Audio Limburg',
     image: `${SITE_URL}/logo-transparent.png`,
     url: SITE_URL,
-    description: 'Specialist in premium car audio systemen, professionele installatie en dashcam systemen. Alpine, Audison, OEM upgrades en meer.',
+    description: 'Specialist in premium car audio systemen en dashcam systemen. Alpine, Audison, OEM upgrades en meer.',
     address: {
       '@type': 'PostalAddress',
       streetAddress: '',
@@ -98,10 +98,6 @@ export function LocalBusinessSchema({ openingHours }: LocalBusinessSchemaProps) 
         {
           '@type': 'OfferCatalog',
           name: 'Car Audio Systemen',
-        },
-        {
-          '@type': 'OfferCatalog',
-          name: 'Installatie Services',
         },
         {
           '@type': 'OfferCatalog',
@@ -356,7 +352,7 @@ export function WebSiteSchema() {
     '@type': 'WebSite',
     name: 'Car Audio Limburg',
     url: SITE_URL,
-    description: 'Specialist in premium car audio systemen, professionele installatie en dashcam systemen.',
+    description: 'Specialist in premium car audio systemen en dashcam systemen. Alpine, Audison, Hertz, Focal en meer.',
     potentialAction: {
       '@type': 'SearchAction',
       target: {

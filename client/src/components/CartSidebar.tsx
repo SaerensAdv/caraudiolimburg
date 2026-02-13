@@ -48,6 +48,11 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   const queryClient = useQueryClient();
   const { items: guestCartItems, updateQuantity: updateGuestQuantity, removeItem: removeGuestItem } = useGuestCart();
 
+  const { data: siteSettings } = useQuery({
+    queryKey: ['/api/site-settings'],
+  });
+  const installationEnabled = siteSettings?.installationServiceEnabled ?? true;
+
   const { data: cartItems, isLoading: cartLoading } = useQuery<CartItemWithProduct[]>({
     queryKey: ["/api/cart"],
     enabled: isAuthenticated && isOpen,
@@ -173,7 +178,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     return sum + (price * item.quantity);
   }, 0) || 0;
 
-  const installationFee = displayItems.some((item: any) => item.needsInstallation) ? 89 : 0;
+  const installationFee = installationEnabled && displayItems.some((item: any) => item.needsInstallation) ? 89 : 0;
   const shipping = subtotal >= 50 ? 0 : 5.95;
   const total = subtotal + installationFee + shipping;
   const itemCount = displayItems.reduce((sum: number, item: any) => sum + item.quantity, 0) || 0;
@@ -292,7 +297,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                                 )}
                               </div>
 
-                              {item.needsInstallation && (
+                              {installationEnabled && item.needsInstallation && (
                                 <Badge className="text-xs bg-[#d0a760]/20 text-[#d0a760] border-[#d0a760]/30">
                                   <Wrench className="w-3 h-3 mr-1" />
                                   + Installatie
@@ -356,7 +361,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                     <span className="text-white" data-testid="cart-subtotal">€{subtotal.toFixed(2)}</span>
                   </div>
                   
-                  {installationFee > 0 && (
+                  {installationEnabled && installationFee > 0 && (
                     <div className="flex justify-between text-sm">
                       <span className="text-white/60">Installatie</span>
                       <span className="text-white" data-testid="cart-installation-fee">€{installationFee.toFixed(2)}</span>

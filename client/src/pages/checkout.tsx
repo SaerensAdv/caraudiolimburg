@@ -269,7 +269,11 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems, isGuest = false }: 
     return sum + (price * item.quantity);
   }, 0);
   
-  const installationFee = cartItems.some((item: any) => item.needsInstallation) ? 89 : 0;
+  const { data: siteSettings } = useQuery({
+    queryKey: ['/api/site-settings'],
+  });
+  const installationEnabled = siteSettings?.installationServiceEnabled ?? true;
+  const installationFee = installationEnabled && cartItems.some((item: any) => item.needsInstallation) ? 89 : 0;
   const shipping = subtotal >= 50 ? 0 : 5.95;
 
   const totalItems = cartItems.reduce((sum: number, item: any) => sum + item.quantity, 0);
@@ -532,7 +536,7 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems, isGuest = false }: 
                       <p className="text-sm font-medium text-white line-clamp-2 leading-tight">
                         {item.product?.name}
                       </p>
-                      {item.needsInstallation && (
+                      {installationEnabled && item.needsInstallation && (
                         <Badge className="mt-2 text-xs bg-[#d0a760]/20 text-[#d0a760] border border-[#d0a760]/30 rounded-none">
                           <Wrench className="w-3 h-3 mr-1" />
                           + Installatie
@@ -554,7 +558,7 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems, isGuest = false }: 
                   <span className="text-white font-medium">€{subtotal.toFixed(2)}</span>
                 </div>
                 
-                {installationFee > 0 && (
+                {installationEnabled && installationFee > 0 && (
                   <div className="flex justify-between items-center text-sm">
                     <span className="text-zinc-400 flex items-center gap-2">
                       <Wrench className="w-4 h-4 text-[#d0a760]" />
@@ -713,7 +717,11 @@ export default function Checkout() {
     return sum + (price * item.quantity);
   }, 0);
   
-  const installationFee = cartItemsArray.some((item: any) => item.needsInstallation) ? 89 : 0;
+  const { data: checkoutSiteSettings } = useQuery({
+    queryKey: ['/api/site-settings'],
+  });
+  const checkoutInstallationEnabled = checkoutSiteSettings?.installationServiceEnabled ?? true;
+  const installationFee = checkoutInstallationEnabled && cartItemsArray.some((item: any) => item.needsInstallation) ? 89 : 0;
   const shipping = subtotal >= 50 ? 0 : 5.95;
   const total = subtotal + installationFee + shipping;
 

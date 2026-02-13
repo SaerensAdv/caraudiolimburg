@@ -43,7 +43,7 @@ export function ChatBot() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
-      content: "Hallo! Ik ben de AI-assistent van Car Audio Limburg. Hoe kan ik je helpen met car audio, multimedia of installatie vragen?",
+      content: "Hallo! Ik ben de AI-assistent van Car Audio Limburg. Hoe kan ik je helpen met car audio of multimedia vragen?",
     },
   ]);
   const [input, setInput] = useState("");

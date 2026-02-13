@@ -414,7 +414,7 @@ export default function ProductPage() {
   const isInStock = effectiveStock !== null && effectiveStock > 0;
   const canAddToCart = product.hasVariations ? (selectedVariation && isInStock) : isInStock;
 
-  const productDescription = product.shortDescription || product.description?.toString().substring(0, 160) || `Koop ${product.name} bij Car Audio Limburg. Professionele installatie beschikbaar.`;
+  const productDescription = product.shortDescription || product.description?.toString().substring(0, 160) || `Koop ${product.name} bij Car Audio Limburg. Premium car audio specialist.`;
 
   const availableTabs: { value: string; label: string; icon: typeof Play }[] = [];
   if (product.videoUrl) availableTabs.push({ value: 'video', label: 'Video', icon: Play });
@@ -831,7 +831,7 @@ export default function ProductPage() {
                     )}
                   </div>
                   
-                  {installationPrice && (
+                  {installationEnabled && installationPrice && (
                     <p className="text-[#d0a760] text-sm font-medium flex items-center gap-2">
                       <Sparkle weight="duotone" className="w-4 h-4" />
                       + €{installationPrice.toFixed(0)} voor professionele installatie
@@ -975,7 +975,7 @@ export default function ProductPage() {
                   </div>
                   
                   {/* Installation Bundle Highlight */}
-                  {installationPrice && (
+                  {installationEnabled && installationPrice && (
                     <div className="bg-[#d0a760]/5 border border-[#d0a760]/20 p-4 mt-4">
                       <div className="flex items-start gap-3">
                         <div className="p-2 bg-[#d0a760]/10">
@@ -1305,7 +1305,7 @@ export default function ProductPage() {
                   Aanbevolen Accessoires
                   <span className="w-8 h-0.5 bg-[#d0a760]"></span>
                 </h2>
-                <p className="text-white/50">Maak uw installatie compleet met deze accessoires</p>
+                <p className="text-white/50">Maak uw setup compleet met deze accessoires</p>
               </div>
             </ScrollReveal>
 
@@ -1586,7 +1586,7 @@ export default function ProductPage() {
                   <span className="text-sm text-white/30 line-through">€{originalPrice.toFixed(0)}</span>
                 )}
               </div>
-              {installationPrice && (
+              {installationEnabled && installationPrice && (
                 <span className="text-[10px] text-[#d0a760]">
                   of €{(currentPrice + installationPrice).toFixed(0)} met installatie
                 </span>

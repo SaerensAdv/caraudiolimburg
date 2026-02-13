@@ -308,14 +308,14 @@ export default function Admin() {
   const [expandedMakes, setExpandedMakes] = useState<Set<string>>(new Set());
   const [vehicleCompatibilityOpen, setVehicleCompatibilityOpen] = useState(false);
 
-  // Vehicle data queries
+  // Vehicle data queries (admin sees all makes/models, not just ones with products)
   const { data: vehicleMakes = [] } = useQuery<VehicleMake[]>({
-    queryKey: ["/api/vehicle-makes"],
+    queryKey: ["/api/vehicle-makes?all=true"],
     enabled: isAuthenticated && user?.role === 'admin',
   });
 
   const { data: vehicleModels = [] } = useQuery<VehicleModel[]>({
-    queryKey: ["/api/vehicle-models"],
+    queryKey: ["/api/vehicle-models?all=true"],
     enabled: isAuthenticated && user?.role === 'admin',
   });
 

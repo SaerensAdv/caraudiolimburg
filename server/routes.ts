@@ -796,7 +796,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Vehicle routes
   app.get('/api/vehicle-makes', async (req, res) => {
     try {
-      const makes = await storage.getVehicleMakes();
+      const all = req.query.all === 'true';
+      const makes = all ? await storage.getAllVehicleMakes() : await storage.getVehicleMakes();
       res.json(makes);
     } catch (error) {
       console.error("Error fetching vehicle makes:", error);
@@ -806,7 +807,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/vehicle-models/:makeId', async (req, res) => {
     try {
-      const models = await storage.getVehicleModels(req.params.makeId);
+      const all = req.query.all === 'true';
+      const models = all ? await storage.getAllVehicleModelsByMake(req.params.makeId) : await storage.getVehicleModels(req.params.makeId);
       res.json(models);
     } catch (error) {
       console.error("Error fetching vehicle models:", error);

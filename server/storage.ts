@@ -101,6 +101,8 @@ export interface IStorage {
   // Vehicle operations
   getVehicleMakes(): Promise<VehicleMake[]>;
   getVehicleModels(makeId: string): Promise<VehicleModel[]>;
+  getAllVehicleMakes(): Promise<VehicleMake[]>;
+  getAllVehicleModelsByMake(makeId: string): Promise<VehicleModel[]>;
   createVehicleMake(make: InsertVehicleMake): Promise<VehicleMake>;
   createVehicleModel(model: InsertVehicleModel): Promise<VehicleModel>;
 
@@ -418,12 +420,34 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Vehicle operations
-  async getVehicleMakes(): Promise<VehicleMake[]> {
+  async getAllVehicleMakes(): Promise<VehicleMake[]> {
     return await db.select().from(vehicleMakes).orderBy(asc(vehicleMakes.name));
   }
 
-  async getVehicleModels(makeId: string): Promise<VehicleModel[]> {
+  async getAllVehicleModelsByMake(makeId: string): Promise<VehicleModel[]> {
     return await db.select().from(vehicleModels).where(eq(vehicleModels.makeId, makeId)).orderBy(asc(vehicleModels.name));
+  }
+
+  // Only return makes/models that have at least one active product linked
+  async getVehicleMakes(): Promise<VehicleMake[]> {
+    const makesWithProducts = await db
+      .selectDistinct({ id: vehicleMakes.id, name: vehicleMakes.name, slug: vehicleMakes.slug, createdAt: vehicleMakes.createdAt })
+      .from(vehicleMakes)
+      .innerJoin(productVehicleCompatibility, eq(productVehicleCompatibility.makeId, vehicleMakes.id))
+      .innerJoin(products, and(eq(products.id, productVehicleCompatibility.productId), eq(products.isActive, true)))
+      .orderBy(asc(vehicleMakes.name));
+    return makesWithProducts;
+  }
+
+  async getVehicleModels(makeId: string): Promise<VehicleModel[]> {
+    const modelsWithProducts = await db
+      .selectDistinct({ id: vehicleModels.id, name: vehicleModels.name, slug: vehicleModels.slug, makeId: vehicleModels.makeId, startYear: vehicleModels.startYear, endYear: vehicleModels.endYear, createdAt: vehicleModels.createdAt })
+      .from(vehicleModels)
+      .innerJoin(productVehicleCompatibility, eq(productVehicleCompatibility.modelId, vehicleModels.id))
+      .innerJoin(products, and(eq(products.id, productVehicleCompatibility.productId), eq(products.isActive, true)))
+      .where(eq(vehicleModels.makeId, makeId))
+      .orderBy(asc(vehicleModels.name));
+    return modelsWithProducts;
   }
 
   async createVehicleMake(make: InsertVehicleMake): Promise<VehicleMake> {

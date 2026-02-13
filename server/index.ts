@@ -257,6 +257,9 @@ app.use('/portfolio', express.static(path.join(process.cwd(), 'public', 'portfol
 // Serve attached assets (stock images, etc.)
 app.use('/attached_assets', express.static(path.join(process.cwd(), 'attached_assets'), shortCacheOptions));
 
+// Serve review images
+app.use('/review-images', express.static(path.join(process.cwd(), 'public', 'review-images'), shortCacheOptions));
+
 // Object Storage files are automatically served at /public/* paths when PUBLIC_OBJECT_SEARCH_PATHS is configured
 // Log Object Storage configuration on startup
 console.log("🗂️  Object Storage Configuration:");

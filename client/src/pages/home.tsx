@@ -80,6 +80,10 @@ export default function Home() {
     queryKey: ["/api/etrusted/aggregate"],
   });
 
+  const { data: reviewImages } = useQuery<{ images: string[] }>({
+    queryKey: ["/api/review-images"],
+  });
+
   const handleVehicleSelect = (selection: {makeId: string; makeName: string; modelId: string; modelName: string; year: number}) => {
     setSelectedVehicle(selection);
     setTimeout(() => {
@@ -843,14 +847,32 @@ export default function Home() {
           )}
 
           <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6" staggerDelay={100}>
-            {etrustedReviews?.reviews?.slice(0, 6).map((review) => (
-              <Card key={review.id} className="bg-zinc-900/80 border-zinc-800 hover:border-[#d0a760]/40 hover:shadow-lg hover:shadow-[#d0a760]/5 rounded-none hover:-translate-y-1 transition-all duration-300" data-testid={`testimonial-${review.id}`}>
-                <CardContent className="p-6">
-                  <div className="flex items-center mb-4">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} weight="fill" className={`w-4 h-4 ${i < Math.round(review.rating) ? 'text-[#d0a760]' : 'text-zinc-700'}`} />
-                    ))}
+            {etrustedReviews?.reviews?.slice(0, 6).map((review, index) => (
+              <Card key={review.id} className="bg-zinc-900/80 border-zinc-800 hover:border-[#d0a760]/40 hover:shadow-lg hover:shadow-[#d0a760]/5 rounded-none hover:-translate-y-1 transition-all duration-300 overflow-hidden" data-testid={`testimonial-${review.id}`}>
+                {reviewImages?.images?.[index] && (
+                  <div className="relative h-40 overflow-hidden">
+                    <img
+                      src={reviewImages.images[index]}
+                      alt=""
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/90 via-zinc-900/30 to-transparent" />
+                    <div className="absolute bottom-3 left-4 flex items-center gap-0.5">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} weight="fill" className={`w-4 h-4 ${i < Math.round(review.rating) ? 'text-[#d0a760] drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]' : 'text-zinc-600'}`} />
+                      ))}
+                    </div>
                   </div>
+                )}
+                <CardContent className="p-6">
+                  {!reviewImages?.images?.[index] && (
+                    <div className="flex items-center mb-4">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} weight="fill" className={`w-4 h-4 ${i < Math.round(review.rating) ? 'text-[#d0a760]' : 'text-zinc-700'}`} />
+                      ))}
+                    </div>
+                  )}
                   {review.title && (
                     <p className="text-white font-medium mb-2">{review.title}</p>
                   )}

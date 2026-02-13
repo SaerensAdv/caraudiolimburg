@@ -30,6 +30,7 @@ import {
   insertProductVariationSchema,
 } from "@shared/schema";
 import { generateImage } from "./replit_integrations/image";
+import { getAllCachedReviewImageUrls, generateAllReviewImages } from "./services/reviewImages";
 
 let stripe: Stripe | null = null;
 
@@ -2787,6 +2788,27 @@ ${message || 'Geen aanvullende informatie'}`
     } catch (error) {
       console.error("Error sending review invitation:", error);
       res.status(500).json({ message: "Failed to send review invitation", success: false });
+    }
+  });
+
+  // Review Images routes
+  app.get('/api/review-images', (req, res) => {
+    try {
+      const urls = getAllCachedReviewImageUrls();
+      res.json({ images: urls });
+    } catch (error) {
+      console.error("Error fetching review images:", error);
+      res.json({ images: [] });
+    }
+  });
+
+  app.post('/api/review-images/generate', isAdmin, async (req, res) => {
+    try {
+      const urls = await generateAllReviewImages();
+      res.json({ images: urls, generated: urls.length });
+    } catch (error) {
+      console.error("Error generating review images:", error);
+      res.status(500).json({ error: "Failed to generate review images" });
     }
   });
 

@@ -76,6 +76,10 @@ export default function Home() {
     queryKey: ["/api/etrusted/service-reviews", { limit: 6 }],
   });
 
+  const { data: etrustedAggregate } = useQuery<{ rating: number | null; count: number; enabled: boolean }>({
+    queryKey: ["/api/etrusted/aggregate"],
+  });
+
   const handleVehicleSelect = (selection: {makeId: string; makeName: string; modelId: string; modelName: string; year: number}) => {
     setSelectedVehicle(selection);
     setTimeout(() => {
@@ -157,6 +161,27 @@ export default function Home() {
                 </Link>
               </div>
             </ScrollReveal>
+
+            {etrustedAggregate?.enabled && etrustedAggregate?.rating && (
+              <ScrollReveal direction="up" delay={1000}>
+                <div className="mt-6">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <div className="flex items-center gap-0.5">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} weight="fill" className={`w-4 h-4 ${i < Math.round(etrustedAggregate.rating!) ? 'text-[#d0a760]' : 'text-white/20'}`} />
+                      ))}
+                    </div>
+                    <span className="text-white font-medium text-sm">{etrustedAggregate.rating.toFixed(2)}/5</span>
+                    <span className="text-white/30">•</span>
+                    <span className="text-white/60 text-sm">{etrustedAggregate.count}+ beoordelingen</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-1.5 text-white/40 text-xs">
+                    <ShieldCheck weight="duotone" className="w-3.5 h-3.5" />
+                    <span>Trusted Shops Geverifieerd</span>
+                  </div>
+                </div>
+              </ScrollReveal>
+            )}
           </div>
         </div>
 
@@ -778,54 +803,93 @@ export default function Home() {
       </section>
 
 
-      {/* Testimonials - WHITE */}
-      <section className="py-24 md:py-32 bg-white">
-        <div className="container px-8 md:px-16 lg:px-24 mx-auto">
+      {/* Testimonials - DARK PREMIUM */}
+      <section className="py-24 md:py-32 bg-zinc-950 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#d0a760]/5 via-transparent to-transparent" />
+        <div className="container px-8 md:px-16 lg:px-24 mx-auto relative z-10">
           <ScrollReveal>
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-light text-black mb-4">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl md:text-4xl font-light text-white mb-4">
                 Onze Klanten aan het Woord
               </h2>
-              <p className="text-zinc-600 text-lg">
+              <p className="text-white/50 text-lg">
                 Dit is waarom meer dan 500 klanten ons hun vertrouwen gaven
               </p>
             </div>
           </ScrollReveal>
 
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8" staggerDelay={150}>
-            {etrustedReviews?.reviews?.slice(0, 3).map((review) => (
-              <Card key={review.id} className="bg-zinc-100 border-zinc-200 hover:border-[#d0a760]/50 hover:shadow-lg hover:shadow-[#d0a760]/10 rounded-none hover:-translate-y-2 transition-all duration-300" data-testid={`testimonial-${review.id}`}>
+          {etrustedAggregate?.enabled && etrustedAggregate?.rating && (
+            <ScrollReveal delay={100}>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-16 py-8 border-y border-[#d0a760]/20">
+                <div className="text-center sm:text-right">
+                  <div className="text-6xl font-bold text-white">{etrustedAggregate.rating.toFixed(1)}</div>
+                  <div className="text-white/40 text-sm mt-1">van 5 sterren</div>
+                </div>
+                <div className="hidden sm:block w-px h-16 bg-[#d0a760]/30" />
+                <div className="text-center sm:text-left">
+                  <div className="flex items-center gap-1 mb-2 justify-center sm:justify-start">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} weight="fill" className={`w-6 h-6 ${i < Math.round(etrustedAggregate.rating!) ? 'text-[#d0a760]' : 'text-zinc-700'}`} />
+                    ))}
+                  </div>
+                  <p className="text-white/70 text-sm">{etrustedAggregate.count}+ geverifieerde beoordelingen</p>
+                  <div className="flex items-center gap-1.5 mt-1 text-[#d0a760] text-xs">
+                    <ShieldCheck weight="duotone" className="w-4 h-4" />
+                    <span>Trusted Shops Gecertificeerd</span>
+                  </div>
+                </div>
+              </div>
+            </ScrollReveal>
+          )}
+
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-6" staggerDelay={100}>
+            {etrustedReviews?.reviews?.slice(0, 6).map((review) => (
+              <Card key={review.id} className="bg-zinc-900/80 border-zinc-800 hover:border-[#d0a760]/40 hover:shadow-lg hover:shadow-[#d0a760]/5 rounded-none hover:-translate-y-1 transition-all duration-300" data-testid={`testimonial-${review.id}`}>
                 <CardContent className="p-6">
                   <div className="flex items-center mb-4">
-                    {[...Array(Math.round(review.rating))].map((_, i) => (
-                      <Star key={i} weight="duotone" className="w-4 h-4 text-[#d0a760] fill-current" />
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} weight="fill" className={`w-4 h-4 ${i < Math.round(review.rating) ? 'text-[#d0a760]' : 'text-zinc-700'}`} />
                     ))}
                   </div>
                   {review.title && (
-                    <p className="text-zinc-900 font-medium mb-2">{review.title}</p>
+                    <p className="text-white font-medium mb-2">{review.title}</p>
                   )}
-                  <p className="text-zinc-700 mb-6 leading-relaxed line-clamp-4">
+                  <p className="text-white/60 mb-6 leading-relaxed line-clamp-4 text-[15px] italic">
                     "{review.comment}"
                   </p>
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-[#d0a760]/20 flex items-center justify-center">
+                    <div className="w-10 h-10 bg-[#d0a760]/10 border border-[#d0a760]/20 flex items-center justify-center">
                       <User weight="duotone" className="w-5 h-5 text-[#d0a760]" />
                     </div>
                     <div>
-                      <p className="text-zinc-900 font-medium text-sm">
+                      <p className="text-white font-medium text-sm">
                         {review.customer?.firstName || "Klant"} {review.customer?.lastName ? review.customer.lastName.charAt(0) + "." : ""}
                       </p>
-                      <p className="text-[#d0a760] text-xs">Trusted Shops Geverifieerd</p>
+                      <p className="text-[#d0a760]/60 text-xs flex items-center gap-1">
+                        <ShieldCheck weight="duotone" className="w-3 h-3" />
+                        Geverifieerd
+                      </p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
             )) || (
-              <div className="col-span-3 text-center text-zinc-400">
+              <div className="col-span-3 text-center text-zinc-500">
                 Reviews worden geladen...
               </div>
             )}
           </StaggerContainer>
+
+          <ScrollReveal delay={300}>
+            <div className="text-center mt-12">
+              <a href="https://www.trstd.com/nl-nl/reviews/caraudiolimburg-nl" target="_blank" rel="noopener noreferrer">
+                <Button className="bg-transparent border border-[#d0a760]/50 text-[#d0a760] hover:bg-[#d0a760]/10 hover:border-[#d0a760] rounded-none px-8 py-6 transition-all duration-300">
+                  Bekijk Alle Reviews
+                  <ArrowRight weight="duotone" className="w-4 h-4 ml-2" />
+                </Button>
+              </a>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 

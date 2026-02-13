@@ -40,7 +40,8 @@ import {
   DownloadSimple,
   Play,
   Cube,
-  Sparkle
+  Sparkle,
+  Star
 } from "@phosphor-icons/react";
 import { SiRevolut, SiKlarna, SiVisa } from "react-icons/si";
 import type { Product, SiteSettings } from "@shared/schema";
@@ -219,6 +220,10 @@ export default function ProductPage() {
   const { data: relatedProducts = [] } = useQuery<Product[]>({
     queryKey: ["/api/products", { categoryId: product?.categoryId, limit: 4 }],
     enabled: !!product?.categoryId,
+  });
+
+  const { data: etrustedAggregate } = useQuery<{ rating: number | null; count: number; enabled: boolean }>({
+    queryKey: ["/api/etrusted/aggregate"],
   });
 
   // Filter out current product from related products
@@ -738,6 +743,27 @@ export default function ProductPage() {
                       </div>
                     )}
                   </div>
+                )}
+
+                {/* Trusted Shops Rating */}
+                {etrustedAggregate?.enabled && etrustedAggregate?.rating && (
+                  <a 
+                    href="https://www.trstd.com/nl-nl/reviews/caraudiolimburg-nl" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 mb-4 group cursor-pointer"
+                    data-testid="product-trusted-shops"
+                  >
+                    <div className="flex items-center gap-0.5">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} weight="fill" className={`w-4 h-4 ${i < Math.round(etrustedAggregate.rating!) ? 'text-[#d0a760]' : 'text-zinc-700'}`} />
+                      ))}
+                    </div>
+                    <span className="text-white/70 text-sm group-hover:text-[#d0a760] transition-colors">
+                      {etrustedAggregate.rating.toFixed(2)}/5 — {etrustedAggregate.count}+ beoordelingen
+                    </span>
+                    <ShieldCheck weight="duotone" className="w-4 h-4 text-[#d0a760]/60" />
+                  </a>
                 )}
 
                 {/* Price - Mobile compact, Desktop full - Enhanced visibility */}

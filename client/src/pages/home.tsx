@@ -313,7 +313,7 @@ export default function Home() {
                 </p>
               </div>
               
-              {installationEnabled && (
+              {installationEnabled ? (
               <div className="text-center md:text-left group snap-start flex-shrink-0 w-[260px] md:w-auto md:flex-shrink">
                 <div className="w-12 h-12 bg-[#d0a760]/10 flex items-center justify-center mb-4 mx-auto md:mx-0 group-hover:bg-[#d0a760]/20 group-hover:scale-110 transition-all duration-300">
                   <Wrench weight="duotone" className="w-6 h-6 text-[#d0a760]" />
@@ -321,6 +321,16 @@ export default function Home() {
                 <h3 className="text-zinc-900 text-lg font-medium mb-2">Vakkundige Installatie</h3>
                 <p className="text-zinc-600 leading-relaxed">
                   Onze gecertificeerde monteurs zorgen met 25+ jaar ervaring voor een perfect resultaat in jouw auto.
+                </p>
+              </div>
+              ) : (
+              <div className="text-center md:text-left group snap-start flex-shrink-0 w-[260px] md:w-auto md:flex-shrink">
+                <div className="w-12 h-12 bg-[#d0a760]/10 flex items-center justify-center mb-4 mx-auto md:mx-0 group-hover:bg-[#d0a760]/20 group-hover:scale-110 transition-all duration-300">
+                  <Truck weight="duotone" className="w-6 h-6 text-[#d0a760]" />
+                </div>
+                <h3 className="text-zinc-900 text-lg font-medium mb-2">Snelle Levering</h3>
+                <p className="text-zinc-600 leading-relaxed">
+                  Bestel vandaag, snel in huis. Gratis verzending vanaf €50 en altijd met track & trace.
                 </p>
               </div>
               )}

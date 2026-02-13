@@ -80,7 +80,7 @@ export default function Home() {
     queryKey: ["/api/etrusted/aggregate"],
   });
 
-  const { data: reviewImages } = useQuery<{ images: string[] }>({
+  const { data: reviewImages } = useQuery<{ images: string[]; portraits: string[] }>({
     queryKey: ["/api/review-images"],
   });
 
@@ -880,9 +880,18 @@ export default function Home() {
                     "{review.comment}"
                   </p>
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-[#d0a760]/10 border border-[#d0a760]/20 flex items-center justify-center">
-                      <User weight="duotone" className="w-5 h-5 text-[#d0a760]" />
-                    </div>
+                    {reviewImages?.portraits?.[index] ? (
+                      <img
+                        src={reviewImages.portraits[index]}
+                        alt=""
+                        className="w-10 h-10 rounded-full object-cover border border-[#d0a760]/30"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 bg-[#d0a760]/10 border border-[#d0a760]/20 flex items-center justify-center rounded-full">
+                        <User weight="duotone" className="w-5 h-5 text-[#d0a760]" />
+                      </div>
+                    )}
                     <div>
                       <p className="text-white font-medium text-sm">
                         {review.customer?.firstName || "Klant"} {review.customer?.lastName ? review.customer.lastName.charAt(0) + "." : ""}

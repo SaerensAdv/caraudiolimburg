@@ -74,3 +74,61 @@ export function getAllCachedReviewImageUrls(): string[] {
   }
   return urls;
 }
+
+const PORTRAIT_PROMPTS = [
+  "Professional headshot portrait of a friendly Dutch man in his 30s, short brown hair, slight smile, wearing a casual polo shirt, neutral grey background, soft studio lighting, high quality photo",
+  "Professional headshot portrait of a confident Belgian woman in her 40s, blonde hair, warm smile, wearing a dark blazer, neutral background, soft lighting, high quality photo",
+  "Professional headshot portrait of a young Dutch man in his 20s, dark hair, friendly expression, wearing a t-shirt, neutral grey background, natural lighting, high quality photo",
+  "Professional headshot portrait of a mature Dutch man in his 50s, grey hair, glasses, kind smile, wearing a button-down shirt, neutral background, studio lighting, high quality photo",
+  "Professional headshot portrait of a Dutch woman in her 30s, brown hair in ponytail, cheerful smile, wearing a sweater, neutral grey background, soft lighting, high quality photo",
+  "Professional headshot portrait of a Belgian man in his 40s, beard, friendly expression, wearing a casual jacket, neutral background, natural lighting, high quality photo",
+];
+
+export async function generatePortrait(index: number): Promise<string> {
+  const safeIndex = index % PORTRAIT_PROMPTS.length;
+  const fileName = `reviewer-portrait-${safeIndex + 1}.webp`;
+  const filePath = path.join(REVIEW_IMAGE_DIR, fileName);
+  const publicUrl = `/review-images/${fileName}`;
+
+  if (fs.existsSync(filePath)) {
+    return publicUrl;
+  }
+
+  await fs.promises.mkdir(REVIEW_IMAGE_DIR, { recursive: true });
+
+  const prompt = PORTRAIT_PROMPTS[safeIndex];
+  const dataUrl = await generateImage(prompt);
+
+  const base64Data = dataUrl.replace(/^data:image\/\w+;base64,/, "");
+  const buffer = Buffer.from(base64Data, "base64");
+
+  await fs.promises.writeFile(filePath, buffer);
+  console.log(`✅ Generated reviewer portrait: ${fileName}`);
+
+  return publicUrl;
+}
+
+export async function generateAllPortraits(): Promise<string[]> {
+  const urls: string[] = [];
+  for (let i = 0; i < PORTRAIT_PROMPTS.length; i++) {
+    try {
+      const url = await generatePortrait(i);
+      urls.push(url);
+    } catch (error) {
+      console.error(`❌ Failed to generate portrait ${i + 1}:`, error);
+    }
+  }
+  return urls;
+}
+
+export function getAllCachedPortraitUrls(): string[] {
+  const urls: string[] = [];
+  for (let i = 0; i < PORTRAIT_PROMPTS.length; i++) {
+    const fileName = `reviewer-portrait-${i + 1}.webp`;
+    const filePath = path.join(REVIEW_IMAGE_DIR, fileName);
+    if (fs.existsSync(filePath)) {
+      urls.push(`/review-images/${fileName}`);
+    }
+  }
+  return urls;
+}

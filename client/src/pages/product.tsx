@@ -42,7 +42,8 @@ import {
   Play,
   Cube,
   Sparkle,
-  Star
+  Star,
+  Info
 } from "@phosphor-icons/react";
 import { SiRevolut, SiKlarna, SiVisa } from "react-icons/si";
 import type { Product, SiteSettings, Brand, Category } from "@shared/schema";
@@ -731,7 +732,7 @@ export default function ProductPage() {
                 {product.hasVariations && product.variations && product.variations.length > 0 && (
                   <div className="py-4 border-b border-white/10" data-testid="variation-selector">
                     <label className="text-white font-semibold text-sm mb-2 block">
-                      Selecteer uw automodel:
+                      Selecteer gewenste uitvoering:
                     </label>
                     <div className="relative">
                       <select
@@ -766,16 +767,68 @@ export default function ProductPage() {
                       <CaretDown weight="bold" className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#d0a760] pointer-events-none" />
                     </div>
                     {product.hasVariations && !selectedVariation && (
-                      <p className="text-[#d0a760]/80 text-xs mt-2 flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 bg-[#d0a760] animate-pulse" />
-                        Selecteer een optie om door te gaan
-                      </p>
+                      <div className="mt-3 space-y-2">
+                        <p className="text-[#d0a760]/80 text-xs flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 bg-[#d0a760] animate-pulse" />
+                          Selecteer een optie om door te gaan
+                        </p>
+                        {product.variations.some(v => /anti-?glare|anti-?reflection/i.test(v.label || '')) && (
+                          <div className="bg-zinc-900/80 border border-zinc-800 p-3 space-y-2">
+                            <p className="text-white/70 text-xs font-semibold flex items-center gap-1.5">
+                              <Info weight="duotone" className="w-3.5 h-3.5 text-[#d0a760]" />
+                              Wat betekenen de opties?
+                            </p>
+                            <div className="space-y-1.5">
+                              <div className="flex gap-2">
+                                <span className="text-[#d0a760] text-xs font-medium whitespace-nowrap">Anti-Reflection:</span>
+                                <span className="text-white/50 text-xs">Helder glanzend scherm met levendige kleuren. Ideaal voor gebruik in een auto met getinte ramen of weinig direct zonlicht.</span>
+                              </div>
+                              <div className="flex gap-2">
+                                <span className="text-[#d0a760] text-xs font-medium whitespace-nowrap">Anti-Glare:</span>
+                                <span className="text-white/50 text-xs">Mat scherm dat spiegelingen vermindert. Perfecte keuze bij veel zonlicht of een open cabine.</span>
+                              </div>
+                            </div>
+                            {product.variations.some(v => /128GB|256GB/i.test(v.label || '')) && (
+                              <div className="space-y-1.5 pt-1.5 border-t border-zinc-800">
+                                <div className="flex gap-2">
+                                  <span className="text-[#d0a760] text-xs font-medium whitespace-nowrap">8+128GB:</span>
+                                  <span className="text-white/50 text-xs">Voldoende opslag voor apps, navigatie en muziek. Geschikt voor standaard gebruik.</span>
+                                </div>
+                                <div className="flex gap-2">
+                                  <span className="text-[#d0a760] text-xs font-medium whitespace-nowrap">8+256GB:</span>
+                                  <span className="text-white/50 text-xs">Dubbele opslag voor wie meer apps, offline kaarten of mediagebruik wil. Toekomstbestendig.</span>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     )}
                     {selectedVariation && (
-                      <p className="text-green-500/80 text-xs mt-2 flex items-center gap-1.5">
-                        <Check weight="bold" className="w-3.5 h-3.5" />
-                        {selectedVariation.label} geselecteerd
-                      </p>
+                      <div className="mt-3 space-y-2">
+                        <p className="text-green-500/80 text-xs flex items-center gap-1.5">
+                          <Check weight="bold" className="w-3.5 h-3.5" />
+                          {selectedVariation.label} geselecteerd
+                        </p>
+                        {/anti-?glare/i.test(selectedVariation.label || '') && (
+                          <div className="bg-zinc-900/80 border border-zinc-800 p-2.5">
+                            <p className="text-white/50 text-xs">
+                              <span className="text-[#d0a760] font-medium">Anti-Glare:</span> Mat scherm dat spiegelingen vermindert — perfecte keuze bij veel zonlicht.
+                              {/256GB/i.test(selectedVariation.label || '') && <> <span className="text-[#d0a760] font-medium">256GB</span> opslag voor extra apps en media.</>}
+                              {/128GB/i.test(selectedVariation.label || '') && <> <span className="text-[#d0a760] font-medium">128GB</span> opslag voor standaard gebruik.</>}
+                            </p>
+                          </div>
+                        )}
+                        {/anti-?reflection/i.test(selectedVariation.label || '') && (
+                          <div className="bg-zinc-900/80 border border-zinc-800 p-2.5">
+                            <p className="text-white/50 text-xs">
+                              <span className="text-[#d0a760] font-medium">Anti-Reflection:</span> Helder glanzend scherm met levendige kleuren — ideaal bij minder direct zonlicht.
+                              {/256GB/i.test(selectedVariation.label || '') && <> <span className="text-[#d0a760] font-medium">256GB</span> opslag voor extra apps en media.</>}
+                              {/128GB/i.test(selectedVariation.label || '') && <> <span className="text-[#d0a760] font-medium">128GB</span> opslag voor standaard gebruik.</>}
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     )}
                     {selectedVariation?.specifications && Object.keys(selectedVariation.specifications).length > 0 && (
                       <div className="mt-3 bg-zinc-900/80 border border-zinc-800 p-3" data-testid="variation-specs">

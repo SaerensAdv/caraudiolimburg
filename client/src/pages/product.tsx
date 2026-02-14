@@ -915,7 +915,7 @@ export default function ProductPage() {
                         <span className="text-white/30 hidden sm:inline">|</span>
                         <span className="text-white/50 text-xs sm:text-sm flex items-center gap-1.5">
                           <Clock weight="duotone" className="w-3.5 h-3.5" />
-                          Morgen in huis
+                          Levertijd 1-3 dagen
                         </span>
                       </>
                     ) : (

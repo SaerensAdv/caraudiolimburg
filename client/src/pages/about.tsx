@@ -153,9 +153,9 @@ export default function About() {
                 <div className="bg-zinc-900 border border-zinc-800 p-8 text-center group hover:border-[#d0a760]/50 transition-colors duration-300" data-testid="stat-experience">
                   <Award className="h-12 w-12 text-[#d0a760] mx-auto mb-6" />
                   <div className="text-4xl md:text-5xl font-light text-white mb-2">
-                    <CountUp end={10} suffix="+" />
+                    <CountUp end={25} suffix="+" />
                   </div>
-                  <p className="text-white/60 text-sm uppercase tracking-wider">Jaar Ervaring</p>
+                  <p className="text-white/60 text-sm uppercase tracking-wider">Jaar Vakmanschap</p>
                 </div>
               </StaggerItem>
 
@@ -165,7 +165,7 @@ export default function About() {
                   <div className="text-4xl md:text-5xl font-light text-white mb-2">
                     <CountUp end={500} suffix="+" />
                   </div>
-                  <p className="text-white/60 text-sm uppercase tracking-wider">Tevreden Klanten</p>
+                  <p className="text-white/60 text-sm uppercase tracking-wider">Blije Klanten</p>
                 </div>
               </StaggerItem>
 
@@ -173,9 +173,9 @@ export default function About() {
                 <div className="bg-zinc-900 border border-zinc-800 p-8 text-center group hover:border-[#d0a760]/50 transition-colors duration-300" data-testid="stat-certified">
                   <Shield className="h-12 w-12 text-[#d0a760] mx-auto mb-6" />
                   <div className="text-4xl md:text-5xl font-light text-white mb-2">
-                    100%
+                    <CountUp end={15} suffix="+" />
                   </div>
-                  <p className="text-white/60 text-sm uppercase tracking-wider">Gecertificeerd</p>
+                  <p className="text-white/60 text-sm uppercase tracking-wider">Premium Merken</p>
                 </div>
               </StaggerItem>
 
@@ -183,9 +183,9 @@ export default function About() {
                 <div className="bg-zinc-900 border border-zinc-800 p-8 text-center group hover:border-[#d0a760]/50 transition-colors duration-300" data-testid="stat-premium">
                   <Star className="h-12 w-12 text-[#d0a760] mx-auto mb-6" />
                   <div className="text-4xl md:text-5xl font-light text-white mb-2">
-                    A+
+                    <CountUp end={2} />
                   </div>
-                  <p className="text-white/60 text-sm uppercase tracking-wider">Premium Kwaliteit</p>
+                  <p className="text-white/60 text-sm uppercase tracking-wider">Jaar Garantie</p>
                 </div>
               </StaggerItem>
             </StaggerContainer>

@@ -14,8 +14,7 @@ import {
   FacebookLogo,
   YoutubeLogo,
   LinkedinLogo,
-  CaretDown,
-  ChatCircle
+  CaretDown
 } from "@phosphor-icons/react";
 import { TrustedShopsBadgeLink } from "@/components/TrustedShops";
 
@@ -135,7 +134,7 @@ export function Footer() {
               <div className="flex items-start space-x-3">
                 <MapPin weight="duotone" className="w-4 h-4 text-[#d0a760] mt-0.5 flex-shrink-0" />
                 <div className="text-white/60">
-                  <span>Dr. Nolenslaan 157-C (Hal 3)</span><br />
+                  <span>Dr. Nolenslaan 157c</span><br />
                   <span>6136 GM Sittard</span>
                 </div>
               </div>
@@ -147,15 +146,11 @@ export function Footer() {
                 <Envelope weight="duotone" className="w-4 h-4 text-[#d0a760] flex-shrink-0" />
                 <a href="mailto:info@caraudiolimburg.nl" className="text-white/60 hover:text-white transition-colors">info@caraudiolimburg.nl</a>
               </div>
-              <div className="flex items-center space-x-3">
-                <ChatCircle weight="duotone" className="w-4 h-4 text-[#d0a760] flex-shrink-0" />
-                <a href="https://wa.me/31852733625" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors">WhatsApp</a>
-              </div>
               <div className="flex items-start space-x-3">
                 <Clock weight="duotone" className="w-4 h-4 text-[#d0a760] mt-0.5 flex-shrink-0" />
                 <div className="text-white/60">
-                  <p>Ma-Vr: 9:00-17:00</p>
-                  <p>Za: 9:00-13:00</p>
+                  <p>Ma-Vr: 08:30-17:30</p>
+                  <p className="text-white/40 text-xs">Op afspraak</p>
                 </div>
               </div>
             </div>
@@ -334,7 +329,7 @@ export function Footer() {
                 <div className="flex items-start space-x-3">
                   <MapPin weight="duotone" className="w-4 h-4 text-[#d0a760] mt-0.5 flex-shrink-0" />
                   <div className="text-white/60">
-                    <span>Dr. Nolenslaan 157-C (Hal 3)</span><br />
+                    <span>Dr. Nolenslaan 157c</span><br />
                     <span>6136 GM Sittard</span>
                   </div>
                 </div>
@@ -346,15 +341,11 @@ export function Footer() {
                   <Envelope weight="duotone" className="w-4 h-4 text-[#d0a760] flex-shrink-0" />
                   <a href="mailto:info@caraudiolimburg.nl" className="text-white/60 hover:text-white transition-colors">info@caraudiolimburg.nl</a>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <ChatCircle weight="duotone" className="w-4 h-4 text-[#d0a760] flex-shrink-0" />
-                  <a href="https://wa.me/31852733625" target="_blank" rel="noopener noreferrer" className="text-white/60 hover:text-white transition-colors">WhatsApp</a>
-                </div>
                 <div className="flex items-start space-x-3">
                   <Clock weight="duotone" className="w-4 h-4 text-[#d0a760] mt-0.5 flex-shrink-0" />
                   <div className="text-white/60">
-                    <p>Ma-Vr: 9:00-17:00</p>
-                    <p>Za: 9:00-13:00</p>
+                    <p>Ma-Vr: 08:30-17:30</p>
+                    <p className="text-white/40 text-xs">Op afspraak</p>
                   </div>
                 </div>
                 

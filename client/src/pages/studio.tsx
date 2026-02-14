@@ -324,7 +324,7 @@ export default function StudioPage() {
                   zodat je precies weet wat er in je auto wordt ingebouwd.
                 </p>
                 <div className="space-y-3 text-white/70">
-                  <p className="font-medium text-white">Dr. Nolenslaan 157-C (Hal 3)</p>
+                  <p className="font-medium text-white">Dr. Nolenslaan 157c</p>
                   <p>6136 GM Sittard</p>
                   <p className="flex items-center gap-2">
                     <Phone className="w-4 h-4 text-[#d0a760]" />

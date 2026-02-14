@@ -28,8 +28,8 @@ Door een bestelling te plaatsen of een afspraak te maken, gaat u akkoord met dez
     {
       icon: Truck,
       title: "Levering & Verzending",
-      content: `• Gratis verzending bij bestellingen vanaf €100
-• Standaard verzendkosten: €15,00
+      content: `• Gratis verzending bij bestellingen vanaf €50
+• Standaard verzendkosten: €5,95
 • Levertijd is doorgaans 1-3 werkdagen
 • Afhalen in onze showroom is gratis mogelijk
 • Bij levering dient u de producten direct te controleren op beschadigingen
@@ -118,7 +118,7 @@ Door een bestelling te plaatsen of een afspraak te maken, gaat u akkoord met dez
                   <strong>Car Audio Limburg</strong>
                 </p>
                 <p className="text-white/60 text-sm">
-                  Dr. Nolenslaan 157-C (Hal 3), 6136 GM Sittard | KvK: 69446415 | BTW: NL857877355B01
+                  Dr. Nolenslaan 157c, 6136 GM Sittard | KvK: 69446415 | BTW: NL857877355B01
                 </p>
                 <p className="text-white/40 text-xs mt-2">
                   Online geschillenbeslechting:{" "}

@@ -274,7 +274,7 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems, isGuest = false }: 
   });
   const installationEnabled = siteSettings?.installationServiceEnabled ?? true;
   const installationFee = installationEnabled && cartItems.some((item: any) => item.needsInstallation) ? 89 : 0;
-  const shipping = subtotal >= 100 ? 0 : 15;
+  const shipping = subtotal >= 50 ? 0 : 5.95;
 
   const totalItems = cartItems.reduce((sum: number, item: any) => sum + item.quantity, 0);
 
@@ -614,7 +614,7 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems, isGuest = false }: 
               </div>
               <div className="flex items-center gap-2 text-xs text-zinc-400">
                 <CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0" />
-                <span>Gratis verzending €100+</span>
+                <span>Gratis verzending €50+</span>
               </div>
               <div className="flex items-center gap-2 text-xs text-zinc-400">
                 <CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0" />
@@ -722,7 +722,7 @@ export default function Checkout() {
   });
   const checkoutInstallationEnabled = checkoutSiteSettings?.installationServiceEnabled ?? true;
   const installationFee = checkoutInstallationEnabled && cartItemsArray.some((item: any) => item.needsInstallation) ? 89 : 0;
-  const shipping = subtotal >= 100 ? 0 : 15;
+  const shipping = subtotal >= 50 ? 0 : 5.95;
   const total = subtotal + installationFee + shipping;
 
   useEffect(() => {

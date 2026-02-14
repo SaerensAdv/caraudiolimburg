@@ -203,7 +203,7 @@ export default function Cart() {
   }, 0) || 0;
   
   const installationFee = installationEnabled && displayItems.some((item: any) => item.needsInstallation) ? 89 : 0;
-  const shipping = subtotal >= 100 ? 0 : 15;
+  const shipping = subtotal >= 50 ? 0 : 5.95;
   const total = subtotal + installationFee + shipping;
   
   const totalSavings = displayItems.reduce((sum: number, item: any) => {
@@ -469,18 +469,18 @@ export default function Cart() {
                     </div>
                   </div>
 
-                  {subtotal > 0 && subtotal < 100 && (
+                  {subtotal > 0 && subtotal < 50 && (
                     <div className="bg-[#d0a760]/10 border border-[#d0a760]/30 p-4 mt-6">
                       <div className="flex items-center gap-3">
                         <Truck className="w-5 h-5 text-[#d0a760] flex-shrink-0" />
                         <div>
                           <p className="text-sm text-white font-medium">
-                            Nog €{(100 - subtotal).toFixed(2)} voor gratis verzending
+                            Nog €{(50 - subtotal).toFixed(2)} voor gratis verzending
                           </p>
                           <div className="w-full bg-zinc-700 h-1.5 mt-2 rounded-full overflow-hidden">
                             <div 
                               className="bg-[#d0a760] h-full rounded-full transition-all duration-500"
-                              style={{ width: `${Math.min((subtotal / 100) * 100, 100)}%` }}
+                              style={{ width: `${Math.min((subtotal / 50) * 100, 100)}%` }}
                             />
                           </div>
                         </div>
@@ -521,7 +521,7 @@ export default function Cart() {
                       </div>
                       <div>
                         <p className="text-white font-medium text-sm">Gratis verzending</p>
-                        <p className="text-zinc-500 text-xs mt-0.5">Vanaf €100 bestelling</p>
+                        <p className="text-zinc-500 text-xs mt-0.5">Vanaf €50 bestelling</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-4 group">

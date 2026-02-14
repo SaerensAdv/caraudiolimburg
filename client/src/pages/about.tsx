@@ -36,7 +36,7 @@ export default function About() {
         title="Over Ons"
         description="Leer meer over Car Audio Limburg - Met passie voor auto's en muziek. Al meer dan 10 jaar specialist in premium car audio systemen en professionele installatie in Limburg."
         canonical="/over-ons"
-        keywords="over ons, car audio limburg, installatie studio, Sittard"
+        keywords="over ons, car audio limburg, installatie studio, Sittard, Geleen"
       />
       <BreadcrumbSchema items={[
         { name: "Home", url: "/" },
@@ -363,7 +363,7 @@ export default function About() {
                   <MapPin className="h-12 w-12 text-[#d0a760] mx-auto mb-6" />
                   <h3 className="text-xl font-medium text-black mb-4">Adres</h3>
                   <p className="text-zinc-600 leading-relaxed">
-                    Dr. Nolenslaan 157-C (Hal 3)<br />
+                    Dr. Nolenslaan 157c<br />
                     6136 GM Sittard<br />
                     Nederland
                   </p>
@@ -380,7 +380,7 @@ export default function About() {
                     </a>
                   </p>
                   <p className="text-zinc-500 text-sm mt-3">
-                    <a href="https://wa.me/31852733625" target="_blank" rel="noopener noreferrer" className="hover:text-[#d0a760] transition-colors">WhatsApp beschikbaar</a>
+                    WhatsApp beschikbaar
                   </p>
                 </div>
               </StaggerItem>
@@ -391,11 +391,11 @@ export default function About() {
                   <h3 className="text-xl font-medium text-black mb-4">Openingstijden</h3>
                   <div className="text-zinc-600 space-y-2 text-sm">
                     <p className="font-medium text-black mb-2">Showroom:</p>
-                    <p>Ma-Vr: 9:00 - 17:00</p>
-                    <p>Zaterdag: 9:00 - 13:00</p>
+                    <p>Ma-Do: 13:30 - 17:30</p>
+                    <p>Vrijdag: 08:30 - 15:00</p>
                     <p className="font-medium text-black mt-4 mb-2">Inbouwstudio:</p>
-                    <p>Ma-Vr: 8:30 - 17:00</p>
-                    <p className="text-zinc-500 text-xs mt-1">Pauze: 12:30 - 13:00</p>
+                    <p>Ma-Do: 08:30 - 17:30</p>
+                    <p>Vrijdag: 08:30 - 12:30</p>
                     <p className="text-[#d0a760] font-medium mt-3">Enkel op afspraak</p>
                   </div>
                 </div>

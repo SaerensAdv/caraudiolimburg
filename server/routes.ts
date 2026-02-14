@@ -1323,7 +1323,7 @@ ${message || 'Geen aanvullende informatie'}`
       }
       
       const installationFee = hasInstallation ? 89 : 0;
-      const shipping = subtotal >= 100 ? 0 : 15;
+      const shipping = subtotal >= 50 ? 0 : 5.95;
       const total = subtotal + installationFee + shipping;
       
       if (total <= 0) {
@@ -1397,7 +1397,7 @@ ${message || 'Geen aanvullende informatie'}`
       }
       
       const installationFee = validatedItems.some(item => item.needsInstallation) ? 89 : 0;
-      const shipping = subtotal >= 100 ? 0 : 15;
+      const shipping = subtotal >= 50 ? 0 : 5.95;
       const total = subtotal + installationFee + shipping;
       
       console.log("Guest checkout - Creating payment intent with validated amount:", total);
@@ -1484,7 +1484,7 @@ ${message || 'Geen aanvullende informatie'}`
       }
       
       const installationFee = cartItems.some(item => item.needsInstallation) ? 89 : 0;
-      const shipping = subtotal >= 100 ? 0 : 15;
+      const shipping = subtotal >= 50 ? 0 : 5.95;
       const total = subtotal + installationFee + shipping;
 
       // Verify amount matches (security check)
@@ -1665,7 +1665,7 @@ ${message || 'Geen aanvullende informatie'}`
           ).then(prices => prices.reduce((sum, price) => sum + price, 0));
           
           const installationFee = cartItems.some(item => item.needsInstallation) ? 89 : 0;
-          const shipping = subtotal >= 100 ? 0 : 15;
+          const shipping = subtotal >= 50 ? 0 : 5.95;
           const expectedTotal = subtotal + installationFee + shipping;
           
           // Create order idempotently
@@ -1753,7 +1753,7 @@ ${message || 'Geen aanvullende informatie'}`
       ).then(prices => prices.reduce((sum, price) => sum + price, 0));
       
       const installationFee = cartItems.some(item => item.needsInstallation) ? 89 : 0;
-      const shipping = subtotal >= 100 ? 0 : 15;
+      const shipping = subtotal >= 50 ? 0 : 5.95;
       const expectedTotal = subtotal + installationFee + shipping;
       
       // Verify amount matches (convert to cents for comparison)
@@ -1904,7 +1904,7 @@ ${message || 'Geen aanvullende informatie'}`
       ).then(prices => prices.reduce((sum, price) => sum + price, 0));
       
       const installationFee = cartItems.some(item => item.needsInstallation) ? 89 : 0;
-      const shipping = subtotal >= 100 ? 0 : 15;
+      const shipping = subtotal >= 50 ? 0 : 5.95;
       const expectedTotal = subtotal + installationFee + shipping;
 
       // Verify amount matches payment intent (security check)

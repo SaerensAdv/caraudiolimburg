@@ -113,7 +113,7 @@ app.post("/api/webhooks/stripe", express.raw({ type: 'application/json' }), asyn
         }
 
         const installationFee = cartItems.some((item: any) => item.needsInstallation) ? 89 : 0;
-        const shipping = subtotal >= 100 ? 0 : 15;
+        const shipping = subtotal >= 50 ? 0 : 5.95;
         const total = subtotal + installationFee + shipping;
 
         const orderNumber = isGuest ? `CAL-G-${Date.now()}` : `CAL-${Date.now()}`;

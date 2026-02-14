@@ -54,11 +54,11 @@ export default function FAQ() {
       questions: [
         {
           question: "Hoe snel wordt mijn bestelling verzonden?",
-          answer: "We begrijpen dat je je nieuwe audio-apparatuur zo snel mogelijk wilt ontvangen! Bestellingen die op werkdagen vóór 14:00 uur worden geplaatst, verzenden we dezelfde dag nog. Standaard verzending binnen Nederland duurt 1-2 werkdagen. Voor België en Duitsland kun je rekenen op 2-3 werkdagen."
+          answer: "We begrijpen dat je je nieuwe audio-apparatuur zo snel mogelijk wilt ontvangen! Bestellingen die op werkdagen vóór 16:00 uur worden geplaatst, verzenden we dezelfde dag nog. Standaard verzending binnen Nederland duurt 1-2 werkdagen. Voor België en Duitsland kun je rekenen op 2-3 werkdagen."
         },
         {
           question: "Wat zijn de verzendkosten?",
-          answer: "Voor bestellingen vanaf €100 verzenden we gratis binnen Nederland. Voor kleinere bestellingen rekenen we €15 verzendkosten. Naar België en Duitsland hanteren we een vast tarief van €9,95. Bij grote of zware producten nemen we vooraf contact met je op over eventuele meerkosten."
+          answer: "Voor bestellingen boven de €50 verzenden we gratis binnen Nederland. Voor kleinere bestellingen rekenen we €4,95 verzendkosten. Naar België en Duitsland hanteren we een vast tarief van €9,95. Bij grote of zware producten nemen we vooraf contact met je op over eventuele meerkosten."
         },
         {
           question: "Kan ik mijn bestelling retourneren?",
@@ -344,7 +344,7 @@ export default function FAQ() {
                   <h3 className="text-white font-medium text-lg mb-2">Showroom</h3>
                   <p className="text-white/50 text-sm mb-4">Kom langs voor een demo</p>
                   <span className="text-[#d0a760] text-sm font-medium">
-                    Dr. Nolenslaan 157-C (Hal 3), Sittard
+                    Dr. Nolenslaan 157c, Sittard
                   </span>
                 </div>
               </ScrollReveal>

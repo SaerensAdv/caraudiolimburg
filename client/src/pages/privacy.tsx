@@ -138,7 +138,7 @@ export default function PrivacyPage() {
             <ScrollReveal delay={500}>
               <div className="bg-[#d0a760]/10 border border-[#d0a760]/30 p-6 text-center">
                 <p className="text-[#d0a760] text-sm">
-                  Car Audio Limburg is gevestigd te Dr. Nolenslaan 157-C (Hal 3), 6136 GM Sittard en 
+                  Car Audio Limburg is gevestigd te Dr. Nolenslaan 157c, 6136 GM Sittard en 
                   is verantwoordelijk voor de verwerking van uw persoonsgegevens.
                 </p>
               </div>

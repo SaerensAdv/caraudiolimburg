@@ -882,22 +882,6 @@ export default function Shop() {
             </div>
           )}
           
-          {sortedRecentlyViewed.length > 0 && (
-            <div className="mb-8">
-              <div className="flex items-center gap-2 mb-4">
-                <Clock className="w-5 h-5 text-[#d0a760]" />
-                <h2 className="text-lg font-semibold text-white">Recent bekeken</h2>
-              </div>
-              <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
-                {sortedRecentlyViewed.map((product: Product) => (
-                  <div key={product.id} className="flex-shrink-0 w-[160px] sm:w-[180px]">
-                    <ProductCard product={product} brandName={brandMap[product.brandId || '']} />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
           {isLoadingProducts ? (
             <div className={viewMode === 'grid' 
               ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6"
@@ -1086,6 +1070,21 @@ export default function Shop() {
                     </a>
                   </Button>
                 </div>
+              </div>
+            </div>
+          )}
+          {sortedRecentlyViewed.length > 0 && (
+            <div className="mt-16 pt-10 border-t border-zinc-800">
+              <div className="flex items-center gap-2 mb-4">
+                <Clock className="w-5 h-5 text-[#d0a760]" />
+                <h2 className="text-lg font-semibold text-white">Recent bekeken</h2>
+              </div>
+              <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+                {sortedRecentlyViewed.map((product: Product) => (
+                  <div key={product.id} className="flex-shrink-0 w-[160px] sm:w-[180px]">
+                    <ProductCard product={product} brandName={brandMap[product.brandId || '']} />
+                  </div>
+                ))}
               </div>
             </div>
           )}

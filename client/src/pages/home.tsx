@@ -38,7 +38,7 @@ import { Link } from "wouter";
 import CinematicIntro from "@/components/CinematicIntro";
 import { KentekenProductFinder } from "@/components/KentekenProductFinder";
 
-import heroImage from "@assets/I_found_the_4k_202602141752_1771087984054.jpeg";
+import heroVideo from "@assets/Professional_hero_background_1080p_2026021417_1771096305581.mp4";
 import studioImage1 from "@assets/C5025.00_06_16_04.Still024-1-2048x1152_1757024538840.jpg";
 import studioImage2 from "@assets/C5025.00_17_23_55.Still031-1-2048x1152_1757024658861.jpg";
 import studioImage3 from "@assets/C5025.00_31_30_11.Still045-1-1-2048x1152_1757024535822.jpg";
@@ -116,14 +116,16 @@ export default function Home() {
       
       {/* Hero Section - Full Screen Premium with Vehicle Selector */}
       <section className="relative min-h-screen min-h-[100svh] w-full overflow-hidden">
-        <Parallax speed={0.3} className="absolute inset-0">
-          <div 
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-110"
-            style={{
-              backgroundImage: `url(${heroImage})`
-            }}
+        <div className="absolute inset-0">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover scale-110"
+            src={heroVideo}
           />
-        </Parallax>
+        </div>
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/70" />
         
         <BassPulse />

@@ -15,7 +15,7 @@ const REVIEW_IMAGE_PROMPTS = [
 
 export async function getReviewImageUrl(index: number): Promise<string | null> {
   const safeIndex = index % REVIEW_IMAGE_PROMPTS.length;
-  const fileName = `review-image-${safeIndex + 1}.webp`;
+  const fileName = `review-image-${safeIndex + 1}.png`;
   const filePath = path.join(REVIEW_IMAGE_DIR, fileName);
   const publicUrl = `/review-images/${fileName}`;
 
@@ -28,7 +28,7 @@ export async function getReviewImageUrl(index: number): Promise<string | null> {
 
 export async function generateReviewImage(index: number): Promise<string> {
   const safeIndex = index % REVIEW_IMAGE_PROMPTS.length;
-  const fileName = `review-image-${safeIndex + 1}.webp`;
+  const fileName = `review-image-${safeIndex + 1}.png`;
   const filePath = path.join(REVIEW_IMAGE_DIR, fileName);
   const publicUrl = `/review-images/${fileName}`;
 
@@ -66,7 +66,7 @@ export async function generateAllReviewImages(): Promise<string[]> {
 export function getAllCachedReviewImageUrls(): string[] {
   const urls: string[] = [];
   for (let i = 0; i < REVIEW_IMAGE_PROMPTS.length; i++) {
-    const fileName = `review-image-${i + 1}.webp`;
+    const fileName = `review-image-${i + 1}.png`;
     const filePath = path.join(REVIEW_IMAGE_DIR, fileName);
     if (fs.existsSync(filePath)) {
       urls.push(`/review-images/${fileName}`);
@@ -86,7 +86,7 @@ const PORTRAIT_PROMPTS = [
 
 export async function generatePortrait(index: number): Promise<string> {
   const safeIndex = index % PORTRAIT_PROMPTS.length;
-  const fileName = `reviewer-portrait-${safeIndex + 1}.webp`;
+  const fileName = `reviewer-portrait-${safeIndex + 1}.png`;
   const filePath = path.join(REVIEW_IMAGE_DIR, fileName);
   const publicUrl = `/review-images/${fileName}`;
 
@@ -124,7 +124,7 @@ export async function generateAllPortraits(): Promise<string[]> {
 export function getAllCachedPortraitUrls(): string[] {
   const urls: string[] = [];
   for (let i = 0; i < PORTRAIT_PROMPTS.length; i++) {
-    const fileName = `reviewer-portrait-${i + 1}.webp`;
+    const fileName = `reviewer-portrait-${i + 1}.png`;
     const filePath = path.join(REVIEW_IMAGE_DIR, fileName);
     if (fs.existsSync(filePath)) {
       urls.push(`/review-images/${fileName}`);

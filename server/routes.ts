@@ -3329,10 +3329,208 @@ Sitemap: https://caraudiolimburg.nl/sitemap.xml`);
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
   }
 
+  app.get('/sitemap-index.xsl', (req, res) => {
+    const xsl = `<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet version="1.0"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:sitemap="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <xsl:output method="html" encoding="UTF-8" indent="yes"/>
+  <xsl:template match="/">
+    <html lang="nl">
+      <head>
+        <title>XML Sitemap Index — Car Audio Limburg</title>
+        <meta name="robots" content="noindex, follow"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <style>
+          *{margin:0;padding:0;box-sizing:border-box}
+          body{background:#0a0a0a;color:#e5e5e5;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6}
+          .container{max-width:1100px;margin:0 auto;padding:24px 16px}
+          .header{padding:32px 0 24px;border-bottom:1px solid #262626;margin-bottom:24px}
+          .logo{font-size:28px;font-weight:700;color:#d4a853;letter-spacing:-0.5px}
+          .logo span{color:#fff}
+          .subtitle{font-size:22px;font-weight:600;color:#fff;margin-top:8px}
+          .desc{color:#a3a3a3;font-size:14px;margin-top:8px;max-width:700px}
+          .desc a{color:#d4a853;text-decoration:none}
+          .desc a:hover{text-decoration:underline}
+          .nav{margin-top:12px;font-size:13px}
+          .nav a{color:#d4a853;text-decoration:none;margin-right:16px}
+          .nav a:hover{text-decoration:underline}
+          .count{background:#141414;border:1px solid #262626;border-radius:8px;padding:12px 20px;margin-bottom:16px;font-size:14px;color:#a3a3a3}
+          .count strong{color:#d4a853}
+          table{width:100%;border-collapse:collapse;background:#141414;border:1px solid #262626;border-radius:8px;overflow:hidden}
+          th{background:#1a1a1a;color:#d4a853;font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;padding:14px 16px;text-align:left;border-bottom:1px solid #262626}
+          td{padding:12px 16px;border-bottom:1px solid #1f1f1f;font-size:14px}
+          tr:last-child td{border-bottom:none}
+          tr:nth-child(even) td{background:#111}
+          tr:hover td{background:#1a1a1a}
+          td a{color:#d4a853;text-decoration:none;word-break:break-all}
+          td a:hover{text-decoration:underline;color:#e0ba6a}
+          .footer{margin-top:32px;padding-top:20px;border-top:1px solid #262626;color:#525252;font-size:12px;text-align:center}
+          .footer a{color:#d4a853;text-decoration:none}
+          @media(max-width:640px){.container{padding:16px 12px}th,td{padding:10px 12px;font-size:13px}.logo{font-size:22px}.subtitle{font-size:18px}}
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <div class="logo">Car Audio <span>Limburg</span></div>
+            <div class="subtitle">XML Sitemap Index</div>
+            <p class="desc">Dit is de XML sitemap index van <a href="https://caraudiolimburg.nl">caraudiolimburg.nl</a>, gegenereerd voor zoekmachines zoals Google. Een sitemap helpt zoekmachines om alle pagina's op de website te ontdekken en te indexeren.</p>
+            <div class="nav">
+              <a href="https://caraudiolimburg.nl">&#x2190; Homepage</a>
+            </div>
+          </div>
+          <div class="count">Aantal sitemaps: <strong><xsl:value-of select="count(sitemap:sitemapindex/sitemap:sitemap)"/></strong></div>
+          <table>
+            <thead>
+              <tr>
+                <th>Sitemap URL</th>
+                <th>Laatst gewijzigd</th>
+              </tr>
+            </thead>
+            <tbody>
+              <xsl:for-each select="sitemap:sitemapindex/sitemap:sitemap">
+                <tr>
+                  <td><a href="{sitemap:loc}"><xsl:value-of select="sitemap:loc"/></a></td>
+                  <td><xsl:value-of select="sitemap:lastmod"/></td>
+                </tr>
+              </xsl:for-each>
+            </tbody>
+          </table>
+          <div class="footer">
+            <p>Dit is een XML sitemap, bedoeld voor zoekmachines. <a href="https://www.sitemaps.org/">Meer informatie over sitemaps</a>.</p>
+            <p style="margin-top:6px">&#xA9; Car Audio Limburg &#x2014; <a href="https://caraudiolimburg.nl">caraudiolimburg.nl</a></p>
+          </div>
+        </div>
+      </body>
+    </html>
+  </xsl:template>
+</xsl:stylesheet>`;
+    res.setHeader('Content-Type', 'application/xml');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.send(xsl);
+  });
+
+  app.get('/sitemap.xsl', (req, res) => {
+    const xsl = `<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet version="1.0"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xmlns:sitemap="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <xsl:output method="html" encoding="UTF-8" indent="yes"/>
+  <xsl:template match="/">
+    <html lang="nl">
+      <head>
+        <title>XML Sitemap — Car Audio Limburg</title>
+        <meta name="robots" content="noindex, follow"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <style>
+          *{margin:0;padding:0;box-sizing:border-box}
+          body{background:#0a0a0a;color:#e5e5e5;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6}
+          .container{max-width:1100px;margin:0 auto;padding:24px 16px}
+          .header{padding:32px 0 24px;border-bottom:1px solid #262626;margin-bottom:24px}
+          .logo{font-size:28px;font-weight:700;color:#d4a853;letter-spacing:-0.5px}
+          .logo span{color:#fff}
+          .subtitle{font-size:22px;font-weight:600;color:#fff;margin-top:8px}
+          .desc{color:#a3a3a3;font-size:14px;margin-top:8px;max-width:700px}
+          .desc a{color:#d4a853;text-decoration:none}
+          .desc a:hover{text-decoration:underline}
+          .nav{margin-top:12px;font-size:13px}
+          .nav a{color:#d4a853;text-decoration:none;margin-right:16px}
+          .nav a:hover{text-decoration:underline}
+          .count{background:#141414;border:1px solid #262626;border-radius:8px;padding:12px 20px;margin-bottom:16px;font-size:14px;color:#a3a3a3}
+          .count strong{color:#d4a853}
+          table{width:100%;border-collapse:collapse;background:#141414;border:1px solid #262626;border-radius:8px;overflow:hidden}
+          th{background:#1a1a1a;color:#d4a853;font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;padding:14px 16px;text-align:left;border-bottom:1px solid #262626}
+          td{padding:12px 16px;border-bottom:1px solid #1f1f1f;font-size:14px}
+          tr:last-child td{border-bottom:none}
+          tr:nth-child(even) td{background:#111}
+          tr:hover td{background:#1a1a1a}
+          td a{color:#d4a853;text-decoration:none;word-break:break-all}
+          td a:hover{text-decoration:underline;color:#e0ba6a}
+          .priority{display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:600}
+          .p-high{background:rgba(212,168,83,0.15);color:#d4a853}
+          .p-med{background:rgba(212,168,83,0.08);color:#a3a3a3}
+          .p-low{background:rgba(82,82,82,0.2);color:#737373}
+          .images-badge{display:inline-block;background:rgba(212,168,83,0.12);color:#d4a853;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:500}
+          .footer{margin-top:32px;padding-top:20px;border-top:1px solid #262626;color:#525252;font-size:12px;text-align:center}
+          .footer a{color:#d4a853;text-decoration:none}
+          @media(max-width:768px){.container{padding:16px 12px}th,td{padding:10px 8px;font-size:12px}.logo{font-size:22px}.subtitle{font-size:18px}.hide-mobile{display:none}}
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <div class="logo">Car Audio <span>Limburg</span></div>
+            <div class="subtitle">XML Sitemap</div>
+            <p class="desc">Dit is de XML sitemap van <a href="https://caraudiolimburg.nl">caraudiolimburg.nl</a>. Deze sitemap bevat alle URL's die beschikbaar zijn voor zoekmachines om te indexeren.</p>
+            <div class="nav">
+              <a href="https://caraudiolimburg.nl">&#x2190; Homepage</a>
+              <a href="https://caraudiolimburg.nl/sitemap.xml">Sitemap Index</a>
+            </div>
+          </div>
+          <div class="count">Aantal URL's: <strong><xsl:value-of select="count(sitemap:urlset/sitemap:url)"/></strong></div>
+          <table>
+            <thead>
+              <tr>
+                <th>URL</th>
+                <th class="hide-mobile">Laatst gewijzigd</th>
+                <th class="hide-mobile">Frequentie</th>
+                <th>Prioriteit</th>
+                <xsl:if test="sitemap:urlset/sitemap:url/image:image">
+                  <th class="hide-mobile">Afbeeldingen</th>
+                </xsl:if>
+              </tr>
+            </thead>
+            <tbody>
+              <xsl:for-each select="sitemap:urlset/sitemap:url">
+                <tr>
+                  <td><a href="{sitemap:loc}"><xsl:value-of select="sitemap:loc"/></a></td>
+                  <td class="hide-mobile"><xsl:value-of select="sitemap:lastmod"/></td>
+                  <td class="hide-mobile"><xsl:value-of select="sitemap:changefreq"/></td>
+                  <td>
+                    <xsl:choose>
+                      <xsl:when test="sitemap:priority &gt;= 0.8">
+                        <span class="priority p-high"><xsl:value-of select="sitemap:priority"/></span>
+                      </xsl:when>
+                      <xsl:when test="sitemap:priority &gt;= 0.5">
+                        <span class="priority p-med"><xsl:value-of select="sitemap:priority"/></span>
+                      </xsl:when>
+                      <xsl:otherwise>
+                        <span class="priority p-low"><xsl:value-of select="sitemap:priority"/></span>
+                      </xsl:otherwise>
+                    </xsl:choose>
+                  </td>
+                  <xsl:if test="/sitemap:urlset/sitemap:url/image:image">
+                    <td class="hide-mobile">
+                      <xsl:if test="count(image:image) &gt; 0">
+                        <span class="images-badge"><xsl:value-of select="count(image:image)"/> img</span>
+                      </xsl:if>
+                    </td>
+                  </xsl:if>
+                </tr>
+              </xsl:for-each>
+            </tbody>
+          </table>
+          <div class="footer">
+            <p>Dit is een XML sitemap, bedoeld voor zoekmachines zoals Google, Bing en Yahoo. <a href="https://www.sitemaps.org/">Meer informatie over sitemaps</a>.</p>
+            <p style="margin-top:6px">&#xA9; Car Audio Limburg &#x2014; <a href="https://caraudiolimburg.nl">caraudiolimburg.nl</a></p>
+          </div>
+        </div>
+      </body>
+    </html>
+  </xsl:template>
+</xsl:stylesheet>`;
+    res.setHeader('Content-Type', 'application/xml');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.send(xsl);
+  });
+
   app.get('/sitemap.xml', async (req, res) => {
     try {
       const now = new Date().toISOString().split('T')[0];
       const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="/sitemap-index.xsl"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
     <loc>${SITEMAP_BASE_URL}/sitemap-pages.xml</loc>
@@ -3382,7 +3580,7 @@ Sitemap: https://caraudiolimburg.nl/sitemap.xml`);
         (p) => `  <url>\n    <loc>${SITEMAP_BASE_URL}${p.loc}</loc>\n    <lastmod>${now}</lastmod>\n    <changefreq>${p.changefreq}</changefreq>\n    <priority>${p.priority}</priority>\n  </url>`
       );
 
-      const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>`;
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>`;
       res.setHeader('Content-Type', 'application/xml');
       res.setHeader('Cache-Control', 'public, max-age=86400');
       res.send(xml);
@@ -3410,7 +3608,7 @@ Sitemap: https://caraudiolimburg.nl/sitemap.xml`);
         urls.push(`  <url>\n    <loc>${SITEMAP_BASE_URL}/webshop/${escapeXml(product.slug)}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>${imageTags}\n  </url>`);
       }
 
-      const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${urls.join('\n')}\n</urlset>`;
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${urls.join('\n')}\n</urlset>`;
       res.setHeader('Content-Type', 'application/xml');
       res.setHeader('Cache-Control', 'public, max-age=3600');
       res.send(xml);
@@ -3439,7 +3637,7 @@ Sitemap: https://caraudiolimburg.nl/sitemap.xml`);
         urls.push(`  <url>\n    <loc>${SITEMAP_BASE_URL}/webshop?brand=${escapeXml(brand.slug)}</loc>\n    <lastmod>${now}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`);
       }
 
-      const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>`;
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>`;
       res.setHeader('Content-Type', 'application/xml');
       res.setHeader('Cache-Control', 'public, max-age=86400');
       res.send(xml);
@@ -3462,7 +3660,7 @@ Sitemap: https://caraudiolimburg.nl/sitemap.xml`);
         urls.push(`  <url>\n    <loc>${SITEMAP_BASE_URL}/blog/${escapeXml(post.slug)}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>`);
       }
 
-      const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>`;
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>`;
       res.setHeader('Content-Type', 'application/xml');
       res.setHeader('Cache-Control', 'public, max-age=3600');
       res.send(xml);

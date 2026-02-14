@@ -190,6 +190,54 @@ FROM products WHERE LOWER(name) LIKE '%[merk]%' ORDER BY sku;
 
 22/44 hebben PDF tech sheets. Overige niet gepubliceerd door Audison.
 
+### Pioneer Status (36 producten compleet)
+
+| Serie | Aantal | Beschrijving | SEO | Afbeeldingen | Specs | Prijzen |
+|-------|--------|-------------|-----|-------------|-------|---------|
+| EVO-107 (10.1" camper) | 11 | OK | OK | OK | OK | OK |
+| EVO-98 (9" multimedia) | 8 | OK | OK | OK | OK | OK |
+| EVO64 (6.8" modulair) | 4 | OK | OK | OK | OK | OK |
+| EVO950/EVO82/EVO93 | 3 | OK | OK | OK | OK | OK |
+| SPH-DA (multimedia) | 2 | OK | OK | OK | OK | OK |
+| AVH/AVIC (navigatie) | 6 | OK | OK | OK | OK | OK |
+| SXT (retro radio) | 1 | OK | OK | OK | OK | OK |
+| Camera (PIO8023) | 1 | OK | OK | OK | OK | OK |
+
+Aanbiedingen: SPH-DA77DAB (€389.95 v/a €499), SPH-EVO64DAB (€574.95 v/a €759), AVH-Z9200DAB (€719.95 v/a €859)
+
+### Alpine Status (48 producten compleet)
+
+| Serie | Aantal | Beschrijving | SEO | Afbeeldingen | Specs | Prijzen |
+|-------|--------|-------------|-----|-------------|-------|---------|
+| Camper Ducato 8 (DU8/DU8S) | 7 | OK | OK | OK | OK | OK |
+| Camper Ducato/Boxer (DU/DU2) | 6 | OK | OK | OK | OK | OK |
+| Camper VW T6/T6.1 | 4 | OK | OK | OK | OK | OK |
+| Camper Ford Transit (TRA) | 3 | OK | OK | OK | OK | OK |
+| Camper Mercedes Sprinter (S907) | 3 | OK | OK | OK | OK | OK |
+| Camper Mercedes Vito (V447) | 1 | OK | OK | OK | OK | OK |
+| Camera's & Veiligheid | 6 | OK | OK | OK | OK | OK |
+| Speakers (SPC) | 5 | OK | OK | OK | OK | OK |
+| Subwoofers (SWC) | 2 | OK | OK | OK | OK | OK |
+| Versterkers (SWA/SPC-200AU) | 2 | OK | OK | OK | OK | OK |
+| Navigatie & Multimedia | 9 | OK | OK | OK | OK | OK |
+
+### Kenwood Status (26 producten compleet)
+
+| Serie | Aantal | Beschrijving | SEO | Afbeeldingen | Specs | Prijzen |
+|-------|--------|-------------|-----|-------------|-------|---------|
+| DMX129 (basis 6.8") | 2 | OK | OK | OK | OK | OK |
+| DMX5020/5023 (multimedia) | 4 | OK | OK | OK | OK | OK |
+| DMX553/6523 (mid-range) | 3 | OK | OK | OK | OK | OK |
+| DMX7525/7722 (draadloos) | 4 | OK | OK | OK | OK | OK |
+| DMX8021 (7" premium) | 2 | OK | OK | OK | OK | OK |
+| DMX-F920DS (9" HD) | 2 | OK | OK | OK | OK | OK |
+| DMX9720/9724XDS (10.1" HD) | 4 | OK | OK | OK | OK | OK |
+| DNX navigatie (5190/7190/9190) | 3 | OK | OK | OK | OK | OK |
+| DNR992RVS (Garmin camper) | 1 | OK | OK | OK | OK | OK |
+| Camper bundels (met Sygic) | 1 | OK | OK | OK | OK | OK |
+
+Aanbiedingen: DMX5020BTS (€299.95 v/a €349.95), DMX5023DABS (€389.95 v/a €449.99), DMX6523 serie (vanaf €429.95), DMX7525DABS (€599.95 v/a €649.99), DMX-F920DS (€675 v/a €699.99)
+
 ## External Dependencies
 
 ### Core Infrastructure

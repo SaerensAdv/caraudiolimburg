@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { SEO } from "@/components/SEO";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -113,6 +114,7 @@ export default function Login() {
 
   return (
     <div className="h-screen h-[100svh] overflow-hidden flex">
+      <SEO title="Inloggen" noindex={true} />
       {/* Left Side - Form */}
       <div className="w-full lg:w-2/5 bg-white flex flex-col overflow-y-auto lg:overflow-hidden">
         {/* Back Button */}

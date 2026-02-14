@@ -7,6 +7,7 @@ import { CartSidebar } from "@/components/CartSidebar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SEO } from "@/components/SEO";
+import { BreadcrumbSchema } from "@/components/StructuredData";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollReveal, StaggerContainer, StaggerItem } from "@/components/ScrollAnimations";
 import {
@@ -71,6 +72,10 @@ function PortfolioOverview() {
         description="Bekijk onze professionele car audio installaties. Van soundupgrades tot CarPlay retrofits - ontdek wat wij kunnen betekenen voor jouw auto."
         canonical="/portfolio"
       />
+      <BreadcrumbSchema items={[
+        { name: "Home", url: "/" },
+        { name: "Portfolio", url: "/portfolio" }
+      ]} />
       
       <Header onCartOpen={() => setIsCartOpen(true)} />
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
@@ -337,6 +342,11 @@ function PortfolioDetail({ slug }: { slug: string }) {
         description={project.shortDescription || `Bekijk dit ${project.category || 'car audio'} project voor ${project.vehicleMake || 'een'} ${project.vehicleModel || 'voertuig'}.`}
         canonical={`/portfolio/${project.slug}`}
       />
+      <BreadcrumbSchema items={[
+        { name: "Home", url: "/" },
+        { name: "Portfolio", url: "/portfolio" },
+        { name: project.title, url: `/portfolio/${project.slug}` }
+      ]} />
       
       <Header onCartOpen={() => setIsCartOpen(true)} />
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />

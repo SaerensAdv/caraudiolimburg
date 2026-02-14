@@ -1,3 +1,4 @@
+import { SEO } from "@/components/SEO";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, X, ArrowRight, HardDrives, Cloud, Lightning, Shield, Clock, CurrencyEur, Users, Database, ImageSquare, Globe } from "@phosphor-icons/react";
@@ -151,6 +152,7 @@ function CostBadge({ cost }: { cost: "laag" | "gemiddeld" | "hoog" }) {
 export default function MigrationOptions() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-zinc-900 to-black">
+      <SEO title="Migratie" noindex={true} />
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="text-center mb-12">
           <Badge variant="outline" className="mb-4 border-amber-500/30 text-amber-400">

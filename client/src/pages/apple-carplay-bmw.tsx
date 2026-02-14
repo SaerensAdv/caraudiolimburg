@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { BreadcrumbSchema } from "@/components/StructuredData";
 import { 
   Accordion,
   AccordionContent,
@@ -146,6 +147,10 @@ export default function AppleCarPlayBMW() {
 
   return (
     <div className="min-h-screen bg-black">
+      <BreadcrumbSchema items={[
+        { name: "Home", url: "/" },
+        { name: "Apple CarPlay BMW", url: "/apple-carplay-voor-uw-bmw" }
+      ]} />
       <Header onCartOpen={() => setIsCartOpen(true)} logoSrc={calWhiteLogo} />
       
       {/* Hero Section */}

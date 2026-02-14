@@ -1,4 +1,5 @@
 import { Link } from "wouter";
+import { SEO } from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -8,6 +9,7 @@ import { House, ArrowLeft } from "@phosphor-icons/react";
 export default function NotFound() {
   return (
     <div className="min-h-screen bg-black flex flex-col">
+      <SEO title="Pagina niet gevonden" noindex={true} />
       <Header onCartOpen={() => {}} />
       
       <div className="flex-1 flex items-center justify-center px-4 py-16">

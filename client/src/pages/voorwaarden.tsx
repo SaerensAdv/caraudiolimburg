@@ -3,6 +3,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CartSidebar } from "@/components/CartSidebar";
 import { ScrollReveal } from "@/components/ScrollAnimations";
+import { BreadcrumbSchema } from "@/components/StructuredData";
 import { FileText, Truck, ArrowCounterClockwise, CreditCard, Wrench, WarningCircle } from "@phosphor-icons/react";
 
 export default function VoorwaardenPage() {
@@ -68,6 +69,10 @@ Door een bestelling te plaatsen of een afspraak te maken, gaat u akkoord met dez
 
   return (
     <div className="min-h-screen bg-black flex flex-col">
+      <BreadcrumbSchema items={[
+        { name: "Home", url: "/" },
+        { name: "Algemene Voorwaarden", url: "/algemene-voorwaarden" }
+      ]} />
       <Header onCartOpen={() => setIsCartOpen(true)} />
       
       <section className="pt-24 pb-16 bg-zinc-950">

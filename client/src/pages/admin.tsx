@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { SEO } from "@/components/SEO";
 import {
   BarChart,
   Bar,
@@ -1448,6 +1449,7 @@ export default function Admin() {
 
   return (
     <div className="min-h-screen bg-black flex">
+      <SEO title="Admin Dashboard" noindex={true} />
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex lg:flex-col lg:w-64 bg-zinc-950 border-r border-zinc-800 fixed h-full z-40">
         {/* Logo */}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "wouter";
+import { SEO } from "@/components/SEO";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CartSidebar } from "@/components/CartSidebar";
@@ -347,6 +348,7 @@ export default function CustomerPortal() {
 
   return (
     <div className="min-h-screen bg-black">
+      <SEO title="Mijn Account" noindex={true} />
       <Header onCartOpen={() => setIsCartOpen(true)} />
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
 

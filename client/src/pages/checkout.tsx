@@ -1,6 +1,7 @@
 import { useStripe, Elements, PaymentElement, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { useEffect, useState, useMemo, useRef } from 'react';
+import { SEO } from '@/components/SEO';
 import { useQuery } from '@tanstack/react-query';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -876,6 +877,7 @@ export default function Checkout() {
 
   return (
     <div className="min-h-screen bg-zinc-950">
+      <SEO title="Afrekenen" noindex={true} />
       <Header onCartOpen={() => setIsCartOpen(true)} />
       
       <div className="pt-20 bg-gradient-to-b from-zinc-900 to-zinc-950 border-b border-zinc-800">

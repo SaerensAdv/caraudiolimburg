@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation, Link } from "wouter";
+import { SEO } from "@/components/SEO";
 import { useQuery } from "@tanstack/react-query";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -252,6 +253,7 @@ export default function OrderConfirmationPage() {
 
   return (
     <div className="min-h-screen bg-black flex flex-col">
+      <SEO title="Bestelling Bevestigd" noindex={true} />
       <Header onCartOpen={() => setIsCartOpen(true)} />
       
       <div className="container px-4 md:px-8 lg:px-16 mx-auto py-12 md:py-16 flex-1">

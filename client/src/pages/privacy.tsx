@@ -3,6 +3,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CartSidebar } from "@/components/CartSidebar";
 import { ScrollReveal } from "@/components/ScrollAnimations";
+import { BreadcrumbSchema } from "@/components/StructuredData";
 import { Shield, Lock, Eye, Database, Envelope, Phone } from "@phosphor-icons/react";
 
 export default function PrivacyPage() {
@@ -59,6 +60,10 @@ export default function PrivacyPage() {
 
   return (
     <div className="min-h-screen bg-black flex flex-col">
+      <BreadcrumbSchema items={[
+        { name: "Home", url: "/" },
+        { name: "Privacybeleid", url: "/privacy-policy" }
+      ]} />
       <Header onCartOpen={() => setIsCartOpen(true)} />
       
       <section className="pt-24 pb-16 bg-zinc-950">

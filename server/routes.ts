@@ -3329,6 +3329,107 @@ Sitemap: https://caraudiolimburg.nl/sitemap.xml`);
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
   }
 
+  app.get('/feed/google-merchant.xml', async (req, res) => {
+    try {
+      const [allProducts, allBrands, allCategories] = await Promise.all([
+        storage.getProducts({}),
+        storage.getBrands(),
+        storage.getCategories(),
+      ]);
+
+      const brandMap = new Map(allBrands.map(b => [b.id, b.name]));
+      const categoryMap = new Map(allCategories.map(c => [c.id, c.name]));
+
+      const activeProducts = allProducts.filter(p => p.isActive !== false);
+
+      const items = activeProducts.map(product => {
+        const rawDesc = product.shortDescription || (product.description ? product.description.substring(0, 5000) : '');
+        const description = rawDesc.replace(/<[^>]*>/g, '').trim();
+
+        const images = product.images || [];
+        const primaryImage = images[0] || '';
+        const absoluteImage = primaryImage.startsWith('http') ? primaryImage : `${SITEMAP_BASE_URL}${primaryImage}`;
+
+        const additionalImages = images.slice(1, 11).map(img =>
+          img.startsWith('http') ? img : `${SITEMAP_BASE_URL}${img}`
+        );
+
+        const availability = product.stock === 0 ? 'out_of_stock' : 'in_stock';
+
+        const price = parseFloat(product.price);
+        const originalPrice = product.originalPrice ? parseFloat(product.originalPrice) : null;
+        const hasSalePrice = originalPrice !== null && originalPrice > price;
+
+        const brandName = product.brandId ? brandMap.get(product.brandId) || '' : '';
+        const categoryName = product.categoryId ? categoryMap.get(product.categoryId) || '' : '';
+
+        let itemXml = `    <item>
+      <g:id>${escapeXml(product.sku || product.id)}</g:id>
+      <g:title>${escapeXml(product.name)}</g:title>
+      <g:description>${escapeXml(description || product.name)}</g:description>
+      <g:link>${SITEMAP_BASE_URL}/webshop/${escapeXml(product.slug)}</g:link>`;
+
+        if (primaryImage) {
+          itemXml += `\n      <g:image_link>${escapeXml(absoluteImage)}</g:image_link>`;
+        }
+
+        for (const addImg of additionalImages) {
+          itemXml += `\n      <g:additional_image_link>${escapeXml(addImg)}</g:additional_image_link>`;
+        }
+
+        itemXml += `\n      <g:availability>${availability}</g:availability>`;
+
+        if (hasSalePrice) {
+          itemXml += `\n      <g:price>${originalPrice!.toFixed(2)} EUR</g:price>`;
+          itemXml += `\n      <g:sale_price>${price.toFixed(2)} EUR</g:sale_price>`;
+        } else {
+          itemXml += `\n      <g:price>${price.toFixed(2)} EUR</g:price>`;
+        }
+
+        if (brandName) {
+          itemXml += `\n      <g:brand>${escapeXml(brandName)}</g:brand>`;
+        }
+
+        itemXml += `\n      <g:condition>new</g:condition>`;
+
+        if (product.sku) {
+          itemXml += `\n      <g:mpn>${escapeXml(product.sku)}</g:mpn>`;
+        }
+
+        if (categoryName) {
+          itemXml += `\n      <g:product_type>${escapeXml(categoryName)}</g:product_type>`;
+        }
+
+        itemXml += `\n      <g:shipping>
+        <g:country>NL</g:country>
+        <g:price>0 EUR</g:price>
+      </g:shipping>`;
+
+        itemXml += `\n      <g:identifier_exists>no</g:identifier_exists>`;
+        itemXml += `\n    </item>`;
+
+        return itemXml;
+      });
+
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:g="http://schemas.google.com/g/1.0" version="2.0">
+  <channel>
+    <title>Car Audio Limburg</title>
+    <link>${SITEMAP_BASE_URL}</link>
+    <description>Premium car audio producten en installatie service</description>
+${items.join('\n')}
+  </channel>
+</rss>`;
+
+      res.set('Content-Type', 'application/xml');
+      res.set('Cache-Control', 'public, max-age=3600');
+      res.send(xml);
+    } catch (error) {
+      console.error('Error generating Google Merchant feed:', error);
+      res.status(500).send('Error generating feed');
+    }
+  });
+
   app.get('/sitemap-index.xsl', (req, res) => {
     const xsl = `<?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0"

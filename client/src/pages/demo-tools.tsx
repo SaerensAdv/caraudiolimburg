@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "wouter";
+import { SEO } from "@/components/SEO";
 import { motion } from "framer-motion";
 import { 
   ChatText, 
@@ -466,6 +467,7 @@ export default function DemoTools() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
+      <SEO title="Demo Tools" noindex={true} />
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#d0a760]/10 via-transparent to-transparent" />
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#d0a760]/5 rounded-full blur-3xl" />

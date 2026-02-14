@@ -431,7 +431,7 @@ export default function Contact() {
                             <ExternalLink className="h-4 w-4 text-white/40" />
                           </h3>
                           <p className="text-white/60 mb-3">Snel een vraagje? Stuur ons gerust een appje!</p>
-                          <span className="text-[#d0a760] font-medium">085 - 27 33 625</span>
+                          <span className="text-[#d0a760] font-medium">+31 (0)85 - 27 33 625</span>
                         </div>
                         <ArrowRight className="h-6 w-6 text-white/40 group-hover:text-[#d0a760] group-hover:translate-x-1 transition-all duration-300" />
                       </div>

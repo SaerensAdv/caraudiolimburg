@@ -5,7 +5,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { ChevronLeft, ChevronRight, Car, Wrench, Award, Users, CheckCircle2, Clock, AlertCircle, CalendarCheck, Loader2 } from "lucide-react";
+import { CaretLeft, CaretRight, Car, Wrench, Trophy, Users, CheckCircle, Clock, WarningCircle, CalendarCheck, SpinnerGap } from "@phosphor-icons/react";
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, getDay } from "date-fns";
 import { nl } from "date-fns/locale";
 
@@ -20,7 +20,7 @@ interface Service {
 const services: Service[] = [
   { id: "radio", name: "Autoradio Installatie", duration: "2-3 uur", price: "vanaf €89", icon: Car },
   { id: "speakers", name: "Speaker Upgrade", duration: "3-4 uur", price: "vanaf €129", icon: Wrench },
-  { id: "complete", name: "Complete Audio Systeem", duration: "6-8 uur", price: "vanaf €299", icon: Award },
+  { id: "complete", name: "Complete Audio Systeem", duration: "6-8 uur", price: "vanaf €299", icon: Trophy },
   { id: "custom", name: "Custom Offerte", duration: "Op maat gemaakt", price: "systeem", icon: Users },
 ];
 
@@ -137,7 +137,7 @@ export function BookingCalendar() {
                         : "border-zinc-700 text-zinc-600 bg-zinc-900"
                     }`}>
                       {status === "complete" ? (
-                        <CheckCircle2 className="w-5 h-5" />
+                        <CheckCircle className="w-5 h-5" />
                       ) : (
                         <Icon className="w-5 h-5" />
                       )}
@@ -228,7 +228,7 @@ export function BookingCalendar() {
                     className="text-white/60 hover:text-white hover:bg-zinc-800 rounded-none w-8 h-8 p-0"
                     data-testid="button-previous-month"
                   >
-                    <ChevronLeft className="w-4 h-4" />
+                    <CaretLeft className="w-4 h-4" />
                   </Button>
                   <Button
                     variant="ghost"
@@ -237,7 +237,7 @@ export function BookingCalendar() {
                     className="text-white/60 hover:text-white hover:bg-zinc-800 rounded-none w-8 h-8 p-0"
                     data-testid="button-next-month"
                   >
-                    <ChevronRight className="w-4 h-4" />
+                    <CaretRight className="w-4 h-4" />
                   </Button>
                 </div>
               </div>
@@ -314,7 +314,7 @@ export function BookingCalendar() {
                 <div className="mt-8 space-y-4">
                   <div className="bg-zinc-900 border border-zinc-800 p-4">
                     <h4 className="text-sm font-medium text-white/60 mb-3 flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-[#d0a760]" />
+                      <CheckCircle className="w-4 h-4 text-[#d0a760]" />
                       Overzicht van je boeking
                     </h4>
                     <div className="space-y-2">
@@ -346,7 +346,7 @@ export function BookingCalendar() {
                   >
                     {bookingMutation.isPending ? (
                       <span className="flex items-center justify-center gap-2">
-                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <SpinnerGap className="w-5 h-5 animate-spin" />
                         Bezig met boeken...
                       </span>
                     ) : (

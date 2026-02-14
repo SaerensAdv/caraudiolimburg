@@ -15,12 +15,12 @@ import {
   Truck, 
   Clock, 
   ArrowRight, 
-  Mail, 
+  Envelope, 
   Phone, 
   ShoppingBag,
   Wrench,
-  Calendar
-} from "lucide-react";
+  CalendarBlank
+} from "@phosphor-icons/react";
 import { apiRequest } from "@/lib/queryClient";
 import { trackPurchase } from "@/lib/dataLayer";
 
@@ -292,7 +292,7 @@ export default function OrderConfirmationPage() {
                       <div>
                         <span className="text-white/60 text-sm block mb-1">Besteldatum</span>
                         <p className="font-semibold text-white flex items-center">
-                          <Calendar className="w-4 h-4 mr-2 text-[#d0a760]" />
+                          <CalendarBlank className="w-4 h-4 mr-2 text-[#d0a760]" />
                           {new Date(orderData.createdAt || Date.now()).toLocaleDateString('nl-NL', {
                             weekday: 'long',
                             year: 'numeric',
@@ -361,7 +361,7 @@ export default function OrderConfirmationPage() {
                 <div className="bg-zinc-900 border border-zinc-800 p-6 mb-8">
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-center sm:text-left">
                     <div className="w-12 h-12 bg-[#d0a760]/20 flex items-center justify-center flex-shrink-0">
-                      <Mail className="w-6 h-6 text-[#d0a760]" />
+                      <Envelope className="w-6 h-6 text-[#d0a760]" />
                     </div>
                     <div>
                       <p className="text-white font-medium">Orderbevestiging verzonden</p>

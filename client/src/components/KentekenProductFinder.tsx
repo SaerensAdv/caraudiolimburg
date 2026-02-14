@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Car, Search, ArrowRight, CheckCircle2, Loader2, AlertCircle, Info } from "lucide-react";
+import { Car, MagnifyingGlass, ArrowRight, CheckCircle, SpinnerGap, WarningCircle, Info } from "@phosphor-icons/react";
 import type { VehicleModel } from "@shared/schema";
 
 interface KentekenMatchResult {
@@ -115,7 +115,7 @@ export function KentekenProductFinder({ className = "", variant = "compact" }: K
   return (
     <div className={className}>
       <div className="flex items-center gap-2 mb-3">
-        <Search className="w-4 h-4 text-[#d0a760]" />
+        <MagnifyingGlass className="w-4 h-4 text-[#d0a760]" />
         <span className="text-white/80 text-sm font-medium tracking-wide uppercase">Zoek op kenteken</span>
       </div>
 
@@ -135,16 +135,16 @@ export function KentekenProductFinder({ className = "", variant = "compact" }: K
           className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none px-5 h-12 shrink-0"
         >
           {isLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <SpinnerGap className="h-4 w-4 animate-spin" />
           ) : (
-            <Search className="h-4 w-4" />
+            <MagnifyingGlass className="h-4 w-4" />
           )}
         </Button>
       </div>
 
       {error && (
         <div className="flex items-center gap-2 mt-3 text-red-400 text-sm">
-          <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+          <WarningCircle className="h-3.5 w-3.5 shrink-0" />
           <span>{error}</span>
         </div>
       )}
@@ -169,7 +169,7 @@ export function KentekenProductFinder({ className = "", variant = "compact" }: K
             {result.match.confidence !== 'none' && result.productCount > 0 ? (
               <div>
                 <div className="flex items-center gap-2 mb-3">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+                  <CheckCircle className="h-4 w-4 text-emerald-400 shrink-0" />
                   <span className="text-emerald-400 text-sm font-medium">
                     {result.productCount} product{result.productCount !== 1 ? 'en' : ''} gevonden voor jouw auto
                   </span>

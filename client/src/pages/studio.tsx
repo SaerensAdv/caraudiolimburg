@@ -7,17 +7,17 @@ import { ScrollReveal, StaggerContainer, StaggerItem } from "@/components/Scroll
 import { SEO } from "@/components/SEO";
 import { BreadcrumbSchema } from "@/components/StructuredData";
 import { 
-  ExternalLink, 
+  ArrowSquareOut, 
   Users, 
-  Settings, 
+  Gear, 
   Wrench, 
   CheckCircle, 
-  Sparkles,
+  Sparkle,
   MapPin,
   Phone,
   ArrowRight,
   Play
-} from "lucide-react";
+} from "@phosphor-icons/react";
 import { SiBmw, SiMercedes, SiPorsche, SiAudi, SiVolvo } from "react-icons/si";
 
 export default function StudioPage() {
@@ -120,7 +120,7 @@ export default function StudioPage() {
               <a href="https://caraudiolimburg.studio/offerte-aanvragen/" target="_blank" rel="noopener noreferrer">
                 <Button size="lg" className="bg-[#d0a760] text-black hover:bg-[#b8954e] px-8 py-6 text-lg font-semibold w-full sm:w-auto">
                   Vraag een offerte aan
-                  <ExternalLink className="w-5 h-5 ml-2" />
+                  <ArrowSquareOut className="w-5 h-5 ml-2" />
                 </Button>
               </a>
               <a href="https://caraudiolimburg.studio/" target="_blank" rel="noopener noreferrer">
@@ -183,7 +183,7 @@ export default function StudioPage() {
                   <a href="https://caraudiolimburg.studio/" target="_blank" rel="noopener noreferrer">
                     <Button className="bg-[#d0a760] text-black hover:bg-[#b8954e]">
                       Naar de Studio
-                      <ExternalLink className="w-4 h-4 ml-2" />
+                      <ArrowSquareOut className="w-4 h-4 ml-2" />
                     </Button>
                   </a>
                   <a href="/webshop">
@@ -260,7 +260,7 @@ export default function StudioPage() {
                       }
                     >
                       Offerte aanvragen
-                      <ExternalLink className="w-4 h-4 ml-2" />
+                      <ArrowSquareOut className="w-4 h-4 ml-2" />
                     </Button>
                   </a>
                 </div>
@@ -338,7 +338,7 @@ export default function StudioPage() {
               <div className="bg-zinc-900 border border-zinc-800 p-8 h-full">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="p-3 bg-[#d0a760]/10">
-                    <Sparkles className="w-6 h-6 text-[#d0a760]" />
+                    <Sparkle className="w-6 h-6 text-[#d0a760]" />
                   </div>
                   <h3 className="text-2xl font-bold text-white">Klaar om te starten?</h3>
                 </div>
@@ -355,7 +355,7 @@ export default function StudioPage() {
                   >
                     <Button size="lg" className="w-full bg-[#d0a760] text-black hover:bg-[#b8954e] py-6">
                       Vraag een offerte aan
-                      <ExternalLink className="w-5 h-5 ml-2" />
+                      <ArrowSquareOut className="w-5 h-5 ml-2" />
                     </Button>
                   </a>
                   <a 
@@ -366,7 +366,7 @@ export default function StudioPage() {
                   >
                     <Button variant="outline" size="lg" className="w-full border-zinc-700 text-white hover:bg-zinc-800 hover:text-white py-6">
                       Neem contact op
-                      <ExternalLink className="w-5 h-5 ml-2" />
+                      <ArrowSquareOut className="w-5 h-5 ml-2" />
                     </Button>
                   </a>
                   <a 
@@ -400,7 +400,7 @@ export default function StudioPage() {
             <a href="https://caraudiolimburg.studio/" target="_blank" rel="noopener noreferrer">
               <Button size="lg" className="bg-black text-white hover:bg-zinc-900 px-8 py-6 text-lg">
                 Bezoek caraudiolimburg.studio
-                <ExternalLink className="w-5 h-5 ml-2" />
+                <ArrowSquareOut className="w-5 h-5 ml-2" />
               </Button>
             </a>
           </ScrollReveal>

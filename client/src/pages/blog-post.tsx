@@ -19,7 +19,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { ScrollReveal, StaggerContainer, StaggerItem } from "@/components/ScrollAnimations";
-import { Calendar, User, ArrowRight, BookOpen, ChevronLeft, Eye } from "lucide-react";
+import { CalendarBlank, User, ArrowRight, BookOpen, CaretLeft, Eye } from "@phosphor-icons/react";
 import type { BlogPost, BlogCategory, User as UserType } from "@shared/schema";
 import { format } from "date-fns";
 import { nl } from "date-fns/locale";
@@ -209,7 +209,7 @@ export default function BlogPostPage() {
             <p className="text-white/60 mb-8">Het artikel dat je zoekt bestaat niet of is niet beschikbaar.</p>
             <Link href="/blog">
               <span className="inline-flex items-center gap-2 text-[#d0a760] hover:underline">
-                <ChevronLeft className="w-4 h-4" />
+                <CaretLeft className="w-4 h-4" />
                 Terug naar Kenniscentrum
               </span>
             </Link>
@@ -299,7 +299,7 @@ export default function BlogPostPage() {
                     </Badge>
                   )}
                   <span className="text-white/60 text-sm flex items-center gap-1">
-                    <Calendar className="w-4 h-4" />
+                    <CalendarBlank className="w-4 h-4" />
                     {formatDate(post.publishedAt)}
                   </span>
                   {post.viewCount !== null && post.viewCount > 0 && (
@@ -374,7 +374,7 @@ export default function BlogPostPage() {
               <div className="mt-16 pt-8 border-t border-zinc-800">
                 <Link href="/blog">
                   <span className="inline-flex items-center gap-2 text-[#d0a760] hover:gap-3 transition-all" data-testid="link-back-to-blog">
-                    <ChevronLeft className="w-4 h-4" />
+                    <CaretLeft className="w-4 h-4" />
                     Terug naar Kenniscentrum
                   </span>
                 </Link>
@@ -416,7 +416,7 @@ export default function BlogPostPage() {
                         </div>
                         <div className="p-5 flex flex-col flex-grow">
                           <span className="text-white/50 text-xs flex items-center gap-1 mb-2">
-                            <Calendar className="w-3 h-3" />
+                            <CalendarBlank className="w-3 h-3" />
                             {formatDate(relatedPost.publishedAt)}
                           </span>
                           <h3 className="text-base font-medium text-white mb-2 group-hover:text-[#d0a760] transition-colors line-clamp-2 flex-grow">

@@ -24,35 +24,35 @@ import { format } from "date-fns";
 import { nl } from "date-fns/locale";
 import { 
   Package, 
-  Calendar, 
+  CalendarBlank, 
   FileText, 
   User, 
   Phone,
-  Mail,
+  Envelope,
   MapPin,
   Clock,
-  Euro,
+  CurrencyEur,
   Car,
   CheckCircle,
-  AlertCircle,
-  Download,
-  ChevronDown,
-  ChevronRight,
-  Settings,
-  LogOut,
+  WarningCircle,
+  DownloadSimple,
+  CaretDown,
+  CaretRight,
+  Gear,
+  SignOut,
   Shield,
   CreditCard,
   Truck,
-  ExternalLink,
-  HelpCircle,
-  MessageCircle,
+  ArrowSquareOut,
+  Question,
+  ChatCircle,
   ArrowRight,
   Heart,
-  Trash2,
+  Trash,
   X,
-  Edit,
-  Send
-} from "lucide-react";
+  PencilSimple,
+  PaperPlaneTilt
+} from "@phosphor-icons/react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { Order, Booking, Product, Wishlist, OrderItem } from "@shared/schema";
@@ -331,7 +331,7 @@ export default function CustomerPortal() {
         return <Clock className="h-3.5 w-3.5" />;
       case "pending":
       case "pending_scheduling":
-        return <AlertCircle className="h-3.5 w-3.5" />;
+        return <WarningCircle className="h-3.5 w-3.5" />;
       case "shipped":
         return <Truck className="h-3.5 w-3.5" />;
       default:
@@ -415,7 +415,7 @@ export default function CustomerPortal() {
                     }`}
                     data-testid="nav-bookings"
                   >
-                    <Calendar className="w-5 h-5" />
+                    <CalendarBlank className="w-5 h-5" />
                     <span>Afspraken</span>
                   </button>
                   <button
@@ -439,7 +439,7 @@ export default function CustomerPortal() {
                     }`}
                     data-testid="nav-account"
                   >
-                    <Settings className="w-5 h-5" />
+                    <Gear className="w-5 h-5" />
                     <span>Account</span>
                   </button>
                   <button
@@ -451,7 +451,7 @@ export default function CustomerPortal() {
                     }`}
                     data-testid="nav-support"
                   >
-                    <HelpCircle className="w-5 h-5" />
+                    <Question className="w-5 h-5" />
                     <span>Support</span>
                   </button>
 
@@ -462,7 +462,7 @@ export default function CustomerPortal() {
                     className="w-full flex items-center gap-3 px-4 py-3 text-left text-zinc-500 hover:text-red-400 hover:bg-zinc-900/50 transition-all"
                     data-testid="nav-logout"
                   >
-                    <LogOut className="w-5 h-5" />
+                    <SignOut className="w-5 h-5" />
                     <span>Uitloggen</span>
                   </a>
                 </nav>
@@ -492,7 +492,7 @@ export default function CustomerPortal() {
                     }`}
                     data-testid="mobile-nav-bookings"
                   >
-                    <Calendar className="w-4 h-4" />
+                    <CalendarBlank className="w-4 h-4" />
                     <span className="text-sm">Afspraken</span>
                   </button>
                   <button
@@ -516,7 +516,7 @@ export default function CustomerPortal() {
                     }`}
                     data-testid="mobile-nav-account"
                   >
-                    <Settings className="w-4 h-4" />
+                    <Gear className="w-4 h-4" />
                     <span className="text-sm">Account</span>
                   </button>
                   <button
@@ -528,7 +528,7 @@ export default function CustomerPortal() {
                     }`}
                     data-testid="mobile-nav-support"
                   >
-                    <HelpCircle className="w-4 h-4" />
+                    <Question className="w-4 h-4" />
                     <span className="text-sm">Support</span>
                   </button>
                 </div>
@@ -614,7 +614,7 @@ export default function CustomerPortal() {
                                         data-testid={`button-download-invoice-${order.id}`}
                                         onClick={() => window.open(`/api/orders/${order.id}/invoice`, '_blank')}
                                       >
-                                        <Download className="h-4 w-4" />
+                                        <DownloadSimple className="h-4 w-4" />
                                       </Button>
                                     </div>
                                   </td>
@@ -647,7 +647,7 @@ export default function CustomerPortal() {
                                   </div>
                                   <div className="flex items-center gap-3">
                                     <span className="text-[#d0a760] font-medium">€{order.total}</span>
-                                    <ChevronDown className={`w-5 h-5 text-zinc-500 transition-transform ${expandedOrders.has(order.id) ? 'rotate-180' : ''}`} />
+                                    <CaretDown className={`w-5 h-5 text-zinc-500 transition-transform ${expandedOrders.has(order.id) ? 'rotate-180' : ''}`} />
                                   </div>
                                 </CollapsibleTrigger>
                                 
@@ -686,7 +686,7 @@ export default function CustomerPortal() {
                                         data-testid={`button-download-invoice-mobile-${order.id}`}
                                         onClick={() => window.open(`/api/orders/${order.id}/invoice`, '_blank')}
                                       >
-                                        <Download className="h-4 w-4 mr-2" />
+                                        <DownloadSimple className="h-4 w-4 mr-2" />
                                         Factuur
                                       </Button>
                                     </div>
@@ -727,7 +727,7 @@ export default function CustomerPortal() {
                   <div className="space-y-6">
                     <div className="flex items-center justify-between">
                       <h2 className="text-xl md:text-2xl font-light text-white flex items-center gap-3">
-                        <Calendar className="w-6 h-6 text-[#d0a760]" />
+                        <CalendarBlank className="w-6 h-6 text-[#d0a760]" />
                         Mijn Afspraken
                       </h2>
                       <Link href="/contact">
@@ -736,7 +736,7 @@ export default function CustomerPortal() {
                           data-testid="button-new-booking"
                         >
                           <span className="hidden sm:inline">Contact opnemen</span>
-                          <Calendar className="w-4 h-4 sm:ml-2" />
+                          <CalendarBlank className="w-4 h-4 sm:ml-2" />
                         </Button>
                       </Link>
                     </div>
@@ -817,7 +817,7 @@ export default function CustomerPortal() {
                                   onClick={() => openBookingEdit(booking)}
                                   disabled={booking.status === "cancelled"}
                                 >
-                                  <Calendar className="h-4 w-4 mr-2" />
+                                  <CalendarBlank className="h-4 w-4 mr-2" />
                                   Verzetten
                                 </Button>
                                 <Button
@@ -848,7 +848,7 @@ export default function CustomerPortal() {
                     ) : (
                       <div className="bg-zinc-950 border border-zinc-800 py-16 px-8 text-center">
                         <div className="w-20 h-20 mx-auto mb-6 bg-zinc-900 flex items-center justify-center">
-                          <Calendar className="w-10 h-10 text-zinc-600" />
+                          <CalendarBlank className="w-10 h-10 text-zinc-600" />
                         </div>
                         <h3 className="text-xl font-light text-white mb-2">
                           Nog geen afspraken
@@ -861,7 +861,7 @@ export default function CustomerPortal() {
                             className="bg-[#d0a760] text-black hover:bg-[#b8954e] rounded-none px-8"
                             data-testid="button-book-appointment"
                           >
-                            <Calendar className="h-4 w-4 mr-2" />
+                            <CalendarBlank className="h-4 w-4 mr-2" />
                             Contact opnemen
                           </Button>
                         </Link>
@@ -934,7 +934,7 @@ export default function CustomerPortal() {
                                   className="text-zinc-400 hover:text-red-400 hover:bg-zinc-800 rounded-none"
                                   data-testid={`remove-from-wishlist-${item.productId}`}
                                 >
-                                  <Trash2 className="h-4 w-4" />
+                                  <Trash className="h-4 w-4" />
                                 </Button>
                               </div>
                             </div>
@@ -970,7 +970,7 @@ export default function CustomerPortal() {
                 {activeTab === "account" && (
                   <div className="space-y-6">
                     <h2 className="text-xl md:text-2xl font-light text-white flex items-center gap-3">
-                      <Settings className="w-6 h-6 text-[#d0a760]" />
+                      <Gear className="w-6 h-6 text-[#d0a760]" />
                       Account Instellingen
                     </h2>
 
@@ -989,7 +989,7 @@ export default function CustomerPortal() {
                             data-testid="button-edit-profile"
                             onClick={openProfileEdit}
                           >
-                            <Edit className="h-4 w-4 mr-2" />
+                            <PencilSimple className="h-4 w-4 mr-2" />
                             Bewerken
                           </Button>
                         </div>
@@ -1127,7 +1127,7 @@ export default function CustomerPortal() {
                 {activeTab === "support" && (
                   <div className="space-y-6">
                     <h2 className="text-xl md:text-2xl font-light text-white flex items-center gap-3">
-                      <HelpCircle className="w-6 h-6 text-[#d0a760]" />
+                      <Question className="w-6 h-6 text-[#d0a760]" />
                       Hulp & Support
                     </h2>
 
@@ -1158,7 +1158,7 @@ export default function CustomerPortal() {
                             data-testid="link-email-support"
                           >
                             <div className="w-12 h-12 bg-zinc-800 group-hover:bg-[#d0a760]/10 flex items-center justify-center transition-colors">
-                              <Mail className="w-5 h-5 text-[#d0a760]" />
+                              <Envelope className="w-5 h-5 text-[#d0a760]" />
                             </div>
                             <div>
                               <p className="text-white font-medium">E-mail</p>
@@ -1173,7 +1173,7 @@ export default function CustomerPortal() {
                       <div className="bg-zinc-950 border border-zinc-800">
                         <div className="px-6 py-4 border-b border-zinc-800">
                           <h3 className="text-white font-medium flex items-center gap-2">
-                            <MessageCircle className="w-4 h-4 text-[#d0a760]" />
+                            <ChatCircle className="w-4 h-4 text-[#d0a760]" />
                             Stuur een bericht
                           </h3>
                         </div>
@@ -1217,7 +1217,7 @@ export default function CustomerPortal() {
                             {submitSupportMutation.isPending ? (
                               <div className="w-4 h-4 border-2 border-black border-t-transparent animate-spin mr-2" />
                             ) : (
-                              <Send className="h-4 w-4 mr-2" />
+                              <PaperPlaneTilt className="h-4 w-4 mr-2" />
                             )}
                             Verstuur bericht
                           </Button>
@@ -1241,7 +1241,7 @@ export default function CustomerPortal() {
                                 <FileText className="w-5 h-5 text-zinc-500 group-hover:text-[#d0a760] transition-colors" />
                                 <span className="text-zinc-300 group-hover:text-white transition-colors">Veelgestelde vragen</span>
                               </div>
-                              <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-[#d0a760] transition-colors" />
+                              <CaretRight className="w-4 h-4 text-zinc-600 group-hover:text-[#d0a760] transition-colors" />
                             </div>
                           </Link>
 
@@ -1253,7 +1253,7 @@ export default function CustomerPortal() {
                               <CheckCircle className="w-5 h-5 text-zinc-500 group-hover:text-[#d0a760] transition-colors" />
                               <span className="text-zinc-300 group-hover:text-white transition-colors">Garantie informatie</span>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-[#d0a760] transition-colors" />
+                            <CaretRight className="w-4 h-4 text-zinc-600 group-hover:text-[#d0a760] transition-colors" />
                           </div>
 
                           <div 
@@ -1264,7 +1264,7 @@ export default function CustomerPortal() {
                               <Package className="w-5 h-5 text-zinc-500 group-hover:text-[#d0a760] transition-colors" />
                               <span className="text-zinc-300 group-hover:text-white transition-colors">Retourneren</span>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-[#d0a760] transition-colors" />
+                            <CaretRight className="w-4 h-4 text-zinc-600 group-hover:text-[#d0a760] transition-colors" />
                           </div>
 
                           <div 
@@ -1275,7 +1275,7 @@ export default function CustomerPortal() {
                               <FileText className="w-5 h-5 text-zinc-500 group-hover:text-[#d0a760] transition-colors" />
                               <span className="text-zinc-300 group-hover:text-white transition-colors">Algemene voorwaarden</span>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-[#d0a760] transition-colors" />
+                            <CaretRight className="w-4 h-4 text-zinc-600 group-hover:text-[#d0a760] transition-colors" />
                           </div>
 
                           <div 
@@ -1286,7 +1286,7 @@ export default function CustomerPortal() {
                               <Shield className="w-5 h-5 text-zinc-500 group-hover:text-[#d0a760] transition-colors" />
                               <span className="text-zinc-300 group-hover:text-white transition-colors">Privacy beleid</span>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-[#d0a760] transition-colors" />
+                            <CaretRight className="w-4 h-4 text-zinc-600 group-hover:text-[#d0a760] transition-colors" />
                           </div>
                         </div>
                       </div>
@@ -1424,7 +1424,7 @@ export default function CustomerPortal() {
                   className="bg-[#d0a760] text-black hover:bg-[#b8954e] rounded-none"
                   data-testid="button-download-invoice-dialog"
                 >
-                  <Download className="h-4 w-4 mr-2" />
+                  <DownloadSimple className="h-4 w-4 mr-2" />
                   Download factuur
                 </Button>
               )}
@@ -1437,7 +1437,7 @@ export default function CustomerPortal() {
           <DialogContent className="bg-zinc-950 border-zinc-800 text-white max-w-md">
             <DialogHeader>
               <DialogTitle className="text-xl font-light flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-[#d0a760]" />
+                <CalendarBlank className="w-5 h-5 text-[#d0a760]" />
                 Afspraak verzetten
               </DialogTitle>
               <DialogDescription className="text-zinc-400">
@@ -1455,7 +1455,7 @@ export default function CustomerPortal() {
                       className="w-full justify-start bg-zinc-900 border-zinc-700 text-white hover:bg-zinc-800 rounded-none"
                       data-testid="button-select-date"
                     >
-                      <Calendar className="mr-2 h-4 w-4" />
+                      <CalendarBlank className="mr-2 h-4 w-4" />
                       {bookingEditDate ? format(bookingEditDate, "d MMMM yyyy", { locale: nl }) : "Selecteer datum"}
                     </Button>
                   </PopoverTrigger>

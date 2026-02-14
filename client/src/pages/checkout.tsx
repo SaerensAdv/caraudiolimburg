@@ -26,16 +26,16 @@ import {
   User, 
   MapPin, 
   Check,
-  ShoppingBag,
+  Bag as ShoppingBag,
   Truck,
-  ChevronRight,
+  CaretRight as ChevronRight,
   ShieldCheck,
-  AlertCircle,
+  WarningCircle as AlertCircle,
   CheckCircle,
   Package,
-  RefreshCw,
+  ArrowClockwise as RefreshCw,
   Shield
-} from 'lucide-react';
+} from '@phosphor-icons/react';
 import carAudioLogo from "@assets/Caraudiolimburg-logo_1757008375383_1757016657436.png";
 
 const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY

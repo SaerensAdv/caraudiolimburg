@@ -1,4 +1,4 @@
-import { FileText, Calendar, ArrowRight } from "lucide-react";
+import { FileText, CalendarBlank, ArrowRight } from "@phosphor-icons/react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 
@@ -19,7 +19,7 @@ const defaultContent = {
   booking: {
     title: "Afspraak Maken",
     description: "Plan een afspraak met onze experts voor persoonlijk advies. Wij demonstreren de mogelijkheden in onze showroom.",
-    icon: Calendar,
+    icon: CalendarBlank,
     link: "/afspraak-maken",
     buttonText: "Afspraak Plannen"
   }

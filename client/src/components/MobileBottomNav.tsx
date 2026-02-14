@@ -2,7 +2,7 @@ import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { useGuestCart } from "@/lib/guestCart";
-import { Home, ShoppingBag, ShoppingCart, User } from "lucide-react";
+import { House, Bag, ShoppingCart, User } from "@phosphor-icons/react";
 import { Badge } from "@/components/ui/badge";
 
 export function MobileBottomNav() {
@@ -35,12 +35,12 @@ export function MobileBottomNav() {
     {
       href: "/",
       label: "Home",
-      icon: Home,
+      icon: House,
     },
     {
       href: "/webshop",
       label: "Shop",
-      icon: ShoppingBag,
+      icon: Bag,
     },
     {
       href: "/cart",

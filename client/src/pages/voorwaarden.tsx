@@ -3,7 +3,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CartSidebar } from "@/components/CartSidebar";
 import { ScrollReveal } from "@/components/ScrollAnimations";
-import { FileText, Truck, RotateCcw, CreditCard, Wrench, AlertCircle } from "lucide-react";
+import { FileText, Truck, ArrowCounterClockwise, CreditCard, Wrench, WarningCircle } from "@phosphor-icons/react";
 
 export default function VoorwaardenPage() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -46,7 +46,7 @@ Door een bestelling te plaatsen of een afspraak te maken, gaat u akkoord met dez
 • Garantie op installatiewerkzaamheden: 2 jaar`
     },
     {
-      icon: RotateCcw,
+      icon: ArrowCounterClockwise,
       title: "Retourneren & Garantie",
       content: `• 30 dagen bedenktijd voor online aankopen (niet-geïnstalleerde producten)
 • Producten moeten ongebruikt en in originele verpakking worden geretourneerd
@@ -56,7 +56,7 @@ Door een bestelling te plaatsen of een afspraak te maken, gaat u akkoord met dez
 • Defecte producten worden gerepareerd of vervangen`
     },
     {
-      icon: AlertCircle,
+      icon: WarningCircle,
       title: "Aansprakelijkheid",
       content: `• Car Audio Limburg is niet aansprakelijk voor indirecte schade
 • Onze aansprakelijkheid is beperkt tot het aankoopbedrag van het product

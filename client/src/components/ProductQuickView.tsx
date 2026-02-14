@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
-import { X, ShoppingCart, Wrench, ChevronLeft, ChevronRight, Eye } from "lucide-react";
+import { X, ShoppingCart, Wrench, CaretLeft, CaretRight, Eye } from "@phosphor-icons/react";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { useGuestCart } from "@/lib/guestCart";
@@ -143,13 +143,13 @@ export function ProductQuickView({ product, isOpen, onClose }: ProductQuickViewP
                     onClick={prevImage}
                     className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white transition-colors"
                   >
-                    <ChevronLeft className="w-5 h-5" />
+                    <CaretLeft className="w-5 h-5" />
                   </button>
                   <button
                     onClick={nextImage}
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-black/50 hover:bg-black/70 text-white transition-colors"
                   >
-                    <ChevronRight className="w-5 h-5" />
+                    <CaretRight className="w-5 h-5" />
                   </button>
                   
                   {/* Image dots */}

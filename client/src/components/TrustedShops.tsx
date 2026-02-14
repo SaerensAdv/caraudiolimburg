@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
-import { Star, User, Shield, ExternalLink } from "lucide-react";
+import { Star, User, Shield, ArrowSquareOut } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import trustedShopsLogo from "@assets/trusted-shops-icon-logo-png_seeklogo-620346_1770318250295.png";
 
@@ -252,7 +252,7 @@ export function TrustedShopsBadgeLink({ className = '' }: { className?: string }
         </div>
         <div className="flex items-center text-xs md:text-sm text-zinc-500">
           <span className="truncate">{count} reviews</span>
-          <ExternalLink className="w-3 h-3 ml-1 flex-shrink-0" />
+          <ArrowSquareOut className="w-3 h-3 ml-1 flex-shrink-0" />
         </div>
       </div>
     </a>

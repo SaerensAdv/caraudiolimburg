@@ -2,37 +2,37 @@ import { useState } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { 
-  MessageSquare, 
+  ChatText, 
   Star, 
-  Mail, 
-  MousePointer2, 
-  MessageCircle,
+  Envelope, 
+  CursorClick, 
+  ChatCircle,
   CreditCard,
-  Box,
-  Volume2,
+  Cube,
+  SpeakerHigh,
   Car,
-  BarChart3,
+  ChartBar,
   ArrowLeft,
   Check,
-  Sparkles,
-  ExternalLink,
-  Zap,
+  Sparkle,
+  ArrowSquareOut,
+  Lightning,
   Bell,
   Gift,
   Users,
-  Smartphone,
+  DeviceMobile,
   Timer,
-  Target,
-  ClipboardList,
-  Video,
+  Crosshair,
+  ClipboardText,
+  VideoCamera,
   Scan,
   ShieldCheck,
   Heart,
-  GitCompare,
+  GitDiff,
   Calculator,
   Percent,
-  Instagram
-} from "lucide-react";
+  InstagramLogo
+} from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SiTrustpilot, SiGoogle, SiWhatsapp, SiKlarna, SiTwilio, SiInstagram, SiFacebook } from "react-icons/si";
@@ -55,7 +55,7 @@ const tools: Tool[] = [
     name: "AI Chatbot Assistent",
     description: "Intelligente chatbot die 24/7 vragen beantwoordt over producten, installaties en services. Gebaseerd op je productcatalogus.",
     category: "conversie",
-    icon: <MessageSquare className="w-6 h-6" />,
+    icon: <ChatText className="w-6 h-6" />,
     benefits: [
       "24/7 klantenservice",
       "Automatische productaanbevelingen",
@@ -86,7 +86,7 @@ const tools: Tool[] = [
     name: "E-mail Marketing Automatisering",
     description: "Geautomatiseerde e-mailcampagnes voor verlaten winkelwagens, nieuwe producten en gepersonaliseerde aanbiedingen.",
     category: "conversie",
-    icon: <Mail className="w-6 h-6" />,
+    icon: <Envelope className="w-6 h-6" />,
     benefits: [
       "Verlaten winkelwagen herstel",
       "Welkomstreeks voor nieuwe klanten",
@@ -101,7 +101,7 @@ const tools: Tool[] = [
     name: "Heatmap & Gebruikersanalyse",
     description: "Begrijp hoe bezoekers je website gebruiken met visuele heatmaps, sessie-opnames en conversie-funnels.",
     category: "analytics",
-    icon: <MousePointer2 className="w-6 h-6" />,
+    icon: <CursorClick className="w-6 h-6" />,
     benefits: [
       "Visuele heatmaps",
       "Sessie-opnames",
@@ -132,7 +132,7 @@ const tools: Tool[] = [
     name: "WhatsApp Business Chat",
     description: "Direct contact via WhatsApp voor snelle vragen, offertes en klantenservice. De voorkeurskanaal van veel klanten.",
     category: "conversie",
-    icon: <MessageCircle className="w-6 h-6" />,
+    icon: <ChatCircle className="w-6 h-6" />,
     brandIcon: <SiWhatsapp className="w-5 h-5 text-[#25D366]" />,
     benefits: [
       "Directe communicatie",
@@ -164,7 +164,7 @@ const tools: Tool[] = [
     name: "3D Product Viewer",
     description: "Interactieve 3D weergave van speakers, versterkers en autoradio's. Klanten kunnen producten van alle kanten bekijken.",
     category: "content",
-    icon: <Box className="w-6 h-6" />,
+    icon: <Cube className="w-6 h-6" />,
     benefits: [
       "Immersieve productervaring",
       "Minder retourzendingen",
@@ -179,7 +179,7 @@ const tools: Tool[] = [
     name: "Audio Demo Player",
     description: "Laat klanten horen hoe verschillende speakers en subwoofers klinken met interactieve audio samples en vergelijkingen.",
     category: "content",
-    icon: <Volume2 className="w-6 h-6" />,
+    icon: <SpeakerHigh className="w-6 h-6" />,
     benefits: [
       "Uniek voor car audio",
       "Helpt bij productkeuze",
@@ -209,7 +209,7 @@ const tools: Tool[] = [
     name: "SMS Marketing & Notificaties",
     description: "Verstuur gepersonaliseerde SMS-berichten voor orderupdates, aanbiedingen en herinneringen. 98% open rate.",
     category: "conversie",
-    icon: <Smartphone className="w-6 h-6" />,
+    icon: <DeviceMobile className="w-6 h-6" />,
     brandIcon: <SiTwilio className="w-5 h-5 text-[#F22F46]" />,
     benefits: [
       "Hoge open rate (98%)",
@@ -225,7 +225,7 @@ const tools: Tool[] = [
     name: "Exit-Intent Popup",
     description: "Vang bezoekers op die de site willen verlaten met een aantrekkelijke aanbieding of nieuwsbrief inschrijving.",
     category: "conversie",
-    icon: <Target className="w-6 h-6" />,
+    icon: <Crosshair className="w-6 h-6" />,
     benefits: [
       "Verloren bezoekers terugwinnen",
       "E-mail lijst opbouwen",
@@ -300,7 +300,7 @@ const tools: Tool[] = [
     name: "A/B Testing Platform",
     description: "Test verschillende versies van je pagina's om te ontdekken wat het beste converteert. Data-gedreven optimalisatie.",
     category: "analytics",
-    icon: <GitCompare className="w-6 h-6" />,
+    icon: <GitDiff className="w-6 h-6" />,
     benefits: [
       "Data-gedreven beslissingen",
       "Continu optimaliseren",
@@ -315,7 +315,7 @@ const tools: Tool[] = [
     name: "Klanttevredenheid Surveys",
     description: "Verzamel feedback na aankoop of installatie. Meet NPS scores en verbeter je service continu.",
     category: "analytics",
-    icon: <ClipboardList className="w-6 h-6" />,
+    icon: <ClipboardText className="w-6 h-6" />,
     benefits: [
       "NPS score meten",
       "Feedback verzamelen",
@@ -330,7 +330,7 @@ const tools: Tool[] = [
     name: "Video Product Demo's",
     description: "Embed installatie video's en productdemonstraties rechtstreeks op productpagina's. Verhoogt engagement.",
     category: "content",
-    icon: <Video className="w-6 h-6" />,
+    icon: <VideoCamera className="w-6 h-6" />,
     benefits: [
       "Visuele uitleg",
       "Installatie tutorials",
@@ -420,7 +420,7 @@ const tools: Tool[] = [
     name: "Instagram Feed Widget",
     description: "Toon je Instagram posts en reels direct op de website. Bouw social proof met je installatie portfolio.",
     category: "content",
-    icon: <Instagram className="w-6 h-6" />,
+    icon: <InstagramLogo className="w-6 h-6" />,
     brandIcon: <SiInstagram className="w-5 h-5 text-[#E4405F]" />,
     benefits: [
       "Social proof",
@@ -481,7 +481,7 @@ export default function DemoTools() {
           <div className="max-w-3xl mb-12">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 bg-gradient-to-br from-[#d0a760] to-[#a88540] rounded-xl flex items-center justify-center">
-                <Zap className="w-6 h-6 text-[#0a0a0a]" />
+                <Lightning className="w-6 h-6 text-[#0a0a0a]" />
               </div>
               <Badge className="bg-[#d0a760]/20 text-[#d0a760] border-[#d0a760]/30">
                 25 Integraties
@@ -542,7 +542,7 @@ export default function DemoTools() {
                   <div className="flex items-center gap-2">
                     <Badge className={statusColors[tool.status]}>
                       {tool.status === "geïntegreerd" && <Check className="w-3 h-3 mr-1" />}
-                      {tool.status === "binnenkort" && <Sparkles className="w-3 h-3 mr-1" />}
+                      {tool.status === "binnenkort" && <Sparkle className="w-3 h-3 mr-1" />}
                       {tool.status.charAt(0).toUpperCase() + tool.status.slice(1)}
                     </Badge>
                   </div>
@@ -566,7 +566,7 @@ export default function DemoTools() {
 
                 <div className="flex items-center justify-between pt-4 border-t border-zinc-800/50">
                   <div className="flex items-center gap-2">
-                    <BarChart3 className={`w-4 h-4 ${impactColors[tool.conversionImpact]}`} />
+                    <ChartBar className={`w-4 h-4 ${impactColors[tool.conversionImpact]}`} />
                     <span className={`text-sm ${impactColors[tool.conversionImpact]}`}>
                       {tool.conversionImpact === "hoog" ? "Hoge" : tool.conversionImpact === "medium" ? "Gemiddelde" : "Lage"} impact
                     </span>
@@ -582,7 +582,7 @@ export default function DemoTools() {
           <div className="mt-16 bg-gradient-to-r from-[#d0a760]/20 via-[#d0a760]/10 to-transparent border border-[#d0a760]/30 rounded-2xl p-8">
             <div className="flex flex-col md:flex-row items-center gap-6">
               <div className="w-16 h-16 bg-gradient-to-br from-[#d0a760] to-[#a88540] rounded-2xl flex items-center justify-center flex-shrink-0">
-                <Sparkles className="w-8 h-8 text-[#0a0a0a]" />
+                <Sparkle className="w-8 h-8 text-[#0a0a0a]" />
               </div>
               <div className="flex-1 text-center md:text-left">
                 <h2 className="text-2xl font-bold text-white mb-2">
@@ -595,7 +595,7 @@ export default function DemoTools() {
               <Link href="/contact">
                 <Button className="bg-[#d0a760] hover:bg-[#b8934d] text-[#0a0a0a] px-8" data-testid="contact-cta">
                   Neem contact op
-                  <ExternalLink className="w-4 h-4 ml-2" />
+                  <ArrowSquareOut className="w-4 h-4 ml-2" />
                 </Button>
               </Link>
             </div>

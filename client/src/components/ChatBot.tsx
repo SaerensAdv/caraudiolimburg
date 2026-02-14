@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useLocation } from "wouter";
-import { MessageCircle, X, Send, Headphones, User, Loader2, Volume2 } from "lucide-react";
+import { ChatCircle, X, PaperPlaneTilt, Headphones, User, SpinnerGap, SpeakerHigh } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -175,7 +175,7 @@ export function ChatBot() {
                         {message.role === "user" ? (
                           <User className="w-4 h-4 text-[#0a0a0a]" />
                         ) : (
-                          <Volume2 className="w-4 h-4 text-[#d0a760]" />
+                          <SpeakerHigh className="w-4 h-4 text-[#d0a760]" />
                         )}
                       </div>
                       <div
@@ -193,7 +193,7 @@ export function ChatBot() {
                   {isLoading && (
                     <div className="flex gap-3">
                       <div className="w-8 h-8 bg-zinc-800 border border-[#d0a760]/20 flex items-center justify-center">
-                        <Volume2 className="w-4 h-4 text-[#d0a760]" />
+                        <SpeakerHigh className="w-4 h-4 text-[#d0a760]" />
                       </div>
                       <div className="bg-zinc-900 border border-zinc-800 px-4 py-3">
                         <div className="flex items-center gap-3">
@@ -225,7 +225,7 @@ export function ChatBot() {
                     className="bg-gradient-to-br from-[#d0a760] to-[#a88540] hover:from-[#e0b770] hover:to-[#b89550] text-[#0a0a0a] rounded-none shadow-[0_0_15px_rgba(208,167,96,0.2)] disabled:opacity-50"
                     data-testid="chatbot-send"
                   >
-                    <Send className="w-4 h-4" />
+                    <PaperPlaneTilt className="w-4 h-4" />
                   </Button>
                 </div>
               </form>
@@ -265,7 +265,7 @@ export function ChatBot() {
               transition={{ duration: 0.15 }}
               className="relative z-10"
             >
-              <MessageCircle className="w-5 h-5 md:w-6 md:h-6 text-[#0a0a0a]" />
+              <ChatCircle className="w-5 h-5 md:w-6 md:h-6 text-[#0a0a0a]" />
             </motion.div>
           )}
         </AnimatePresence>

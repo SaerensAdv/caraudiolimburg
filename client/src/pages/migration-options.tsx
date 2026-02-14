@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, ArrowRight, Server, Cloud, Zap, Shield, Clock, Euro, Users, Database, Image, Globe } from "lucide-react";
+import { Check, X, ArrowRight, HardDrives, Cloud, Lightning, Shield, Clock, CurrencyEur, Users, Database, ImageSquare, Globe } from "@phosphor-icons/react";
 
 interface MigrationOption {
   id: string;
@@ -41,7 +41,7 @@ const migrationOptions: MigrationOption[] = [
     id: "wp-com-new-nl",
     title: "WordPress naar .com, Nieuwe webshop op .nl",
     description: "WordPress wordt verplaatst naar caraudiolimburg.com (of uitgefaseerd). De nieuwe webshop gaat live op het hoofddomein caraudiolimburg.nl.",
-    icon: <Zap className="w-8 h-8" />,
+    icon: <Lightning className="w-8 h-8" />,
     pros: [
       "Hoofddomein .nl krijgt de nieuwe, snelle webshop",
       "Beste SEO-strategie: alle autoriteit op .nl",
@@ -63,7 +63,7 @@ const migrationOptions: MigrationOption[] = [
     id: "full-nl-replace",
     title: "WordPress volledig vervangen op .nl",
     description: "WordPress op caraudiolimburg.nl wordt volledig uitgeschakeld. De nieuwe webshop neemt het domein direct over. Geen .com nodig.",
-    icon: <Server className="w-8 h-8" />,
+    icon: <HardDrives className="w-8 h-8" />,
     pros: [
       "Schone, definitieve migratie",
       "Geen dubbele kosten of verwarring",
@@ -142,7 +142,7 @@ function CostBadge({ cost }: { cost: "laag" | "gemiddeld" | "hoog" }) {
   
   return (
     <Badge variant="outline" className={colors[cost]}>
-      <Euro className="w-3 h-3 mr-1" />
+      <CurrencyEur className="w-3 h-3 mr-1" />
       {cost.charAt(0).toUpperCase() + cost.slice(1)}
     </Badge>
   );
@@ -183,7 +183,7 @@ export default function MigrationOptions() {
                 </div>
                 <div className="flex items-start gap-4">
                   <div className="p-3 rounded-lg bg-blue-500/10">
-                    <Image className="w-6 h-6 text-blue-400" />
+                    <ImageSquare className="w-6 h-6 text-blue-400" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-white">Afbeeldingen</h3>
@@ -312,14 +312,14 @@ export default function MigrationOptions() {
 
         <div className="mb-16">
           <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-            <Zap className="w-6 h-6 text-amber-400" />
+            <Lightning className="w-6 h-6 text-amber-400" />
             Aanbeveling
           </h2>
           <Card className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/30">
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
                 <div className="p-3 rounded-full bg-amber-500/20">
-                  <Zap className="w-8 h-8 text-amber-400" />
+                  <Lightning className="w-8 h-8 text-amber-400" />
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-white mb-2">WordPress naar .com, Nieuwe webshop op .nl</h3>
@@ -339,7 +339,7 @@ export default function MigrationOptions() {
                       Doorlooptijd: 2-3 weken
                     </div>
                     <div className="flex items-center gap-2 text-sm text-zinc-400">
-                      <Euro className="w-4 h-4" />
+                      <CurrencyEur className="w-4 h-4" />
                       Investering: Gemiddeld
                     </div>
                     <div className="flex items-center gap-2 text-sm text-zinc-400">

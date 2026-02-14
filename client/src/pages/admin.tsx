@@ -49,31 +49,31 @@ import { insertProductSchema } from "@shared/schema";
 import { z } from "zod";
 import { 
   Plus, 
-  Edit, 
-  Trash2, 
+  PencilSimple, 
+  Trash, 
   Package, 
   ShoppingCart, 
-  Calendar,
+  CalendarBlank,
   Users,
-  TrendingUp,
+  TrendUp,
   Eye,
-  Upload,
-  Download,
+  UploadSimple,
+  DownloadSimple,
   X,
   Star,
-  Image,
-  Settings,
-  LayoutDashboard,
+  ImageSquare,
+  Gear,
+  SquaresFour,
   FileText,
-  Menu,
-  LogOut,
-  ChevronRight,
-  ChevronDown,
-  Euro,
-  BarChart3,
-  Home,
+  List,
+  SignOut,
+  CaretRight,
+  CaretDown,
+  CurrencyEur,
+  ChartBar,
+  House,
   Car
-} from "lucide-react";
+} from "@phosphor-icons/react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Collapsible,
@@ -1279,7 +1279,7 @@ export default function Admin() {
       <div className="min-h-screen bg-black flex items-center justify-center p-4">
         <div className="bg-zinc-900 border border-zinc-800 p-12 text-center max-w-md w-full">
           <div className="w-16 h-16 bg-zinc-800 border border-[#d0a760] flex items-center justify-center mx-auto mb-6">
-            <LogOut className="w-8 h-8 text-[#d0a760]" />
+            <SignOut className="w-8 h-8 text-[#d0a760]" />
           </div>
           <h1 className="text-2xl font-bold text-white mb-4">Toegang geweigerd</h1>
           <p className="text-zinc-400 mb-8">
@@ -1435,15 +1435,15 @@ export default function Admin() {
   const totalRevenue = orders?.reduce((sum: number, order: Order) => sum + parseFloat(order.total || '0'), 0) || 0;
 
   const navItems = [
-    { id: 'dashboard' as AdminSection, label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'dashboard' as AdminSection, label: 'Dashboard', icon: SquaresFour },
     { id: 'products' as AdminSection, label: 'Producten', icon: Package },
     { id: 'orders' as AdminSection, label: 'Bestellingen', icon: ShoppingCart },
-    { id: 'bookings' as AdminSection, label: 'Afspraken', icon: Calendar },
+    { id: 'bookings' as AdminSection, label: 'Afspraken', icon: CalendarBlank },
     { id: 'quotes' as AdminSection, label: 'Offertes', icon: FileText },
     { id: 'users' as AdminSection, label: 'Gebruikers', icon: Users },
     { id: 'blog' as AdminSection, label: 'Blog', icon: FileText },
     { id: 'portfolio' as AdminSection, label: 'Portfolio', icon: Car },
-    { id: 'settings' as AdminSection, label: 'Instellingen', icon: Settings },
+    { id: 'settings' as AdminSection, label: 'Instellingen', icon: Gear },
   ];
 
   return (
@@ -1478,7 +1478,7 @@ export default function Admin() {
               <item.icon className="w-5 h-5" />
               <span className="font-medium">{item.label}</span>
               {activeSection === item.id && (
-                <ChevronRight className="w-4 h-4 ml-auto" />
+                <CaretRight className="w-4 h-4 ml-auto" />
               )}
             </button>
           ))}
@@ -1503,7 +1503,7 @@ export default function Admin() {
               className="w-full mt-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-none justify-start"
               data-testid="button-back-to-site"
             >
-              <Home className="w-4 h-4 mr-2" />
+              <House className="w-4 h-4 mr-2" />
               Terug naar site
             </Button>
           </Link>
@@ -1525,7 +1525,7 @@ export default function Admin() {
             className="p-2 text-zinc-400 hover:text-white"
             data-testid="button-toggle-menu"
           >
-            <Menu className="w-6 h-6" />
+            <List className="w-6 h-6" />
           </button>
         </div>
       </div>
@@ -1647,7 +1647,7 @@ export default function Admin() {
                       </p>
                     </div>
                     <div className="w-10 h-10 md:w-12 md:h-12 bg-[#d0a760]/10 border border-[#d0a760]/30 flex items-center justify-center">
-                      <Euro className="w-5 h-5 md:w-6 md:h-6 text-[#d0a760]" />
+                      <CurrencyEur className="w-5 h-5 md:w-6 md:h-6 text-[#d0a760]" />
                     </div>
                   </div>
                   <div className="mt-4 pt-4 border-t border-zinc-800">
@@ -1662,7 +1662,7 @@ export default function Admin() {
                       <p className="text-2xl md:text-3xl font-bold text-white mt-2">{totalBookings}</p>
                     </div>
                     <div className="w-10 h-10 md:w-12 md:h-12 bg-[#d0a760]/10 border border-[#d0a760]/30 flex items-center justify-center">
-                      <Calendar className="w-5 h-5 md:w-6 md:h-6 text-[#d0a760]" />
+                      <CalendarBlank className="w-5 h-5 md:w-6 md:h-6 text-[#d0a760]" />
                     </div>
                   </div>
                   <div className="mt-4 pt-4 border-t border-zinc-800">
@@ -1761,7 +1761,7 @@ export default function Admin() {
                         </p>
                       </div>
                       <div className="w-12 h-12 bg-[#d0a760]/10 border border-[#d0a760]/30 flex items-center justify-center">
-                        <Euro className="w-6 h-6 text-[#d0a760]" />
+                        <CurrencyEur className="w-6 h-6 text-[#d0a760]" />
                       </div>
                     </div>
                     <div className="flex items-center justify-between p-4 bg-zinc-800 border border-zinc-700">
@@ -1772,7 +1772,7 @@ export default function Admin() {
                         </p>
                       </div>
                       <div className="w-12 h-12 bg-zinc-700 border border-zinc-600 flex items-center justify-center">
-                        <TrendingUp className="w-6 h-6 text-zinc-400" />
+                        <TrendUp className="w-6 h-6 text-zinc-400" />
                       </div>
                     </div>
                     <div className="flex items-center justify-between p-4 bg-zinc-800 border border-zinc-700">
@@ -1813,7 +1813,7 @@ export default function Admin() {
                     className="bg-zinc-800 text-white hover:bg-zinc-700 rounded-none h-auto py-4 flex flex-col gap-2 border border-zinc-700"
                     data-testid="button-quick-view-bookings"
                   >
-                    <Calendar className="w-5 h-5" />
+                    <CalendarBlank className="w-5 h-5" />
                     <span className="text-sm">Afspraken</span>
                   </Button>
                   <Button
@@ -1852,7 +1852,7 @@ export default function Admin() {
                     className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white rounded-none"
                     data-testid="button-download-template"
                   >
-                    <Download className="w-4 h-4 mr-2" />
+                    <DownloadSimple className="w-4 h-4 mr-2" />
                     Template
                   </Button>
 
@@ -1868,7 +1868,7 @@ export default function Admin() {
                       variant="outline"
                       className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white rounded-none"
                     >
-                      <Upload className="w-4 h-4 mr-2" />
+                      <UploadSimple className="w-4 h-4 mr-2" />
                       {selectedFile ? selectedFile.name : "CSV Upload"}
                     </Button>
                   </div>
@@ -1891,7 +1891,7 @@ export default function Admin() {
                     className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white rounded-none"
                     data-testid="button-optimize-images"
                   >
-                    <Image className="w-4 h-4 mr-2" />
+                    <ImageSquare className="w-4 h-4 mr-2" />
                     {isOptimizing ? "Optimaliseren..." : "Optimaliseer Afbeeldingen"}
                   </Button>
 
@@ -1916,7 +1916,7 @@ export default function Admin() {
                     className="bg-green-600/20 border-green-600/50 text-green-400 hover:bg-green-600/30 hover:text-green-300 rounded-none"
                     data-testid="button-export-data"
                   >
-                    <Download className="w-4 h-4 mr-2" />
+                    <DownloadSimple className="w-4 h-4 mr-2" />
                     Export Data
                   </Button>
 
@@ -1950,7 +1950,7 @@ export default function Admin() {
                       variant="outline"
                       className="bg-blue-600/20 border-blue-600/50 text-blue-400 hover:bg-blue-600/30 hover:text-blue-300 rounded-none"
                     >
-                      <Upload className="w-4 h-4 mr-2" />
+                      <UploadSimple className="w-4 h-4 mr-2" />
                       Import Data
                     </Button>
                   </div>
@@ -2180,7 +2180,7 @@ export default function Admin() {
                                   data-testid="input-image-upload"
                                 />
                                 <label htmlFor="image-upload" className="cursor-pointer">
-                                  <Upload className="w-8 h-8 text-zinc-500 mx-auto mb-2" />
+                                  <UploadSimple className="w-8 h-8 text-zinc-500 mx-auto mb-2" />
                                   <p className="text-sm text-zinc-400">
                                     {isUploading ? "Uploaden..." : "Klik om afbeeldingen te uploaden"}
                                   </p>
@@ -2555,7 +2555,7 @@ export default function Admin() {
                                     variant="outline"
                                     className="bg-blue-600/20 border-blue-600/50 text-blue-400 hover:bg-blue-600/30 hover:text-blue-300 rounded-none"
                                   >
-                                    <Upload className="w-4 h-4 mr-2" />
+                                    <UploadSimple className="w-4 h-4 mr-2" />
                                     PDF Uploaden
                                   </Button>
                                 </div>
@@ -2598,7 +2598,7 @@ export default function Admin() {
                                       className="flex items-center justify-between bg-zinc-800 px-3 py-2"
                                     >
                                       <div className="flex items-center gap-2 text-sm">
-                                        <Download className="w-4 h-4 text-[#d0a760]" />
+                                        <DownloadSimple className="w-4 h-4 text-[#d0a760]" />
                                         <span className="text-white font-medium">{download.name}</span>
                                         <span className="text-zinc-500">-</span>
                                         <span className="text-zinc-400 text-xs truncate max-w-48">{download.url}</span>
@@ -2642,7 +2642,7 @@ export default function Admin() {
                                     </Badge>
                                   )}
                                 </div>
-                                <ChevronDown className={`w-5 h-5 text-zinc-400 transition-transform ${vehicleCompatibilityOpen ? 'rotate-180' : ''}`} />
+                                <CaretDown className={`w-5 h-5 text-zinc-400 transition-transform ${vehicleCompatibilityOpen ? 'rotate-180' : ''}`} />
                               </button>
                             </CollapsibleTrigger>
                             <CollapsibleContent>
@@ -2703,7 +2703,7 @@ export default function Admin() {
                                                 </span>
                                               )}
                                               {makeModels.length > 0 && (
-                                                <ChevronRight className={`w-4 h-4 text-zinc-400 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                                                <CaretRight className={`w-4 h-4 text-zinc-400 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
                                               )}
                                             </div>
                                           </button>
@@ -2798,7 +2798,7 @@ export default function Admin() {
                                                 className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
                                                 data-testid={`button-delete-variation-${index}`}
                                               >
-                                                <Trash2 className="w-4 h-4" />
+                                                <Trash className="w-4 h-4" />
                                               </Button>
                                             </TableCell>
                                           </TableRow>
@@ -3144,7 +3144,7 @@ export default function Admin() {
                                 className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-[#d0a760] rounded-none"
                                 data-testid={`button-edit-product-${product.id}`}
                               >
-                                <Edit className="w-4 h-4" />
+                                <PencilSimple className="w-4 h-4" />
                               </Button>
                               <Button 
                                 size="sm" 
@@ -3154,7 +3154,7 @@ export default function Admin() {
                                 className="bg-transparent border-zinc-700 text-red-400 hover:bg-red-500/10 hover:border-red-500/50 rounded-none"
                                 data-testid={`button-delete-product-${product.id}`}
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash className="w-4 h-4" />
                               </Button>
                             </div>
                           </TableCell>
@@ -3212,7 +3212,7 @@ export default function Admin() {
                           onClick={() => handleEditProduct(product)}
                           className="flex-1 bg-zinc-800 text-white hover:bg-zinc-700 rounded-none"
                         >
-                          <Edit className="w-4 h-4 mr-2" />
+                          <PencilSimple className="w-4 h-4 mr-2" />
                           Bewerken
                         </Button>
                         <Button 
@@ -3220,7 +3220,7 @@ export default function Admin() {
                           onClick={() => handleDeleteProduct(product)}
                           className="bg-transparent border border-red-500/50 text-red-400 hover:bg-red-500/10 rounded-none"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash className="w-4 h-4" />
                         </Button>
                       </div>
                     </div>
@@ -3395,7 +3395,7 @@ export default function Admin() {
                     ) : bookings?.length === 0 ? (
                       <TableRow className="border-zinc-800">
                         <TableCell colSpan={6} className="text-center text-zinc-500 py-12">
-                          <Calendar className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                          <CalendarBlank className="w-12 h-12 mx-auto mb-4 opacity-50" />
                           <p>Nog geen afspraken</p>
                         </TableCell>
                       </TableRow>
@@ -3455,7 +3455,7 @@ export default function Admin() {
                   ))
                 ) : bookings?.length === 0 ? (
                   <div className="bg-zinc-900 border border-zinc-800 p-8 text-center">
-                    <Calendar className="w-12 h-12 mx-auto mb-4 text-zinc-600" />
+                    <CalendarBlank className="w-12 h-12 mx-auto mb-4 text-zinc-600" />
                     <p className="text-zinc-500">Nog geen afspraken</p>
                   </div>
                 ) : (
@@ -4042,14 +4042,14 @@ export default function Admin() {
                           className="text-zinc-400 hover:text-[#d0a760]"
                           data-testid={`button-edit-category-${category.id}`}
                         >
-                          <Edit className="w-3 h-3" />
+                          <PencilSimple className="w-3 h-3" />
                         </button>
                         <button
                           onClick={() => handleDeleteBlogCategory(category)}
                           className="text-zinc-400 hover:text-red-400"
                           data-testid={`button-delete-category-${category.id}`}
                         >
-                          <Trash2 className="w-3 h-3" />
+                          <Trash className="w-3 h-3" />
                         </button>
                       </div>
                     ))}
@@ -4137,7 +4137,7 @@ export default function Admin() {
                                 className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-[#d0a760] rounded-none"
                                 data-testid={`button-edit-blogpost-${post.id}`}
                               >
-                                <Edit className="w-4 h-4" />
+                                <PencilSimple className="w-4 h-4" />
                               </Button>
                               <Button 
                                 size="sm" 
@@ -4147,7 +4147,7 @@ export default function Admin() {
                                 className="bg-transparent border-zinc-700 text-red-400 hover:bg-red-500/10 hover:border-red-500/50 rounded-none"
                                 data-testid={`button-delete-blogpost-${post.id}`}
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash className="w-4 h-4" />
                               </Button>
                             </div>
                           </TableCell>
@@ -4200,7 +4200,7 @@ export default function Admin() {
                             className="h-8 w-8 p-0 text-zinc-400 hover:text-[#d0a760]"
                             data-testid={`button-edit-blogpost-mobile-${post.id}`}
                           >
-                            <Edit className="w-4 h-4" />
+                            <PencilSimple className="w-4 h-4" />
                           </Button>
                           <Button 
                             size="sm" 
@@ -4209,7 +4209,7 @@ export default function Admin() {
                             className="h-8 w-8 p-0 text-zinc-400 hover:text-red-400"
                             data-testid={`button-delete-blogpost-mobile-${post.id}`}
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash className="w-4 h-4" />
                           </Button>
                         </div>
                       </div>
@@ -4566,7 +4566,7 @@ export default function Admin() {
                                 className="h-8 w-8 p-0 text-zinc-400 hover:text-[#d0a760]"
                                 data-testid={`button-edit-portfolio-${project.id}`}
                               >
-                                <Edit className="w-4 h-4" />
+                                <PencilSimple className="w-4 h-4" />
                               </Button>
                               <Button 
                                 size="sm" 
@@ -4575,7 +4575,7 @@ export default function Admin() {
                                 className="h-8 w-8 p-0 text-zinc-400 hover:text-red-400"
                                 data-testid={`button-delete-portfolio-${project.id}`}
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash className="w-4 h-4" />
                               </Button>
                             </div>
                           </TableCell>
@@ -4643,7 +4643,7 @@ export default function Admin() {
                             className="h-8 w-8 p-0 text-zinc-400 hover:text-[#d0a760]"
                             data-testid={`button-edit-portfolio-mobile-${project.id}`}
                           >
-                            <Edit className="w-4 h-4" />
+                            <PencilSimple className="w-4 h-4" />
                           </Button>
                           <Button 
                             size="sm" 
@@ -4652,7 +4652,7 @@ export default function Admin() {
                             className="h-8 w-8 p-0 text-zinc-400 hover:text-red-400"
                             data-testid={`button-delete-portfolio-mobile-${project.id}`}
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash className="w-4 h-4" />
                           </Button>
                         </div>
                       </div>

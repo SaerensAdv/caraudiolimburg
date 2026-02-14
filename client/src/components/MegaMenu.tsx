@@ -3,18 +3,18 @@ import { createPortal } from "react-dom";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import type { Category, Brand, VehicleMake, SiteSettings } from "@shared/schema";
-import { Car } from "lucide-react";
 import { 
+  Car,
   Monitor, 
-  Speaker, 
-  Zap, 
-  Settings, 
+  SpeakerHigh, 
+  Lightning, 
+  Gear, 
   Camera, 
   Wrench,
-  ChevronRight,
+  CaretRight,
   ArrowRight,
-  Sparkles
-} from "lucide-react";
+  Sparkle
+} from "@phosphor-icons/react";
 import bmwCarplayImage from "@assets/bmw-carplay-1.jpg";
 
 interface MegaMenuProps {
@@ -27,9 +27,9 @@ interface MegaMenuProps {
 
 const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
   "multimedia-navigatie": Monitor,
-  "speakers-subwoofers": Speaker,
-  "versterkers-dsp": Zap,
-  "oem-upgrades": Settings,
+  "speakers-subwoofers": SpeakerHigh,
+  "versterkers-dsp": Lightning,
+  "oem-upgrades": Gear,
   "cameras-veiligheid": Camera,
   "installatie-accessoires": Wrench,
 };
@@ -131,7 +131,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
                 ))
               ) : (
                 categories.map((category) => {
-                  const IconComponent = categoryIcons[category.slug] || Settings;
+                  const IconComponent = categoryIcons[category.slug] || Gear;
                   return (
                     <li key={category.id} role="none">
                       <Link
@@ -143,7 +143,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
                       >
                         <IconComponent className="w-5 h-5 text-[#d0a760]/70 group-hover:text-[#d0a760] transition-colors" />
                         <span className="text-sm font-medium">{category.name}</span>
-                        <ChevronRight className="w-4 h-4 ml-auto opacity-0 -translate-x-2 group-hover:opacity-50 group-hover:translate-x-0 transition-all duration-200" />
+                        <CaretRight className="w-4 h-4 ml-auto opacity-0 -translate-x-2 group-hover:opacity-50 group-hover:translate-x-0 transition-all duration-200" />
                       </Link>
                     </li>
                   );
@@ -232,7 +232,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
                 
                 <div className="absolute bottom-0 left-0 right-0 p-5">
                   <div className="flex items-center gap-2 mb-2">
-                    <Sparkles className="w-4 h-4 text-[#d0a760]" />
+                    <Sparkle className="w-4 h-4 text-[#d0a760]" />
                     <span className="text-[#d0a760] text-xs font-semibold tracking-wider uppercase">
                       Populair
                     </span>

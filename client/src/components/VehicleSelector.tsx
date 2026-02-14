@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
-import { Search } from "lucide-react";
+import { MagnifyingGlass } from "@phosphor-icons/react";
 import type { VehicleMake, VehicleModel } from "@shared/schema";
 
 export function VehicleSelector() {
@@ -94,7 +94,7 @@ export function VehicleSelector() {
             className="w-full sm:col-span-2 lg:col-span-1"
             data-testid="button-search-products"
           >
-            <Search className="w-4 h-4 mr-2" />
+            <MagnifyingGlass className="w-4 h-4 mr-2" />
             Zoek producten
           </Button>
         </div>

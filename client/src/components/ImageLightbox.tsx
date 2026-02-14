@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, X, ZoomIn } from "lucide-react";
+import { CaretLeft, CaretRight, X, MagnifyingGlassPlus } from "@phosphor-icons/react";
 
 interface ImageLightboxProps {
   images: string[];
@@ -88,7 +88,7 @@ export function ImageLightbox({ images, isOpen, initialIndex, onClose }: ImageLi
               }}
               data-testid="button-previous-lightbox"
             >
-              <ChevronLeft className="w-8 h-8" />
+              <CaretLeft className="w-8 h-8" />
             </Button>
             <Button
               variant="ghost"
@@ -100,7 +100,7 @@ export function ImageLightbox({ images, isOpen, initialIndex, onClose }: ImageLi
               }}
               data-testid="button-next-lightbox"
             >
-              <ChevronRight className="w-8 h-8" />
+              <CaretRight className="w-8 h-8" />
             </Button>
           </>
         )}

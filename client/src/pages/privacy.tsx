@@ -3,7 +3,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CartSidebar } from "@/components/CartSidebar";
 import { ScrollReveal } from "@/components/ScrollAnimations";
-import { Shield, Lock, Eye, Database, Mail, Phone } from "lucide-react";
+import { Shield, Lock, Eye, Database, Envelope, Phone } from "@phosphor-icons/react";
 
 export default function PrivacyPage() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -108,7 +108,7 @@ export default function PrivacyPage() {
               <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8">
                 <div className="flex items-start gap-4">
                   <div className="p-3 bg-[#d0a760]/10 flex-shrink-0">
-                    <Mail className="w-6 h-6 text-[#d0a760]" />
+                    <Envelope className="w-6 h-6 text-[#d0a760]" />
                   </div>
                   <div>
                     <h2 className="text-xl font-semibold text-white mb-4">Contact</h2>
@@ -118,7 +118,7 @@ export default function PrivacyPage() {
                     </p>
                     <div className="space-y-2 text-white/60">
                       <p className="flex items-center gap-2">
-                        <Mail className="w-4 h-4 text-[#d0a760]" />
+                        <Envelope className="w-4 h-4 text-[#d0a760]" />
                         <a href="mailto:privacy@caraudiolimburg.nl" className="hover:text-[#d0a760] transition-colors">
                           privacy@caraudiolimburg.nl
                         </a>

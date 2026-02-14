@@ -18,7 +18,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { ScrollReveal, StaggerContainer, StaggerItem } from "@/components/ScrollAnimations";
-import { Calendar, ArrowRight, BookOpen, ChevronRight, Star } from "lucide-react";
+import { CalendarBlank, ArrowRight, BookOpen, CaretRight, Star } from "@phosphor-icons/react";
 import type { BlogPost, BlogCategory } from "@shared/schema";
 import { format } from "date-fns";
 import { nl } from "date-fns/locale";
@@ -215,7 +215,7 @@ export default function Blog() {
                                 </Badge>
                               )}
                               <span className="text-white/60 text-sm flex items-center gap-1">
-                                <Calendar className="w-3 h-3" />
+                                <CalendarBlank className="w-3 h-3" />
                                 {formatDate(post.publishedAt)}
                               </span>
                             </div>
@@ -228,7 +228,7 @@ export default function Blog() {
                               </p>
                             )}
                             <span className="text-[#d0a760] text-sm font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
-                              Lees meer <ChevronRight className="w-4 h-4" />
+                              Lees meer <CaretRight className="w-4 h-4" />
                             </span>
                           </div>
                         </article>
@@ -302,7 +302,7 @@ export default function Blog() {
                                   </Badge>
                                 )}
                                 <span className="text-white/50 text-xs flex items-center gap-1">
-                                  <Calendar className="w-3 h-3" />
+                                  <CalendarBlank className="w-3 h-3" />
                                   {formatDate(post.publishedAt)}
                                 </span>
                               </div>

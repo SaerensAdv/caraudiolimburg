@@ -17,17 +17,17 @@ import {
   CheckCircle, 
   Clock, 
   MapPin, 
-  Smartphone, 
-  Wifi, 
-  Zap,
+  DeviceMobile, 
+  WifiHigh, 
+  Lightning,
   Star,
-  ChevronDown,
+  CaretDown,
   Play,
   Phone,
-  Mail,
+  Envelope,
   Shield,
-  Award
-} from "lucide-react";
+  Trophy
+} from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import { ScrollReveal, StaggerContainer, CountUp } from "@/components/ScrollAnimations";
 import { KentekenLookup } from "@/components/KentekenLookup";
@@ -82,12 +82,12 @@ export default function AppleCarPlayBMW() {
 
   const features = [
     {
-      icon: <Smartphone className="w-6 h-6" />,
+      icon: <DeviceMobile className="w-6 h-6" />,
       title: "Jouw iPhone, naadloos verbonden",
       description: "Geniet van navigatie, muziek en berichten via het vertrouwde iDrive scherm"
     },
     {
-      icon: <Wifi className="w-6 h-6" />,
+      icon: <WifiHigh className="w-6 h-6" />,
       title: "Draadloos gemak",
       description: "Stap in en je iPhone verbindt automatisch - geen gedoe met kabels"
     },
@@ -97,7 +97,7 @@ export default function AppleCarPlayBMW() {
       description: "Als specialist in BMW/MINI garanderen wij perfecte OEM-kwaliteit"
     },
     {
-      icon: <Award className="w-6 h-6" />,
+      icon: <Trophy className="w-6 h-6" />,
       title: "Fabrieksgarantie blijft behouden",
       description: "Rijd zorgeloos verder - je garantie blijft volledig intact"
     }
@@ -246,7 +246,7 @@ export default function AppleCarPlayBMW() {
           animate={{ y: [0, 10, 0] }}
           transition={{ repeat: Infinity, duration: 2 }}
         >
-          <ChevronDown className="w-8 h-8 text-[#d0a760]" />
+          <CaretDown className="w-8 h-8 text-[#d0a760]" />
         </motion.div>
       </section>
 
@@ -341,7 +341,7 @@ export default function AppleCarPlayBMW() {
                 {selectedImage === 4 && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black/40">
                     <div className="bg-[#d0a760] p-4 hover:scale-110 transition-transform">
-                      <Play className="w-8 h-8 text-black" fill="currentColor" />
+                      <Play className="w-8 h-8 text-black" weight="fill" />
                     </div>
                   </div>
                 )}
@@ -375,7 +375,7 @@ export default function AppleCarPlayBMW() {
                 <div className="bg-zinc-900 p-6">
                   <div className="flex items-center space-x-2 mb-3">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 text-[#d0a760] fill-current" />
+                      <Star key={i} className="w-5 h-5 text-[#d0a760]" weight="fill" />
                     ))}
                   </div>
                   <p className="text-white font-semibold mb-2">Precies zoals verwacht</p>
@@ -550,7 +550,7 @@ export default function AppleCarPlayBMW() {
                       className="w-full bg-[#d0a760] hover:bg-[#b8954d] text-black font-semibold text-lg py-6 rounded-none"
                       data-testid="button-submit-quote"
                     >
-                      <Mail className="w-5 h-5 mr-2" />
+                      <Envelope className="w-5 h-5 mr-2" />
                       Verstuur offerteverzoek
                     </Button>
                   </form>

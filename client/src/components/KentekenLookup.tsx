@@ -1,7 +1,7 @@
 import { useState, type ChangeEvent, type KeyboardEvent } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, CheckCircle2, Loader2, AlertCircle } from "lucide-react";
+import { MagnifyingGlass, CheckCircle, SpinnerGap, WarningCircle } from "@phosphor-icons/react";
 
 interface KentekenLookupProps {
   onResult: (data: {
@@ -89,23 +89,23 @@ export function KentekenLookup({ onResult, className = "" }: KentekenLookupProps
           className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none px-4 shrink-0"
         >
           {isLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <SpinnerGap className="h-4 w-4 animate-spin" />
           ) : (
-            <Search className="h-4 w-4" />
+            <MagnifyingGlass className="h-4 w-4" />
           )}
         </Button>
       </div>
 
       {error && (
         <div className="flex items-center gap-2 mt-2 text-red-400 text-sm">
-          <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+          <WarningCircle className="h-3.5 w-3.5 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {result && (
         <div className="flex items-center gap-2 mt-2 text-emerald-400 text-sm">
-          <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
+          <CheckCircle className="h-3.5 w-3.5 shrink-0" />
           <span>{result.merk} {result.model} ({result.bouwjaar})</span>
         </div>
       )}

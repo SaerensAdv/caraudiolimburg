@@ -25,7 +25,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Filter, X, ChevronDown, Grid, Car, Volume2, Settings, ChevronRight, LayoutGrid, List, SlidersHorizontal, ArrowLeft, ShoppingCart, Home as HomeIcon, Package, Clock } from "lucide-react";
+import { MagnifyingGlass as Search, Funnel as Filter, X, CaretDown as ChevronDown, SquaresFour as Grid, Car, SpeakerHigh as Volume2, Gear as Settings, CaretRight as ChevronRight, List, Sliders as SlidersHorizontal, ArrowLeft, ShoppingCart, House as HomeIcon, Package, Clock } from "@phosphor-icons/react";
+const LayoutGrid = Grid;
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { Product, Category, Brand, VehicleMake } from "@shared/schema";

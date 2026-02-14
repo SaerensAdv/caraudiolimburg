@@ -18,21 +18,21 @@ import { LocalBusinessSchema, BreadcrumbSchema } from "@/components/StructuredDa
 import { 
   MapPin, 
   Phone, 
-  Mail, 
+  Envelope, 
   Clock, 
-  MessageCircle,
-  Send,
+  ChatCircle,
+  PaperPlaneTilt,
   Car,
-  Calendar,
+  CalendarBlank,
   ArrowRight,
-  ExternalLink,
+  ArrowSquareOut,
   User,
-  AtSign,
+  At,
   FileText,
-  AlertCircle,
-  CheckCircle2,
-  Loader2
-} from "lucide-react";
+  WarningCircle,
+  CheckCircle,
+  SpinnerGap
+} from "@phosphor-icons/react";
 
 const contactSchema = z.object({
   firstName: z.string().min(2, "Voornaam is verplicht"),
@@ -198,7 +198,7 @@ export default function Contact() {
               <ScrollReveal direction="up" delay={300}>
                 <div className="bg-zinc-950 p-8 text-center h-full border border-zinc-800 hover:border-[#d0a760]/50 transition-colors duration-300">
                   <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center border border-[#d0a760] text-[#d0a760]">
-                    <Mail className="h-8 w-8" />
+                    <Envelope className="h-8 w-8" />
                   </div>
                   <h3 className="text-lg font-semibold text-white mb-3">Mail Ons</h3>
                   <p className="text-white/60">
@@ -249,7 +249,7 @@ export default function Contact() {
               <ScrollReveal direction="left" delay={100}>
                 <div className="bg-zinc-950 border border-zinc-800 p-8 md:p-10">
                   <div className="flex items-center gap-3 mb-4">
-                    <Send className="h-6 w-6 text-[#d0a760]" />
+                    <PaperPlaneTilt className="h-6 w-6 text-[#d0a760]" />
                     <h2 className="text-2xl font-light text-white">Laat van je horen</h2>
                   </div>
                   <p className="text-white/50 text-sm mb-8">Vul het formulier in en we nemen zo snel mogelijk contact met je op. Geen vraag is te gek!</p>
@@ -272,7 +272,7 @@ export default function Contact() {
                         </div>
                         {errors.firstName && (
                           <p className="text-red-400 text-sm flex items-center gap-1.5">
-                            <AlertCircle className="h-3.5 w-3.5" />
+                            <WarningCircle className="h-3.5 w-3.5" />
                             {errors.firstName.message}
                           </p>
                         )}
@@ -293,7 +293,7 @@ export default function Contact() {
                         </div>
                         {errors.lastName && (
                           <p className="text-red-400 text-sm flex items-center gap-1.5">
-                            <AlertCircle className="h-3.5 w-3.5" />
+                            <WarningCircle className="h-3.5 w-3.5" />
                             {errors.lastName.message}
                           </p>
                         )}
@@ -302,7 +302,7 @@ export default function Contact() {
 
                     <div className="space-y-2">
                       <Label htmlFor="email" className="text-white/80 flex items-center gap-2">
-                        <AtSign className="h-4 w-4 text-[#d0a760]" />
+                        <At className="h-4 w-4 text-[#d0a760]" />
                         Je e-mailadres
                       </Label>
                       <div className="relative">
@@ -317,7 +317,7 @@ export default function Contact() {
                       </div>
                       {errors.email && (
                         <p className="text-red-400 text-sm flex items-center gap-1.5">
-                          <AlertCircle className="h-3.5 w-3.5" />
+                          <WarningCircle className="h-3.5 w-3.5" />
                           {errors.email.message}
                         </p>
                       )}
@@ -340,7 +340,7 @@ export default function Contact() {
                       </div>
                       {errors.phone && (
                         <p className="text-red-400 text-sm flex items-center gap-1.5">
-                          <AlertCircle className="h-3.5 w-3.5" />
+                          <WarningCircle className="h-3.5 w-3.5" />
                           {errors.phone.message}
                         </p>
                       )}
@@ -362,7 +362,7 @@ export default function Contact() {
                       </div>
                       {errors.subject && (
                         <p className="text-red-400 text-sm flex items-center gap-1.5">
-                          <AlertCircle className="h-3.5 w-3.5" />
+                          <WarningCircle className="h-3.5 w-3.5" />
                           {errors.subject.message}
                         </p>
                       )}
@@ -370,7 +370,7 @@ export default function Contact() {
 
                     <div className="space-y-2">
                       <Label htmlFor="message" className="text-white/80 flex items-center gap-2">
-                        <MessageCircle className="h-4 w-4 text-[#d0a760]" />
+                        <ChatCircle className="h-4 w-4 text-[#d0a760]" />
                         Vertel ons meer
                       </Label>
                       <Textarea
@@ -383,7 +383,7 @@ export default function Contact() {
                       />
                       {errors.message && (
                         <p className="text-red-400 text-sm flex items-center gap-1.5">
-                          <AlertCircle className="h-3.5 w-3.5" />
+                          <WarningCircle className="h-3.5 w-3.5" />
                           {errors.message.message}
                         </p>
                       )}
@@ -397,12 +397,12 @@ export default function Contact() {
                     >
                       {isSubmitting ? (
                         <span className="flex items-center justify-center gap-2">
-                          <Loader2 className="h-5 w-5 animate-spin" />
+                          <SpinnerGap className="h-5 w-5 animate-spin" />
                           Verzenden...
                         </span>
                       ) : (
                         <span className="flex items-center justify-center gap-2">
-                          <Send className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                          <PaperPlaneTilt className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                           Verstuur je bericht
                         </span>
                       )}
@@ -424,12 +424,12 @@ export default function Contact() {
                     <div className="bg-zinc-950 border border-zinc-800 p-8 hover:border-[#d0a760]/50 transition-all duration-300 group-hover:bg-zinc-900">
                       <div className="flex items-start gap-6">
                         <div className="w-14 h-14 flex-shrink-0 flex items-center justify-center border border-[#d0a760] text-[#d0a760] group-hover:bg-[#d0a760] group-hover:text-black transition-colors duration-300">
-                          <MessageCircle className="h-7 w-7" />
+                          <ChatCircle className="h-7 w-7" />
                         </div>
                         <div className="flex-1">
                           <h3 className="text-xl font-medium text-white mb-2 flex items-center gap-2">
                             Even Appen?
-                            <ExternalLink className="h-4 w-4 text-white/40" />
+                            <ArrowSquareOut className="h-4 w-4 text-white/40" />
                           </h3>
                           <p className="text-white/60 mb-3">Snel een vraagje? Stuur ons gerust een appje!</p>
                           <span className="text-[#d0a760] font-medium">085 - 27 33 625</span>
@@ -468,7 +468,7 @@ export default function Contact() {
                     <div className="bg-zinc-950 border border-zinc-800 p-8 hover:border-[#d0a760]/50 transition-all duration-300 group-hover:bg-zinc-900">
                       <div className="flex items-start gap-6">
                         <div className="w-14 h-14 flex-shrink-0 flex items-center justify-center border border-[#d0a760] text-[#d0a760] group-hover:bg-[#d0a760] group-hover:text-black transition-colors duration-300">
-                          <Calendar className="h-7 w-7" />
+                          <CalendarBlank className="h-7 w-7" />
                         </div>
                         <div className="flex-1">
                           <h3 className="text-xl font-medium text-white mb-2">Kom Langs in de Showroom</h3>
@@ -502,7 +502,7 @@ export default function Contact() {
                           </p>
                           <div className="flex items-center gap-2 text-[#d0a760] font-medium">
                             <span>Naar caraudiolimburg.studio</span>
-                            <ExternalLink className="h-4 w-4" />
+                            <ArrowSquareOut className="h-4 w-4" />
                           </div>
                         </div>
                       </div>
@@ -553,7 +553,7 @@ export default function Contact() {
                       className="inline-flex items-center gap-2 text-[#d0a760] hover:text-[#b8954e] transition-colors"
                     >
                       <span>Plan je route via Google Maps</span>
-                      <ExternalLink className="h-4 w-4" />
+                      <ArrowSquareOut className="h-4 w-4" />
                     </a>
                   </div>
                 </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Volume2 } from "lucide-react";
+import { SpeakerHigh } from "@phosphor-icons/react";
 
 interface CinematicIntroProps {
   onComplete: () => void;
@@ -113,7 +113,7 @@ export default function CinematicIntro({ onComplete }: CinematicIntroProps) {
                   animate={{ scale: 1 }}
                   transition={{ duration: 0.8, ease: "easeOut" }}
                 >
-                  <Volume2 className="w-12 h-12 text-[#d0a760]" />
+                  <SpeakerHigh className="w-12 h-12 text-[#d0a760]" />
                 </motion.div>
               </div>
               <motion.p

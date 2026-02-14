@@ -11,8 +11,8 @@ import { LocalBusinessSchema, BreadcrumbSchema } from "@/components/StructuredDa
 import { 
   Clock, 
   Shield, 
-  Calendar,
-  Award,
+  CalendarBlank,
+  Trophy,
   Wrench,
   Users,
   Car,
@@ -23,8 +23,8 @@ import {
   User,
   Check,
   Headphones,
-  Volume2
-} from "lucide-react";
+  SpeakerHigh
+} from "@phosphor-icons/react";
 
 export default function Booking() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -75,7 +75,7 @@ export default function Booking() {
           <ScrollReveal direction="up" delay={400}>
             <div className="flex flex-wrap justify-center gap-4">
               <div className="flex items-center gap-2 bg-[#d0a760]/10 border border-[#d0a760]/30 px-5 py-3" data-testid="badge-warranty">
-                <Award className="w-4 h-4 text-[#d0a760]" />
+                <Trophy className="w-4 h-4 text-[#d0a760]" />
                 <span className="text-white text-sm font-medium">2 jaar garantie</span>
               </div>
               <div className="flex items-center gap-2 bg-[#d0a760]/10 border border-[#d0a760]/30 px-5 py-3" data-testid="badge-fast">
@@ -97,7 +97,7 @@ export default function Booking() {
           <ScrollReveal>
             <div className="text-center mb-12">
               <div className="flex items-center justify-center gap-2 mb-4">
-                <Calendar className="w-5 h-5 text-[#d0a760]" />
+                <CalendarBlank className="w-5 h-5 text-[#d0a760]" />
                 <span className="text-[#d0a760] text-sm font-medium tracking-wider uppercase">Online Boeken</span>
               </div>
               <h2 className="text-3xl md:text-4xl font-light text-white mb-4">Plan je Installatie</h2>
@@ -121,7 +121,7 @@ export default function Booking() {
           <ScrollReveal>
             <div className="text-center mb-16">
               <div className="flex items-center justify-center gap-2 mb-4">
-                <Volume2 className="w-5 h-5 text-[#d0a760]" />
+                <SpeakerHigh className="w-5 h-5 text-[#d0a760]" />
                 <span className="text-[#d0a760] text-sm font-medium tracking-wider uppercase">Onze Diensten</span>
               </div>
               <h2 className="text-3xl md:text-4xl font-light text-white mb-4">Installatie Services</h2>
@@ -162,7 +162,7 @@ export default function Booking() {
 
             <div className="bg-zinc-950 border border-zinc-800 p-8 text-center hover:border-[#d0a760]/50 transition-all duration-300 group" data-testid="service-complete">
               <div className="w-16 h-16 bg-[#d0a760]/10 flex items-center justify-center mx-auto mb-6 group-hover:bg-[#d0a760]/20 transition-colors">
-                <Award className="w-8 h-8 text-[#d0a760]" />
+                <Trophy className="w-8 h-8 text-[#d0a760]" />
               </div>
               <h3 className="text-lg font-semibold text-white mb-3">Complete Audio Systeem</h3>
               <p className="text-sm text-white/60 mb-6">
@@ -240,7 +240,7 @@ export default function Booking() {
                 <ScrollReveal delay={300}>
                   <div className="flex items-start gap-5" data-testid="benefit-certified">
                     <div className="w-14 h-14 bg-[#d0a760]/10 flex items-center justify-center flex-shrink-0">
-                      <Award className="w-7 h-7 text-[#d0a760]" />
+                      <Trophy className="w-7 h-7 text-[#d0a760]" />
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-white mb-2">Gecertificeerde Monteurs</h3>
@@ -254,7 +254,7 @@ export default function Booking() {
                 <ScrollReveal delay={400}>
                   <div className="flex items-start gap-5" data-testid="benefit-flexible">
                     <div className="w-14 h-14 bg-[#d0a760]/10 flex items-center justify-center flex-shrink-0">
-                      <Calendar className="w-7 h-7 text-[#d0a760]" />
+                      <CalendarBlank className="w-7 h-7 text-[#d0a760]" />
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-white mb-2">Flexibele Planning</h3>

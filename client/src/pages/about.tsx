@@ -11,7 +11,7 @@ import {
   MapPin, 
   Phone, 
   Clock, 
-  Award, 
+  Trophy, 
   Users, 
   Star,
   Car,
@@ -19,7 +19,7 @@ import {
   ArrowRight,
   Shield,
   Headphones
-} from "lucide-react";
+} from "@phosphor-icons/react";
 import { Link } from "wouter";
 
 import studioImage1 from "@assets/C5025.00_06_16_04.Still024-1-2048x1152_1757024538840.jpg";
@@ -151,7 +151,7 @@ export default function About() {
             <StaggerContainer className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8" staggerDelay={100}>
               <StaggerItem>
                 <div className="bg-zinc-900 border border-zinc-800 p-8 text-center group hover:border-[#d0a760]/50 transition-colors duration-300" data-testid="stat-experience">
-                  <Award className="h-12 w-12 text-[#d0a760] mx-auto mb-6" />
+                  <Trophy className="h-12 w-12 text-[#d0a760] mx-auto mb-6" />
                   <div className="text-4xl md:text-5xl font-light text-white mb-2">
                     <CountUp end={25} suffix="+" />
                   </div>

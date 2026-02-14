@@ -1,4 +1,4 @@
-import { User } from "lucide-react";
+import { User } from "@phosphor-icons/react";
 import { Link } from "wouter";
 
 interface AuthorBoxProps {

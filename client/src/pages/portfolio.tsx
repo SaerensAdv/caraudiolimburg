@@ -17,7 +17,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { ArrowLeft, Car, Wrench, Phone, ChevronLeft, ChevronRight, X, Grid, Volume2, Play, Tv, Settings } from "lucide-react";
+import { ArrowLeft, Car, Wrench, Phone, CaretLeft, CaretRight, X, SquaresFour, SpeakerHigh, Play, Monitor, Gear } from "@phosphor-icons/react";
 
 interface PortfolioProject {
   id: string;
@@ -38,11 +38,11 @@ interface PortfolioProject {
 }
 
 const CATEGORIES = [
-  { id: "all", label: "Alle", icon: Grid },
-  { id: "soundupgrade", label: "Soundupgrade", icon: Volume2 },
+  { id: "all", label: "Alle", icon: SquaresFour },
+  { id: "soundupgrade", label: "Soundupgrade", icon: SpeakerHigh },
   { id: "carplay", label: "CarPlay", icon: Play },
-  { id: "entertainment", label: "Entertainment", icon: Tv },
-  { id: "custom", label: "Custom", icon: Settings },
+  { id: "entertainment", label: "Entertainment", icon: Monitor },
+  { id: "custom", label: "Custom", icon: Gear },
 ];
 
 function PortfolioOverview() {
@@ -516,7 +516,7 @@ function PortfolioDetail({ slug }: { slug: string }) {
                   setSelectedImageIndex((prev) => (prev === 0 ? allImages.length - 1 : prev - 1));
                 }}
               >
-                <ChevronLeft className="w-10 h-10" />
+                <CaretLeft className="w-10 h-10" />
               </button>
               <button
                 className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-white/60 hover:text-white transition-colors z-10"
@@ -525,7 +525,7 @@ function PortfolioDetail({ slug }: { slug: string }) {
                   setSelectedImageIndex((prev) => (prev === allImages.length - 1 ? 0 : prev + 1));
                 }}
               >
-                <ChevronRight className="w-10 h-10" />
+                <CaretRight className="w-10 h-10" />
               </button>
             </>
           )}

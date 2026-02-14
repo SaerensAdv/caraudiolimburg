@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { AudioLoadingSpinner } from "@/components/AudioSkeletons";
-import { Mail, Lock, ArrowLeft, User, Volume2, Headphones, Speaker } from "lucide-react";
+import { Envelope, Lock, ArrowLeft, User, SpeakerHigh, Headphones } from "@phosphor-icons/react";
 
 import calLogo from "@assets/cal-white-logo.png";
 import calLogoDark from "@assets/Caraudiolimburg-logo_1757008375383.png";
@@ -212,7 +212,7 @@ export default function Login() {
               <div>
                 <Label htmlFor="email" className="text-zinc-700 text-sm font-medium">E-mailadres</Label>
                 <div className="relative mt-1.5">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-400" />
+                  <Envelope className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-400" />
                   <Input
                     id="email"
                     type="email"
@@ -377,7 +377,7 @@ export default function Login() {
           <div className="relative mb-12">
             <div className="w-32 h-32 border-2 border-[#d0a760]/30 flex items-center justify-center">
               <div className="w-24 h-24 border border-[#d0a760]/50 flex items-center justify-center">
-                <Volume2 className="w-12 h-12 text-[#d0a760]" />
+                <SpeakerHigh className="w-12 h-12 text-[#d0a760]" />
               </div>
             </div>
             {/* Floating icons */}
@@ -385,7 +385,7 @@ export default function Login() {
               <Headphones className="w-5 h-5" />
             </div>
             <div className="absolute -bottom-4 -left-4 p-3 bg-zinc-800 text-[#d0a760]">
-              <Speaker className="w-5 h-5" />
+              <SpeakerHigh className="w-5 h-5" />
             </div>
           </div>
 

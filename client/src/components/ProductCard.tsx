@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
-import { ShoppingCart, Wrench, Eye, Heart } from "lucide-react";
+import { ShoppingCart, Wrench, Eye, Heart } from "@phosphor-icons/react";
 import { ProductQuickView } from "@/components/ProductQuickView";
 import { useAuth } from "@/hooks/useAuth";
 import { useGuestCart } from "@/lib/guestCart";

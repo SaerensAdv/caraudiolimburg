@@ -13,17 +13,17 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { 
-  HelpCircle, 
-  Store, 
+  Question, 
+  Storefront, 
   Truck, 
-  Settings, 
+  Gear, 
   Wrench, 
   Phone,
-  MessageCircle,
+  ChatCircle,
   MapPin,
   ArrowRight,
-  ExternalLink
-} from "lucide-react";
+  ArrowSquareOut
+} from "@phosphor-icons/react";
 import { Link } from "wouter";
 
 export default function FAQ() {
@@ -32,7 +32,7 @@ export default function FAQ() {
   const faqData = [
     {
       category: "Webshop & Studio",
-      icon: <Store className="h-5 w-5" />,
+      icon: <Storefront className="h-5 w-5" />,
       questions: [
         {
           question: "Wat is het verschil tussen de webshop en de studio?",
@@ -72,7 +72,7 @@ export default function FAQ() {
     },
     {
       category: "Producten & Merken",
-      icon: <Settings className="h-5 w-5" />,
+      icon: <Gear className="h-5 w-5" />,
       questions: [
         {
           question: "Welke merken verkopen jullie?",
@@ -150,7 +150,7 @@ export default function FAQ() {
           <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <ScrollReveal direction="up" delay={100}>
               <div className="inline-flex items-center justify-center w-16 h-16 bg-zinc-900 border border-zinc-800 mb-8">
-                <HelpCircle className="h-8 w-8 text-[#d0a760]" />
+                <Question className="h-8 w-8 text-[#d0a760]" />
               </div>
             </ScrollReveal>
             
@@ -199,7 +199,7 @@ export default function FAQ() {
                       className="border-zinc-700 text-white hover:bg-zinc-800 hover:border-[#d0a760] rounded-none min-h-[44px] px-6"
                       data-testid="button-whatsapp"
                     >
-                      <MessageCircle className="h-4 w-4 mr-2" />
+                      <ChatCircle className="h-4 w-4 mr-2" />
                       WhatsApp
                     </Button>
                   </a>
@@ -274,7 +274,7 @@ export default function FAQ() {
                     data-testid="button-studio-link"
                   >
                     Naar de Studio
-                    <ExternalLink className="w-4 h-4 ml-2" />
+                    <ArrowSquareOut className="w-4 h-4 ml-2" />
                   </Button>
                 </a>
               </div>
@@ -318,7 +318,7 @@ export default function FAQ() {
               <ScrollReveal delay={200}>
                 <div className="bg-zinc-900 border border-zinc-800 p-6 md:p-8 text-center group hover:border-[#d0a760]/50 transition-colors">
                   <div className="inline-flex items-center justify-center w-14 h-14 bg-zinc-800 border border-zinc-700 mb-5 group-hover:border-[#d0a760]/50 transition-colors">
-                    <MessageCircle className="h-6 w-6 text-[#d0a760]" />
+                    <ChatCircle className="h-6 w-6 text-[#d0a760]" />
                   </div>
                   <h3 className="text-white font-medium text-lg mb-2">WhatsApp</h3>
                   <p className="text-white/50 text-sm mb-4">Snel en gemakkelijk contact</p>

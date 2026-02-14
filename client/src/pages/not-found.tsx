@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ScrollReveal } from "@/components/ScrollAnimations";
-import { Home, ArrowLeft } from "lucide-react";
+import { House, ArrowLeft } from "@phosphor-icons/react";
 
 export default function NotFound() {
   return (
@@ -41,7 +41,7 @@ export default function NotFound() {
                   className="bg-[#d0a760] text-black hover:bg-[#b8954e] rounded-none px-8 py-6 text-lg font-semibold w-full sm:w-auto"
                   data-testid="button-go-home"
                 >
-                  <Home className="w-5 h-5 mr-2" />
+                  <House className="w-5 h-5 mr-2" />
                   Naar homepage
                 </Button>
               </Link>

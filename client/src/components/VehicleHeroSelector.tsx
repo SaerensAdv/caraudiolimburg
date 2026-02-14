@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowRight, Car, Loader2 } from "lucide-react";
+import { ArrowRight, Car, SpinnerGap } from "@phosphor-icons/react";
 import type { VehicleMake, VehicleModel } from "@shared/schema";
 
 interface VehicleSelection {
@@ -82,7 +82,7 @@ export function VehicleHeroSelector({ onVehicleSelect }: VehicleHeroSelectorProp
             data-testid="select-hero-vehicle-make"
           >
             {isLoadingMakes ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <SpinnerGap className="w-4 h-4 animate-spin" />
             ) : (
               <SelectValue placeholder="Merk" />
             )}
@@ -106,7 +106,7 @@ export function VehicleHeroSelector({ onVehicleSelect }: VehicleHeroSelectorProp
             data-testid="select-hero-vehicle-model"
           >
             {isLoadingModels ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <SpinnerGap className="w-4 h-4 animate-spin" />
             ) : (
               <SelectValue placeholder="Model" />
             )}

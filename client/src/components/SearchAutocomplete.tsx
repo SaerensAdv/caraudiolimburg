@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { Search, Loader2 } from "lucide-react";
+import { MagnifyingGlass, SpinnerGap } from "@phosphor-icons/react";
 import { Input } from "@/components/ui/input";
 
 interface AutocompleteProduct {
@@ -117,7 +117,7 @@ export function SearchAutocomplete({ variant = 'desktop', onNavigate }: SearchAu
       data-testid="search-autocomplete"
     >
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
+        <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
         <Input
           ref={inputRef}
           type="text"
@@ -133,7 +133,7 @@ export function SearchAutocomplete({ variant = 'desktop', onNavigate }: SearchAu
           data-testid="search-input"
         />
         {isLoading && debouncedQuery.length >= 2 && (
-          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 animate-spin" data-testid="search-loading" />
+          <SpinnerGap className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50 animate-spin" data-testid="search-loading" />
         )}
       </div>
 
@@ -144,7 +144,7 @@ export function SearchAutocomplete({ variant = 'desktop', onNavigate }: SearchAu
         >
           {isLoading ? (
             <div className="p-4 text-center text-white/50" data-testid="search-loading-state">
-              <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+              <SpinnerGap className="w-5 h-5 animate-spin mx-auto" />
             </div>
           ) : !hasResults ? (
             <div className="p-4 text-center text-white/50" data-testid="search-no-results">
@@ -173,7 +173,7 @@ export function SearchAutocomplete({ variant = 'desktop', onNavigate }: SearchAu
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-white/20">
-                            <Search className="w-4 h-4" />
+                            <MagnifyingGlass className="w-4 h-4" />
                           </div>
                         )}
                       </div>

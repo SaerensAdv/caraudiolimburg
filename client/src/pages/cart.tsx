@@ -17,8 +17,8 @@ import { useGuestCart, type GuestCartItem } from "@/lib/guestCart";
 import { 
   Minus, 
   Plus, 
-  Trash2, 
-  ShoppingBag, 
+  Trash as Trash2, 
+  Bag as ShoppingBag, 
   ArrowRight,
   Wrench,
   Truck,
@@ -27,10 +27,10 @@ import {
   Lock,
   Package,
   CheckCircle,
-  RefreshCw,
+  ArrowClockwise as RefreshCw,
   CreditCard,
   ShieldCheck
-} from "lucide-react";
+} from "@phosphor-icons/react";
 import type { CartItem, Product } from "@shared/schema";
 import carAudioLogo from "@assets/Caraudiolimburg-logo_1757008375383_1757016657436.png";
 

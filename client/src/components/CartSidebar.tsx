@@ -16,11 +16,11 @@ import {
   X, 
   Minus, 
   Plus, 
-  Trash2, 
-  ShoppingBag, 
+  Trash, 
+  Bag, 
   ArrowRight,
   Wrench
-} from "lucide-react";
+} from "@phosphor-icons/react";
 import type { CartItem } from "@shared/schema";
 import carAudioLogo from "@assets/Caraudiolimburg-logo_1757008375383_1757016657436.png";
 
@@ -191,7 +191,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
           <SheetHeader className="p-6 border-b border-zinc-800">
             <div className="flex items-center justify-between">
               <SheetTitle className="text-lg font-semibold text-white flex items-center">
-                <ShoppingBag className="w-5 h-5 mr-2 text-[#d0a760]" />
+                <Bag className="w-5 h-5 mr-2 text-[#d0a760]" />
                 Winkelwagen
                 {itemCount > 0 && (
                   <Badge className="ml-2 bg-[#d0a760] text-black" data-testid="cart-item-count">
@@ -231,7 +231,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
           ) : displayItems.length === 0 ? (
             <div className="flex-1 flex items-center justify-center p-6">
               <div className="text-center space-y-4" data-testid="cart-empty">
-                <ShoppingBag className="w-12 h-12 text-white/40 mx-auto" />
+                <Bag className="w-12 h-12 text-white/40 mx-auto" />
                 <div>
                   <h3 className="font-semibold text-white mb-2">Je winkelwagen is leeg</h3>
                   <p className="text-sm text-white/60 mb-4">
@@ -340,7 +340,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                                   className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-1"
                                   data-testid={`button-remove-cart-${item.id}`}
                                 >
-                                  <Trash2 className="w-4 h-4" />
+                                  <Trash className="w-4 h-4" />
                                 </Button>
                               </div>
                             </div>

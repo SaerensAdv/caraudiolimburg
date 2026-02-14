@@ -176,7 +176,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.redirect(301, `/blog/${rootSlugMatch[1]}`);
     }
 
-    if (path.length > 1 && path.endsWith('/') && cleanPath === path.slice(0, -1)) {
+    const spaRoutes = new Set(['/portfolio', '/webshop', '/blog', '/contact', '/over-ons', '/montage', '/booking', '/faq', '/cart', '/checkout', '/login', '/admin']);
+    if (path.length > 1 && path.endsWith('/') && cleanPath === path.slice(0, -1) && !spaRoutes.has(cleanPath)) {
       return res.redirect(301, cleanPath);
     }
 

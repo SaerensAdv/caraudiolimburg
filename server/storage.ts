@@ -317,22 +317,33 @@ export class DatabaseStorage implements IStorage {
       }
     }
 
-    if (options.vehicleMakeId) {
-      conditions.push(
-        sql`EXISTS (SELECT 1 FROM ${productVehicleCompatibility} WHERE ${productVehicleCompatibility.productId} = ${products.id} AND ${productVehicleCompatibility.makeId} = ${options.vehicleMakeId})`
-      );
-    }
+    const hasVehicleFilter = options.vehicleMakeId || options.vehicleModelId || options.vehicleYear;
+    if (hasVehicleFilter) {
+      const yearCheck = options.vehicleYear 
+        ? sql`AND (pvc.year_from IS NULL OR pvc.year_from <= ${options.vehicleYear}) AND (pvc.year_to IS NULL OR pvc.year_to >= ${options.vehicleYear})` 
+        : sql``;
 
-    if (options.vehicleModelId) {
-      conditions.push(
-        sql`EXISTS (SELECT 1 FROM ${productVehicleCompatibility} WHERE ${productVehicleCompatibility.productId} = ${products.id} AND ${productVehicleCompatibility.modelId} = ${options.vehicleModelId})`
-      );
-    }
-
-    if (options.vehicleYear) {
-      conditions.push(
-        sql`EXISTS (SELECT 1 FROM ${productVehicleCompatibility} WHERE ${productVehicleCompatibility.productId} = ${products.id} AND (${productVehicleCompatibility.yearFrom} IS NULL OR ${productVehicleCompatibility.yearFrom} <= ${options.vehicleYear}) AND (${productVehicleCompatibility.yearTo} IS NULL OR ${productVehicleCompatibility.yearTo} >= ${options.vehicleYear}))`
-      );
+      if (options.vehicleMakeId && options.vehicleModelId) {
+        conditions.push(
+          sql`EXISTS (SELECT 1 FROM ${productVehicleCompatibility} pvc WHERE pvc.product_id = ${products.id} AND (
+            (pvc.make_id = ${options.vehicleMakeId} AND pvc.model_id = ${options.vehicleModelId})
+            OR (pvc.make_id = ${options.vehicleMakeId} AND pvc.model_id IS NULL)
+            OR (pvc.make_id IS NULL AND pvc.model_id IS NULL)
+          ) ${yearCheck})`
+        );
+      } else if (options.vehicleMakeId) {
+        conditions.push(
+          sql`EXISTS (SELECT 1 FROM ${productVehicleCompatibility} pvc WHERE pvc.product_id = ${products.id} AND (pvc.make_id = ${options.vehicleMakeId} OR pvc.make_id IS NULL) ${yearCheck})`
+        );
+      } else if (options.vehicleModelId) {
+        conditions.push(
+          sql`EXISTS (SELECT 1 FROM ${productVehicleCompatibility} pvc WHERE pvc.product_id = ${products.id} AND (pvc.model_id = ${options.vehicleModelId} OR pvc.model_id IS NULL) ${yearCheck})`
+        );
+      } else if (options.vehicleYear) {
+        conditions.push(
+          sql`EXISTS (SELECT 1 FROM ${productVehicleCompatibility} pvc WHERE pvc.product_id = ${products.id} ${yearCheck})`
+        );
+      }
     }
 
     // Build query step by step to avoid TypeScript issues
@@ -446,6 +457,19 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getVehicleModels(makeId: string): Promise<VehicleModel[]> {
+    const hasMakeLevelCompat = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(productVehicleCompatibility)
+      .innerJoin(products, and(eq(products.id, productVehicleCompatibility.productId), eq(products.isActive, true)))
+      .where(and(
+        eq(productVehicleCompatibility.makeId, makeId),
+        sql`${productVehicleCompatibility.modelId} IS NULL`
+      ));
+
+    if (hasMakeLevelCompat[0]?.count > 0) {
+      return await db.select().from(vehicleModels).where(eq(vehicleModels.makeId, makeId)).orderBy(asc(vehicleModels.name));
+    }
+
     const modelsWithProducts = await db
       .selectDistinct({ id: vehicleModels.id, name: vehicleModels.name, slug: vehicleModels.slug, makeId: vehicleModels.makeId, startYear: vehicleModels.startYear, endYear: vehicleModels.endYear, createdAt: vehicleModels.createdAt })
       .from(vehicleModels)

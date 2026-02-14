@@ -120,7 +120,6 @@ export default function Home() {
           <video
             autoPlay
             muted
-            loop
             playsInline
             className="absolute inset-0 w-full h-full object-cover scale-110"
             src={heroVideo}

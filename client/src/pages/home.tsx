@@ -38,7 +38,7 @@ import { Link } from "wouter";
 import CinematicIntro from "@/components/CinematicIntro";
 import { KentekenProductFinder } from "@/components/KentekenProductFinder";
 
-import heroVideo from "@assets/Professional_hero_background_1080p_2026021417_1771096305581.mp4";
+import heroVideo from "@assets/hero-bg-optimized.mp4";
 import studioImage1 from "@assets/C5025.00_06_16_04.Still024-1-2048x1152_1757024538840.jpg";
 import studioImage2 from "@assets/C5025.00_17_23_55.Still031-1-2048x1152_1757024658861.jpg";
 import studioImage3 from "@assets/C5025.00_31_30_11.Still045-1-1-2048x1152_1757024535822.jpg";

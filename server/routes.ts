@@ -2395,114 +2395,6 @@ ${message || 'Geen aanvullende informatie'}`
   });
 
   // ============================================
-  // SITEMAP.XML - SEO Compliant (sitemaps.org)
-  // ============================================
-  
-  // Helper: Escape XML special characters
-  function escapeXml(str: string): string {
-    return str
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&apos;');
-  }
-
-  // Helper: Normalize URL (no trailing slash, except for root)
-  function normalizeUrl(baseUrl: string, path: string): string {
-    const cleanPath = path.replace(/\/+$/, ''); // Remove trailing slashes
-    if (cleanPath === '' || cleanPath === '/') {
-      return baseUrl; // Root URL without trailing slash
-    }
-    return `${baseUrl}${cleanPath.startsWith('/') ? cleanPath : '/' + cleanPath}`;
-  }
-
-  // Helper: Generate sitemap XML
-  async function generateSitemapXml(baseUrl: string): Promise<string> {
-    const urls: Array<{ loc: string; lastmod?: string; changefreq?: string; priority?: string }> = [];
-
-    // Static pages (public, indexable)
-    const staticPages = [
-      { path: '/', priority: '1.0', changefreq: 'daily' },
-      { path: '/products', priority: '0.9', changefreq: 'daily' },
-      { path: '/shop', priority: '0.9', changefreq: 'daily' },
-      { path: '/blog', priority: '0.8', changefreq: 'weekly' },
-      { path: '/studio', priority: '0.8', changefreq: 'weekly' },
-      { path: '/booking', priority: '0.8', changefreq: 'weekly' },
-      { path: '/about', priority: '0.7', changefreq: 'monthly' },
-      { path: '/faq', priority: '0.6', changefreq: 'monthly' },
-      { path: '/contact', priority: '0.7', changefreq: 'monthly' },
-      { path: '/apple-carplay-bmw', priority: '0.8', changefreq: 'weekly' },
-      { path: '/privacy', priority: '0.3', changefreq: 'yearly' },
-      { path: '/voorwaarden', priority: '0.3', changefreq: 'yearly' },
-    ];
-
-    // Add static pages
-    for (const page of staticPages) {
-      urls.push({
-        loc: normalizeUrl(baseUrl, page.path),
-        changefreq: page.changefreq,
-        priority: page.priority,
-      });
-    }
-
-    // Add dynamic product pages
-    try {
-      const products = await storage.getProducts({ limit: 50000 }); // Sitemap limit
-      for (const product of products) {
-        if (product.slug) {
-          urls.push({
-            loc: normalizeUrl(baseUrl, `/product/${product.slug}`),
-            changefreq: 'weekly',
-            priority: '0.7',
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Sitemap: Error fetching products:', error);
-    }
-
-    // Add dynamic blog post pages
-    try {
-      const blogPosts = await storage.getPublishedBlogPostsForSitemap();
-      for (const post of blogPosts) {
-        if (post.slug) {
-          urls.push({
-            loc: normalizeUrl(baseUrl, `/blog/${post.slug}`),
-            lastmod: post.updatedAt ? post.updatedAt.toISOString().split('T')[0] : undefined,
-            changefreq: 'weekly',
-            priority: '0.7',
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Sitemap: Error fetching blog posts:', error);
-    }
-
-    // Build XML
-    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
-
-    for (const url of urls) {
-      xml += '  <url>\n';
-      xml += `    <loc>${escapeXml(url.loc)}</loc>\n`;
-      if (url.lastmod) {
-        xml += `    <lastmod>${escapeXml(url.lastmod)}</lastmod>\n`;
-      }
-      if (url.changefreq) {
-        xml += `    <changefreq>${escapeXml(url.changefreq)}</changefreq>\n`;
-      }
-      if (url.priority) {
-        xml += `    <priority>${escapeXml(url.priority)}</priority>\n`;
-      }
-      xml += '  </url>\n';
-    }
-
-    xml += '</urlset>';
-    return xml;
-  }
-
-  // ============================================
   // Portfolio Routes - Public
   // ============================================
 
@@ -3431,18 +3323,46 @@ Disallow: /demo-tools
 Sitemap: https://caraudiolimburg.nl/sitemap.xml`);
   });
 
+  const SITEMAP_BASE_URL = 'https://caraudiolimburg.nl';
+
+  function escapeXml(str: string): string {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+  }
+
   app.get('/sitemap.xml', async (req, res) => {
     try {
-      const BASE_URL = 'https://caraudiolimburg.nl';
-      const STATIC_LASTMOD = '2026-02-14';
+      const now = new Date().toISOString().split('T')[0];
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>${SITEMAP_BASE_URL}/sitemap-pages.xml</loc>
+    <lastmod>${now}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${SITEMAP_BASE_URL}/sitemap-products.xml</loc>
+    <lastmod>${now}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${SITEMAP_BASE_URL}/sitemap-categories.xml</loc>
+    <lastmod>${now}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${SITEMAP_BASE_URL}/sitemap-blog.xml</loc>
+    <lastmod>${now}</lastmod>
+  </sitemap>
+</sitemapindex>`;
+      res.setHeader('Content-Type', 'application/xml');
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+      res.send(xml);
+    } catch (error) {
+      console.error('Error generating sitemap index:', error);
+      res.status(500).send('Error generating sitemap');
+    }
+  });
 
-      const [allProducts, allCategories, allBrands, blogPosts] = await Promise.all([
-        storage.getProducts({}),
-        storage.getCategories(),
-        storage.getBrands(),
-        storage.getPublishedBlogPostsForSitemap().catch(() => []),
-      ]);
-
+  app.get('/sitemap-pages.xml', (req, res) => {
+    try {
+      const now = new Date().toISOString().split('T')[0];
       const staticPages = [
         { loc: '/', changefreq: 'daily', priority: '1.0' },
         { loc: '/webshop', changefreq: 'daily', priority: '0.9' },
@@ -3458,47 +3378,96 @@ Sitemap: https://caraudiolimburg.nl/sitemap.xml`);
         { loc: '/apple-carplay-voor-uw-bmw', changefreq: 'monthly', priority: '0.6' },
       ];
 
-      let urls = staticPages.map(
-        (p) => `  <url>\n    <loc>${BASE_URL}${p.loc}</loc>\n    <lastmod>${STATIC_LASTMOD}</lastmod>\n    <changefreq>${p.changefreq}</changefreq>\n    <priority>${p.priority}</priority>\n  </url>`
+      const urls = staticPages.map(
+        (p) => `  <url>\n    <loc>${SITEMAP_BASE_URL}${p.loc}</loc>\n    <lastmod>${now}</lastmod>\n    <changefreq>${p.changefreq}</changefreq>\n    <priority>${p.priority}</priority>\n  </url>`
       );
 
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>`;
+      res.setHeader('Content-Type', 'application/xml');
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+      res.send(xml);
+    } catch (error) {
+      console.error('Error generating pages sitemap:', error);
+      res.status(500).send('Error generating sitemap');
+    }
+  });
+
+  app.get('/sitemap-products.xml', async (req, res) => {
+    try {
+      const allProducts = await storage.getProducts({});
+      const urls: string[] = [];
+
       for (const product of allProducts) {
-        if (product.slug) {
-          const lastmod = (product as any).updatedAt ? new Date((product as any).updatedAt).toISOString().split('T')[0] : STATIC_LASTMOD;
-          const images = product.images && product.images.length > 0 ? product.images : [];
-          const imageTags = images.map((img: string) => {
-            const imageUrl = img.startsWith('http') ? img : `${BASE_URL}${img}`;
-            return `\n    <image:image>\n      <image:loc>${imageUrl}</image:loc>\n      <image:title>${product.name}</image:title>\n    </image:image>`;
-          }).join('');
-          urls.push(`  <url>\n    <loc>${BASE_URL}/webshop/${product.slug}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>${imageTags}\n  </url>`);
-        }
-      }
-
-      for (const category of allCategories) {
-        if (category.slug) {
-          urls.push(`  <url>\n    <loc>${BASE_URL}/webshop?category=${category.slug}</loc>\n    <lastmod>${STATIC_LASTMOD}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`);
-        }
-      }
-
-      for (const brand of allBrands) {
-        if (brand.slug) {
-          urls.push(`  <url>\n    <loc>${BASE_URL}/webshop?brand=${brand.slug}</loc>\n    <lastmod>${STATIC_LASTMOD}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`);
-        }
-      }
-
-      for (const post of blogPosts) {
-        if (post.slug) {
-          const lastmod = (post as any).updatedAt ? new Date((post as any).updatedAt).toISOString().split('T')[0] : STATIC_LASTMOD;
-          urls.push(`  <url>\n    <loc>${BASE_URL}/blog/${post.slug}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>`);
-        }
+        if (!product.slug) continue;
+        const lastmod = (product as any).updatedAt
+          ? new Date((product as any).updatedAt).toISOString().split('T')[0]
+          : new Date().toISOString().split('T')[0];
+        const images = product.images && product.images.length > 0 ? product.images : [];
+        const imageTags = images.map((img: string) => {
+          const imageUrl = img.startsWith('http') ? img : `${SITEMAP_BASE_URL}${img}`;
+          return `\n    <image:image>\n      <image:loc>${escapeXml(imageUrl)}</image:loc>\n      <image:title>${escapeXml(product.name)}</image:title>\n    </image:image>`;
+        }).join('');
+        urls.push(`  <url>\n    <loc>${SITEMAP_BASE_URL}/webshop/${escapeXml(product.slug)}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>${imageTags}\n  </url>`);
       }
 
       const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${urls.join('\n')}\n</urlset>`;
-
       res.setHeader('Content-Type', 'application/xml');
+      res.setHeader('Cache-Control', 'public, max-age=3600');
       res.send(xml);
     } catch (error) {
-      console.error('Error generating sitemap:', error);
+      console.error('Error generating products sitemap:', error);
+      res.status(500).send('Error generating sitemap');
+    }
+  });
+
+  app.get('/sitemap-categories.xml', async (req, res) => {
+    try {
+      const now = new Date().toISOString().split('T')[0];
+      const [allCategories, allBrands] = await Promise.all([
+        storage.getCategories(),
+        storage.getBrands(),
+      ]);
+      const urls: string[] = [];
+
+      for (const category of allCategories) {
+        if (!category.slug) continue;
+        urls.push(`  <url>\n    <loc>${SITEMAP_BASE_URL}/webshop?category=${escapeXml(category.slug)}</loc>\n    <lastmod>${now}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`);
+      }
+
+      for (const brand of allBrands) {
+        if (!brand.slug) continue;
+        urls.push(`  <url>\n    <loc>${SITEMAP_BASE_URL}/webshop?brand=${escapeXml(brand.slug)}</loc>\n    <lastmod>${now}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`);
+      }
+
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>`;
+      res.setHeader('Content-Type', 'application/xml');
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+      res.send(xml);
+    } catch (error) {
+      console.error('Error generating categories sitemap:', error);
+      res.status(500).send('Error generating sitemap');
+    }
+  });
+
+  app.get('/sitemap-blog.xml', async (req, res) => {
+    try {
+      const blogPosts = await storage.getPublishedBlogPostsForSitemap().catch(() => []);
+      const urls: string[] = [];
+
+      for (const post of blogPosts) {
+        if (!post.slug) continue;
+        const lastmod = (post as any).updatedAt
+          ? new Date((post as any).updatedAt).toISOString().split('T')[0]
+          : new Date().toISOString().split('T')[0];
+        urls.push(`  <url>\n    <loc>${SITEMAP_BASE_URL}/blog/${escapeXml(post.slug)}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>`);
+      }
+
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>`;
+      res.setHeader('Content-Type', 'application/xml');
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+      res.send(xml);
+    } catch (error) {
+      console.error('Error generating blog sitemap:', error);
       res.status(500).send('Error generating sitemap');
     }
   });

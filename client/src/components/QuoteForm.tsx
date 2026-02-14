@@ -16,6 +16,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertQuoteRequestSchema } from "@shared/schema";
 import { z } from "zod";
+import { KentekenLookup } from "@/components/KentekenLookup";
 
 const quoteFormSchema = insertQuoteRequestSchema.extend({
   vehicleYear: z.number().min(1990).max(new Date().getFullYear() + 1),
@@ -67,6 +68,22 @@ export function QuoteForm() {
   return (
     <div data-testid="quote-form">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <KentekenLookup
+          onResult={(data) => {
+            setValue("vehicleMake", data.merk, { shouldValidate: true });
+            setValue("vehicleModel", data.model, { shouldValidate: true });
+            if (data.bouwjaar) {
+              setValue("vehicleYear", data.bouwjaar, { shouldValidate: true });
+            }
+          }}
+        />
+
+        <div className="flex items-center gap-3 text-white/30 text-xs">
+          <div className="flex-1 h-px bg-zinc-700" />
+          <span>of vul handmatig in</span>
+          <div className="flex-1 h-px bg-zinc-700" />
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
             {...register("firstName")}

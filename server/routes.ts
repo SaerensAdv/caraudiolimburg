@@ -1017,7 +1017,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
           if (contactIdTl) {
             await teamleader.createDeal({
-              contactIdTl,
+              contactId: contactIdTl,
               title: `Website Contact - ${firstName || ''} ${lastName}`,
               summary: `Onderwerp: ${subject || 'Geen onderwerp'}\n\nBericht:\n${message || 'Geen bericht'}`,
             });
@@ -3627,6 +3627,59 @@ Sitemap: https://caraudiolimburg.com/sitemap.xml`);
     } catch (error) {
       console.error("Error disconnecting Teamleader:", error);
       res.status(500).json({ message: "Failed to disconnect" });
+    }
+  });
+
+  app.get('/api/rdw/kenteken/:plate', async (req, res) => {
+    try {
+      const plate = req.params.plate.toUpperCase().replace(/[-\s]/g, '');
+
+      if (!plate || plate.length < 4) {
+        return res.status(400).json({ message: "Ongeldig kenteken" });
+      }
+
+      const rdwUrl = `https://opendata.rdw.nl/resource/m9d7-ebf2.json?kenteken=${plate}`;
+      const response = await fetch(rdwUrl);
+
+      if (!response.ok) {
+        return res.status(502).json({ message: "RDW service niet beschikbaar" });
+      }
+
+      const data = await response.json();
+
+      if (!data || data.length === 0) {
+        return res.status(404).json({ message: "Kenteken niet gevonden" });
+      }
+
+      const vehicle = data[0];
+
+      const firstRegistration = vehicle.datum_eerste_toelating;
+      const year = firstRegistration ? parseInt(firstRegistration.substring(0, 4)) : null;
+
+      const result: any = {
+        kenteken: vehicle.kenteken,
+        merk: vehicle.merk ? vehicle.merk.charAt(0) + vehicle.merk.slice(1).toLowerCase() : null,
+        model: vehicle.handelsbenaming || null,
+        bouwjaar: year,
+        brandstof: null,
+        kleur: vehicle.eerste_kleur ? vehicle.eerste_kleur.charAt(0) + vehicle.eerste_kleur.slice(1).toLowerCase() : null,
+        voertuigsoort: vehicle.voertuigsoort || null,
+        apkVervaldatum: vehicle.vervaldatum_apk || null,
+      };
+
+      const fuelUrl = `https://opendata.rdw.nl/resource/8ys7-d773.json?kenteken=${plate}`;
+      const fuelResponse = await fetch(fuelUrl);
+      if (fuelResponse.ok) {
+        const fuelData = await fuelResponse.json();
+        if (fuelData && fuelData.length > 0) {
+          result.brandstof = fuelData[0].brandstof_omschrijving || null;
+        }
+      }
+
+      res.json(result);
+    } catch (error) {
+      console.error("RDW lookup error:", error);
+      res.status(500).json({ message: "Fout bij ophalen voertuiggegevens" });
     }
   });
 

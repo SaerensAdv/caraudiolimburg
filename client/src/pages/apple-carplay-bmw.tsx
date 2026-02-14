@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { ScrollReveal, StaggerContainer, CountUp } from "@/components/ScrollAnimations";
+import { KentekenLookup } from "@/components/KentekenLookup";
 import bmwCarPlay1 from "@assets/bmw-carplay-1.jpg";
 import bmwCarPlay2 from "@assets/bmw-carplay-2.jpg";
 import bmwCarPlay3 from "@assets/bmw-carplay-3.jpg";
@@ -463,6 +464,20 @@ export default function AppleCarPlayBMW() {
                           data-testid="input-email"
                         />
                       </div>
+                    </div>
+
+                    <KentekenLookup
+                      onResult={(data) => {
+                        handleInputChange('model', `${data.merk} ${data.model}`);
+                        handleInputChange('year', String(data.bouwjaar));
+                        handleInputChange('license', data.kenteken);
+                      }}
+                    />
+
+                    <div className="flex items-center gap-3 my-2">
+                      <div className="flex-1 h-px bg-zinc-700" />
+                      <span className="text-zinc-500 text-xs">of vul handmatig in</span>
+                      <div className="flex-1 h-px bg-zinc-700" />
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-6">

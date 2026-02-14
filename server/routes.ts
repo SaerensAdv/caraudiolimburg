@@ -3630,6 +3630,157 @@ Sitemap: https://caraudiolimburg.com/sitemap.xml`);
     }
   });
 
+  app.get('/api/rdw/kenteken/:plate/match', async (req, res) => {
+    try {
+      const plate = req.params.plate.toUpperCase().replace(/[-\s]/g, '');
+
+      if (!plate || plate.length < 4) {
+        return res.status(400).json({ message: "Ongeldig kenteken" });
+      }
+
+      const rdwUrl = `https://opendata.rdw.nl/resource/m9d7-ebf2.json?kenteken=${plate}`;
+      const response = await fetch(rdwUrl);
+
+      if (!response.ok) {
+        return res.status(502).json({ message: "RDW service niet beschikbaar" });
+      }
+
+      const data = await response.json();
+
+      if (!data || data.length === 0) {
+        return res.status(404).json({ message: "Kenteken niet gevonden" });
+      }
+
+      const vehicle = data[0];
+      const firstRegistration = vehicle.datum_eerste_toelating;
+      const bouwjaar = firstRegistration ? parseInt(firstRegistration.substring(0, 4)) : null;
+      const rdwMerk = vehicle.merk || '';
+      const rdwModel = vehicle.handelsbenaming || '';
+
+      let brandstof: string | null = null;
+      try {
+        const fuelUrl = `https://opendata.rdw.nl/resource/8ys7-d773.json?kenteken=${plate}`;
+        const fuelResponse = await fetch(fuelUrl);
+        if (fuelResponse.ok) {
+          const fuelData = await fuelResponse.json();
+          if (fuelData && fuelData.length > 0) {
+            brandstof = fuelData[0].brandstof_omschrijving || null;
+          }
+        }
+      } catch {}
+
+      const kleur = vehicle.eerste_kleur ? vehicle.eerste_kleur.charAt(0) + vehicle.eerste_kleur.slice(1).toLowerCase() : null;
+
+      const removeAccents = (str: string) =>
+        str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+      const allMakes = await storage.getAllVehicleMakes();
+
+      let matchedMake: { id: string; name: string } | null = null;
+      const rdwMerkLower = rdwMerk.toLowerCase().trim();
+      const rdwMerkNorm = removeAccents(rdwMerkLower);
+
+      for (const make of allMakes) {
+        const dbNameLower = make.name.toLowerCase();
+        const dbNameNorm = removeAccents(dbNameLower);
+        if (dbNameLower === rdwMerkLower || dbNameNorm === rdwMerkNorm) {
+          matchedMake = { id: make.id, name: make.name };
+          break;
+        }
+      }
+
+      let matchedModel: { id: string; name: string } | null = null;
+      let confidence: 'exact' | 'partial' | 'make_only' | 'none' = 'none';
+
+      if (matchedMake) {
+        const allModels = await storage.getAllVehicleModelsByMake(matchedMake.id);
+        const rdwModelLower = rdwModel.toLowerCase().trim();
+        const rdwModelNorm = removeAccents(rdwModelLower);
+
+        for (const model of allModels) {
+          const dbModelLower = model.name.toLowerCase();
+          const dbModelNorm = removeAccents(dbModelLower);
+          if (dbModelLower === rdwModelLower || dbModelNorm === rdwModelNorm) {
+            matchedModel = { id: model.id, name: model.name };
+            confidence = 'exact';
+            break;
+          }
+        }
+
+        if (!matchedModel) {
+          for (const model of allModels) {
+            const dbModelLower = model.name.toLowerCase();
+            const dbModelNorm = removeAccents(dbModelLower);
+            if (rdwModelLower.includes(dbModelLower) || rdwModelNorm.includes(dbModelNorm)) {
+              matchedModel = { id: model.id, name: model.name };
+              confidence = 'partial';
+              break;
+            }
+          }
+        }
+
+        if (!matchedModel) {
+          for (const model of allModels) {
+            const dbModelLower = model.name.toLowerCase();
+            const dbModelNorm = removeAccents(dbModelLower);
+            if (rdwModelLower.startsWith(dbModelLower) || rdwModelNorm.startsWith(dbModelNorm)) {
+              matchedModel = { id: model.id, name: model.name };
+              confidence = 'partial';
+              break;
+            }
+          }
+        }
+
+        if (!matchedModel) {
+          confidence = 'make_only';
+        }
+      }
+
+      let productCount = 0;
+      let shopUrl = '/webshop';
+
+      if (matchedMake) {
+        const matchedProducts = await storage.getProducts({
+          vehicleMakeId: matchedMake.id,
+          vehicleModelId: matchedModel?.id || undefined,
+          vehicleYear: bouwjaar || undefined,
+        });
+        productCount = matchedProducts.length;
+
+        const params = new URLSearchParams();
+        params.set('vehicleMakeId', matchedMake.id);
+        if (matchedModel) params.set('vehicleModelId', matchedModel.id);
+        if (bouwjaar) params.set('vehicleYear', bouwjaar.toString());
+        shopUrl = `/webshop?${params.toString()}`;
+      }
+
+      const displayMerk = rdwMerk ? rdwMerk.charAt(0) + rdwMerk.slice(1).toLowerCase() : null;
+
+      res.json({
+        vehicle: {
+          kenteken: vehicle.kenteken,
+          merk: matchedMake?.name || displayMerk,
+          model: rdwModel || null,
+          bouwjaar,
+          brandstof,
+          kleur,
+        },
+        match: {
+          makeId: matchedMake?.id || null,
+          makeName: matchedMake?.name || null,
+          modelId: matchedModel?.id || null,
+          modelName: matchedModel?.name || null,
+          confidence,
+        },
+        productCount,
+        shopUrl,
+      });
+    } catch (error) {
+      console.error("RDW match error:", error);
+      res.status(500).json({ message: "Fout bij ophalen voertuiggegevens" });
+    }
+  });
+
   app.get('/api/rdw/kenteken/:plate', async (req, res) => {
     try {
       const plate = req.params.plate.toUpperCase().replace(/[-\s]/g, '');

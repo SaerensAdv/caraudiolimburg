@@ -36,6 +36,7 @@ import type { Product, Category } from "@shared/schema";
 import { ProductAudioSkeleton } from "@/components/AudioSkeletons";
 import { Link } from "wouter";
 import CinematicIntro from "@/components/CinematicIntro";
+import { KentekenProductFinder } from "@/components/KentekenProductFinder";
 
 import heroImage from "@assets/C5025.00_33_41_03.Still050-2048x1152_1757024504641.jpg";
 import studioImage1 from "@assets/C5025.00_06_16_04.Still024-1-2048x1152_1757024538840.jpg";
@@ -145,6 +146,14 @@ export default function Home() {
             </ScrollReveal>
 
             <ScrollReveal direction="up" delay={600}>
+              <KentekenProductFinder variant="compact" />
+              
+              <div className="flex items-center gap-3 my-5">
+                <div className="flex-1 h-px bg-white/10" />
+                <span className="text-white/30 text-xs uppercase tracking-wider">of zoek handmatig</span>
+                <div className="flex-1 h-px bg-white/10" />
+              </div>
+
               <VehicleHeroSelector onVehicleSelect={handleVehicleSelect} />
             </ScrollReveal>
             

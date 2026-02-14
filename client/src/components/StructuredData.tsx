@@ -22,7 +22,7 @@ export function OrganizationSchema() {
     '@type': 'Organization',
     name: 'Car Audio Limburg',
     url: SITE_URL,
-    logo: `${SITE_URL}/logo-transparent.webp`,
+    logo: `${SITE_URL}/logo-transparent.png`,
     description: 'Specialist in premium car audio systemen en dashcam systemen. Alpine, Audison, Hertz, Focal en meer.',
     address: {
       '@type': 'PostalAddress',
@@ -51,7 +51,7 @@ export function LocalBusinessSchema({ openingHours }: LocalBusinessSchemaProps) 
     '@type': 'LocalBusiness',
     '@id': `${SITE_URL}/#localbusiness`,
     name: 'Car Audio Limburg',
-    image: `${SITE_URL}/logo-transparent.webp`,
+    image: `${SITE_URL}/logo-transparent.png`,
     url: SITE_URL,
     description: 'Specialist in premium car audio systemen en dashcam systemen. Alpine, Audison, OEM upgrades en meer.',
     address: {
@@ -249,7 +249,7 @@ export function ArticleSchema({
       name: 'Car Audio Limburg',
       logo: {
         '@type': 'ImageObject',
-        url: `${SITE_URL}/logo-transparent.webp`,
+        url: `${SITE_URL}/logo-transparent.png`,
       },
     },
     mainEntityOfPage: {
@@ -366,7 +366,7 @@ export function WebSiteSchema() {
       name: 'Car Audio Limburg',
       logo: {
         '@type': 'ImageObject',
-        url: `${SITE_URL}/logo-transparent.webp`,
+        url: `${SITE_URL}/logo-transparent.png`,
       },
     },
   };

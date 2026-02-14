@@ -906,11 +906,11 @@ export default function CustomerPortal() {
                             <Link href={`/webshop/${item.product.slug}`}>
                               <div className="aspect-square bg-zinc-900 flex items-center justify-center p-6 relative overflow-hidden">
                                 <img 
-                                  src={item.product.images?.[item.product.primaryImageIndex || 0] || '/caraudiolimburg-logo.webp'} 
+                                  src={item.product.images?.[item.product.primaryImageIndex || 0] || '/caraudiolimburg-logo.png'} 
                                   alt={item.product.name}
                                   className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500"
                                   onError={(e) => {
-                                    e.currentTarget.src = '/caraudiolimburg-logo.webp';
+                                    e.currentTarget.src = '/caraudiolimburg-logo.png';
                                   }}
                                 />
                               </div>

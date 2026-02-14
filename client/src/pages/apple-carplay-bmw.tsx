@@ -32,12 +32,12 @@ import {
 import { motion } from "framer-motion";
 import { ScrollReveal, StaggerContainer, CountUp } from "@/components/ScrollAnimations";
 import { KentekenLookup } from "@/components/KentekenLookup";
-import bmwCarPlay1 from "@assets/bmw-carplay-1.webp";
-import bmwCarPlay2 from "@assets/bmw-carplay-2.webp";
-import bmwCarPlay3 from "@assets/bmw-carplay-3.webp";
-import bmwCarPlay4 from "@assets/bmw-carplay-4.webp";
-import bmwCarPlayVideo from "@assets/bmw-carplay-video.webp";
-import calWhiteLogo from "@assets/cal-white-logo.webp";
+import bmwCarPlay1 from "@assets/bmw-carplay-1.jpg";
+import bmwCarPlay2 from "@assets/bmw-carplay-2.jpg";
+import bmwCarPlay3 from "@assets/bmw-carplay-3.jpg";
+import bmwCarPlay4 from "@assets/bmw-carplay-4.jpg";
+import bmwCarPlayVideo from "@assets/bmw-carplay-video.jpg";
+import calWhiteLogo from "@assets/cal-white-logo.png";
 
 export default function AppleCarPlayBMW() {
   const [formData, setFormData] = useState({

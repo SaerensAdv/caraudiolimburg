@@ -87,7 +87,7 @@ import { nl } from "date-fns/locale";
 import type { Product, Order, Booking, QuoteRequest, User, BlogPost, BlogCategory, VehicleMake, VehicleModel, SiteSettings } from "@shared/schema";
 import { Link } from "wouter";
 
-import logoImage from "@assets/CAL white_1758369495328.webp";
+import logoImage from "@assets/CAL white_1758369495328.png";
 
 const productFormSchema = insertProductSchema.extend({
   price: z.string().min(1, "Prijs is verplicht"),

@@ -7,8 +7,8 @@ import { useQuery } from "@tanstack/react-query";
 import { MegaMenu } from "@/components/MegaMenu";
 import { SearchAutocomplete } from "@/components/SearchAutocomplete";
 import { useGuestCart } from "@/lib/guestCart";
-import logoUrl from "@assets/Caraudiolimburg-logo_1757008375383.webp";
-import whiteLogoUrl from "@assets/CAL white_1758369495328.webp";
+import logoUrl from "@assets/Caraudiolimburg-logo_1757008375383.png";
+import whiteLogoUrl from "@assets/CAL white_1758369495328.png";
 import type { Category, Brand, SiteSettings } from "@shared/schema";
 import { 
   ShoppingCart,

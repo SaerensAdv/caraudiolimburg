@@ -15,7 +15,7 @@ import {
   ArrowRight,
   Sparkle
 } from "@phosphor-icons/react";
-import bmwCarplayImage from "@assets/bmw-carplay-1.webp";
+import bmwCarplayImage from "@assets/bmw-carplay-1.jpg";
 
 interface MegaMenuProps {
   isOpen: boolean;

@@ -22,10 +22,10 @@ import {
 } from "@phosphor-icons/react";
 import { Link } from "wouter";
 
-import studioImage1 from "@assets/C5025.00_06_16_04.Still024-1-2048x1152_1757024538840.webp";
-import studioImage2 from "@assets/C5025.00_17_23_55.Still031-1-2048x1152_1757024658861.webp";
-import studioImage3 from "@assets/C5025.00_31_30_11.Still045-1-1-2048x1152_1757024535822.webp";
-import heroImage from "@assets/C5025.00_33_41_03.Still050-2048x1152_1757024504641.webp";
+import studioImage1 from "@assets/C5025.00_06_16_04.Still024-1-2048x1152_1757024538840.jpg";
+import studioImage2 from "@assets/C5025.00_17_23_55.Still031-1-2048x1152_1757024658861.jpg";
+import studioImage3 from "@assets/C5025.00_31_30_11.Still045-1-1-2048x1152_1757024535822.jpg";
+import heroImage from "@assets/C5025.00_33_41_03.Still050-2048x1152_1757024504641.jpg";
 
 export default function About() {
   const [isCartOpen, setIsCartOpen] = useState(false);

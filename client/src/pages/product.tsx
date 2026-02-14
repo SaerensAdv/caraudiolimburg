@@ -50,10 +50,10 @@ import type { Product, SiteSettings, Brand, Category } from "@shared/schema";
 import { trackViewItem, trackAddToCart } from "@/lib/dataLayer";
 import { addRecentlyViewed } from "@/lib/recentlyViewed";
 
-import bancontactLogo from "@assets/Bancontact-Original-logo-RGB_1770317016482.webp";
-import googlePayLogo from "@assets/Google_Pay_Logo.svg_1770317053129.webp";
-import applePayLogo from "@assets/Apple_Pay_logo.svg_1770317065102.webp";
-import mastercardLogo from "@assets/Mastercard-Emblem_1770317085225.webp";
+import bancontactLogo from "@assets/Bancontact-Original-logo-RGB_1770317016482.png";
+import googlePayLogo from "@assets/Google_Pay_Logo.svg_1770317053129.png";
+import applePayLogo from "@assets/Apple_Pay_logo.svg_1770317065102.png";
+import mastercardLogo from "@assets/Mastercard-Emblem_1770317085225.png";
 import idealLogo from "@assets/ideal-logo-1024_1770317108053.webp";
 
 type ProductVariation = {

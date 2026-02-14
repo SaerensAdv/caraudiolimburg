@@ -87,6 +87,102 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   setupAuth(app);
 
+  // WordPress-to-new-site 301 redirect middleware
+  app.use((req, res, next) => {
+    const path = req.path;
+
+    if (path.startsWith('/api/') || path.startsWith('/assets/')) {
+      return next();
+    }
+
+    const cleanPath = path.length > 1 && path.endsWith('/') ? path.slice(0, -1) : path;
+
+    if (path.startsWith('/wp-content/') || path.startsWith('/wp-content')) {
+      return res.status(410).send('Gone');
+    }
+
+    const brandMatch = cleanPath.match(/^\/(brand|product-brand)\/([^/]+)$/);
+    if (brandMatch) {
+      return res.redirect(301, `/webshop?brand=${brandMatch[2]}`);
+    }
+
+    if (/^\/cat(\/|$)/.test(cleanPath)) {
+      return res.redirect(301, '/webshop');
+    }
+
+    if (/^\/product_cat(\/|$)/.test(cleanPath)) {
+      return res.redirect(301, '/webshop');
+    }
+
+    if (/^\/landingpaginas(\/|$)/.test(cleanPath)) {
+      return res.redirect(301, '/webshop');
+    }
+
+    if (/^\/model-year(\/|$)/.test(cleanPath)) {
+      return res.redirect(301, '/webshop');
+    }
+
+    if (/^\/audio-upgrades\//.test(cleanPath)) {
+      return res.redirect(301, '/webshop');
+    }
+
+    if (cleanPath === '/klantenservice/garantie-en-reparatie') {
+      return res.redirect(301, '/veelgestelde-vragen');
+    }
+    if (cleanPath === '/klantenservice/veelgestelde-vragen') {
+      return res.redirect(301, '/veelgestelde-vragen');
+    }
+    if (cleanPath === '/klantenservice' || cleanPath.startsWith('/klantenservice/')) {
+      return res.redirect(301, '/contact');
+    }
+
+    if (cleanPath === '/webshop/privacy-policy') {
+      return res.redirect(301, '/privacy-policy');
+    }
+
+    const staticRedirects: Record<string, string> = {
+      '/reviews': '/',
+      '/alarminstallaties': '/webshop',
+      '/dashcams': '/webshop',
+      '/achteruitrijcameras': '/webshop',
+      '/carplay': '/webshop',
+      '/audio-upgrade': '/webshop',
+      '/audi-audio-upgrade': '/webshop',
+      '/bmw-audio-upgrade-2': '/webshop',
+      '/inbouwservice-car-audio-limburg': '/montage',
+      '/bedrijfsgegevens': '/over-ons',
+      '/landing-page': '/',
+      '/cookie-policy': '/privacy-policy',
+    };
+
+    if (staticRedirects[cleanPath]) {
+      return res.redirect(301, staticRedirects[cleanPath]);
+    }
+
+    const wpBlogSlugs = new Set([
+      'de-voordelen-van-het-upgraden-van-je-af-fabriek-speakers',
+      'apple-carplay-voor-uw-bmw-compatibiliteit-installatie-en-gebruik',
+      'car-audio-limburg-blijft-in-beweging',
+      'car-audio-limburg-blikt-terug-en-kijkt-vooruit',
+      'een-nieuw-jaar-een-fris-begin',
+      'hoe-maak-je-apple-carplay-draadloos',
+      'kies-de-luidsprekers-die-bij-jou-passen',
+      'waarom-een-rear-entertainment-systeem-op-de-achterbank-de-perfecte-aanvulling-is-voor-uw-familie-uitstapjes',
+      'zijn-alpine-sound-systemen-goed',
+    ]);
+
+    const rootSlugMatch = cleanPath.match(/^\/([a-z0-9-]+)$/);
+    if (rootSlugMatch && wpBlogSlugs.has(rootSlugMatch[1])) {
+      return res.redirect(301, `/blog/${rootSlugMatch[1]}`);
+    }
+
+    if (path.length > 1 && path.endsWith('/') && cleanPath === path.slice(0, -1)) {
+      return res.redirect(301, cleanPath);
+    }
+
+    next();
+  });
+
   // Health check endpoints for deployment monitoring
   app.get('/health', async (req, res) => {
     try {
@@ -3326,12 +3422,19 @@ ${message || 'Geen aanvullende informatie'}`
 Allow: /
 Disallow: /admin
 Disallow: /api/
-Sitemap: https://caraudiolimburg.com/sitemap.xml`);
+Disallow: /checkout
+Disallow: /my-account
+Disallow: /login
+Disallow: /cart
+Disallow: /migration-options
+Disallow: /demo-tools
+Sitemap: https://caraudiolimburg.nl/sitemap.xml`);
   });
 
   app.get('/sitemap.xml', async (req, res) => {
     try {
-      const BASE_URL = 'https://caraudiolimburg.com';
+      const BASE_URL = 'https://caraudiolimburg.nl';
+      const STATIC_LASTMOD = '2026-02-14';
 
       const [allProducts, allCategories, allBrands, blogPosts] = await Promise.all([
         storage.getProducts({}),
@@ -3343,43 +3446,54 @@ Sitemap: https://caraudiolimburg.com/sitemap.xml`);
       const staticPages = [
         { loc: '/', changefreq: 'daily', priority: '1.0' },
         { loc: '/webshop', changefreq: 'daily', priority: '0.9' },
-        { loc: '/contact', changefreq: 'monthly', priority: '0.6' },
+        { loc: '/contact', changefreq: 'monthly', priority: '0.7' },
         { loc: '/over-ons', changefreq: 'monthly', priority: '0.5' },
-        { loc: '/faq', changefreq: 'monthly', priority: '0.5' },
+        { loc: '/veelgestelde-vragen', changefreq: 'monthly', priority: '0.5' },
+        { loc: '/montage', changefreq: 'monthly', priority: '0.7' },
         { loc: '/blog', changefreq: 'weekly', priority: '0.7' },
-        { loc: '/afspraak-maken', changefreq: 'monthly', priority: '0.6' },
-        { loc: '/studio', changefreq: 'monthly', priority: '0.5' },
+        { loc: '/kenniscentrum', changefreq: 'weekly', priority: '0.7' },
+        { loc: '/portfolio', changefreq: 'monthly', priority: '0.6' },
+        { loc: '/privacy-policy', changefreq: 'yearly', priority: '0.3' },
+        { loc: '/algemene-voorwaarden', changefreq: 'yearly', priority: '0.3' },
+        { loc: '/apple-carplay-voor-uw-bmw', changefreq: 'monthly', priority: '0.6' },
       ];
 
       let urls = staticPages.map(
-        (p) => `  <url>\n    <loc>${BASE_URL}${p.loc}</loc>\n    <changefreq>${p.changefreq}</changefreq>\n    <priority>${p.priority}</priority>\n  </url>`
+        (p) => `  <url>\n    <loc>${BASE_URL}${p.loc}</loc>\n    <lastmod>${STATIC_LASTMOD}</lastmod>\n    <changefreq>${p.changefreq}</changefreq>\n    <priority>${p.priority}</priority>\n  </url>`
       );
 
       for (const product of allProducts) {
         if (product.slug) {
-          urls.push(`  <url>\n    <loc>${BASE_URL}/webshop/${product.slug}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>\n  </url>`);
+          const lastmod = (product as any).updatedAt ? new Date((product as any).updatedAt).toISOString().split('T')[0] : STATIC_LASTMOD;
+          const images = product.images && product.images.length > 0 ? product.images : [];
+          const imageTags = images.map((img: string) => {
+            const imageUrl = img.startsWith('http') ? img : `${BASE_URL}${img}`;
+            return `\n    <image:image>\n      <image:loc>${imageUrl}</image:loc>\n      <image:title>${product.name}</image:title>\n    </image:image>`;
+          }).join('');
+          urls.push(`  <url>\n    <loc>${BASE_URL}/webshop/${product.slug}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>${imageTags}\n  </url>`);
         }
       }
 
       for (const category of allCategories) {
         if (category.slug) {
-          urls.push(`  <url>\n    <loc>${BASE_URL}/webshop?category=${category.slug}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`);
+          urls.push(`  <url>\n    <loc>${BASE_URL}/webshop?category=${category.slug}</loc>\n    <lastmod>${STATIC_LASTMOD}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`);
         }
       }
 
       for (const brand of allBrands) {
         if (brand.slug) {
-          urls.push(`  <url>\n    <loc>${BASE_URL}/webshop?brand=${brand.slug}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`);
+          urls.push(`  <url>\n    <loc>${BASE_URL}/webshop?brand=${brand.slug}</loc>\n    <lastmod>${STATIC_LASTMOD}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`);
         }
       }
 
       for (const post of blogPosts) {
         if (post.slug) {
-          urls.push(`  <url>\n    <loc>${BASE_URL}/blog/${post.slug}</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>`);
+          const lastmod = (post as any).updatedAt ? new Date((post as any).updatedAt).toISOString().split('T')[0] : STATIC_LASTMOD;
+          urls.push(`  <url>\n    <loc>${BASE_URL}/blog/${post.slug}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>`);
         }
       }
 
-      const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>`;
+      const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${urls.join('\n')}\n</urlset>`;
 
       res.setHeader('Content-Type', 'application/xml');
       res.send(xml);

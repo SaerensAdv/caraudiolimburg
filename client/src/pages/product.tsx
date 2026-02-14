@@ -436,7 +436,7 @@ export default function ProductPage() {
       <ProductSchema
         name={product.name}
         description={productDescription}
-        image={images.length > 0 ? images : ['https://caraudiolimburg.com/og-image.jpg']}
+        image={images.length > 0 ? images : ['https://caraudiolimburg.nl/og-image.jpg']}
         price={currentPrice}
         availability={isInStock ? 'InStock' : 'OutOfStock'}
         brand={brandName}

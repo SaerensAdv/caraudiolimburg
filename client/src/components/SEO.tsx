@@ -13,8 +13,8 @@ interface SEOProps {
 
 const DEFAULT_TITLE = 'Car Audio Limburg';
 const DEFAULT_DESCRIPTION = 'Specialist in premium car audio systemen, professionele installatie en dashcam systemen. Alpine, Audison, OEM upgrades en meer. Gevestigd in Geleen, Limburg.';
-const DEFAULT_IMAGE = 'https://caraudiolimburg.com/og-image.jpg';
-const SITE_URL = 'https://caraudiolimburg.com';
+const DEFAULT_IMAGE = 'https://caraudiolimburg.nl/og-image.jpg';
+const SITE_URL = 'https://caraudiolimburg.nl';
 
 export function SEO({
   title,

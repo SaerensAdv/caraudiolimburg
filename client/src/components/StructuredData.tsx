@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 
-const SITE_URL = 'https://caraudiolimburg.com';
+const SITE_URL = 'https://caraudiolimburg.nl';
 
 interface JsonLdProps {
   data: object;

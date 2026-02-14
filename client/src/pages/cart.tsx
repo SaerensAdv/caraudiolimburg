@@ -33,7 +33,7 @@ import {
   ShieldCheck
 } from "@phosphor-icons/react";
 import type { CartItem, Product } from "@shared/schema";
-import carAudioLogo from "@assets/Caraudiolimburg-logo_1757008375383_1757016657436.png";
+import carAudioLogo from "@assets/Caraudiolimburg-logo_1757008375383_1757016657436.webp";
 
 interface CartItemWithProduct extends CartItem {
   product: Product;

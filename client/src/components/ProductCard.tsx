@@ -13,10 +13,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { useGuestCart } from "@/lib/guestCart";
 import type { Product, SiteSettings } from "@shared/schema";
 import { trackSelectItem } from "@/lib/dataLayer";
-import carAudioLogo from "@assets/Caraudiolimburg-logo_1757008375383_1757016657436.png";
+import carAudioLogo from "@assets/Caraudiolimburg-logo_1757008375383_1757016657436.webp";
 import fordFiestaImage from "@assets/ford-fiesta-real.webp";
 import audisonImage from "@assets/audison-real.webp";
-import audiA3Image from "@assets/audi-a3.png";
+import audiA3Image from "@assets/audi-a3.webp";
 
 interface ProductCardProps {
   product: Product;
@@ -163,16 +163,16 @@ export function ProductCard({ product, featured = false, brandName }: ProductCar
   const discount = originalPrice ? Math.round(((originalPrice - currentPrice) / originalPrice) * 100) : null;
 
   const getImageSrc = (imagePath: string) => {
-    if (imagePath.startsWith('@assets/Caraudiolimburg-logo_1757008375383_1757016657436.png')) {
+    if (imagePath.startsWith('@assets/Caraudiolimburg-logo_1757008375383_1757016657436.webp')) {
       return carAudioLogo;
     }
-    if (imagePath.includes('Android-Ford-Fiesta.png')) {
+    if (imagePath.includes('Android-Ford-Fiesta.webp')) {
       return fordFiestaImage;
     }
-    if (imagePath.includes('Audison-AV-3.0-II.png')) {
+    if (imagePath.includes('Audison-AV-3.0-II.webp')) {
       return audisonImage;
     }
-    if (imagePath.includes('Android-Audi-A3.png')) {
+    if (imagePath.includes('Android-Audi-A3.webp')) {
       return audiA3Image;
     }
     return imagePath;

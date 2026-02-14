@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star, User, Shield, ArrowSquareOut } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
-import trustedShopsLogo from "@assets/trusted-shops-icon-logo-png_seeklogo-620346_1770318250295.png";
+import trustedShopsLogo from "@assets/trusted-shops-icon-logo-png_seeklogo-620346_1770318250295.webp";
 
 interface ETrustedReview {
   id: string;

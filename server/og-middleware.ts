@@ -49,7 +49,7 @@ async function getMetaTagsForUrl(url: string): Promise<OGMetaTags> {
       if (product) {
         const imageUrl = product.images && product.images[0] 
           ? (product.images[0].startsWith('http') ? product.images[0] : `${SITE_URL}${product.images[0]}`)
-          : `${SITE_URL}/favicon.png`;
+          : `${SITE_URL}/favicon.webp`;
         
         const description = product.shortDescription || product.description || `${product.name} - Premium car audio bij Car Audio Limburg`;
         const cleanDescription = description.replace(/<[^>]*>/g, '').substring(0, 160).replace(/"/g, '&quot;');
@@ -71,7 +71,7 @@ async function getMetaTagsForUrl(url: string): Promise<OGMetaTags> {
   return {
     title: "Car Audio Limburg | Premium Car Audio & Installatie",
     description: "Specialist in premium car audio systemen, dashcams en professionele installatie. Alpine, Audison, BlackVue en meer. Bezoek onze showroom in Sittard.",
-    image: `${SITE_URL}/favicon.png`,
+    image: `${SITE_URL}/favicon.webp`,
     url: SITE_URL,
     type: "website",
     siteName: "Car Audio Limburg"

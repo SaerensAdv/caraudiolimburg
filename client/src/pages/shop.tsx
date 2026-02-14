@@ -928,7 +928,7 @@ export default function Shop() {
                         {/* Product Image */}
                         <div className="w-full sm:w-56 h-56 sm:h-auto bg-zinc-800 flex-shrink-0 relative overflow-hidden">
                           <img 
-                            src={product.images?.[0] || '/placeholder.png'} 
+                            src={product.images?.[0] || '/placeholder.webp'} 
                             alt={product.name}
                             width={224}
                             height={224}

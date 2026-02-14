@@ -13,8 +13,8 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { AudioLoadingSpinner } from "@/components/AudioSkeletons";
 import { Envelope, Lock, ArrowLeft, User, SpeakerHigh, Headphones } from "@phosphor-icons/react";
 
-import calLogo from "@assets/cal-white-logo.png";
-import calLogoDark from "@assets/Caraudiolimburg-logo_1757008375383.png";
+import calLogo from "@assets/cal-white-logo.webp";
+import calLogoDark from "@assets/Caraudiolimburg-logo_1757008375383.webp";
 
 const loginSchema = z.object({
   email: z.string().email("Voer een geldig e-mailadres in"),

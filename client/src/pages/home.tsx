@@ -39,9 +39,9 @@ import CinematicIntro from "@/components/CinematicIntro";
 import { KentekenProductFinder } from "@/components/KentekenProductFinder";
 
 import heroVideo from "@assets/hero-bg-optimized.mp4";
-import studioImage1 from "@assets/C5025.00_06_16_04.Still024-1-2048x1152_1757024538840.jpg";
-import studioImage2 from "@assets/C5025.00_17_23_55.Still031-1-2048x1152_1757024658861.jpg";
-import studioImage3 from "@assets/C5025.00_31_30_11.Still045-1-1-2048x1152_1757024535822.jpg";
+import studioImage1 from "@assets/C5025.00_06_16_04.Still024-1-2048x1152_1757024538840.webp";
+import studioImage2 from "@assets/C5025.00_17_23_55.Still031-1-2048x1152_1757024658861.webp";
+import studioImage3 from "@assets/C5025.00_31_30_11.Still045-1-1-2048x1152_1757024535822.webp";
 import promoVideo from "@assets/Verkorte-Video-Car-Audio-Limburg-Studio-1_1758238662915.mp4";
 
 export default function Home() {

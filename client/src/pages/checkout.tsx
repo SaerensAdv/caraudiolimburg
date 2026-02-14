@@ -37,7 +37,7 @@ import {
   ArrowClockwise as RefreshCw,
   Shield
 } from '@phosphor-icons/react';
-import carAudioLogo from "@assets/Caraudiolimburg-logo_1757008375383_1757016657436.png";
+import carAudioLogo from "@assets/Caraudiolimburg-logo_1757008375383_1757016657436.webp";
 
 const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY
   ? loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)

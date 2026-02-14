@@ -866,102 +866,110 @@ export default function ProductPage() {
                   </a>
                 )}
 
-                {/* Price - Mobile compact, Desktop full - Enhanced visibility */}
-                <div className="py-6 md:py-8 border-y border-[#d0a760]/20 bg-zinc-900/50 -mx-4 px-4 md:mx-0 md:px-0 md:bg-gradient-to-r md:from-[#d0a760]/5 md:via-transparent md:to-[#d0a760]/5" data-testid="product-pricing">
-                  <div className="flex items-baseline gap-3 md:gap-4 mb-3 md:mb-4">
-                    <span className="text-4xl md:text-5xl font-bold text-white drop-shadow-[0_0_20px_rgba(208,167,96,0.3)]">
+                {/* Price & Purchase Info */}
+                <div className="py-5 md:py-6 border-y border-[#d0a760]/20" data-testid="product-pricing">
+                  <div className="flex items-baseline gap-3 mb-2">
+                    <span className="text-3xl md:text-4xl font-bold text-white">
                       €{currentPrice.toFixed(0)}
                     </span>
                     {originalPrice && (
-                      <span className="text-lg md:text-xl text-white/40 line-through">
+                      <span className="text-base md:text-lg text-white/40 line-through">
                         €{originalPrice.toFixed(0)}
                       </span>
                     )}
                     {discount && (
-                      <span className="ml-2 px-3 py-1 bg-green-500/20 text-green-400 text-sm font-semibold border border-green-500/30">
-                        Bespaar €{(originalPrice! - currentPrice).toFixed(0)}
+                      <span className="px-2.5 py-0.5 bg-green-500/15 text-green-400 text-xs font-semibold border border-green-500/25">
+                        -{Math.round(((originalPrice! - currentPrice) / originalPrice!) * 100)}%
                       </span>
                     )}
                   </div>
                   
-                  {installationEnabled && installationPrice && (
-                    <p className="text-[#d0a760] text-sm font-medium flex items-center gap-2">
-                      <Sparkle weight="duotone" className="w-4 h-4" />
-                      + €{installationPrice.toFixed(0)} voor professionele installatie
-                    </p>
-                  )}
+                  <p className="text-white/40 text-xs mb-4">incl. BTW</p>
 
-                  <div className="mt-3 md:mt-4 space-y-3">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mb-4">
                     {isInStock ? (
-                      <div className="flex flex-col gap-1.5">
+                      <>
                         {effectiveStock !== null && effectiveStock >= 1 && effectiveStock <= 5 ? (
-                          <span className="inline-flex items-center gap-2 text-amber-500 text-sm font-medium">
-                            <Warning weight="duotone" className="w-4 h-4" />
-                            Nog maar {effectiveStock} op voorraad
+                          <span className="inline-flex items-center gap-1.5 text-amber-500 text-sm font-medium">
+                            <Warning weight="fill" className="w-3.5 h-3.5" />
+                            Nog {effectiveStock} op voorraad
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-2 text-green-500 text-sm font-medium">
-                            <Check weight="duotone" className="w-4 h-4" />
+                          <span className="inline-flex items-center gap-1.5 text-green-500 text-sm font-medium">
+                            <Check weight="bold" className="w-3.5 h-3.5" />
                             Op voorraad
                           </span>
                         )}
-                        {currentPrice >= 50 && (
-                          <span className="inline-flex items-center gap-2 text-[#d0a760] text-xs font-medium">
-                            <Truck weight="duotone" className="w-3.5 h-3.5" />
+                        <span className="text-white/30">|</span>
+                        {currentPrice >= 100 ? (
+                          <span className="inline-flex items-center gap-1.5 text-white/60 text-sm">
+                            <Truck weight="duotone" className="w-3.5 h-3.5 text-[#d0a760]" />
                             Gratis verzending
                           </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 text-white/60 text-sm">
+                            <Truck weight="duotone" className="w-3.5 h-3.5" />
+                            + €15 verzending
+                          </span>
                         )}
-                        <span className="text-white/50 text-xs flex items-center gap-1">
-                          <Clock weight="duotone" className="w-3 h-3" />
-                          Bestel voor 16:00, morgen in huis
+                        <span className="text-white/30 hidden sm:inline">|</span>
+                        <span className="text-white/50 text-xs sm:text-sm flex items-center gap-1.5">
+                          <Clock weight="duotone" className="w-3.5 h-3.5" />
+                          Morgen in huis
                         </span>
-                      </div>
+                      </>
                     ) : (
-                      <div className="flex flex-col gap-1.5">
-                        <span className="inline-flex items-center gap-2 text-red-500 text-sm font-medium">
-                          <Clock weight="duotone" className="w-4 h-4" />
+                      <>
+                        <span className="inline-flex items-center gap-1.5 text-red-400 text-sm font-medium">
+                          <Clock weight="duotone" className="w-3.5 h-3.5" />
                           {product.hasVariations && !selectedVariation 
                             ? "Selecteer een optie" 
                             : "Niet op voorraad"}
                         </span>
-                        {currentPrice >= 50 && (
-                          <span className="inline-flex items-center gap-2 text-[#d0a760] text-xs font-medium">
-                            <Truck weight="duotone" className="w-3.5 h-3.5" />
-                            Gratis verzending
-                          </span>
+                        {currentPrice >= 100 && (
+                          <>
+                            <span className="text-white/30">|</span>
+                            <span className="inline-flex items-center gap-1.5 text-white/60 text-sm">
+                              <Truck weight="duotone" className="w-3.5 h-3.5 text-[#d0a760]" />
+                              Gratis verzending
+                            </span>
+                          </>
                         )}
-                      </div>
+                      </>
                     )}
+                  </div>
+
+                  {installationEnabled && installationPrice && (
+                    <div className="flex items-center gap-2 mb-4 px-3 py-2 bg-[#d0a760]/5 border border-[#d0a760]/15">
+                      <Sparkle weight="duotone" className="w-4 h-4 text-[#d0a760]" />
+                      <span className="text-white/70 text-xs">Installatie beschikbaar voor <span className="text-[#d0a760] font-semibold">€{installationPrice.toFixed(0)}</span></span>
+                    </div>
+                  )}
                     
-                    {/* Payment Methods */}
-                    <div className="flex items-center gap-2 pt-2 overflow-x-auto scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
-                      <span className="text-white/40 text-xs whitespace-nowrap flex-shrink-0">Betaalmethodes:</span>
-                      <div className="flex items-center gap-1.5 flex-shrink-0">
-                        <div className="bg-[#1A1F71] px-2 py-1.5 rounded flex items-center justify-center" title="Visa">
-                          <SiVisa className="w-7 h-5 text-white" />
-                        </div>
-                        <div className="bg-white px-1.5 py-1 rounded flex items-center justify-center" title="Mastercard">
-                          <img src={mastercardLogo} alt="Mastercard" loading="lazy" decoding="async" className="h-5 w-auto" />
-                        </div>
-                        <div className="bg-black px-2 py-1.5 rounded flex items-center justify-center" title="Apple Pay">
-                          <img src={applePayLogo} alt="Apple Pay" loading="lazy" decoding="async" className="h-4 w-auto invert" />
-                        </div>
-                        <div className="bg-white px-2 py-1.5 rounded flex items-center justify-center" title="Google Pay">
-                          <img src={googlePayLogo} alt="Google Pay" loading="lazy" decoding="async" className="h-5 w-auto" />
-                        </div>
-                        <div className="bg-black px-2 py-1.5 rounded flex items-center justify-center" title="Revolut Pay">
-                          <SiRevolut className="w-5 h-5 text-white" />
-                        </div>
-                        <div className="bg-white px-1.5 py-1 rounded flex items-center justify-center" title="Bancontact">
-                          <img src={bancontactLogo} alt="Bancontact" loading="lazy" decoding="async" className="h-6 w-auto" />
-                        </div>
-                        <div className="bg-white px-1.5 py-1 rounded flex items-center justify-center" title="iDEAL">
-                          <img src={idealLogo} alt="iDEAL" loading="lazy" decoding="async" className="h-6 w-auto" />
-                        </div>
-                        <div className="bg-[#FFB3C7] px-2 py-1.5 rounded flex items-center justify-center" title="Klarna">
-                          <SiKlarna className="w-6 h-5 text-[#0A0B09]" />
-                        </div>
-                      </div>
+                  <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+                    <div className="bg-[#1A1F71] px-1.5 py-1 rounded flex items-center justify-center flex-shrink-0" title="Visa">
+                      <SiVisa className="w-6 h-4 text-white" />
+                    </div>
+                    <div className="bg-white px-1 py-0.5 rounded flex items-center justify-center flex-shrink-0" title="Mastercard">
+                      <img src={mastercardLogo} alt="Mastercard" loading="lazy" decoding="async" className="h-4 w-auto" />
+                    </div>
+                    <div className="bg-black px-1.5 py-1 rounded flex items-center justify-center flex-shrink-0" title="Apple Pay">
+                      <img src={applePayLogo} alt="Apple Pay" loading="lazy" decoding="async" className="h-3.5 w-auto invert" />
+                    </div>
+                    <div className="bg-white px-1.5 py-1 rounded flex items-center justify-center flex-shrink-0" title="Google Pay">
+                      <img src={googlePayLogo} alt="Google Pay" loading="lazy" decoding="async" className="h-4 w-auto" />
+                    </div>
+                    <div className="bg-black px-1.5 py-1 rounded flex items-center justify-center flex-shrink-0" title="Revolut Pay">
+                      <SiRevolut className="w-4 h-4 text-white" />
+                    </div>
+                    <div className="bg-white px-1 py-0.5 rounded flex items-center justify-center flex-shrink-0" title="Bancontact">
+                      <img src={bancontactLogo} alt="Bancontact" loading="lazy" decoding="async" className="h-5 w-auto" />
+                    </div>
+                    <div className="bg-white px-1 py-0.5 rounded flex items-center justify-center flex-shrink-0" title="iDEAL">
+                      <img src={idealLogo} alt="iDEAL" loading="lazy" decoding="async" className="h-5 w-auto" />
+                    </div>
+                    <div className="bg-[#FFB3C7] px-1.5 py-1 rounded flex items-center justify-center flex-shrink-0" title="Klarna">
+                      <SiKlarna className="w-5 h-4 text-[#0A0B09]" />
                     </div>
                   </div>
                 </div>

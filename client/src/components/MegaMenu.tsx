@@ -25,7 +25,7 @@ interface MegaMenuProps {
   isTransparent?: boolean;
 }
 
-const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
+const categoryIcons: Record<string, React.ComponentType<{ className?: string; weight?: "thin" | "light" | "regular" | "bold" | "fill" | "duotone" }>> = {
   "multimedia-navigatie": Monitor,
   "speakers-subwoofers": SpeakerHigh,
   "versterkers-dsp": Lightning,
@@ -141,9 +141,9 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
                         onClick={onClose}
                         data-testid={`megamenu-category-${category.slug}`}
                       >
-                        <IconComponent className="w-5 h-5 text-[#d0a760]/70 group-hover:text-[#d0a760] transition-colors" />
+                        <IconComponent weight="duotone" className="w-5 h-5 text-[#d0a760]/70 group-hover:text-[#d0a760] transition-colors" />
                         <span className="text-sm font-medium">{category.name}</span>
-                        <CaretRight className="w-4 h-4 ml-auto opacity-0 -translate-x-2 group-hover:opacity-50 group-hover:translate-x-0 transition-all duration-200" />
+                        <CaretRight weight="bold" className="w-4 h-4 ml-auto opacity-0 -translate-x-2 group-hover:opacity-50 group-hover:translate-x-0 transition-all duration-200" />
                       </Link>
                     </li>
                   );
@@ -159,7 +159,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
                 data-testid="megamenu-all-products"
               >
                 Bekijk alle producten
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight weight="bold" className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
           </div>
@@ -232,7 +232,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
                 
                 <div className="absolute bottom-0 left-0 right-0 p-5">
                   <div className="flex items-center gap-2 mb-2">
-                    <Sparkle className="w-4 h-4 text-[#d0a760]" />
+                    <Sparkle weight="duotone" className="w-4 h-4 text-[#d0a760]" />
                     <span className="text-[#d0a760] text-xs font-semibold tracking-wider uppercase">
                       Populair
                     </span>
@@ -245,7 +245,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
                   </p>
                   <span className="inline-flex items-center gap-2 text-[#d0a760] text-sm font-medium group-hover:gap-3 transition-all">
                     Meer informatie
-                    <ArrowRight className="w-4 h-4" />
+                    <ArrowRight weight="bold" className="w-4 h-4" />
                   </span>
                 </div>
               </div>
@@ -255,7 +255,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
             <div className="mt-4 p-4 bg-gradient-to-br from-[#d0a760]/10 to-transparent border border-[#d0a760]/20">
               <div className="flex items-start gap-3">
                 <div className="w-10 h-10 bg-[#d0a760]/20 flex items-center justify-center flex-shrink-0">
-                  <Wrench className="w-5 h-5 text-[#d0a760]" />
+                  <Wrench weight="duotone" className="w-5 h-5 text-[#d0a760]" />
                 </div>
                 <div>
                   <h4 className="text-white text-sm font-medium mb-1">
@@ -274,7 +274,7 @@ export function MegaMenu({ isOpen, onMouseEnter, onMouseLeave, onClose, isTransp
         {/* Car Brands Section */}
         <div className="mt-6 md:mt-8 lg:mt-10 pt-6 md:pt-8 border-t border-white/10">
           <div className="flex items-center gap-3 mb-4 md:mb-6">
-            <Car className="w-5 h-5 text-[#d0a760]" />
+            <Car weight="duotone" className="w-5 h-5 text-[#d0a760]" />
             <h3 className="text-[#d0a760] text-xs font-semibold tracking-widest uppercase">
               Automerken
             </h3>

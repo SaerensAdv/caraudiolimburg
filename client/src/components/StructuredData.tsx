@@ -26,7 +26,7 @@ export function OrganizationSchema() {
     description: 'Specialist in premium car audio systemen en dashcam systemen. Alpine, Audison, Hertz, Focal en meer.',
     address: {
       '@type': 'PostalAddress',
-      addressLocality: 'Geleen',
+      addressLocality: 'Sittard',
       addressRegion: 'Limburg',
       addressCountry: 'NL',
     },
@@ -56,10 +56,10 @@ export function LocalBusinessSchema({ openingHours }: LocalBusinessSchemaProps) 
     description: 'Specialist in premium car audio systemen en dashcam systemen. Alpine, Audison, OEM upgrades en meer.',
     address: {
       '@type': 'PostalAddress',
-      streetAddress: '',
-      addressLocality: 'Geleen',
+      streetAddress: 'Dr. Nolenslaan 157-C',
+      addressLocality: 'Sittard',
       addressRegion: 'Limburg',
-      postalCode: '',
+      postalCode: '6136 GM',
       addressCountry: 'NL',
     },
     geo: {
@@ -73,13 +73,13 @@ export function LocalBusinessSchema({ openingHours }: LocalBusinessSchemaProps) 
         '@type': 'OpeningHoursSpecification',
         dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
         opens: '09:00',
-        closes: '18:00',
+        closes: '17:00',
       },
       {
         '@type': 'OpeningHoursSpecification',
         dayOfWeek: 'Saturday',
-        opens: '10:00',
-        closes: '16:00',
+        opens: '09:00',
+        closes: '13:00',
       },
     ],
     areaServed: {

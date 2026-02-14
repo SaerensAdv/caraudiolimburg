@@ -58,7 +58,7 @@ export default function FAQ() {
         },
         {
           question: "Wat zijn de verzendkosten?",
-          answer: "Voor bestellingen boven de €50 verzenden we gratis binnen Nederland. Voor kleinere bestellingen rekenen we €4,95 verzendkosten. Naar België en Duitsland hanteren we een vast tarief van €9,95. Bij grote of zware producten nemen we vooraf contact met je op over eventuele meerkosten."
+          answer: "Voor bestellingen boven de €100 verzenden we gratis binnen Nederland. Voor kleinere bestellingen rekenen we €15 verzendkosten. Naar België en Duitsland hanteren we een vast tarief van €9,95. Bij grote of zware producten nemen we vooraf contact met je op over eventuele meerkosten."
         },
         {
           question: "Kan ik mijn bestelling retourneren?",

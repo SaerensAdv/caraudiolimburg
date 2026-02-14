@@ -28,8 +28,8 @@ Door een bestelling te plaatsen of een afspraak te maken, gaat u akkoord met dez
     {
       icon: Truck,
       title: "Levering & Verzending",
-      content: `• Gratis verzending bij bestellingen vanaf €50
-• Standaard verzendkosten: €5,95
+      content: `• Gratis verzending bij bestellingen vanaf €100
+• Standaard verzendkosten: €15,00
 • Levertijd is doorgaans 1-3 werkdagen
 • Afhalen in onze showroom is gratis mogelijk
 • Bij levering dient u de producten direct te controleren op beschadigingen

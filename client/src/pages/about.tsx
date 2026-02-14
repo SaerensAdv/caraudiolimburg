@@ -36,7 +36,7 @@ export default function About() {
         title="Over Ons"
         description="Leer meer over Car Audio Limburg - Met passie voor auto's en muziek. Al meer dan 10 jaar specialist in premium car audio systemen en professionele installatie in Limburg."
         canonical="/over-ons"
-        keywords="over ons, car audio limburg, installatie studio, Sittard, Geleen"
+        keywords="over ons, car audio limburg, installatie studio, Sittard"
       />
       <BreadcrumbSchema items={[
         { name: "Home", url: "/" },
@@ -363,7 +363,7 @@ export default function About() {
                   <MapPin className="h-12 w-12 text-[#d0a760] mx-auto mb-6" />
                   <h3 className="text-xl font-medium text-black mb-4">Adres</h3>
                   <p className="text-zinc-600 leading-relaxed">
-                    Dr. Nolenslaan 157c<br />
+                    Dr. Nolenslaan 157-C (Hal 3)<br />
                     6136 GM Sittard<br />
                     Nederland
                   </p>
@@ -391,12 +391,13 @@ export default function About() {
                   <h3 className="text-xl font-medium text-black mb-4">Openingstijden</h3>
                   <div className="text-zinc-600 space-y-2 text-sm">
                     <p className="font-medium text-black mb-2">Showroom:</p>
-                    <p>Ma-Do: 13:30 - 17:30</p>
-                    <p>Vrijdag: 08:30 - 15:00</p>
-                    <p className="font-medium text-black mt-4 mb-2">Inbouwstudio:</p>
-                    <p>Ma-Do: 08:30 - 17:30</p>
-                    <p>Vrijdag: 08:30 - 12:30</p>
-                    <p className="text-[#d0a760] font-medium mt-3">Enkel op afspraak</p>
+                    <p>Ma-Vr: 9:00 - 17:00</p>
+                    <p className="font-medium text-black mt-4 mb-2">Inbouwstudio (op afspraak):</p>
+                    <p>Ma-Vr: 8:30 - 17:00</p>
+                    <p className="text-zinc-500 text-xs">Pauze: 12:30 - 13:00</p>
+                    <p className="font-medium text-black mt-4 mb-2">Zaterdag showroom:</p>
+                    <p>9:00 - 13:00</p>
+                    <p className="text-zinc-500 mt-3">Zon- en feestdagen: Gesloten</p>
                   </div>
                 </div>
               </StaggerItem>

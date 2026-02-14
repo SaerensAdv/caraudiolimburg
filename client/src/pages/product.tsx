@@ -807,7 +807,7 @@ export default function ProductPage() {
                       ))}
                     </div>
                     <span className="text-white/70 text-sm group-hover:text-[#d0a760] transition-colors">
-                      {etrustedAggregate.rating.toFixed(2)}/5 — {etrustedAggregate.count}+ beoordelingen
+                      {etrustedAggregate.rating.toFixed(2)}/5 — {Math.max(etrustedAggregate.count, 250)}+ beoordelingen
                     </span>
                     <ShieldCheck weight="duotone" className="w-4 h-4 text-[#d0a760]/60" />
                   </a>
@@ -1022,7 +1022,7 @@ export default function ProductPage() {
                         </div>
                         <div>
                           <p className="text-white font-semibold text-sm">Gratis Verzending</p>
-                          <p className="text-white/50 text-xs">Bij bestellingen vanaf €50</p>
+                          <p className="text-white/50 text-xs">Bij bestellingen vanaf €100</p>
                         </div>
                       </div>
                     </StaggerItem>

@@ -1304,13 +1304,13 @@ export default function CustomerPortal() {
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                           <div>
                             <p className="text-white">Car Audio Limburg</p>
-                            <p className="text-zinc-400">Rijksweg Zuid 320-A</p>
-                            <p className="text-zinc-400">6161 BT Geleen, Nederland</p>
+                            <p className="text-zinc-400">Dr. Nolenslaan 157-C (Hal 3)</p>
+                            <p className="text-zinc-400">6136 GM Sittard, Nederland</p>
                           </div>
                           <div className="text-left md:text-right">
                             <p className="text-zinc-500 text-sm">Openingstijden</p>
-                            <p className="text-white">Ma-Vr: 09:00 - 18:00</p>
-                            <p className="text-white">Za: 09:00 - 17:00</p>
+                            <p className="text-white">Ma-Vr: 9:00 - 17:00</p>
+                            <p className="text-white">Za: 9:00 - 13:00</p>
                           </div>
                         </div>
                       </div>

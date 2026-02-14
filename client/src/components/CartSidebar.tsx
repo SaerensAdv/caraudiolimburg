@@ -179,7 +179,7 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   }, 0) || 0;
 
   const installationFee = installationEnabled && displayItems.some((item: any) => item.needsInstallation) ? 89 : 0;
-  const shipping = subtotal >= 50 ? 0 : 5.95;
+  const shipping = subtotal >= 100 ? 0 : 15;
   const total = subtotal + installationFee + shipping;
   const itemCount = displayItems.reduce((sum: number, item: any) => sum + item.quantity, 0) || 0;
 
@@ -422,10 +422,10 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                 </div>
 
                 {/* Free Shipping Notice */}
-                {subtotal > 0 && subtotal < 50 && (
+                {subtotal > 0 && subtotal < 100 && (
                   <div className="bg-[#d0a760]/10 border border-[#d0a760]/30 p-3" data-testid="free-shipping-notice">
                     <p className="text-xs text-center text-[#d0a760]">
-                      Nog €{(50 - subtotal).toFixed(2)} voor gratis verzending!
+                      Nog €{(100 - subtotal).toFixed(2)} voor gratis verzending!
                     </p>
                   </div>
                 )}

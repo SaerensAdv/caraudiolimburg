@@ -807,7 +807,7 @@ export default function ProductPage() {
                       ))}
                     </div>
                     <span className="text-white/70 text-sm group-hover:text-[#d0a760] transition-colors">
-                      {etrustedAggregate.rating.toFixed(2)}/5 — {etrustedAggregate.count}+ beoordelingen
+                      {etrustedAggregate.rating.toFixed(2)}/5 — 250+ beoordelingen
                     </span>
                     <ShieldCheck weight="duotone" className="w-4 h-4 text-[#d0a760]/60" />
                   </a>
@@ -852,7 +852,7 @@ export default function ProductPage() {
                             Op voorraad
                           </span>
                         )}
-                        {currentPrice >= 50 && (
+                        {currentPrice >= 100 && (
                           <span className="inline-flex items-center gap-2 text-[#d0a760] text-xs font-medium">
                             <Truck weight="duotone" className="w-3.5 h-3.5" />
                             Gratis verzending
@@ -860,7 +860,7 @@ export default function ProductPage() {
                         )}
                         <span className="text-white/50 text-xs flex items-center gap-1">
                           <Clock weight="duotone" className="w-3 h-3" />
-                          Bestel voor 16:00, morgen in huis
+                          Bestel voor 14:00, morgen in huis
                         </span>
                       </div>
                     ) : (
@@ -871,7 +871,7 @@ export default function ProductPage() {
                             ? "Selecteer een optie" 
                             : "Niet op voorraad"}
                         </span>
-                        {currentPrice >= 50 && (
+                        {currentPrice >= 100 && (
                           <span className="inline-flex items-center gap-2 text-[#d0a760] text-xs font-medium">
                             <Truck weight="duotone" className="w-3.5 h-3.5" />
                             Gratis verzending
@@ -1022,7 +1022,7 @@ export default function ProductPage() {
                         </div>
                         <div>
                           <p className="text-white font-semibold text-sm">Gratis Verzending</p>
-                          <p className="text-white/50 text-xs">Bij bestellingen vanaf €50</p>
+                          <p className="text-white/50 text-xs">Bij bestellingen vanaf €100</p>
                         </div>
                       </div>
                     </StaggerItem>

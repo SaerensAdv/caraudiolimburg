@@ -637,7 +637,7 @@ export default function AppleCarPlayBMW() {
                     </div>
                     <h3 className="text-xl font-bold text-white mb-4">Bezoek onze studio</h3>
                     <p className="text-gray-400 mb-4">
-                      Dr. Nolenslaan 157c<br />
+                      Dr. Nolenslaan 157-C (Hal 3)<br />
                       6136 GM Sittard
                     </p>
                     <p className="text-gray-500 text-sm mb-4">

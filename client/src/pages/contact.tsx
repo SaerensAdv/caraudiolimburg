@@ -166,7 +166,7 @@ export default function Contact() {
                   </div>
                   <h3 className="text-lg font-semibold text-white mb-3">Kom Langs</h3>
                   <p className="text-white/60 leading-relaxed">
-                    Dr. Nolenslaan 157c<br />
+                    Dr. Nolenslaan 157-C (Hal 3)<br />
                     6136 GM Sittard<br />
                     Nederland
                   </p>
@@ -223,12 +223,12 @@ export default function Contact() {
                   <h3 className="text-lg font-semibold text-white mb-3">Wanneer Kun Je Langs?</h3>
                   <div className="text-white/60 text-sm space-y-1">
                     <p className="text-[#d0a760] font-medium">Showroom:</p>
-                    <p>Ma-Do: 13:30 - 17:30</p>
-                    <p>Vr: 08:30 - 15:00</p>
+                    <p>Ma-Vr: 9:00 - 17:00</p>
+                    <p>Za: 9:00 - 13:00</p>
                     <p className="text-[#d0a760] font-medium mt-3">Inbouwstudio:</p>
-                    <p>Ma-Do: 08:30 - 17:30</p>
-                    <p>Vr: 08:30 - 12:30</p>
-                    <p className="text-white/40 text-xs mt-2">Maak even een afspraak</p>
+                    <p>Ma-Vr: 8:30 - 17:00</p>
+                    <p className="text-white/40 text-xs mt-1">Pauze: 12:30 - 13:00</p>
+                    <p className="text-white/40 text-xs mt-2">Enkel op afspraak</p>
                   </div>
                 </div>
               </ScrollReveal>
@@ -415,7 +415,7 @@ export default function Contact() {
                 {/* WhatsApp Card */}
                 <ScrollReveal direction="right" delay={100}>
                   <a 
-                    href="https://wa.me/31475636363"
+                    href="https://wa.me/31852733625"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block group"
@@ -431,7 +431,7 @@ export default function Contact() {
                             <ExternalLink className="h-4 w-4 text-white/40" />
                           </h3>
                           <p className="text-white/60 mb-3">Snel een vraagje? Stuur ons gerust een appje!</p>
-                          <span className="text-[#d0a760] font-medium">047 563 63 63</span>
+                          <span className="text-[#d0a760] font-medium">085 - 27 33 625</span>
                         </div>
                         <ArrowRight className="h-6 w-6 text-white/40 group-hover:text-[#d0a760] group-hover:translate-x-1 transition-all duration-300" />
                       </div>
@@ -543,10 +543,10 @@ export default function Contact() {
                       Vind Ons
                     </h3>
                     <p className="text-white/60 mb-6 max-w-md mx-auto">
-                      Dr. Nolenslaan 157c, Sittard — makkelijk bereikbaar met voldoende parkeergelegenheid
+                      Dr. Nolenslaan 157-C (Hal 3), Sittard — makkelijk bereikbaar met voldoende parkeergelegenheid
                     </p>
                     <a 
-                      href="https://maps.google.com/?q=Dr.+Nolenslaan+157c,+6136+GM+Sittard,+Nederland"
+                      href="https://maps.google.com/?q=Dr.+Nolenslaan+157-C,+6136+GM+Sittard,+Nederland"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 text-[#d0a760] hover:text-[#b8954e] transition-colors"

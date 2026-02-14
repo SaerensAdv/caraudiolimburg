@@ -327,7 +327,7 @@ export default function Booking() {
                     <div className="flex items-start gap-4">
                       <MapPin className="w-5 h-5 text-[#d0a760] mt-1 flex-shrink-0" />
                       <div>
-                        <p className="font-medium text-white">Dr. Nolenslaan 157c</p>
+                        <p className="font-medium text-white">Dr. Nolenslaan 157-C (Hal 3)</p>
                         <p className="text-sm text-white/60">6136 GM Sittard</p>
                         <p className="text-xs text-white/40 mt-1">Gratis parkeren beschikbaar</p>
                       </div>
@@ -338,9 +338,10 @@ export default function Booking() {
                       <div>
                         <p className="font-medium text-white">Openingstijden</p>
                         <div className="text-sm text-white/60 space-y-1 mt-1">
-                          <p>Maandag - Vrijdag: 9:00 - 18:00</p>
-                          <p>Zaterdag: 9:00 - 17:00</p>
-                          <p>Zondag: Gesloten</p>
+                          <p>Ma-Vr Showroom: 9:00 - 17:00</p>
+                          <p>Ma-Vr Inbouwstudio: 8:30 - 17:00</p>
+                          <p>Zaterdag: 9:00 - 13:00</p>
+                          <p>Zondag & feestdagen: Gesloten</p>
                         </div>
                       </div>
                     </div>

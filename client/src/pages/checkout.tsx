@@ -44,12 +44,6 @@ let stripePromise: ReturnType<typeof loadStripe> | null = null;
 async function getStripePromise() {
   if (stripePromise) return stripePromise;
   
-  const envKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
-  if (envKey) {
-    stripePromise = loadStripe(envKey);
-    return stripePromise;
-  }
-  
   try {
     const res = await fetch('/api/stripe-config');
     if (res.ok) {

@@ -39,9 +39,31 @@ import {
 } from '@phosphor-icons/react';
 import carAudioLogo from "@assets/Caraudiolimburg-logo_1757008375383_1757016657436.png";
 
-const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY
-  ? loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
-  : null;
+let stripePromise: ReturnType<typeof loadStripe> | null = null;
+
+async function getStripePromise() {
+  if (stripePromise) return stripePromise;
+  
+  const envKey = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
+  if (envKey) {
+    stripePromise = loadStripe(envKey);
+    return stripePromise;
+  }
+  
+  try {
+    const res = await fetch('/api/stripe-config');
+    if (res.ok) {
+      const data = await res.json();
+      if (data.publishableKey) {
+        stripePromise = loadStripe(data.publishableKey);
+        return stripePromise;
+      }
+    }
+  } catch (e) {
+    console.error('Failed to load Stripe config:', e);
+  }
+  return null;
+}
 
 const checkoutFormSchema = z.object({
   email: z.string().email("Voer een geldig e-mailadres in"),
@@ -137,6 +159,8 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems, isGuest = false }: 
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [paymentReady, setPaymentReady] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
 
   const {
     register,
@@ -402,7 +426,34 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems, isGuest = false }: 
                 options={{
                   layout: 'tabs',
                 }}
+                onReady={() => setPaymentReady(true)}
+                onLoadError={(e) => {
+                  console.error("Stripe PaymentElement load error:", e);
+                  setPaymentError("Betaalmethode kon niet geladen worden. Ververs de pagina.");
+                }}
               />
+              {!paymentReady && !paymentError && (
+                <div className="flex items-center gap-3 mt-4 p-3 bg-zinc-800/50 border border-zinc-700">
+                  <div className="w-5 h-5 border-2 border-[#d0a760] border-t-transparent animate-spin" />
+                  <span className="text-sm text-zinc-400">Betaalmethoden laden...</span>
+                </div>
+              )}
+              {paymentError && (
+                <div className="flex items-center gap-3 mt-4 p-3 bg-red-900/20 border border-red-800">
+                  <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm text-red-300">{paymentError}</p>
+                    <button
+                      type="button"
+                      onClick={() => window.location.reload()}
+                      className="text-xs text-[#d0a760] hover:underline mt-1 flex items-center gap-1"
+                    >
+                      <RefreshCw className="w-3 h-3" />
+                      Pagina verversen
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-6">
@@ -473,7 +524,7 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems, isGuest = false }: 
               className={`w-full bg-[#d0a760] hover:bg-[#b8954e] text-black font-bold h-16 rounded-none text-lg transition-all duration-200 ${
                 acceptedTerms && !isProcessing ? 'hover:scale-[1.01] shadow-lg shadow-[#d0a760]/20' : 'opacity-60 cursor-not-allowed'
               }`}
-              disabled={!stripe || isProcessing || !acceptedTerms}
+              disabled={!stripe || isProcessing || !acceptedTerms || !paymentReady}
               data-testid="button-place-order"
             >
               {isProcessing ? (
@@ -656,7 +707,7 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems, isGuest = false }: 
           className={`w-full bg-[#d0a760] hover:bg-[#b8954e] text-black font-bold h-14 rounded-none text-lg ${
             !acceptedTerms || isProcessing ? 'opacity-60' : ''
           }`}
-          disabled={!stripe || isProcessing || !acceptedTerms}
+          disabled={!stripe || isProcessing || !acceptedTerms || !paymentReady}
           data-testid="button-place-order-mobile"
           onClick={handleSubmit(onSubmit)}
         >
@@ -681,9 +732,18 @@ export default function Checkout() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [clientSecret, setClientSecret] = useState("");
   const [guestEmail, setGuestEmail] = useState("");
+  const [stripeInstance, setStripeInstance] = useState<Awaited<ReturnType<typeof loadStripe>> | null>(null);
+  const [stripeLoading, setStripeLoading] = useState(true);
   const { isAuthenticated } = useAuth();
   const { toast } = useToast();
   const { items: guestCartItems } = useGuestCart();
+
+  useEffect(() => {
+    getStripePromise().then((s) => {
+      setStripeInstance(s);
+      setStripeLoading(false);
+    });
+  }, []);
 
   const { data: cartItems = [] } = useQuery({
     queryKey: ["/api/cart"],
@@ -726,39 +786,48 @@ export default function Checkout() {
   const shipping = subtotal >= 100 ? 0 : 15;
   const total = subtotal + installationFee + shipping;
 
+  const paymentIntentCreatedRef = useRef(false);
+  const lastTotalRef = useRef<number>(0);
+
   useEffect(() => {
-    if (total > 0) {
-      if (isAuthenticated) {
-        apiRequest("POST", "/api/create-payment-intent", { amount: total })
-          .then((res) => res.json())
-          .then((data) => {
-            setClientSecret(data.clientSecret);
-          })
-          .catch((error) => {
-            toast({
-              title: "Fout bij laden van betaling",
-              description: "Probeer de pagina te verversen.",
-              variant: "destructive",
-            });
-          });
-      } else if (guestCartItems.length > 0 && guestEmail && guestEmail.includes('@')) {
-        apiRequest("POST", "/api/guest-checkout/create-payment-intent", { 
-          cartItems: guestCartItems,
-          guestEmail 
+    if (total <= 0) return;
+    if (paymentIntentCreatedRef.current && lastTotalRef.current === total) return;
+
+    paymentIntentCreatedRef.current = true;
+    lastTotalRef.current = total;
+
+    if (isAuthenticated) {
+      apiRequest("POST", "/api/create-payment-intent", { amount: total })
+        .then((res) => res.json())
+        .then((data) => {
+          setClientSecret(data.clientSecret);
         })
-          .then((res) => res.json())
-          .then((data) => {
-            setClientSecret(data.clientSecret);
-          })
-          .catch((error) => {
-            console.error("Guest payment intent error:", error);
-            toast({
-              title: "Fout bij laden van betaling",
-              description: "Probeer de pagina te verversen.",
-              variant: "destructive",
-            });
+        .catch((error) => {
+          paymentIntentCreatedRef.current = false;
+          toast({
+            title: "Fout bij laden van betaling",
+            description: "Probeer de pagina te verversen.",
+            variant: "destructive",
           });
-      }
+        });
+    } else if (guestCartItems.length > 0 && guestEmail && guestEmail.includes('@')) {
+      apiRequest("POST", "/api/guest-checkout/create-payment-intent", { 
+        cartItems: guestCartItems,
+        guestEmail 
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setClientSecret(data.clientSecret);
+        })
+        .catch((error) => {
+          paymentIntentCreatedRef.current = false;
+          console.error("Guest payment intent error:", error);
+          toast({
+            title: "Fout bij laden van betaling",
+            description: "Probeer de pagina te verversen.",
+            variant: "destructive",
+          });
+        });
     }
   }, [isAuthenticated, total, toast, guestCartItems, guestEmail]);
 
@@ -785,6 +854,23 @@ export default function Checkout() {
                   Naar Shop
                 </Button>
               </div>
+            </div>
+          </div>
+        </div>
+        <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      </div>
+    );
+  }
+
+  if (stripeLoading) {
+    return (
+      <div className="min-h-screen bg-zinc-950">
+        <Header onCartOpen={() => setIsCartOpen(true)} />
+        <div className="pt-24 pb-16">
+          <div className="container px-4 mx-auto">
+            <div className="flex flex-col items-center justify-center min-h-[50vh]">
+              <div className="w-14 h-14 border-2 border-[#d0a760] border-t-transparent animate-spin mb-6" />
+              <p className="text-zinc-400 text-lg">Betalingssysteem laden...</p>
             </div>
           </div>
         </div>
@@ -891,9 +977,9 @@ export default function Checkout() {
       </div>
 
       <div className="container px-4 mx-auto py-8 md:py-12 pb-32 lg:pb-12">
-        {stripePromise ? (
+        {stripeInstance ? (
           <Elements 
-            stripe={stripePromise} 
+            stripe={stripeInstance} 
             options={{ 
               clientSecret,
               appearance: {

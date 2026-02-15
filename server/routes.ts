@@ -241,6 +241,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get('/api/stripe-config', (req, res) => {
+    const publishableKey = process.env.STRIPE_PUBLISHABLE_KEY || process.env.VITE_STRIPE_PUBLIC_KEY;
+    if (!publishableKey) {
+      return res.status(500).json({ error: 'Stripe is niet geconfigureerd' });
+    }
+    res.json({ publishableKey });
+  });
+
   // Auth routes - handled by auth.ts
 
   // Customer Portal routes

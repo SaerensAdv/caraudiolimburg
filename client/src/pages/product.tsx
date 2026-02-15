@@ -550,9 +550,9 @@ export default function ProductPage() {
       {/* Product Section - Black */}
       <section className="pt-2 md:pt-0 py-8 md:py-24 pb-8 md:pb-24">
         <div className="container mx-auto px-4 mt-0 md:mt-[32px] mb-[48px]">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 lg:gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 lg:gap-16 lg:items-start">
             {/* Product Images - Mobile Swipeable Gallery */}
-            <ScrollReveal animation="fade-right">
+            <ScrollReveal animation="fade-right" className="lg:sticky lg:top-24 lg:self-start">
               <div className="space-y-4" data-testid="product-images">
                 {images.length > 0 ? (
                   <>

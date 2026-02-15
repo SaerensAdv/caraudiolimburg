@@ -225,7 +225,147 @@ export async function sendShippingNotificationEmail(
   }
 }
 
+export async function sendContactConfirmationEmail(
+  customerEmail: string,
+  customerName: string,
+  subject: string,
+  message: string
+): Promise<boolean> {
+  try {
+    const { client, fromEmail } = await getResendClient();
+
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+    <h1 style="color: #d0a760; margin: 0; font-size: 24px;">Car Audio Limburg</h1>
+    <p style="color: #999; margin: 10px 0 0 0;">Bedankt voor je bericht!</p>
+  </div>
+  
+  <div style="background: #fff; padding: 30px; border: 1px solid #eee; border-top: none;">
+    <p>Beste ${customerName},</p>
+    
+    <p>Bedankt voor je bericht! We hebben je aanvraag in goede orde ontvangen en nemen zo snel mogelijk contact met je op.</p>
+    
+    <div style="background: #f9f9f9; padding: 15px; border-radius: 4px; margin: 20px 0;">
+      <strong>Onderwerp:</strong> ${subject || 'Algemeen'}
+    </div>
+    
+    <div style="background: #f9f9f9; padding: 15px; border-radius: 4px; margin: 20px 0;">
+      <strong>Je bericht:</strong>
+      <p style="margin: 10px 0 0 0; white-space: pre-wrap;">${message || 'Geen bericht'}</p>
+    </div>
+    
+    <div style="margin-top: 30px; padding: 20px; background: #f0f7ff; border-radius: 4px; border-left: 4px solid #d0a760;">
+      <strong>Wat gebeurt er nu?</strong>
+      <p style="margin: 10px 0 0 0;">We streven ernaar om binnen 24 uur te reageren op je bericht. Voor dringende vragen kun je ons ook telefonisch bereiken.</p>
+    </div>
+    
+    <p style="margin-top: 30px;">Met vriendelijke groet,<br><strong>Team Car Audio Limburg</strong></p>
+  </div>
+  
+  <div style="background: #1a1a1a; padding: 20px; text-align: center; border-radius: 0 0 8px 8px;">
+    <p style="color: #999; margin: 0; font-size: 12px;">
+      Car Audio Limburg | Premium Car Audio & Installation<br>
+      <a href="https://caraudiolimburg.nl" style="color: #d0a760;">www.caraudiolimburg.nl</a>
+    </p>
+  </div>
+</body>
+</html>
+    `;
+
+    await client.emails.send({
+      from: fromEmail || 'noreply@caraudiolimburg.nl',
+      to: customerEmail,
+      subject: `Bedankt voor je bericht - Car Audio Limburg`,
+      html,
+    });
+
+    console.log(`Contact confirmation email sent to ${customerEmail}`);
+    return true;
+  } catch (error) {
+    console.error('Failed to send contact confirmation email:', error);
+    return false;
+  }
+}
+
+export async function sendQuoteConfirmationEmail(
+  customerEmail: string,
+  customerName: string,
+  vehicleInfo: string,
+  description: string
+): Promise<boolean> {
+  try {
+    const { client, fromEmail } = await getResendClient();
+
+    const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+    <h1 style="color: #d0a760; margin: 0; font-size: 24px;">Car Audio Limburg</h1>
+    <p style="color: #999; margin: 10px 0 0 0;">Offerteaanvraag ontvangen!</p>
+  </div>
+  
+  <div style="background: #fff; padding: 30px; border: 1px solid #eee; border-top: none;">
+    <p>Beste ${customerName},</p>
+    
+    <p>Bedankt voor je offerteaanvraag! We hebben je aanvraag in goede orde ontvangen en gaan er zo snel mogelijk mee aan de slag.</p>
+    
+    <div style="background: #f9f9f9; padding: 15px; border-radius: 4px; margin: 20px 0;">
+      <strong>Voertuig:</strong> ${vehicleInfo}
+    </div>
+    
+    <div style="background: #f9f9f9; padding: 15px; border-radius: 4px; margin: 20px 0;">
+      <strong>Omschrijving:</strong>
+      <p style="margin: 10px 0 0 0; white-space: pre-wrap;">${description || 'Geen omschrijving'}</p>
+    </div>
+    
+    <div style="margin-top: 30px; padding: 20px; background: #f0f7ff; border-radius: 4px; border-left: 4px solid #d0a760;">
+      <strong>Wat gebeurt er nu?</strong>
+      <p style="margin: 10px 0 0 0;">We bekijken je aanvraag en stellen een passende offerte samen. Je ontvangt deze meestal binnen 1-2 werkdagen per e-mail.</p>
+    </div>
+    
+    <p style="margin-top: 30px;">Met vriendelijke groet,<br><strong>Team Car Audio Limburg</strong></p>
+  </div>
+  
+  <div style="background: #1a1a1a; padding: 20px; text-align: center; border-radius: 0 0 8px 8px;">
+    <p style="color: #999; margin: 0; font-size: 12px;">
+      Car Audio Limburg | Premium Car Audio & Installation<br>
+      <a href="https://caraudiolimburg.nl" style="color: #d0a760;">www.caraudiolimburg.nl</a>
+    </p>
+  </div>
+</body>
+</html>
+    `;
+
+    await client.emails.send({
+      from: fromEmail || 'noreply@caraudiolimburg.nl',
+      to: customerEmail,
+      subject: `Offerteaanvraag ontvangen - Car Audio Limburg`,
+      html,
+    });
+
+    console.log(`Quote confirmation email sent to ${customerEmail}`);
+    return true;
+  } catch (error) {
+    console.error('Failed to send quote confirmation email:', error);
+    return false;
+  }
+}
+
 export const emailService = {
   sendOrderConfirmationEmail,
   sendShippingNotificationEmail,
+  sendContactConfirmationEmail,
+  sendQuoteConfirmationEmail,
 };

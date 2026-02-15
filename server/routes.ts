@@ -1100,6 +1100,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         description: `Contactformulier:\n\nOnderwerp: ${subject || 'Geen onderwerp'}\n\n${message || 'Geen bericht'}`,
       });
 
+      // Send confirmation email (best-effort)
+      try {
+        const { sendContactConfirmationEmail } = await import('./services/email');
+        await sendContactConfirmationEmail(
+          email,
+          `${firstName || ''} ${lastName}`.trim(),
+          subject || 'Algemeen',
+          message || ''
+        );
+      } catch (emailError) {
+        console.error("Contact confirmation email failed:", emailError);
+      }
+
       // Then try Teamleader sync (best-effort)
       try {
         const teamleader = await import('./services/teamleader');
@@ -1137,6 +1150,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const quoteData = insertQuoteRequestSchema.parse(req.body);
       const quote = await storage.createQuoteRequest(quoteData);
 
+      // Send confirmation email (best-effort)
+      try {
+        const { sendQuoteConfirmationEmail } = await import('./services/email');
+        const vehicleInfo = `${quoteData.vehicleMake} ${quoteData.vehicleModel} (${quoteData.vehicleYear})`;
+        await sendQuoteConfirmationEmail(
+          quoteData.email,
+          `${quoteData.firstName} ${quoteData.lastName}`.trim(),
+          vehicleInfo,
+          quoteData.description || ''
+        );
+      } catch (emailError) {
+        console.error("Quote confirmation email failed:", emailError);
+      }
+
+      // Then try Teamleader sync (best-effort)
       try {
         const teamleader = await import('./services/teamleader');
         if (teamleader.isConfigured()) {
@@ -1240,6 +1268,21 @@ ${message || 'Geen aanvullende informatie'}`
 
       const quote = await storage.createQuoteRequest(quoteData);
 
+      // Send confirmation email (best-effort)
+      try {
+        const { sendQuoteConfirmationEmail } = await import('./services/email');
+        const vehicleInfo = `${model} (${year})`;
+        await sendQuoteConfirmationEmail(
+          email,
+          `${firstName} ${lastName}`.trim(),
+          vehicleInfo,
+          `CarPlay Activatie\nVIN: ${vin}${license ? '\nKenteken: ' + license : ''}${message ? '\n\n' + message : ''}`
+        );
+      } catch (emailError) {
+        console.error("BMW CarPlay confirmation email failed:", emailError);
+      }
+
+      // Then try Teamleader sync (best-effort)
       try {
         const teamleader = await import('./services/teamleader');
         if (teamleader.isConfigured()) {

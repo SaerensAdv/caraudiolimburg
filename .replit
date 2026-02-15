@@ -50,6 +50,7 @@ TEAMLEADER_CF_KENTEKEN = ""
 TEAMLEADER_CF_MODEL = ""
 TEAMLEADER_CF_VIN = ""
 TEAMLEADER_CF_BOUWJAAR = ""
+TEAMLEADER_REDIRECT_URI = "https://caraudiolimburg.nl/api/teamleader/callback"
 
 [objectStorage]
 defaultBucketID = "replit-objstore-4f8266cc-3e05-45e9-ab4a-5b04528ce9fb"

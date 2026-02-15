@@ -4217,6 +4217,54 @@ ${items.join('\n')}
     }
   });
 
+  app.post('/api/admin/sync-missing-products', isAdmin, async (req: any, res) => {
+    try {
+      const possiblePaths = [
+        path.join(__dirname, 'migrations', 'sync_missing_products.sql'),
+        path.join(process.cwd(), 'server', 'migrations', 'sync_missing_products.sql'),
+      ];
+      let sqlFilePath = '';
+      for (const p of possiblePaths) {
+        if (fs.existsSync(p)) { sqlFilePath = p; break; }
+      }
+      if (!sqlFilePath) {
+        return res.status(404).json({ message: 'Sync SQL file not found', checked: possiblePaths });
+      }
+      const sqlContent = fs.readFileSync(sqlFilePath, 'utf8');
+      const statements = sqlContent
+        .split(';')
+        .map((s: string) => s.trim())
+        .filter((s: string) => s.toUpperCase().startsWith('INSERT'));
+      
+      if (statements.length === 0) {
+        return res.json({ message: 'No INSERT statements found in sync file', success: 0 });
+      }
+
+      const { pool } = await import('./db');
+      
+      let success = 0;
+      for (const stmt of statements) {
+        await pool.query(stmt);
+        success++;
+      }
+      
+      const countResult = await pool.query('SELECT COUNT(*) as count FROM products');
+      const totalProducts = parseInt(countResult.rows[0].count);
+      const varResult = await pool.query('SELECT COUNT(*) as count FROM product_variations');
+      const totalVariations = parseInt(varResult.rows[0].count);
+      
+      res.json({
+        message: `Sync complete. ${success} statements executed successfully.`,
+        success,
+        totalProducts,
+        totalVariations
+      });
+    } catch (error: any) {
+      console.error('Sync error:', error);
+      res.status(500).json({ message: 'Sync failed: ' + error.message });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

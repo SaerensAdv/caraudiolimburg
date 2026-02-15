@@ -9,7 +9,7 @@
 -- Uses name-based lookups — no hardcoded UUIDs.
 -- =============================================
 
-BEGIN;
+
 
 -- =============================================
 -- PART 1: VOLKSWAGEN
@@ -1337,4 +1337,4 @@ JOIN vehicle_makes vmk ON vm.make_id = vmk.id
 WHERE vmk.name IN ('BMW', 'Audi', 'Volkswagen', 'Mercedes-Benz')
 ORDER BY vmk.name, vm.name;
 
-COMMIT;
+

@@ -5,10 +5,64 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "wouter";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
+}
+
+function renderMessageContent(text: string) {
+  const lines = text.split("\n");
+  return lines.map((line, li) => {
+    const parts: (string | JSX.Element)[] = [];
+    let remaining = line;
+    let keyIdx = 0;
+
+    while (remaining.length > 0) {
+      const boldMatch = remaining.match(/\*\*(.+?)\*\*/);
+      const linkMatch = remaining.match(/\[([^\]]+)\]\((\/[^\)]+)\)/);
+
+      let firstMatch: { index: number; type: "bold" | "link"; full: string; content: string; href?: string } | null = null;
+
+      if (boldMatch && boldMatch.index !== undefined) {
+        firstMatch = { index: boldMatch.index, type: "bold", full: boldMatch[0], content: boldMatch[1] };
+      }
+      if (linkMatch && linkMatch.index !== undefined) {
+        if (!firstMatch || linkMatch.index < firstMatch.index) {
+          firstMatch = { index: linkMatch.index, type: "link", full: linkMatch[0], content: linkMatch[1], href: linkMatch[2] };
+        }
+      }
+
+      if (!firstMatch) {
+        parts.push(remaining);
+        break;
+      }
+
+      if (firstMatch.index > 0) {
+        parts.push(remaining.substring(0, firstMatch.index));
+      }
+
+      if (firstMatch.type === "bold") {
+        parts.push(<strong key={`b-${li}-${keyIdx++}`} className="font-semibold text-[#d0a760]">{firstMatch.content}</strong>);
+      } else if (firstMatch.type === "link" && firstMatch.href) {
+        parts.push(
+          <Link key={`l-${li}-${keyIdx++}`} href={firstMatch.href} className="text-[#d0a760] underline hover:text-[#e0b770]">
+            {firstMatch.content}
+          </Link>
+        );
+      }
+
+      remaining = remaining.substring(firstMatch.index + firstMatch.full.length);
+    }
+
+    return (
+      <span key={`line-${li}`}>
+        {li > 0 && "\n"}
+        {parts}
+      </span>
+    );
+  });
 }
 
 function AudioBars() {
@@ -186,7 +240,7 @@ export function ChatBot() {
                         }`}
                         data-testid={`chat-message-${message.role}-${index}`}
                       >
-                        <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
+                        <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.role === "assistant" ? renderMessageContent(message.content) : message.content}</p>
                       </div>
                     </div>
                   ))}

@@ -4220,8 +4220,9 @@ ${items.join('\n')}
   app.post('/api/admin/sync-missing-products', isAdmin, async (req: any, res) => {
     try {
       const possiblePaths = [
-        path.join(__dirname, 'migrations', 'sync_missing_products.sql'),
         path.join(process.cwd(), 'server', 'migrations', 'sync_missing_products.sql'),
+        path.join(process.cwd(), 'dist', 'migrations', 'sync_missing_products.sql'),
+        path.join(process.cwd(), 'migrations', 'sync_missing_products.sql'),
       ];
       let sqlFilePath = '';
       for (const p of possiblePaths) {

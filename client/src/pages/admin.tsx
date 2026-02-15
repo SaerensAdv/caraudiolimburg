@@ -34,6 +34,16 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -100,6 +110,7 @@ const productFormSchema = insertProductSchema.extend({
   overviewContent: z.string().optional(),
   boxContent: z.array(z.string()).optional(),
   downloads: z.array(z.object({ name: z.string(), url: z.string() })).optional(),
+  isActive: z.boolean().optional(),
 });
 
 type ProductFormData = z.infer<typeof productFormSchema>;
@@ -223,6 +234,7 @@ export default function Admin() {
   const [activeSection, setActiveSection] = useState<AdminSection>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -239,6 +251,10 @@ export default function Admin() {
   const [productSearch, setProductSearch] = useState('');
   const [productCategoryFilter, setProductCategoryFilter] = useState('');
   const [productBrandFilter, setProductBrandFilter] = useState('');
+  const [productSortField, setProductSortField] = useState<'name' | 'price' | 'stock' | 'created'>('name');
+  const [productSortDirection, setProductSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [productPage, setProductPage] = useState(1);
+  const productsPerPage = 25;
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [hasVariations, setHasVariations] = useState(false);
   const [productVariations, setProductVariations] = useState<Array<{id?: string; label: string; price: string; originalPrice?: string; stock: number; sku?: string; sortOrder: number; specifications?: Record<string, string>}>>([]);
@@ -246,6 +262,7 @@ export default function Admin() {
   const [newVariationPrice, setNewVariationPrice] = useState('');
   const [newVariationStock, setNewVariationStock] = useState(0);
   const [newVariationSku, setNewVariationSku] = useState('');
+  const [newVariationOriginalPrice, setNewVariationOriginalPrice] = useState('');
   const [newVariationSpecs, setNewVariationSpecs] = useState('');
   const [videoUrl, setVideoUrl] = useState('');
   const [overviewContent, setOverviewContent] = useState('');
@@ -258,6 +275,24 @@ export default function Admin() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
+
+  const generateSlug = (name: string) => {
+    return name
+      .toLowerCase()
+      .replace(/[àáâãäå]/g, 'a')
+      .replace(/[èéêë]/g, 'e')
+      .replace(/[ìíîï]/g, 'i')
+      .replace(/[òóôõö]/g, 'o')
+      .replace(/[ùúûü]/g, 'u')
+      .replace(/[ñ]/g, 'n')
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .trim()
+      .replace(/^-+|-+$/g, '');
+  };
+
   const {
     register,
     handleSubmit,
@@ -267,6 +302,9 @@ export default function Admin() {
     formState: { errors },
   } = useForm<ProductFormData>({
     resolver: zodResolver(productFormSchema),
+    defaultValues: {
+      isActive: true,
+    },
   });
 
   const isFeatured = watch("isFeatured");
@@ -414,7 +452,7 @@ export default function Admin() {
   });
 
   const filteredProducts = useMemo(() => {
-    return products.filter((product: Product) => {
+    let result = products.filter((product: Product) => {
       const matchesSearch = productSearch === '' || 
         product.name.toLowerCase().includes(productSearch.toLowerCase());
       const matchesCategory = productCategoryFilter === '' || 
@@ -423,7 +461,39 @@ export default function Admin() {
         product.brandId === productBrandFilter;
       return matchesSearch && matchesCategory && matchesBrand;
     });
-  }, [products, productSearch, productCategoryFilter, productBrandFilter]);
+
+    result.sort((a: Product, b: Product) => {
+      let comparison = 0;
+      switch (productSortField) {
+        case 'name':
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case 'price':
+          comparison = (parseFloat(a.price) || 0) - (parseFloat(b.price) || 0);
+          break;
+        case 'stock':
+          comparison = (a.stock || 0) - (b.stock || 0);
+          break;
+        case 'created':
+          comparison = new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime();
+          break;
+      }
+      return productSortDirection === 'asc' ? comparison : -comparison;
+    });
+
+    return result;
+  }, [products, productSearch, productCategoryFilter, productBrandFilter, productSortField, productSortDirection]);
+
+  const paginatedProducts = useMemo(() => {
+    const start = (productPage - 1) * productsPerPage;
+    return filteredProducts.slice(start, start + productsPerPage);
+  }, [filteredProducts, productPage]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / productsPerPage));
+
+  useEffect(() => {
+    setProductPage(1);
+  }, [productSearch, productCategoryFilter, productBrandFilter, productSortField, productSortDirection]);
 
   const orderStatusData = useMemo(() => {
     const statusCounts: Record<string, number> = {
@@ -504,6 +574,7 @@ export default function Admin() {
       setVehicleCompatibilityOpen(false);
       setHasVariations(false);
       setProductVariations([]);
+      setNewVariationOriginalPrice('');
       setVideoUrl('');
       setOverviewContent('');
       setBoxContent([]);
@@ -628,6 +699,7 @@ export default function Admin() {
       setVehicleCompatibilityOpen(false);
       setHasVariations(false);
       setProductVariations([]);
+      setNewVariationOriginalPrice('');
       setVideoUrl('');
       setOverviewContent('');
       setBoxContent([]);
@@ -998,12 +1070,6 @@ export default function Admin() {
     setSelectedBlogCategory(null);
   };
 
-  const generateSlug = (title: string) => {
-    return title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
-  };
 
   const handleEditBlogPost = (post: BlogPost) => {
     setSelectedBlogPost(post);
@@ -1346,8 +1412,13 @@ export default function Admin() {
   };
 
   const handleDeleteProduct = (product: Product) => {
-    if (window.confirm(`Weet je zeker dat je "${product.name}" wilt verwijderen?`)) {
-      deleteProductMutation.mutate(product.id);
+    setProductToDelete(product);
+  };
+
+  const confirmDeleteProduct = () => {
+    if (productToDelete) {
+      deleteProductMutation.mutate(productToDelete.id);
+      setProductToDelete(null);
     }
   };
 
@@ -1367,6 +1438,8 @@ export default function Admin() {
     setValue("upsellCategoryId", product.upsellCategoryId || "");
     setValue("isFeatured", product.isFeatured || false);
     setValue("canHaveInstallation", product.canHaveInstallation || false);
+    setValue("isActive", product.isActive !== false);
+    setSlugManuallyEdited(true);
     
     const existingImages = product.images || [];
     setProductImages([...existingImages]);
@@ -1970,15 +2043,21 @@ export default function Admin() {
                       setVehicleCompatibilityOpen(false);
                       setHasVariations(false);
                       setProductVariations([]);
+                      setNewVariationOriginalPrice('');
                       setProductFormTab('algemeen');
                       setEditingSpecKey(null);
                       setNewImageUrl('');
+                      setSlugManuallyEdited(false);
                     }
                   }}>
                     <DialogTrigger asChild>
                       <Button 
                         className="bg-[#d0a760] text-black hover:bg-[#d0a760]/90 rounded-none"
                         data-testid="button-add-product"
+                        onClick={() => {
+                          setSlugManuallyEdited(false);
+                          setSelectedProduct(null);
+                        }}
                       >
                         <Plus className="w-4 h-4 mr-2" />
                         Product Toevoegen
@@ -2000,6 +2079,7 @@ export default function Admin() {
                             <TabsTrigger value="specificaties" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Specificaties</TabsTrigger>
                             <TabsTrigger value="kenmerken" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Kenmerken</TabsTrigger>
                             <TabsTrigger value="compatibiliteit" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Compatibiliteit</TabsTrigger>
+                            <TabsTrigger value="variaties" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Variaties</TabsTrigger>
                             <TabsTrigger value="instellingen" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Instellingen</TabsTrigger>
                           </TabsList>
 
@@ -2009,7 +2089,13 @@ export default function Admin() {
                               <div>
                                 <Label htmlFor="name" className="text-zinc-300">Naam</Label>
                                 <Input
-                                  {...register("name")}
+                                  {...register("name", {
+                                    onChange: (e) => {
+                                      if (!slugManuallyEdited && !selectedProduct) {
+                                        setValue("slug", generateSlug(e.target.value));
+                                      }
+                                    }
+                                  })}
                                   placeholder="Product naam"
                                   className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
                                   data-testid="input-product-name"
@@ -2021,7 +2107,11 @@ export default function Admin() {
                               <div>
                                 <Label htmlFor="slug" className="text-zinc-300">Slug</Label>
                                 <Input
-                                  {...register("slug")}
+                                  {...register("slug", {
+                                    onChange: () => {
+                                      setSlugManuallyEdited(true);
+                                    }
+                                  })}
                                   placeholder="product-slug"
                                   className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760]"
                                   data-testid="input-product-slug"
@@ -2759,10 +2849,27 @@ export default function Admin() {
                               </Collapsible>
                             </div>
 
-                            <Separator className="bg-zinc-700" />
+                          </TabsContent>
+
+                          {/* Tab: Variaties */}
+                          <TabsContent value="variaties" className="space-y-6 mt-4">
+                            <div className="flex items-center justify-between p-4 bg-zinc-800">
+                              <div>
+                                <Label className="text-white">Heeft variaties</Label>
+                                <p className="text-sm text-zinc-400">Bied verschillende opties aan (bijv. maten, kleuren)</p>
+                              </div>
+                              <Switch
+                                checked={hasVariations || false}
+                                onCheckedChange={(checked) => {
+                                  setHasVariations(checked);
+                                  if (!checked) setProductVariations([]);
+                                }}
+                                data-testid="switch-has-variations"
+                              />
+                            </div>
 
                             {hasVariations && (
-                              <div className="p-4 bg-zinc-800 space-y-4">
+                              <div className="space-y-4">
                                 <Label className="text-zinc-300 font-semibold">Productvariaties</Label>
                                 
                                 {productVariations.length > 0 && (
@@ -2772,6 +2879,7 @@ export default function Admin() {
                                         <TableRow className="border-zinc-700 hover:bg-transparent">
                                           <TableHead className="text-[#d0a760] font-semibold">Label</TableHead>
                                           <TableHead className="text-[#d0a760] font-semibold">Prijs</TableHead>
+                                          <TableHead className="text-[#d0a760] font-semibold">Orig. prijs</TableHead>
                                           <TableHead className="text-[#d0a760] font-semibold">Voorraad</TableHead>
                                           <TableHead className="text-[#d0a760] font-semibold">SKU</TableHead>
                                           <TableHead className="text-[#d0a760] font-semibold text-right">Acties</TableHead>
@@ -2780,22 +2888,76 @@ export default function Admin() {
                                       <TableBody>
                                         {productVariations.map((variation, index) => (
                                           <TableRow key={index} className="border-zinc-700">
-                                            <TableCell className="text-white">
-                                              {variation.label}
-                                              {variation.specifications && Object.keys(variation.specifications).length > 0 && (
-                                                <span className="ml-2 text-[#d0a760]/60 text-xs">({Object.keys(variation.specifications).length} specs)</span>
-                                              )}
+                                            <TableCell>
+                                              <Input
+                                                value={variation.label}
+                                                onChange={(e) => {
+                                                  const updated = [...productVariations];
+                                                  updated[index] = { ...updated[index], label: e.target.value };
+                                                  setProductVariations(updated);
+                                                }}
+                                                className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760] h-8 text-sm"
+                                              />
                                             </TableCell>
-                                            <TableCell className="text-white">€{variation.price}</TableCell>
-                                            <TableCell className="text-white">{variation.stock}</TableCell>
-                                            <TableCell className="text-zinc-400">{variation.sku || '-'}</TableCell>
+                                            <TableCell>
+                                              <Input
+                                                type="number"
+                                                step="0.01"
+                                                value={variation.price}
+                                                onChange={(e) => {
+                                                  const updated = [...productVariations];
+                                                  updated[index] = { ...updated[index], price: e.target.value };
+                                                  setProductVariations(updated);
+                                                }}
+                                                className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760] h-8 text-sm w-24"
+                                              />
+                                            </TableCell>
+                                            <TableCell>
+                                              <Input
+                                                type="number"
+                                                step="0.01"
+                                                value={variation.originalPrice || ''}
+                                                onChange={(e) => {
+                                                  const updated = [...productVariations];
+                                                  updated[index] = { ...updated[index], originalPrice: e.target.value || undefined };
+                                                  setProductVariations(updated);
+                                                }}
+                                                placeholder="-"
+                                                className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760] h-8 text-sm w-24"
+                                              />
+                                            </TableCell>
+                                            <TableCell>
+                                              <Input
+                                                type="number"
+                                                value={variation.stock}
+                                                onChange={(e) => {
+                                                  const updated = [...productVariations];
+                                                  updated[index] = { ...updated[index], stock: parseInt(e.target.value) || 0 };
+                                                  setProductVariations(updated);
+                                                }}
+                                                className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760] h-8 text-sm w-20"
+                                              />
+                                            </TableCell>
+                                            <TableCell>
+                                              <Input
+                                                value={variation.sku || ''}
+                                                onChange={(e) => {
+                                                  const updated = [...productVariations];
+                                                  updated[index] = { ...updated[index], sku: e.target.value || undefined };
+                                                  setProductVariations(updated);
+                                                }}
+                                                placeholder="-"
+                                                className="bg-zinc-800 border-zinc-700 text-white rounded-none focus:border-[#d0a760] h-8 text-sm w-24"
+                                              />
+                                            </TableCell>
                                             <TableCell className="text-right">
                                               <Button
                                                 type="button"
                                                 variant="ghost"
                                                 size="sm"
                                                 onClick={() => {
-                                                  setProductVariations(productVariations.filter((_, i) => i !== index));
+                                                  const updated = productVariations.filter((_, i) => i !== index).map((v, i) => ({ ...v, sortOrder: i }));
+                                                  setProductVariations(updated);
                                                 }}
                                                 className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
                                                 data-testid={`button-delete-variation-${index}`}
@@ -2810,6 +2972,8 @@ export default function Admin() {
                                   </div>
                                 )}
                                 
+                                <Separator className="bg-zinc-700" />
+                                <p className="text-zinc-400 text-sm font-medium">Nieuwe variatie toevoegen</p>
                                 <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                                   <div>
                                     <Label className="text-zinc-400 text-sm">Label</Label>
@@ -2832,6 +2996,18 @@ export default function Admin() {
                                       placeholder="0.00"
                                       className="bg-zinc-700 border-zinc-600 text-white rounded-none focus:border-[#d0a760]"
                                       data-testid="input-variation-price"
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label className="text-zinc-400 text-sm">Orig. prijs (€)</Label>
+                                    <Input
+                                      type="number"
+                                      step="0.01"
+                                      value={newVariationOriginalPrice || ''}
+                                      onChange={(e) => setNewVariationOriginalPrice(e.target.value)}
+                                      placeholder="0.00"
+                                      className="bg-zinc-700 border-zinc-600 text-white rounded-none focus:border-[#d0a760]"
+                                      data-testid="input-variation-original-price"
                                     />
                                   </div>
                                   <div>
@@ -2888,6 +3064,7 @@ export default function Admin() {
                                             {
                                               label: newVariationLabel,
                                               price: newVariationPrice,
+                                              originalPrice: newVariationOriginalPrice || undefined,
                                               stock: newVariationStock,
                                               sku: newVariationSku || undefined,
                                               sortOrder: productVariations.length,
@@ -2896,6 +3073,7 @@ export default function Admin() {
                                           ]);
                                           setNewVariationLabel('');
                                           setNewVariationPrice('');
+                                          setNewVariationOriginalPrice('');
                                           setNewVariationStock(0);
                                           setNewVariationSku('');
                                           setNewVariationSpecs('');
@@ -2913,12 +3091,24 @@ export default function Admin() {
                             )}
 
                             {!hasVariations && (
-                              <p className="text-zinc-500 text-sm">Schakel variaties in via de Instellingen tab om variaties toe te voegen.</p>
+                              <p className="text-zinc-500 text-sm">Schakel variaties in om verschillende productopties aan te bieden.</p>
                             )}
                           </TabsContent>
 
                           {/* Tab 7: Instellingen */}
                           <TabsContent value="instellingen" className="space-y-4 mt-4">
+                            <div className="flex items-center justify-between p-4 bg-zinc-800">
+                              <div>
+                                <Label className="text-white">Product actief</Label>
+                                <p className="text-sm text-zinc-400">Zichtbaar in de webshop</p>
+                              </div>
+                              <Switch
+                                checked={watch("isActive") !== false}
+                                onCheckedChange={(checked) => setValue("isActive", checked)}
+                                data-testid="switch-is-active"
+                              />
+                            </div>
+
                             <div className="flex items-center justify-between p-4 bg-zinc-800">
                               <div>
                                 <Label className="text-white">Uitgelicht product</Label>
@@ -2960,20 +3150,6 @@ export default function Admin() {
                               </div>
                             )}
 
-                            <div className="flex items-center justify-between p-4 bg-zinc-800">
-                              <div>
-                                <Label className="text-white">Heeft variaties (bijv. opslagcapaciteit)</Label>
-                                <p className="text-sm text-zinc-400">Bied verschillende opties aan</p>
-                              </div>
-                              <Switch
-                                checked={hasVariations || false}
-                                onCheckedChange={(checked) => {
-                                  setHasVariations(checked);
-                                  if (!checked) setProductVariations([]);
-                                }}
-                                data-testid="switch-has-variations"
-                              />
-                            </div>
                           </TabsContent>
                         </Tabs>
 
@@ -3080,9 +3256,60 @@ export default function Admin() {
                 <Table>
                   <TableHeader>
                     <TableRow className="border-zinc-800 hover:bg-transparent">
-                      <TableHead className="text-[#d0a760] font-semibold">Product</TableHead>
-                      <TableHead className="text-[#d0a760] font-semibold">Prijs</TableHead>
-                      <TableHead className="text-[#d0a760] font-semibold">Voorraad</TableHead>
+                      <TableHead 
+                        className="text-[#d0a760] font-semibold cursor-pointer hover:text-[#d0a760]/80 select-none"
+                        onClick={() => {
+                          if (productSortField === 'name') {
+                            setProductSortDirection(d => d === 'asc' ? 'desc' : 'asc');
+                          } else {
+                            setProductSortField('name');
+                            setProductSortDirection('asc');
+                          }
+                        }}
+                      >
+                        <span className="flex items-center gap-1">
+                          Product
+                          {productSortField === 'name' && (
+                            <span className="text-xs">{productSortDirection === 'asc' ? '↑' : '↓'}</span>
+                          )}
+                        </span>
+                      </TableHead>
+                      <TableHead 
+                        className="text-[#d0a760] font-semibold cursor-pointer hover:text-[#d0a760]/80 select-none"
+                        onClick={() => {
+                          if (productSortField === 'price') {
+                            setProductSortDirection(d => d === 'asc' ? 'desc' : 'asc');
+                          } else {
+                            setProductSortField('price');
+                            setProductSortDirection('asc');
+                          }
+                        }}
+                      >
+                        <span className="flex items-center gap-1">
+                          Prijs
+                          {productSortField === 'price' && (
+                            <span className="text-xs">{productSortDirection === 'asc' ? '↑' : '↓'}</span>
+                          )}
+                        </span>
+                      </TableHead>
+                      <TableHead 
+                        className="text-[#d0a760] font-semibold cursor-pointer hover:text-[#d0a760]/80 select-none"
+                        onClick={() => {
+                          if (productSortField === 'stock') {
+                            setProductSortDirection(d => d === 'asc' ? 'desc' : 'asc');
+                          } else {
+                            setProductSortField('stock');
+                            setProductSortDirection('asc');
+                          }
+                        }}
+                      >
+                        <span className="flex items-center gap-1">
+                          Voorraad
+                          {productSortField === 'stock' && (
+                            <span className="text-xs">{productSortDirection === 'asc' ? '↑' : '↓'}</span>
+                          )}
+                        </span>
+                      </TableHead>
                       <TableHead className="text-[#d0a760] font-semibold">Status</TableHead>
                       <TableHead className="text-[#d0a760] font-semibold text-right">Acties</TableHead>
                     </TableRow>
@@ -3098,7 +3325,7 @@ export default function Admin() {
                           <TableCell><div className="h-4 bg-zinc-800 animate-pulse w-24"></div></TableCell>
                         </TableRow>
                       ))
-                    ) : filteredProducts?.length === 0 ? (
+                    ) : paginatedProducts?.length === 0 ? (
                       <TableRow className="border-zinc-800">
                         <TableCell colSpan={5} className="text-center text-zinc-500 py-12">
                           <Package className="w-12 h-12 mx-auto mb-4 opacity-50" />
@@ -3106,7 +3333,7 @@ export default function Admin() {
                         </TableCell>
                       </TableRow>
                     ) : (
-                      filteredProducts?.map((product: Product) => (
+                      paginatedProducts?.map((product: Product) => (
                         <TableRow key={product.id} className="border-zinc-800 hover:bg-zinc-800/50" data-testid={`product-row-${product.id}`}>
                           <TableCell>
                             <div className="flex items-center gap-3">
@@ -3139,6 +3366,16 @@ export default function Admin() {
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-2">
+                              <Link href={`/webshop/${product.slug}`}>
+                                <Button 
+                                  size="sm" 
+                                  variant="outline"
+                                  className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-[#d0a760] rounded-none"
+                                  data-testid={`button-view-product-${product.id}`}
+                                >
+                                  <Eye className="w-4 h-4" />
+                                </Button>
+                              </Link>
                               <Button 
                                 size="sm" 
                                 variant="outline"
@@ -3176,13 +3413,13 @@ export default function Admin() {
                       <div className="h-4 bg-zinc-800 w-1/2"></div>
                     </div>
                   ))
-                ) : filteredProducts?.length === 0 ? (
+                ) : paginatedProducts?.length === 0 ? (
                   <div className="bg-zinc-900 border border-zinc-800 p-8 text-center">
                     <Package className="w-12 h-12 mx-auto mb-4 text-zinc-600" />
                     <p className="text-zinc-500">{products.length === 0 ? 'Nog geen producten' : 'Geen producten gevonden'}</p>
                   </div>
                 ) : (
-                  filteredProducts?.map((product: Product) => (
+                  paginatedProducts?.map((product: Product) => (
                     <div key={product.id} className="bg-zinc-900 border border-zinc-800 p-4" data-testid={`product-card-${product.id}`}>
                       <div className="flex gap-3">
                         {product.images?.[0] && (
@@ -3209,6 +3446,15 @@ export default function Admin() {
                         </div>
                       </div>
                       <div className="flex gap-2 mt-3 pt-3 border-t border-zinc-800">
+                        <Link href={`/webshop/${product.slug}`} className="flex-1">
+                          <Button 
+                            size="sm" 
+                            className="w-full bg-zinc-800 text-white hover:bg-zinc-700 rounded-none"
+                          >
+                            <Eye className="w-4 h-4 mr-2" />
+                            Bekijken
+                          </Button>
+                        </Link>
                         <Button 
                           size="sm" 
                           onClick={() => handleEditProduct(product)}
@@ -3229,8 +3475,86 @@ export default function Admin() {
                   ))
                 )}
               </div>
+
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between bg-zinc-900 border border-zinc-800 px-4 py-3">
+                  <p className="text-sm text-zinc-400">
+                    Pagina {productPage} van {totalPages} ({filteredProducts.length} producten)
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setProductPage(p => Math.max(1, p - 1))}
+                      disabled={productPage === 1}
+                      className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 rounded-none disabled:opacity-30"
+                    >
+                      Vorige
+                    </Button>
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      let pageNum;
+                      if (totalPages <= 5) {
+                        pageNum = i + 1;
+                      } else if (productPage <= 3) {
+                        pageNum = i + 1;
+                      } else if (productPage >= totalPages - 2) {
+                        pageNum = totalPages - 4 + i;
+                      } else {
+                        pageNum = productPage - 2 + i;
+                      }
+                      return (
+                        <Button
+                          key={pageNum}
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setProductPage(pageNum)}
+                          className={`rounded-none min-w-[36px] ${
+                            pageNum === productPage 
+                              ? 'bg-[#d0a760] text-black border-[#d0a760] hover:bg-[#d0a760]/90' 
+                              : 'bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800'
+                          }`}
+                        >
+                          {pageNum}
+                        </Button>
+                      );
+                    })}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setProductPage(p => Math.min(totalPages, p + 1))}
+                      disabled={productPage === totalPages}
+                      className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 rounded-none disabled:opacity-30"
+                    >
+                      Volgende
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
+
+          <AlertDialog open={!!productToDelete} onOpenChange={(open) => !open && setProductToDelete(null)}>
+            <AlertDialogContent className="bg-zinc-900 border-zinc-700 rounded-none">
+              <AlertDialogHeader>
+                <AlertDialogTitle className="text-white">Product verwijderen</AlertDialogTitle>
+                <AlertDialogDescription className="text-zinc-400">
+                  Weet je zeker dat je "{productToDelete?.name}" wilt verwijderen? Dit kan niet ongedaan worden gemaakt.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel className="bg-transparent border-zinc-600 text-zinc-300 hover:bg-zinc-800 rounded-none">
+                  Annuleren
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={confirmDeleteProduct}
+                  className="bg-red-600 text-white hover:bg-red-700 rounded-none"
+                  disabled={deleteProductMutation.isPending}
+                >
+                  {deleteProductMutation.isPending ? "Verwijderen..." : "Verwijderen"}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
 
           {/* Orders Section */}
           {activeSection === 'orders' && (

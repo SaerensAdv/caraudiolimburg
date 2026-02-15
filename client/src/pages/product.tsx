@@ -69,6 +69,26 @@ type ProductVariation = {
   isActive?: boolean | null;
 };
 
+function isSubtitleLine(line: string): boolean {
+  const trimmed = line.trim();
+  const plain = trimmed.replace(/^\*\*/, '').replace(/\*\*$/, '');
+  return (plain.endsWith(':') && plain.length < 60) || (trimmed.startsWith('**') && trimmed.endsWith(':**'));
+}
+
+function cleanSubtitle(line: string): string {
+  return line.trim().replace(/^\*\*/, '').replace(/\*\*$/, '').replace(/:$/, '');
+}
+
+function renderInlineBold(text: string) {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i} className="text-white font-semibold">{part.slice(2, -2)}</strong>;
+    }
+    return <span key={i}>{part}</span>;
+  });
+}
+
 function FormattedDescription({ text, hasFeatures = false }: { text: string; hasFeatures?: boolean }) {
   const blocks = text.split(/\n\n+/);
   
@@ -76,26 +96,26 @@ function FormattedDescription({ text, hasFeatures = false }: { text: string; has
     <div className="space-y-6">
       {blocks.map((block, blockIndex) => {
         const lines = block.split('\n').filter(l => l.trim());
-        const bulletLines = lines.filter(l => /^[•\-\*]\s/.test(l.trim()));
-        const nonBulletLines = lines.filter(l => !/^[•\-\*]\s/.test(l.trim()));
+        const bulletLines = lines.filter(l => /^[•\-\*]\s/.test(l.trim()) && !l.trim().startsWith('**'));
+        const nonBulletLines = lines.filter(l => !(/^[•\-\*]\s/.test(l.trim()) && !l.trim().startsWith('**')));
         
         if (bulletLines.length > 0) {
           if (hasFeatures) {
-            const remainingLines = nonBulletLines.filter(l => !(l.trim().endsWith(':') && l.trim().length < 60));
+            const remainingLines = nonBulletLines.filter(l => !isSubtitleLine(l));
             if (remainingLines.length === 0) return null;
             return (
               <div key={blockIndex}>
                 {remainingLines.map((line, i) => (
-                  <p key={i} className="text-white/70 leading-relaxed text-base">{line}</p>
+                  <p key={i} className="text-white/70 leading-relaxed text-base">{renderInlineBold(line)}</p>
                 ))}
               </div>
             );
           }
-          const headerLine = nonBulletLines.length > 0 && nonBulletLines[0].trim().endsWith(':') ? nonBulletLines[0].trim() : null;
+          const headerLine = nonBulletLines.length > 0 && isSubtitleLine(nonBulletLines[0]) ? nonBulletLines[0].trim() : null;
           return (
             <div key={blockIndex}>
               {headerLine && (
-                <h3 className="text-white font-semibold text-base mb-3">{headerLine}</h3>
+                <h3 className="text-white font-semibold text-base mb-3">{cleanSubtitle(headerLine)}</h3>
               )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {bulletLines.map((line, i) => {
@@ -103,13 +123,13 @@ function FormattedDescription({ text, hasFeatures = false }: { text: string; has
                   return (
                     <div key={i} className="flex items-start gap-3 p-3 bg-zinc-800/50 border border-zinc-700/50">
                       <Check weight="duotone" className="w-4 h-4 text-[#d0a760] flex-shrink-0 mt-0.5" />
-                      <span className="text-white/80 text-sm">{cleanLine}</span>
+                      <span className="text-white/80 text-sm">{renderInlineBold(cleanLine)}</span>
                     </div>
                   );
                 })}
               </div>
-              {nonBulletLines.filter(l => l !== headerLine?.replace(':', '') + ':' && l.trim() !== headerLine).map((line, i) => (
-                <p key={`extra-${i}`} className="text-white/70 leading-relaxed text-base mt-3">{line}</p>
+              {nonBulletLines.filter(l => l.trim() !== headerLine).map((line, i) => (
+                <p key={`extra-${i}`} className="text-white/70 leading-relaxed text-base mt-3">{renderInlineBold(line)}</p>
               ))}
             </div>
           );
@@ -118,10 +138,10 @@ function FormattedDescription({ text, hasFeatures = false }: { text: string; has
         return (
           <div key={blockIndex}>
             {lines.map((line, i) => {
-              if (line.trim().endsWith(':') && line.trim().length < 60) {
-                return <h3 key={i} className="text-white font-semibold text-base mb-1">{line.trim()}</h3>;
+              if (isSubtitleLine(line)) {
+                return <h3 key={i} className="text-white font-semibold text-base mb-1">{cleanSubtitle(line)}</h3>;
               }
-              return <p key={i} className="text-white/70 leading-relaxed text-base">{line}</p>;
+              return <p key={i} className="text-white/70 leading-relaxed text-base">{renderInlineBold(line)}</p>;
             })}
           </div>
         );

@@ -3,8 +3,6 @@
 -- Total products updated: 112
 -- AI patterns removed: studio, angle45, topdown, dramatic, lifestyle
 
-BEGIN;
-
 UPDATE products SET images = ARRAY['/products/3e-remlicht-camera-fiat-citroen-en-peugeot-wp.jpg'] WHERE sku = 'CAM-FIAT-DC';
 UPDATE products SET images = ARRAY['/products/3e-remlicht-camera-ford-transit-custom-2012-wp.jpg'] WHERE sku = 'CAL-CAM-FORD-BRC';
 UPDATE products SET images = ARRAY['/products/3e-remlicht-camera-ford-transit-custom-2016-wp.jpg'] WHERE sku = 'CAL-CAM-FORD-BR2';
@@ -120,5 +118,3 @@ UPDATE products SET images = ARRAY['/products/vw-android-navigatie-vw-en-seat-wp
 
 -- Unmatched product: clear AI-generated images (no source in CSV)
 UPDATE products SET images = ARRAY[]::text[] WHERE sku = 'SPKUP-VWG';
-
-COMMIT;

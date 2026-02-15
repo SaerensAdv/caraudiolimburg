@@ -36,6 +36,11 @@ export default function OrderConfirmationPage() {
   // Handle non-succeeded payment statuses from redirect
   const paymentFailed = redirectStatus && redirectStatus !== 'succeeded';
 
+  const { data: siteSettings } = useQuery({
+    queryKey: ['/api/site-settings'],
+  });
+  const installationEnabled = (siteSettings as any)?.installationServiceEnabled ?? true;
+
   const { data: orderData, isLoading, isError } = useQuery({
     queryKey: ["/api/orders/by-payment-intent", paymentIntentId],
     queryFn: async () => {
@@ -224,11 +229,6 @@ export default function OrderConfirmationPage() {
       </div>
     );
   }
-
-  const { data: siteSettings } = useQuery({
-    queryKey: ['/api/site-settings'],
-  });
-  const installationEnabled = siteSettings?.installationServiceEnabled ?? true;
 
   const steps = [
     {

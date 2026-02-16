@@ -534,28 +534,17 @@ export default function Contact() {
             
             <ScrollReveal direction="up" delay={200}>
               <div className="bg-zinc-950 border border-zinc-800 overflow-hidden">
-                <div className="h-[400px] md:h-[500px] bg-zinc-900 flex items-center justify-center relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 via-zinc-950 to-black opacity-50" />
-                  <div className="text-center relative z-10 px-4">
-                    <div className="w-20 h-20 mx-auto mb-6 flex items-center justify-center border-2 border-[#d0a760] text-[#d0a760]">
-                      <MapPin className="h-10 w-10" />
-                    </div>
-                    <h3 className="text-2xl font-light text-white mb-3">
-                      Vind Ons
-                    </h3>
-                    <p className="text-white/60 mb-6 max-w-md mx-auto">
-                      Dr. Nolenslaan 157c, Sittard — makkelijk bereikbaar met voldoende parkeergelegenheid
-                    </p>
-                    <a 
-                      href="https://maps.google.com/?q=Dr.+Nolenslaan+157c,+6136+GM+Sittard,+Nederland"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-[#d0a760] hover:text-[#b8954e] transition-colors"
-                    >
-                      <span>Plan je route via Google Maps</span>
-                      <ArrowSquareOut className="h-4 w-4" />
-                    </a>
-                  </div>
+                <div className="h-[400px] md:h-[500px] bg-zinc-900">
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3261.5322754951953!2d5.857546277252433!3d51.01842827170622!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c0c70399105d29%3A0xf7a377fee73d7b2d!2sCar%20Audio%20Limburg%20%7C%20Car%20Audio%20Specialist!5e1!3m2!1snl!2sbe!4v1771210829495!5m2!1snl!2sbe"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Car Audio Limburg locatie"
+                  />
                 </div>
               </div>
             </ScrollReveal>

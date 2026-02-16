@@ -33,7 +33,7 @@ app.use((req, res, next) => {
     "font-src 'self' data: https://fonts.gstatic.com; " +
     "img-src 'self' data: https: blob:; " +
     "connect-src 'self' https://api.stripe.com https://*.stripe.com https://consentease.io wss://localhost:* http://localhost:*; " +
-    "frame-src https://js.stripe.com https://*.stripe.com https://www.youtube.com https://youtube.com https://www.youtube-nocookie.com https://youtu.be; " +
+    "frame-src https://js.stripe.com https://*.stripe.com https://www.youtube.com https://youtube.com https://www.youtube-nocookie.com https://youtu.be https://www.google.com https://maps.google.com https://*.google.com; " +
     "child-src 'self'; " +
     "object-src 'none'; " +
     "upgrade-insecure-requests"

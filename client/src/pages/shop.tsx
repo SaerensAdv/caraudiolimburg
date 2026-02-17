@@ -62,12 +62,14 @@ export default function Shop() {
     const params = new URLSearchParams(searchString || '');
     const categoryParam = params.get('category');
     const brandParam = params.get('brand');
+    const searchParam = params.get('search');
     const vehicleMakeParam = params.get('vehicleMakeId');
     const vehicleModelParam = params.get('vehicleModelId');
     const vehicleYearParam = params.get('vehicleYear');
     
     setSelectedCategory(categoryParam || 'all-categories');
     setSelectedBrand(brandParam || 'all-brands');
+    if (searchParam) setSearch(searchParam);
     if (vehicleMakeParam) setSelectedMake(vehicleMakeParam);
     if (vehicleModelParam) setSelectedModelId(vehicleModelParam);
     if (vehicleYearParam) setSelectedYear(vehicleYearParam);

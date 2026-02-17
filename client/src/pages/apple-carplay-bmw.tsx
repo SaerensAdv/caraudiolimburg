@@ -152,7 +152,6 @@ export default function AppleCarPlayBMW() {
         { name: "Apple CarPlay BMW", url: "/apple-carplay-voor-uw-bmw" }
       ]} />
       <Header onCartOpen={() => setIsCartOpen(true)} logoSrc={calWhiteLogo} />
-      
       {/* Hero Section */}
       <section className="relative overflow-hidden min-h-screen">
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent z-10"></div>
@@ -174,9 +173,7 @@ export default function AppleCarPlayBMW() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <Badge className="mb-4 md:mb-6 bg-[#d0a760] text-black font-semibold text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2 rounded-none">
-                ✨ SPECIALIST IN BMW & MINI CARPLAY
-              </Badge>
+              <Badge className="mb-4 md:mb-6 bg-[#d0a760] text-black font-semibold text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2 rounded-none">SPECIALIST IN BMW & MINI CARPLAY</Badge>
               
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-4 md:mb-6 leading-tight">
                 Apple CarPlay voor jouw{" "}
@@ -254,7 +251,6 @@ export default function AppleCarPlayBMW() {
           <CaretDown className="w-8 h-8 text-[#d0a760]" />
         </motion.div>
       </section>
-
       {/* Features Section */}
       <section className="py-16 md:py-24 bg-zinc-950">
         <div className="container mx-auto px-4 md:px-8 lg:px-16">
@@ -284,7 +280,6 @@ export default function AppleCarPlayBMW() {
           </StaggerContainer>
         </div>
       </section>
-
       {/* Stats Section */}
       <section className="py-16 bg-zinc-900">
         <div className="container mx-auto px-4 md:px-8 lg:px-16">
@@ -318,7 +313,6 @@ export default function AppleCarPlayBMW() {
           </StaggerContainer>
         </div>
       </section>
-
       {/* Gallery Section */}
       <section className="py-16 md:py-24 bg-black">
         <div className="container mx-auto px-4 md:px-8 lg:px-16">
@@ -394,7 +388,6 @@ export default function AppleCarPlayBMW() {
           </div>
         </div>
       </section>
-
       {/* Quote Form Section */}
       <section id="offerte" className="py-16 md:py-24 bg-zinc-950">
         <div className="container mx-auto px-4 md:px-8 lg:px-16">
@@ -565,7 +558,6 @@ export default function AppleCarPlayBMW() {
           </ScrollReveal>
         </div>
       </section>
-
       {/* FAQ Section */}
       <section className="py-16 md:py-24 bg-zinc-900">
         <div className="container mx-auto px-4 md:px-8 lg:px-16">
@@ -618,7 +610,6 @@ export default function AppleCarPlayBMW() {
           </ScrollReveal>
         </div>
       </section>
-
       {/* CTA Section */}
       <section className="py-16 md:py-24 bg-black">
         <div className="container mx-auto px-4 md:px-8 lg:px-16">
@@ -694,7 +685,6 @@ export default function AppleCarPlayBMW() {
           </ScrollReveal>
         </div>
       </section>
-
       <Footer />
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </div>

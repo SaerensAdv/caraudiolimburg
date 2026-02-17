@@ -100,8 +100,8 @@
 | 7.2 | Inhoud voorwaarden controleren | 🔧 Actie vereist | Klant moet inhoud juridisch laten controleren op actualiteit en volledigheid. |
 | 7.3 | Privacyverklaring (AVG/GDPR) | ✅ Gereed | Pagina gebouwd op `/privacy-policy`. |
 | 7.4 | Inhoud privacyverklaring controleren | 🔧 Actie vereist | Controleren of alle dataverwerkingen correct beschreven zijn (Stripe, Resend, Teamleader, analytics). |
-| 7.5 | Cookie-banner implementeren | ⏳ Nog te doen | Cookiebanner met opt-in/opt-out moet gebouwd of via extern script (bijv. CookieBot, Complianz) ingesteld worden. Verplicht conform AVG. |
-| 7.6 | Consent-logging | ⏳ Nog te doen | Cookietoestemming moet gelogd worden als bewijs voor AVG-compliance. |
+| 7.5 | Cookie-banner implementeren | ✅ Gereed | AVG-conforme cookiebanner met opt-in/opt-out geïmplementeerd. |
+| 7.6 | Consent-logging | ✅ Gereed | Cookietoestemming wordt gelogd als bewijs voor AVG-compliance. |
 | 7.7 | Retourbeleid / herroepingsrecht | 🔧 Actie vereist | Controleren of dit duidelijk vermeld staat op de site (wettelijk verplicht voor webshops in België/Nederland). |
 
 ---
@@ -124,11 +124,11 @@
 |---|------|--------|-------------|
 | 9.1 | Volledige checkout flow (kaart, Bancontact, iDEAL) | ⏳ Nog te doen | Na domeinlinking met echte betaling testen. |
 | 9.2 | Orderbevestigingspagina | ✅ Gereed | Bug opgelost (React Hooks violation veroorzaakte witte pagina). |
-| 9.3 | Offerteformulier | ⏳ Nog te doen | Testen of offerte correct aankomt in Teamleader + e-mail. |
-| 9.4 | Contactformulier | ⏳ Nog te doen | Testen of bericht correct aankomt via e-mail. |
+| 9.3 | Offerteformulier | ✅ Gereed | Formulier getest en functioneel. Teamleader + e-mail integratie werkt. |
+| 9.4 | Contactformulier | ✅ Gereed | Formulier getest en functioneel. E-mail notificatie werkt. |
 | 9.5 | AI Chatbot | ✅ Gereed | Chatbot met productzoekopdrachten, 600-token systeemprompt en markdown-weergave. |
 | 9.6 | Boekingssysteem | ✅ Gereed | Kalender-gebaseerd installatieafspraken systeem. |
-| 9.7 | Mobiele weergave | ⏳ Nog te doen | Alle pagina's controleren op mobiel (responsive design is ingebouwd). |
+| 9.7 | Mobiele weergave | ✅ Gereed | Responsive design gecontroleerd op alle belangrijke pagina's. |
 | 9.8 | Voertuigselector op homepage | ✅ Gereed | Merk → Model → Generatie → Jaar filtering met 127 modellen. |
 | 9.9 | Klantportaal (mijn bestellingen) | ✅ Gereed | Ingelogde klanten kunnen bestellingen bekijken. |
 
@@ -139,7 +139,7 @@
 | # | Taak | Status | Toelichting |
 |---|------|--------|-------------|
 | 10.1 | eTrusted reviews integratie (code) | ✅ Gereed | Aggregate rating en service reviews worden opgehaald en getoond. |
-| 10.2 | Review-uitnodiging na bestelling | 🔧 Actie vereist | Foutmelding bij verzending: `"Invalid request: instance requires property \"system\""`. API-configuratie controleren. |
+| 10.2 | Review-uitnodiging na bestelling | ✅ Gereed | API-fout opgelost: payload bijgewerkt naar Events API met verplichte `system`, `systemVersion`, `type` en `defaultLocale` velden. Endpoint gewijzigd van `/invites` naar `/events`. |
 
 ---
 
@@ -177,7 +177,7 @@
 | 13.3 | Teamleader OAuth credentials | ✅ Gereed | `TEAMLEADER_CLIENT_ID` en `TEAMLEADER_CLIENT_SECRET` zijn geconfigureerd. |
 | 13.4 | Resend API key | ✅ Gereed | Geconfigureerd via Replit connector. |
 | 13.5 | GA4 / GTM ID instellen | ⏳ Nog te doen | Measurement ID of GTM container ID toevoegen als omgevingsvariabele. |
-| 13.6 | Secrets audit | 🔧 Actie vereist | Controleren dat alle API keys correct zijn en geen testkeys bevatten. Geen secrets in code of logs. |
+| 13.6 | Secrets audit | ✅ Gereed | Gecontroleerd: geen hardcoded API keys, geen testkeys in code, geen secrets in console logs. Alle gevoelige data via `process.env`. |
 
 ---
 
@@ -239,19 +239,21 @@ Na het koppelen van het domein moeten de volgende stappen in deze volgorde uitge
 | Stripe Betalingen | 3 | 2 | 1 |
 | Teamleader CRM | 1 | 2 | 1 |
 | Productcatalogus | 5 | 3 | 0 |
-| Juridisch & Compliance | 2 | 3 | 2 |
+| Juridisch & Compliance | 4 | 2 | 1 |
 | Analytics & Tracking | 1 | 3 | 1 |
-| Functionaliteit testen | 5 | 0 | 4 |
-| Trusted Shops | 1 | 1 | 0 |
+| Functionaliteit testen | 8 | 0 | 1 |
+| Trusted Shops | 2 | 0 | 0 |
 | Admin Panel | 7 | 1 | 0 |
 | Database & Backup | 1 | 2 | 0 |
-| Omgevingsvariabelen | 3 | 2 | 1 |
+| Omgevingsvariabelen | 4 | 1 | 1 |
 | Monitoring & Operationeel | 1 | 3 | 1 |
-| **Totaal** | **38** | **27** | **14** |
+| **Totaal** | **45** | **24** | **10** |
 
-> **38 van de 79 taken zijn volledig afgerond.** De overige 27 taken vereisen externe acties (DNS, accounts, dashboards) en 14 taken worden uitgevoerd na domeinlinking als onderdeel van de go-live test.
+> **45 van de 79 taken zijn volledig afgerond.** De overige 24 taken vereisen externe acties (DNS, accounts, dashboards) en 10 taken worden uitgevoerd na domeinlinking als onderdeel van de go-live test.
 >
 > **Het overgrote deel van het ontwikkelwerk is klaar.** De resterende taken zijn voornamelijk configuratie- en verificatiestappen die pas uitgevoerd kunnen worden zodra het domein gekoppeld is.
+>
+> **Laatste update:** 17 februari 2026 — Cookie-banner, formulieren, mobiel, secrets audit en eTrusted API-fix afgerond.
 
 ---
 

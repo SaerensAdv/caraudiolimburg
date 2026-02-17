@@ -157,8 +157,12 @@ class ETrustedService {
 
     try {
       const token = await this.getAccessToken();
-      
+
       const payload = {
+        type: 'checkout',
+        defaultLocale: 'nl_NL',
+        system: 'caraudiolimburg-webshop',
+        systemVersion: '1.0',
         channel: {
           id: this.channelId,
           type: 'etrusted',
@@ -180,7 +184,7 @@ class ETrustedService {
         })) || [],
       };
 
-      const response = await fetch(`${this.API_BASE}/invites`, {
+      const response = await fetch(`${this.API_BASE}/events`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

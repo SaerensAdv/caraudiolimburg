@@ -139,7 +139,7 @@ export function SearchAutocomplete({ variant = 'desktop', onNavigate }: SearchAu
 
       {showDropdown && (
         <div 
-          className="absolute top-full left-0 right-0 mt-1 bg-black/95 backdrop-blur-xl border border-white/20 shadow-xl z-50 max-h-96 overflow-y-auto"
+          className="absolute top-full left-0 right-0 mt-1 bg-black/95 backdrop-blur-xl border border-white/20 shadow-xl z-50 max-h-[60vh] overflow-y-auto overscroll-contain"
           data-testid="search-dropdown"
         >
           {isLoading ? (

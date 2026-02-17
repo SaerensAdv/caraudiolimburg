@@ -557,7 +557,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const [allProducts, allCategories, allBrands] = await Promise.all([
-        storage.getProducts({ search: query, limit: 5 }),
+        storage.getProducts({ search: query, limit: 10 }),
         storage.getCategories(),
         storage.getBrands()
       ]);
@@ -573,7 +573,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .slice(0, 3)
         .map(brand => ({ id: brand.id, name: brand.name, slug: brand.slug }));
       
-      const products = allProducts.slice(0, 5).map(p => ({
+      const products = allProducts.slice(0, 10).map(p => ({
         id: p.id,
         name: p.name,
         slug: p.slug,

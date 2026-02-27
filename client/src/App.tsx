@@ -152,7 +152,9 @@ function App() {
           <ScrollToTop />
           <Toaster />
           <VerticalScrollProgress />
-          <Router />
+          <main id="main-content">
+            <Router />
+          </main>
           <Suspense fallback={null}><ChatBot /></Suspense>
           <MobileBottomNav />
         </div>

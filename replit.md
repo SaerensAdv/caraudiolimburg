@@ -66,6 +66,15 @@ Preferred communication style: Simple, everyday language.
 - **Search autocomplete**: Arrow key (Up/Down) navigation through results with Enter to select, ARIA listbox attributes
 - **Kenteken formatting**: Auto-formats Dutch license plates with dashes after 5+ characters (supports all 14 sidecodes)
 
+### SEO & Crawler Optimization
+- **Server-side meta injection**: `server/og-middleware.ts` injects page-specific `<title>`, `<meta description>`, and OG tags for all non-homepage routes. Products get their name/description from DB; static pages use a predefined map.
+- **Sitemaps**: Dynamic sitemap generation at `/sitemap.xml` with sub-sitemaps (pages, products, categories, blog). Base URL derived from request host or `SITE_URL` env var.
+- **HTML structure**: `client/index.html` includes `<main>` landmark, skip-link, and `<noscript>` fallback content with internal links for non-JS crawlers.
+- **Compression**: `compression` middleware enabled globally via `server/index.ts`.
+- **Google Fonts**: Trimmed from 25+ font families to only Inter (the only font actually used).
+- **Viewport**: Removed `maximum-scale=1` to allow pinch-to-zoom (accessibility compliance).
+- **Squirrelscan audit**: Score improved from 43 (F) → 74 (C). Remaining warnings are dev-environment specific (noindex, HSTS, unminified JS).
+
 ## External Dependencies
 
 ### Core Infrastructure

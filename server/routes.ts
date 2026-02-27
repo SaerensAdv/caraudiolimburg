@@ -3414,7 +3414,15 @@ ${message || 'Geen aanvullende informatie'}`
   });
 
   // Robots.txt route
+  function getSitemapBaseUrl(req: any): string {
+    if (process.env.SITE_URL) return process.env.SITE_URL.replace(/\/$/, '');
+    const proto = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+    const host = req.headers['x-forwarded-host'] || req.headers.host;
+    return `${proto}://${host}`;
+  }
+
   app.get('/robots.txt', (req, res) => {
+    const baseUrl = getSitemapBaseUrl(req);
     res.setHeader('Content-Type', 'text/plain');
     res.send(`User-agent: *
 Allow: /
@@ -3426,7 +3434,7 @@ Disallow: /login
 Disallow: /cart
 Disallow: /migration-options
 Disallow: /demo-tools
-Sitemap: https://caraudiolimburg.nl/sitemap.xml`);
+Sitemap: ${baseUrl}/sitemap.xml`);
   });
 
   const SITEMAP_BASE_URL = 'https://caraudiolimburg.nl';
@@ -3735,24 +3743,25 @@ ${items.join('\n')}
 
   app.get('/sitemap.xml', async (req, res) => {
     try {
+      const baseUrl = getSitemapBaseUrl(req);
       const now = new Date().toISOString().split('T')[0];
       const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="/sitemap-index.xsl"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
-    <loc>${SITEMAP_BASE_URL}/sitemap-pages.xml</loc>
+    <loc>${baseUrl}/sitemap-pages.xml</loc>
     <lastmod>${now}</lastmod>
   </sitemap>
   <sitemap>
-    <loc>${SITEMAP_BASE_URL}/sitemap-products.xml</loc>
+    <loc>${baseUrl}/sitemap-products.xml</loc>
     <lastmod>${now}</lastmod>
   </sitemap>
   <sitemap>
-    <loc>${SITEMAP_BASE_URL}/sitemap-categories.xml</loc>
+    <loc>${baseUrl}/sitemap-categories.xml</loc>
     <lastmod>${now}</lastmod>
   </sitemap>
   <sitemap>
-    <loc>${SITEMAP_BASE_URL}/sitemap-blog.xml</loc>
+    <loc>${baseUrl}/sitemap-blog.xml</loc>
     <lastmod>${now}</lastmod>
   </sitemap>
 </sitemapindex>`;
@@ -3783,8 +3792,9 @@ ${items.join('\n')}
         { loc: '/apple-carplay-voor-uw-bmw', changefreq: 'monthly', priority: '0.6' },
       ];
 
+      const sitemapUrl = getSitemapBaseUrl(req);
       const urls = staticPages.map(
-        (p) => `  <url>\n    <loc>${SITEMAP_BASE_URL}${p.loc}</loc>\n    <lastmod>${now}</lastmod>\n    <changefreq>${p.changefreq}</changefreq>\n    <priority>${p.priority}</priority>\n  </url>`
+        (p) => `  <url>\n    <loc>${sitemapUrl}${p.loc}</loc>\n    <lastmod>${now}</lastmod>\n    <changefreq>${p.changefreq}</changefreq>\n    <priority>${p.priority}</priority>\n  </url>`
       );
 
       const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>`;
@@ -3799,6 +3809,7 @@ ${items.join('\n')}
 
   app.get('/sitemap-products.xml', async (req, res) => {
     try {
+      const sitemapUrl = getSitemapBaseUrl(req);
       const allProducts = await storage.getProducts({});
       const urls: string[] = [];
 
@@ -3809,10 +3820,10 @@ ${items.join('\n')}
           : new Date().toISOString().split('T')[0];
         const images = product.images && product.images.length > 0 ? product.images : [];
         const imageTags = images.map((img: string) => {
-          const imageUrl = img.startsWith('http') ? img : `${SITEMAP_BASE_URL}${img}`;
+          const imageUrl = img.startsWith('http') ? img : `${sitemapUrl}${img}`;
           return `\n    <image:image>\n      <image:loc>${escapeXml(imageUrl)}</image:loc>\n      <image:title>${escapeXml(product.name)}</image:title>\n    </image:image>`;
         }).join('');
-        urls.push(`  <url>\n    <loc>${SITEMAP_BASE_URL}/webshop/${escapeXml(product.slug)}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>${imageTags}\n  </url>`);
+        urls.push(`  <url>\n    <loc>${sitemapUrl}/webshop/${escapeXml(product.slug)}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.8</priority>${imageTags}\n  </url>`);
       }
 
       const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${urls.join('\n')}\n</urlset>`;
@@ -3834,14 +3845,15 @@ ${items.join('\n')}
       ]);
       const urls: string[] = [];
 
+      const sitemapUrl = getSitemapBaseUrl(req);
       for (const category of allCategories) {
         if (!category.slug) continue;
-        urls.push(`  <url>\n    <loc>${SITEMAP_BASE_URL}/webshop?category=${escapeXml(category.slug)}</loc>\n    <lastmod>${now}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`);
+        urls.push(`  <url>\n    <loc>${sitemapUrl}/webshop?category=${escapeXml(category.slug)}</loc>\n    <lastmod>${now}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`);
       }
 
       for (const brand of allBrands) {
         if (!brand.slug) continue;
-        urls.push(`  <url>\n    <loc>${SITEMAP_BASE_URL}/webshop?brand=${escapeXml(brand.slug)}</loc>\n    <lastmod>${now}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`);
+        urls.push(`  <url>\n    <loc>${sitemapUrl}/webshop?brand=${escapeXml(brand.slug)}</loc>\n    <lastmod>${now}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`);
       }
 
       const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>`;
@@ -3864,7 +3876,8 @@ ${items.join('\n')}
         const lastmod = (post as any).updatedAt
           ? new Date((post as any).updatedAt).toISOString().split('T')[0]
           : new Date().toISOString().split('T')[0];
-        urls.push(`  <url>\n    <loc>${SITEMAP_BASE_URL}/blog/${escapeXml(post.slug)}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>`);
+        const sitemapUrl = getSitemapBaseUrl(req);
+        urls.push(`  <url>\n    <loc>${sitemapUrl}/blog/${escapeXml(post.slug)}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>`);
       }
 
       const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>`;

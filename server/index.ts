@@ -5,11 +5,14 @@ import { ogMiddleware } from "./og-middleware";
 import { clickupScheduler } from "./services/scheduler";
 import { emailService } from "./services/email";
 import { blogScheduler } from "./services/blog-scheduler";
+import compression from "compression";
 import path from "path";
 import Stripe from "stripe";
 import { storage } from "./storage";
 
 const app = express();
+
+app.use(compression());
 
 // Security headers middleware
 app.use((req, res, next) => {

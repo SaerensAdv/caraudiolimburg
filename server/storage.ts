@@ -112,6 +112,7 @@ export interface IStorage {
   // Cart operations
   getCartItems(userId: string): Promise<CartItem[]>;
   addToCart(cartItem: InsertCartItem): Promise<CartItem>;
+  getCartItem(id: string): Promise<CartItem | undefined>;
   updateCartItem(id: string, quantity: number): Promise<CartItem>;
   removeFromCart(id: string): Promise<void>;
   clearCart(userId: string): Promise<void>;
@@ -568,31 +569,30 @@ export class DatabaseStorage implements IStorage {
       .where(eq(cartItems.userId, userId)) as any;
   }
 
+  async getCartItem(id: string): Promise<CartItem | undefined> {
+    const [item] = await db.select().from(cartItems).where(eq(cartItems.id, id));
+    return item;
+  }
+
   async addToCart(cartItem: InsertCartItem): Promise<CartItem> {
-    // Check if item already exists with same product and variation
     const conditions = [
       eq(cartItems.userId, cartItem.userId),
-      eq(cartItems.productId, cartItem.productId)
+      eq(cartItems.productId, cartItem.productId),
     ];
-    
-    // For products with variations, also match on variationId
     if (cartItem.variationId) {
       conditions.push(eq(cartItems.variationId, cartItem.variationId));
+    } else {
+      conditions.push(sql`${cartItems.variationId} IS NULL`);
     }
 
-    const [existing] = await db
-      .select()
-      .from(cartItems)
-      .where(and(...conditions));
+    const result = await db
+      .update(cartItems)
+      .set({ quantity: sql`${cartItems.quantity} + ${cartItem.quantity || 1}` })
+      .where(and(...conditions))
+      .returning();
 
-    // Only update quantity if variationId matches (or both are null)
-    if (existing && existing.variationId === (cartItem.variationId || null)) {
-      const [updated] = await db
-        .update(cartItems)
-        .set({ quantity: existing.quantity + (cartItem.quantity || 1) })
-        .where(eq(cartItems.id, existing.id))
-        .returning();
-      return updated;
+    if (result.length > 0) {
+      return result[0];
     }
 
     const [newItem] = await db.insert(cartItems).values(cartItem).returning();

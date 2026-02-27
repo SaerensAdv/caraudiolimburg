@@ -158,6 +158,7 @@ export default function Shop() {
     setPriceRange([0, 5000]);
     setInStockOnly(false);
     setSortBy("name");
+    navigate("/webshop", { replace: true });
   };
 
   const isPriceRangeModified = priceRange[0] !== 0 || priceRange[1] !== 5000;

@@ -53,6 +53,19 @@ Preferred communication style: Simple, everyday language.
 - **Vehicle Compatibility**: Dynamic product filtering by make, model, year, including RDW API integration for Kenteken (license plate) search.
 - **Admin Dashboard**: CRM-like interface for managing products, orders, bookings, and customer interactions.
 
+### Security & Data Integrity
+- **Cart ownership checks**: PATCH/DELETE /api/cart/:id verify the cart item belongs to the authenticated user (403 if not)
+- **Cart quantity validation**: Quantity must be a positive integer between 1 and 99
+- **Variation validation**: Server verifies variationId belongs to productId in cart, payment intent, and guest checkout flows
+- **Shipping data persistence**: Shipping details stored in Stripe PaymentIntent metadata as fallback for 3DS/iDEAL redirect flows
+- **Race condition protection**: addToCart uses atomic UPDATE before INSERT to prevent duplicate cart entries on rapid clicks
+- **Guest order variation labels**: Variation labels are fetched from DB instead of being null in guest order items
+
+### Vehicle Filter & Search UX
+- **Filter URL sync**: "Filters wissen" in shop.tsx navigates to clean /webshop URL, removing all query params including vehicleMakeId/vehicleModelId
+- **Search autocomplete**: Arrow key (Up/Down) navigation through results with Enter to select, ARIA listbox attributes
+- **Kenteken formatting**: Auto-formats Dutch license plates with dashes after 5+ characters (supports all 14 sidecodes)
+
 ## External Dependencies
 
 ### Core Infrastructure

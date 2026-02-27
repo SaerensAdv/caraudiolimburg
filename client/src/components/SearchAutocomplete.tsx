@@ -39,6 +39,7 @@ export function SearchAutocomplete({ variant = 'desktop', onNavigate }: SearchAu
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [, navigate] = useLocation();
@@ -67,15 +68,60 @@ export function SearchAutocomplete({ variant = 'desktop', onNavigate }: SearchAu
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [handleClickOutside]);
 
+  type FlatItem =
+    | { type: 'product'; item: AutocompleteProduct }
+    | { type: 'category'; item: AutocompleteCategory }
+    | { type: 'brand'; item: AutocompleteBrand };
+
+  const flatItems: FlatItem[] = [];
+  if (results) {
+    for (const p of results.products) flatItems.push({ type: 'product', item: p });
+    for (const c of results.categories) flatItems.push({ type: 'category', item: c });
+    for (const b of results.brands) flatItems.push({ type: 'brand', item: b });
+  }
+
+  useEffect(() => {
+    setHighlightedIndex(-1);
+  }, [debouncedQuery, results]);
+
+  const selectItem = useCallback((fi: FlatItem) => {
+    setIsOpen(false);
+    setQuery("");
+    if (fi.type === 'product') {
+      navigate(`/webshop/${fi.item.slug}`);
+    } else if (fi.type === 'category') {
+      navigate(`/webshop?category=${fi.item.slug}`);
+    } else {
+      navigate(`/webshop?brand=${fi.item.slug}`);
+    }
+    onNavigate?.();
+  }, [navigate, onNavigate]);
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Escape") {
       setIsOpen(false);
       inputRef.current?.blur();
-    } else if (e.key === "Enter" && query.trim()) {
+    } else if (e.key === "ArrowDown") {
       e.preventDefault();
-      setIsOpen(false);
-      navigate(`/webshop?search=${encodeURIComponent(query.trim())}`);
-      onNavigate?.();
+      if (!isOpen) setIsOpen(true);
+      if (flatItems.length > 0) {
+        setHighlightedIndex((prev) => (prev < flatItems.length - 1 ? prev + 1 : 0));
+      }
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (!isOpen) setIsOpen(true);
+      if (flatItems.length > 0) {
+        setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : flatItems.length - 1));
+      }
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (highlightedIndex >= 0 && highlightedIndex < flatItems.length) {
+        selectItem(flatItems[highlightedIndex]);
+      } else if (query.trim()) {
+        setIsOpen(false);
+        navigate(`/webshop?search=${encodeURIComponent(query.trim())}`);
+        onNavigate?.();
+      }
     }
   };
 
@@ -151,77 +197,100 @@ export function SearchAutocomplete({ variant = 'desktop', onNavigate }: SearchAu
               Geen resultaten
             </div>
           ) : (
-            <div className="py-2">
-              {results.products.length > 0 && (
-                <div data-testid="search-products-section">
-                  <div className="px-3 py-1.5 text-xs font-medium text-white/40 uppercase tracking-wider">
-                    Producten
-                  </div>
-                  {results.products.map((product) => (
-                    <button
-                      key={product.id}
-                      onClick={() => handleProductClick(product.slug)}
-                      className="w-full flex items-center gap-3 px-3 py-2 hover:bg-white/10 transition-colors text-left"
-                      data-testid={`search-product-${product.id}`}
-                    >
-                      <div className="w-10 h-10 bg-white flex-shrink-0 overflow-hidden">
-                        {product.imageUrl ? (
-                          <img 
-                            src={product.imageUrl} 
-                            alt={product.name}
-                            className="w-full h-full object-contain"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-white/20">
-                            <MagnifyingGlass className="w-4 h-4" />
-                          </div>
-                        )}
+            (() => {
+              let idx = 0;
+              return (
+                <div className="py-2" role="listbox">
+                  {results.products.length > 0 && (
+                    <div data-testid="search-products-section">
+                      <div className="px-3 py-1.5 text-xs font-medium text-white/40 uppercase tracking-wider">
+                        Producten
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-white text-sm truncate">{product.name}</div>
-                        <div className="text-[#d0a760] text-xs">€{parseFloat(product.price).toFixed(2)}</div>
+                      {results.products.map((product) => {
+                        const itemIdx = idx++;
+                        return (
+                          <button
+                            key={product.id}
+                            onClick={() => handleProductClick(product.slug)}
+                            onMouseEnter={() => setHighlightedIndex(itemIdx)}
+                            className={`w-full flex items-center gap-3 px-3 py-2 transition-colors text-left ${highlightedIndex === itemIdx ? 'bg-white/15' : 'hover:bg-white/10'}`}
+                            role="option"
+                            aria-selected={highlightedIndex === itemIdx}
+                            data-testid={`search-product-${product.id}`}
+                          >
+                            <div className="w-10 h-10 bg-white flex-shrink-0 overflow-hidden">
+                              {product.imageUrl ? (
+                                <img 
+                                  src={product.imageUrl} 
+                                  alt={product.name}
+                                  className="w-full h-full object-contain"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-white/20">
+                                  <MagnifyingGlass className="w-4 h-4" />
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-white text-sm truncate">{product.name}</div>
+                              <div className="text-[#d0a760] text-xs">€{parseFloat(product.price).toFixed(2)}</div>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {results.categories.length > 0 && (
+                    <div data-testid="search-categories-section">
+                      <div className="px-3 py-1.5 text-xs font-medium text-white/40 uppercase tracking-wider mt-2">
+                        Categorieën
                       </div>
-                    </button>
-                  ))}
-                </div>
-              )}
+                      {results.categories.map((category) => {
+                        const itemIdx = idx++;
+                        return (
+                          <button
+                            key={category.id}
+                            onClick={() => handleCategoryClick(category.slug)}
+                            onMouseEnter={() => setHighlightedIndex(itemIdx)}
+                            className={`w-full text-left px-3 py-2 transition-colors text-white text-sm ${highlightedIndex === itemIdx ? 'bg-white/15' : 'hover:bg-white/10'}`}
+                            role="option"
+                            aria-selected={highlightedIndex === itemIdx}
+                            data-testid={`search-category-${category.id}`}
+                          >
+                            {category.name}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
 
-              {results.categories.length > 0 && (
-                <div data-testid="search-categories-section">
-                  <div className="px-3 py-1.5 text-xs font-medium text-white/40 uppercase tracking-wider mt-2">
-                    Categorieën
-                  </div>
-                  {results.categories.map((category) => (
-                    <button
-                      key={category.id}
-                      onClick={() => handleCategoryClick(category.slug)}
-                      className="w-full text-left px-3 py-2 hover:bg-white/10 transition-colors text-white text-sm"
-                      data-testid={`search-category-${category.id}`}
-                    >
-                      {category.name}
-                    </button>
-                  ))}
+                  {results.brands.length > 0 && (
+                    <div data-testid="search-brands-section">
+                      <div className="px-3 py-1.5 text-xs font-medium text-white/40 uppercase tracking-wider mt-2">
+                        Merken
+                      </div>
+                      {results.brands.map((brand) => {
+                        const itemIdx = idx++;
+                        return (
+                          <button
+                            key={brand.id}
+                            onClick={() => handleBrandClick(brand.slug)}
+                            onMouseEnter={() => setHighlightedIndex(itemIdx)}
+                            className={`w-full text-left px-3 py-2 transition-colors text-white text-sm ${highlightedIndex === itemIdx ? 'bg-white/15' : 'hover:bg-white/10'}`}
+                            role="option"
+                            aria-selected={highlightedIndex === itemIdx}
+                            data-testid={`search-brand-${brand.id}`}
+                          >
+                            {brand.name}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
-              )}
-
-              {results.brands.length > 0 && (
-                <div data-testid="search-brands-section">
-                  <div className="px-3 py-1.5 text-xs font-medium text-white/40 uppercase tracking-wider mt-2">
-                    Merken
-                  </div>
-                  {results.brands.map((brand) => (
-                    <button
-                      key={brand.id}
-                      onClick={() => handleBrandClick(brand.slug)}
-                      className="w-full text-left px-3 py-2 hover:bg-white/10 transition-colors text-white text-sm"
-                      data-testid={`search-brand-${brand.id}`}
-                    >
-                      {brand.name}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+              );
+            })()
           )}
         </div>
       )}

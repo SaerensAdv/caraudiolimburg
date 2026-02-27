@@ -358,7 +358,9 @@ export default function ProductPage() {
       }
       toast({
         title: "Fout",
-        description: "Kon product niet toevoegen aan winkelwagen.",
+        description: error.message === "Selecteer eerst een variatie" 
+          ? "Selecteer eerst een optie voordat je het product toevoegt."
+          : "Kon product niet toevoegen aan winkelwagen.",
         variant: "destructive",
       });
     },

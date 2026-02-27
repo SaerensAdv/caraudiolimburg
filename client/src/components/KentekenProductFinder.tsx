@@ -54,9 +54,47 @@ export function KentekenProductFinder({ className = "", variant = "compact" }: K
     enabled: !!result?.match?.makeId && (result?.match?.confidence === 'make_only' || result?.match?.confidence === 'partial'),
   });
 
+  const formatKenteken = (raw: string): string => {
+    const clean = raw.replace(/[^A-Z0-9]/g, '');
+    if (clean.length === 0) return '';
+
+    const patterns = [
+      /^([A-Z]{2})(\d{2})(\d{2})$/,
+      /^(\d{2})(\d{2})([A-Z]{2})$/,
+      /^(\d{2})([A-Z]{2})(\d{2})$/,
+      /^([A-Z]{2})(\d{2})([A-Z]{2})$/,
+      /^([A-Z]{2})([A-Z]{2})(\d{2})$/,
+      /^(\d{2})([A-Z]{2})([A-Z]{2})$/,
+      /^(\d{2})([A-Z]{3})(\d{1})$/,
+      /^(\d{1})([A-Z]{3})(\d{2})$/,
+      /^([A-Z]{2})(\d{3})([A-Z]{1})$/,
+      /^([A-Z]{1})(\d{3})([A-Z]{2})$/,
+      /^([A-Z]{3})(\d{2})([A-Z]{1})$/,
+      /^([A-Z]{1})(\d{2})([A-Z]{3})$/,
+      /^(\d{1})([A-Z]{2})(\d{3})$/,
+      /^(\d{3})([A-Z]{2})(\d{1})$/,
+    ];
+
+    for (const pattern of patterns) {
+      const match = clean.match(pattern);
+      if (match) {
+        return `${match[1]}-${match[2]}-${match[3]}`;
+      }
+    }
+
+    return clean;
+  };
+
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.toUpperCase();
-    setPlate(value);
+    const value = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+    const clean = value.replace(/[^A-Z0-9]/g, '');
+
+    if (clean.length >= 5) {
+      setPlate(formatKenteken(clean));
+    } else {
+      setPlate(clean);
+    }
+
     setError(null);
     setResult(null);
     setSelectedModelOverride("");

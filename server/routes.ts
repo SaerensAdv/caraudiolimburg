@@ -977,7 +977,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const userId = req.user.id;
-      const { productId, variationId } = req.body;
+      const { productId, variationId, quantity: reqQuantity } = req.body;
+      
+      if (reqQuantity !== undefined && (!Number.isInteger(reqQuantity) || reqQuantity < 1 || reqQuantity > 99)) {
+        return res.status(400).json({ message: "Quantity must be a whole number between 1 and 99" });
+      }
       
       // Validate product exists
       const product = await storage.getProduct(productId);
@@ -1010,12 +1014,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch('/api/cart/:id', async (req: any, res) => {
     try {
-      // Only authenticated users can update persistent cart
       if (!req.isAuthenticated() || !req.user?.id) {
         return res.status(401).json({ message: "Authentication required" });
       }
       
       const { quantity } = req.body;
+      if (!Number.isInteger(quantity) || quantity < 1 || quantity > 99) {
+        return res.status(400).json({ message: "Quantity must be a whole number between 1 and 99" });
+      }
+
+      const existing = await storage.getCartItem(req.params.id);
+      if (!existing) {
+        return res.status(404).json({ message: "Cart item not found" });
+      }
+      if (existing.userId !== req.user.id) {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      
       const cartItem = await storage.updateCartItem(req.params.id, quantity);
       res.json(cartItem);
     } catch (error) {
@@ -1026,9 +1041,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete('/api/cart/:id', async (req: any, res) => {
     try {
-      // Only authenticated users can remove from persistent cart
       if (!req.isAuthenticated() || !req.user?.id) {
         return res.status(401).json({ message: "Authentication required" });
+      }
+      
+      const existing = await storage.getCartItem(req.params.id);
+      if (!existing) {
+        return res.status(404).json({ message: "Cart item not found" });
+      }
+      if (existing.userId !== req.user.id) {
+        return res.status(403).json({ message: "Forbidden" });
       }
       
       await storage.removeFromCart(req.params.id);
@@ -1385,12 +1407,12 @@ ${message || 'Geen aanvullende informatie'}`
         
         let price = parseFloat(product.price);
         
-        // Handle variations if present
         if (cartItem.variationId) {
           const variation = await storage.getProductVariation(cartItem.variationId);
-          if (variation) {
-            price = parseFloat(variation.price);
+          if (!variation || variation.productId !== cartItem.productId) {
+            return res.status(400).json({ message: `Invalid variation for product: ${cartItem.productId}` });
           }
+          price = parseFloat(variation.price);
         }
         
         subtotal += price * cartItem.quantity;
@@ -1406,15 +1428,19 @@ ${message || 'Geen aanvullende informatie'}`
         return res.status(400).json({ message: "Invalid cart total" });
       }
       
+      const { shippingDetails } = req.body;
+      const metadata: Record<string, string> = { userId };
+      if (shippingDetails) {
+        metadata.shippingDetails = JSON.stringify(shippingDetails).slice(0, 500);
+      }
+
       const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(total * 100), // Convert to cents
+        amount: Math.round(total * 100),
         currency: "eur",
         automatic_payment_methods: {
           enabled: true,
         },
-        metadata: {
-          userId: userId,
-        },
+        metadata,
       });
       res.json({ clientSecret: paymentIntent.client_secret });
     } catch (error: any) {
@@ -1425,6 +1451,37 @@ ${message || 'Geen aanvullende informatie'}`
     }
   });
 
+  app.post("/api/update-payment-intent-shipping", async (req: any, res) => {
+    if (!stripe) {
+      return res.status(500).json({ message: "Payment system not configured" });
+    }
+    try {
+      const { clientSecret, shippingDetails } = req.body;
+      if (!clientSecret || !shippingDetails) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+      const piId = clientSecret.split('_secret_')[0];
+      const paymentIntent = await stripe.paymentIntents.retrieve(piId);
+
+      if (req.isAuthenticated?.() && req.user?.id) {
+        if (paymentIntent.metadata?.userId && paymentIntent.metadata.userId !== req.user.id) {
+          return res.status(403).json({ message: "Forbidden" });
+        }
+      }
+
+      await stripe.paymentIntents.update(piId, {
+        metadata: { 
+          ...paymentIntent.metadata,
+          shippingDetails: JSON.stringify(shippingDetails).slice(0, 500),
+        },
+      });
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error updating payment intent shipping:", error);
+      res.status(500).json({ message: "Failed to update shipping details" });
+    }
+  });
+
   // Guest checkout - create payment intent with server-side price validation
   app.post("/api/guest-checkout/create-payment-intent", async (req, res) => {
     if (!stripe) {
@@ -1432,7 +1489,7 @@ ${message || 'Geen aanvullende informatie'}`
     }
     
     try {
-      const { cartItems, guestEmail } = req.body;
+      const { cartItems, guestEmail, shippingDetails } = req.body;
       
       if (!cartItems || !Array.isArray(cartItems) || cartItems.length === 0) {
         return res.status(400).json({ message: "Cart items are required" });
@@ -1457,9 +1514,12 @@ ${message || 'Geen aanvullende informatie'}`
         // Handle variations if present
         if (item.variationId) {
           const variation = await storage.getProductVariation(item.variationId);
-          if (variation) {
-            price = parseFloat(variation.price);
+          if (!variation || variation.productId !== item.productId) {
+            return res.status(400).json({ message: `Invalid variation for product: ${product.name}` });
           }
+          price = parseFloat(variation.price);
+        } else if (product.hasVariations) {
+          return res.status(400).json({ message: `Variation is required for product: ${product.name}` });
         }
         
         subtotal += price * item.quantity;
@@ -1504,6 +1564,7 @@ ${message || 'Geen aanvullende informatie'}`
             price: i.price,
             installationPrice: i.installationPrice,
           }))),
+          ...(shippingDetails ? { shippingDetails: JSON.stringify(shippingDetails).slice(0, 500) } : {}),
         },
       });
       
@@ -1600,8 +1661,12 @@ ${message || 'Geen aanvullende informatie'}`
         shippingAddress: shippingDetails,
       });
 
-      // Create order items
       for (const cartItem of cartItems) {
+        let variationLabel = null;
+        if (cartItem.variationId) {
+          const variation = await storage.getProductVariation(cartItem.variationId);
+          if (variation) variationLabel = variation.label;
+        }
         await storage.createOrderItem({
           orderId: order.id,
           productId: cartItem.productId,
@@ -1609,7 +1674,7 @@ ${message || 'Geen aanvullende informatie'}`
           price: cartItem.price,
           needsInstallation: cartItem.needsInstallation,
           variationId: cartItem.variationId || null,
-          variationLabel: null,
+          variationLabel,
         });
       }
 
@@ -1765,15 +1830,21 @@ ${message || 'Geen aanvullende informatie'}`
           const shipping = subtotal >= 100 ? 0 : 15;
           const expectedTotal = subtotal + installationFee + shipping;
           
-          // Create order idempotently
           const orderNumber = `CAL-${Date.now()}`;
+          let shippingAddress = {};
+          try {
+            if (paymentIntent.metadata?.shippingDetails) {
+              shippingAddress = JSON.parse(paymentIntent.metadata.shippingDetails);
+            }
+          } catch {}
+          
           order = await storage.createOrder({
             userId,
             orderNumber,
             status: "paid",
             total: expectedTotal.toString(),
             stripePaymentIntentId: paymentIntentId,
-            shippingAddress: {}, // Default empty shipping for 3DS return
+            shippingAddress,
           });
 
           // Create order items
@@ -2030,14 +2101,22 @@ ${message || 'Geen aanvullende informatie'}`
       // Generate unique order number
       const orderNumber = `CAL-${Date.now()}`;
 
-      // Create order with shipping details from localStorage (passed from frontend)
+      let resolvedShipping = shippingDetails || {};
+      if (!shippingDetails || Object.keys(shippingDetails).length === 0) {
+        try {
+          if (paymentIntent.metadata?.shippingDetails) {
+            resolvedShipping = JSON.parse(paymentIntent.metadata.shippingDetails);
+          }
+        } catch {}
+      }
+
       const order = await storage.createOrder({
         userId,
         orderNumber,
         status: "paid",
         total: expectedTotal.toString(),
         stripePaymentIntentId: paymentIntentId,
-        shippingAddress: shippingDetails || {},
+        shippingAddress: resolvedShipping,
       });
 
       // Create order items

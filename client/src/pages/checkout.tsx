@@ -221,6 +221,13 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems, isGuest = false }: 
     localStorage.setItem('checkout_shipping_details', JSON.stringify(data));
     localStorage.setItem('checkout_is_guest', isGuest ? 'true' : 'false');
 
+    try {
+      await apiRequest("POST", "/api/update-payment-intent-shipping", {
+        clientSecret,
+        shippingDetails: data,
+      });
+    } catch {}
+
     const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       redirect: 'if_required',

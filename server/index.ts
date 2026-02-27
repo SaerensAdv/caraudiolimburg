@@ -241,9 +241,32 @@ const shortCacheOptions = {
   }
 };
 
-// Serve static files from local public directory (development fallback)
+// Serve product images: first try local filesystem (fast cache), then Object Storage (persistent)
 app.use('/products', express.static(path.join(process.cwd(), 'public', 'products'), staticCacheOptions));
-app.use('/public/products', express.static(path.join(process.cwd(), 'public', 'products'), staticCacheOptions));
+app.use('/products', async (req: Request, res: Response, next: NextFunction) => {
+  const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
+  if (!bucketId) return next();
+  try {
+    const { Client } = await import('@replit/object-storage');
+    const client = new Client();
+    const objectName = `products${req.path}`;
+    const result = await client.downloadAsBytes(objectName);
+    if (result.ok && result.value[0]) {
+      const localDir = path.join(process.cwd(), 'public', 'products');
+      const fileName = path.basename(req.path);
+      const localPath = path.join(localDir, fileName);
+      const fsModule = await import('fs');
+      await fsModule.promises.mkdir(localDir, { recursive: true });
+      await fsModule.promises.writeFile(localPath, result.value[0]);
+      res.setHeader('Content-Type', 'image/webp');
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+      return res.send(result.value[0]);
+    }
+  } catch (err) {
+    console.error('[Object Storage] Fallback download failed:', err);
+  }
+  next();
+});
 
 // Serve PDF downloads (manuals, tech sheets, etc.)
 app.use('/downloads', express.static(path.join(process.cwd(), 'public', 'downloads'), staticCacheOptions));

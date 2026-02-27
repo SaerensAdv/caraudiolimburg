@@ -6,6 +6,7 @@ import Papa from "papaparse";
 import path from "path";
 import fs from "fs";
 import sharp from "sharp";
+import { Client as ObjectStorageClient } from "@replit/object-storage";
 import { z } from "zod";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated, isAdmin } from "./auth";
@@ -67,6 +68,31 @@ const imageUpload = multer({
     }
   }
 });
+
+// Helper: save a product image buffer to local filesystem AND Object Storage for persistence
+async function saveProductImage(fileName: string, buffer: Buffer): Promise<string> {
+  const localDir = path.join(process.cwd(), 'public', 'products');
+  const localPath = path.join(localDir, fileName);
+  await fs.promises.mkdir(localDir, { recursive: true });
+  await fs.promises.writeFile(localPath, buffer);
+
+  if (process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID) {
+    try {
+      const client = new ObjectStorageClient();
+      const objectName = `products/${fileName}`;
+      const result = await client.uploadFromBytes(objectName, buffer);
+      if (result.ok) {
+        console.log(`✅ [Object Storage] Uploaded: ${objectName}`);
+      } else {
+        console.error(`❌ [Object Storage] Upload failed for ${objectName}:`, result.error);
+      }
+    } catch (err) {
+      console.error(`❌ [Object Storage] Exception uploading ${fileName}:`, err);
+    }
+  }
+
+  return `/products/${fileName}`;
+}
 
 // PDF upload configuration
 const pdfUpload = multer({
@@ -2184,8 +2210,7 @@ ${message || 'Geen aanvullende informatie'}`
     res.json({ message: "Simple upload works!", user: req.user?.email });
   });
 
-  // Image upload endpoint using Object Storage for production persistence  
-  // Automatically resizes to 1000x1000 and converts to WebP format
+  // Image upload endpoint - resizes to max 1000x1000, converts to WebP, saves to local + Object Storage
   app.post('/api/upload/image', isAdmin, imageUpload.single('file'), async (req: any, res) => {
     console.log("🔍 [UPLOAD] Starting image upload with optimization...");
     
@@ -2195,14 +2220,9 @@ ${message || 'Geen aanvullende informatie'}`
       }
       console.log("✅ [UPLOAD] File received:", req.file.originalname, req.file.size, "bytes");
 
-      const fs = await import('fs');
-      const path = await import('path');
-
       // Process image: resize to max 1000x1000 (don't upscale) and convert to WebP
       const metadata = await sharp(req.file.buffer).metadata();
       const maxSize = 1000;
-      
-      // Only resize if image is larger than maxSize, otherwise keep original dimensions
       const needsResize = (metadata.width && metadata.width > maxSize) || (metadata.height && metadata.height > maxSize);
       
       let sharpInstance = sharp(req.file.buffer);
@@ -2217,66 +2237,18 @@ ${message || 'Geen aanvullende informatie'}`
         .webp({ quality: 90 })
         .toBuffer();
       
-      console.log("✅ [UPLOAD] Image optimized: 1000x1000 WebP, size:", processedImage.length, "bytes");
+      console.log("✅ [UPLOAD] Image optimized to WebP, size:", processedImage.length, "bytes");
 
-      // Generate unique filename with .webp extension
       const fileName = `product-${Date.now()}-${Math.random().toString(36).substring(7)}.webp`;
-      
-      // Object Storage configuration
-      const publicSearchPaths = process.env.PUBLIC_OBJECT_SEARCH_PATHS;
-      const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
-      
-      if (!publicSearchPaths) {
-        throw new Error("Object Storage not configured properly");
-      }
-      
-      if (!bucketId) {
-        throw new Error("Object Storage not configured");
-      }
-      
-      const objectStorageDir = path.join('public', 'products');
-      const objectStoragePath = path.join(objectStorageDir, fileName);
-      
-      try {
-        await fs.promises.mkdir(objectStorageDir, { recursive: true });
-        await fs.promises.writeFile(objectStoragePath, processedImage);
-        console.log(`✅ [UPLOAD] Optimized image saved: ${objectStoragePath}`);
-        
-        const publicUrl = `/products/${fileName}`;
-        
-        res.json({
-          url: publicUrl,
-          fileName: fileName,
-          size: processedImage.length,
-          mimeType: 'image/webp'
-        });
-      } catch (objectStorageError: any) {
-        console.error("❌ [UPLOAD] Object Storage upload failed:", objectStorageError);
-        
-        if (process.env.NODE_ENV === 'production') {
-          return res.status(500).json({ 
-            message: "Image upload failed - Object Storage not available in production",
-            error: objectStorageError?.message || "Unknown error"
-          });
-        }
-        
-        // Development fallback to local directory
-        console.log("🔄 [UPLOAD] Falling back to local storage (development only)");
-        const localDir = path.join(process.cwd(), 'public', 'products');
-        const localPath = path.join(localDir, fileName);
-        
-        await fs.promises.mkdir(localDir, { recursive: true });
-        await fs.promises.writeFile(localPath, processedImage);
-        
-        const publicUrl = `/products/${fileName}`;
-        
-        res.json({
-          url: publicUrl,
-          fileName: fileName,
-          size: processedImage.length,
-          mimeType: 'image/webp'
-        });
-      }
+      const publicUrl = await saveProductImage(fileName, processedImage);
+
+      console.log(`✅ [UPLOAD] Saved as ${publicUrl}`);
+      res.json({
+        url: publicUrl,
+        fileName: fileName,
+        size: processedImage.length,
+        mimeType: 'image/webp'
+      });
     } catch (error: any) {
       console.error("❌ [UPLOAD] Error:", error);
       res.status(500).json({ 
@@ -2725,10 +2697,6 @@ ${message || 'Geen aanvullende informatie'}`
     console.log("🔍 [OPTIMIZE] Starting batch image optimization...");
     
     try {
-      const fs = await import('fs');
-      const path = await import('path');
-      
-      // Get all products
       const products = await storage.getProducts();
       const results = {
         processed: 0,
@@ -2736,16 +2704,6 @@ ${message || 'Geen aanvullende informatie'}`
         failed: 0,
         details: [] as { productId: string; name: string; status: string; newImages?: string[] }[]
       };
-      
-      const publicSearchPaths = process.env.PUBLIC_OBJECT_SEARCH_PATHS;
-      const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
-      
-      if (!publicSearchPaths || !bucketId) {
-        return res.status(500).json({ message: "Object Storage not configured" });
-      }
-      
-      const objectStorageDir = path.join('public', 'products');
-      await fs.promises.mkdir(objectStorageDir, { recursive: true });
       
       for (const product of products) {
         const images = product.images || [];
@@ -2761,7 +2719,7 @@ ${message || 'Geen aanvullende informatie'}`
         for (let i = 0; i < images.length; i++) {
           const imageUrl = images[i];
           
-          // Skip if already a local WebP file
+          // Skip if already a local WebP file in Object Storage
           if (imageUrl.startsWith('/products/') && imageUrl.endsWith('.webp')) {
             newImages.push(imageUrl);
             continue;
@@ -2776,30 +2734,27 @@ ${message || 'Geen aanvullende informatie'}`
               const response = await fetch(imageUrl);
               if (!response.ok) {
                 console.error(`❌ [OPTIMIZE] Failed to download: ${imageUrl}`);
-                newImages.push(imageUrl); // Keep original
+                newImages.push(imageUrl);
                 continue;
               }
               imageBuffer = Buffer.from(await response.arrayBuffer());
             } else if (imageUrl.startsWith('/products/')) {
-              // Local non-WebP file
-              const localPath = path.join('public', imageUrl);
+              const localPath = path.join(process.cwd(), 'public', imageUrl);
               try {
                 imageBuffer = await fs.promises.readFile(localPath);
               } catch {
-                newImages.push(imageUrl); // Keep original if can't read
+                newImages.push(imageUrl);
                 continue;
               }
             } else {
-              newImages.push(imageUrl); // Keep unknown format
+              newImages.push(imageUrl);
               continue;
             }
             
-            // Process image: resize to max 1000x1000 (don't upscale small images) and convert to WebP
             const metadata = await sharp(imageBuffer).metadata();
             const maxSize = 1000;
             
             let sharpInstance = sharp(imageBuffer);
-            // Only resize if image is larger than maxSize
             if ((metadata.width && metadata.width > maxSize) || (metadata.height && metadata.height > maxSize)) {
               sharpInstance = sharpInstance.resize(maxSize, maxSize, {
                 fit: 'inside',
@@ -2811,18 +2766,14 @@ ${message || 'Geen aanvullende informatie'}`
               .webp({ quality: 90 })
               .toBuffer();
             
-            // Save to Object Storage
             const fileName = `product-${product.id}-${i}-${Date.now()}.webp`;
-            const objectStoragePath = path.join(objectStorageDir, fileName);
-            await fs.promises.writeFile(objectStoragePath, processedImage);
-            
-            const newUrl = `/products/${fileName}`;
+            const newUrl = await saveProductImage(fileName, processedImage);
             newImages.push(newUrl);
             hasChanges = true;
             console.log(`✅ [OPTIMIZE] Processed: ${product.name} image ${i + 1}`);
           } catch (imgError) {
             console.error(`❌ [OPTIMIZE] Error processing image for ${product.name}:`, imgError);
-            newImages.push(imageUrl); // Keep original on error
+            newImages.push(imageUrl);
           }
         }
         
@@ -3303,9 +3254,6 @@ ${message || 'Geen aanvullende informatie'}`
       const generatedImages: { type: string; url: string }[] = [];
       const errors: { type: string; error: string }[] = [];
 
-      const fs = await import('fs');
-      const path = await import('path');
-
       for (const imageType of typesToGenerate) {
         const prompt = promptTemplates[imageType];
         if (!prompt) {
@@ -3328,11 +3276,7 @@ ${message || 'Geen aanvullende informatie'}`
             .webp({ quality: 90 })
             .toBuffer();
           
-          const productDir = path.join('public', 'products');
-          await fs.promises.mkdir(productDir, { recursive: true });
-          await fs.promises.writeFile(path.join(productDir, fileName), processedImage);
-          
-          const publicUrl = `/products/${fileName}`;
+          const publicUrl = await saveProductImage(fileName, processedImage);
           generatedImages.push({ type: imageType, url: publicUrl });
           console.log(`[Image Gen] ✅ Generated ${imageType}: ${publicUrl}`);
         } catch (error: any) {

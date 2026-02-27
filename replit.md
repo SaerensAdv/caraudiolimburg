@@ -40,6 +40,12 @@ Preferred communication style: Simple, everyday language.
 - **Supported Methods**: Designed to accept credit cards, Bancontact, and iDEAL, targeting Belgian and Dutch markets.
 - **Webhooks**: Handles Stripe webhooks for real-time payment confirmation and order status updates.
 
+### File Storage (Product Images)
+- **SDK**: `@replit/object-storage` is used to persist product images in Replit's Object Storage (bucket: `replit-objstore-4f8266cc-3e05-45e9-ab4a-5b04528ce9fb`)
+- **Upload flow**: Images are resized (max 1000x1000), converted to WebP via `sharp`, saved to local filesystem (`public/products/`) AND uploaded to Object Storage via `saveProductImage()` helper in `server/routes.ts`
+- **Serving**: Express serves `/products/*` from local filesystem first (fast), then falls back to downloading from Object Storage if the file is not found locally (handles production server restarts)
+- **URL format**: All product images use the `/products/filename.webp` URL pattern
+
 ### Key Features
 - **E-commerce**: Comprehensive product catalog with categorization, branding, vehicle compatibility filtering, and a shopping cart system.
 - **Booking System**: An integrated calendar-based system for scheduling installation appointments.

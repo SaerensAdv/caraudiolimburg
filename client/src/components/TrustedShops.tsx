@@ -251,7 +251,7 @@ export function TrustedShopsBadgeLink({ className = '' }: { className?: string }
           </span>
         </div>
         <div className="flex items-center text-xs md:text-sm text-zinc-500">
-          <span className="truncate">{count} reviews</span>
+          <span className="truncate">250+ reviews</span>
           <ArrowSquareOut className="w-3 h-3 ml-1 flex-shrink-0" />
         </div>
       </div>

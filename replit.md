@@ -94,7 +94,8 @@ Elk product heeft deze velden (zie `shared/schema.ts`):
 | `sku` | varchar | Artikelnummer van fabrikant |
 | `price` | numeric | Verkoopprijs in EUR |
 | `original_price` | numeric | Adviesprijs (voor korting) |
-| `installation_price` | numeric | Installatiekosten |
+| `installation_price` | numeric | Installatiekosten (dynamisch per product) |
+| `can_have_installation` | boolean | Bepaalt of installatie beschikbaar is voor dit product |
 | `description` | text | Lange SEO beschrijving (Nederlands) |
 | `short_description` | varchar | Meta description, max 155 tekens |
 | `images` | text[] | PostgreSQL array van afbeelding-URLs |

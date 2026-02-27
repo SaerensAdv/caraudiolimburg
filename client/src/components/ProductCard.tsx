@@ -303,7 +303,7 @@ export function ProductCard({ product, featured = false, brandName }: ProductCar
                 <span className="sm:hidden">+</span>
               </Button>
               
-              {installationEnabled && product.installationPrice && (
+              {installationEnabled && product.canHaveInstallation && product.installationPrice && (
                 <Button 
                   onClick={() => handleAddToCart(true)}
                   disabled={addToCartMutation.isPending}

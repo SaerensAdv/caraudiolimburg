@@ -1375,7 +1375,7 @@ ${message || 'Geen aanvullende informatie'}`
       
       // Calculate total from actual product prices in database
       let subtotal = 0;
-      let hasInstallation = false;
+      let installationFee = 0;
       
       for (const cartItem of cartItems) {
         const product = await storage.getProduct(cartItem.productId);
@@ -1395,12 +1395,10 @@ ${message || 'Geen aanvullende informatie'}`
         
         subtotal += price * cartItem.quantity;
         
-        if (cartItem.needsInstallation) {
-          hasInstallation = true;
+        if (cartItem.needsInstallation && product.canHaveInstallation && product.installationPrice) {
+          installationFee += parseFloat(product.installationPrice);
         }
       }
-      
-      const installationFee = hasInstallation ? 89 : 0;
       const shipping = subtotal >= 100 ? 0 : 15;
       const total = subtotal + installationFee + shipping;
       
@@ -1465,16 +1463,25 @@ ${message || 'Geen aanvullende informatie'}`
         }
         
         subtotal += price * item.quantity;
+        const itemInstallationPrice = (item.needsInstallation && product.canHaveInstallation && product.installationPrice)
+          ? product.installationPrice
+          : null;
         validatedItems.push({
           productId: item.productId,
           quantity: item.quantity,
           needsInstallation: item.needsInstallation || false,
           variationId: item.variationId || null,
           price: price.toString(),
+          installationPrice: itemInstallationPrice,
         });
       }
       
-      const installationFee = validatedItems.some(item => item.needsInstallation) ? 89 : 0;
+      const installationFee = validatedItems.reduce((sum, item) => {
+        if (item.needsInstallation && item.installationPrice) {
+          return sum + parseFloat(item.installationPrice);
+        }
+        return sum;
+      }, 0);
       const shipping = subtotal >= 100 ? 0 : 15;
       const total = subtotal + installationFee + shipping;
       
@@ -1494,7 +1501,8 @@ ${message || 'Geen aanvullende informatie'}`
             quantity: i.quantity, 
             needsInstallation: i.needsInstallation,
             variationId: i.variationId,
-            price: i.price 
+            price: i.price,
+            installationPrice: i.installationPrice,
           }))),
         },
       });
@@ -1561,7 +1569,12 @@ ${message || 'Geen aanvullende informatie'}`
         subtotal += parseFloat(item.price) * item.quantity;
       }
       
-      const installationFee = cartItems.some(item => item.needsInstallation) ? 89 : 0;
+      const installationFee = cartItems.reduce((sum: number, item: any) => {
+        if (item.needsInstallation && item.installationPrice) {
+          return sum + parseFloat(item.installationPrice);
+        }
+        return sum;
+      }, 0);
       const shipping = subtotal >= 100 ? 0 : 15;
       const total = subtotal + installationFee + shipping;
 
@@ -1742,7 +1755,13 @@ ${message || 'Geen aanvullende informatie'}`
             })
           ).then(prices => prices.reduce((sum, price) => sum + price, 0));
           
-          const installationFee = cartItems.some(item => item.needsInstallation) ? 89 : 0;
+          const installationFee = cartItems.reduce((sum, item) => {
+            const anyItem = item as any;
+            if (item.needsInstallation && anyItem.product?.canHaveInstallation && anyItem.product?.installationPrice) {
+              return sum + parseFloat(anyItem.product.installationPrice);
+            }
+            return sum;
+          }, 0);
           const shipping = subtotal >= 100 ? 0 : 15;
           const expectedTotal = subtotal + installationFee + shipping;
           
@@ -1830,7 +1849,13 @@ ${message || 'Geen aanvullende informatie'}`
         })
       ).then(prices => prices.reduce((sum, price) => sum + price, 0));
       
-      const installationFee = cartItems.some(item => item.needsInstallation) ? 89 : 0;
+      const installationFee = cartItems.reduce((sum, item) => {
+        const anyItem = item as any;
+        if (item.needsInstallation && anyItem.product?.canHaveInstallation && anyItem.product?.installationPrice) {
+          return sum + parseFloat(anyItem.product.installationPrice);
+        }
+        return sum;
+      }, 0);
       const shipping = subtotal >= 100 ? 0 : 15;
       const expectedTotal = subtotal + installationFee + shipping;
       
@@ -1981,7 +2006,13 @@ ${message || 'Geen aanvullende informatie'}`
         })
       ).then(prices => prices.reduce((sum, price) => sum + price, 0));
       
-      const installationFee = cartItems.some(item => item.needsInstallation) ? 89 : 0;
+      const installationFee = cartItems.reduce((sum, item) => {
+        const anyItem = item as any;
+        if (item.needsInstallation && anyItem.product?.canHaveInstallation && anyItem.product?.installationPrice) {
+          return sum + parseFloat(anyItem.product.installationPrice);
+        }
+        return sum;
+      }, 0);
       const shipping = subtotal >= 100 ? 0 : 15;
       const expectedTotal = subtotal + installationFee + shipping;
 

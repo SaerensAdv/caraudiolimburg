@@ -292,7 +292,14 @@ const CheckoutForm = ({ clientSecret, orderTotal, cartItems, isGuest = false }: 
     queryKey: ['/api/site-settings'],
   });
   const installationEnabled = siteSettings?.installationServiceEnabled ?? true;
-  const installationFee = installationEnabled && cartItems.some((item: any) => item.needsInstallation) ? 89 : 0;
+  const installationFee = installationEnabled
+    ? cartItems.reduce((sum: number, item: any) => {
+        if (item.needsInstallation && item.product?.canHaveInstallation && item.product?.installationPrice) {
+          return sum + parseFloat(item.product.installationPrice);
+        }
+        return sum;
+      }, 0)
+    : 0;
   const shipping = subtotal >= 100 ? 0 : 15;
 
   const totalItems = cartItems.reduce((sum: number, item: any) => sum + item.quantity, 0);
@@ -776,7 +783,14 @@ export default function Checkout() {
     queryKey: ['/api/site-settings'],
   });
   const checkoutInstallationEnabled = checkoutSiteSettings?.installationServiceEnabled ?? true;
-  const installationFee = checkoutInstallationEnabled && cartItemsArray.some((item: any) => item.needsInstallation) ? 89 : 0;
+  const installationFee = checkoutInstallationEnabled
+    ? cartItemsArray.reduce((sum: number, item: any) => {
+        if (item.needsInstallation && item.product?.canHaveInstallation && item.product?.installationPrice) {
+          return sum + parseFloat(item.product.installationPrice);
+        }
+        return sum;
+      }, 0)
+    : 0;
   const shipping = subtotal >= 100 ? 0 : 15;
   const total = subtotal + installationFee + shipping;
 

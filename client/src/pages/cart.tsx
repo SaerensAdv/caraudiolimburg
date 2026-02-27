@@ -203,7 +203,14 @@ export default function Cart() {
     return sum + (price * item.quantity);
   }, 0) || 0;
   
-  const installationFee = installationEnabled && displayItems.some((item: any) => item.needsInstallation) ? 89 : 0;
+  const installationFee = installationEnabled
+    ? displayItems.reduce((sum: number, item: any) => {
+        if (item.needsInstallation && item.product?.canHaveInstallation && item.product?.installationPrice) {
+          return sum + parseFloat(item.product.installationPrice);
+        }
+        return sum;
+      }, 0)
+    : 0;
   const shipping = subtotal >= 100 ? 0 : 15;
   const total = subtotal + installationFee + shipping;
   

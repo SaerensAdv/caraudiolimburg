@@ -112,7 +112,12 @@ app.post("/api/webhooks/stripe", express.raw({ type: 'application/json' }), asyn
           subtotal += parseFloat(item.price) * item.quantity;
         }
 
-        const installationFee = cartItems.some((item: any) => item.needsInstallation) ? 89 : 0;
+        const installationFee = cartItems.reduce((sum: number, item: any) => {
+          if (item.needsInstallation && item.installationPrice) {
+            return sum + parseFloat(item.installationPrice);
+          }
+          return sum;
+        }, 0);
         const shipping = subtotal >= 100 ? 0 : 15;
         const total = subtotal + installationFee + shipping;
 

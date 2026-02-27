@@ -426,7 +426,7 @@ export default function ProductPage() {
   const images = (product.hasVariations && selectedVariation?.images && selectedVariation.images.length > 0)
     ? selectedVariation.images
     : baseImages;
-  const installationPrice = (installationEnabled && product.installationPrice) ? parseFloat(product.installationPrice) : null;
+  const installationPrice = (installationEnabled && product.canHaveInstallation && product.installationPrice) ? parseFloat(product.installationPrice) : null;
   
   // Determine stock based on variation or product
   const effectiveStock = product.hasVariations && selectedVariation 

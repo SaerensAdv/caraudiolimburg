@@ -507,6 +507,8 @@ export class DatabaseStorage implements IStorage {
           price: products.price,
           images: products.images,
           hasVariations: products.hasVariations,
+          installationPrice: products.installationPrice,
+          canHaveInstallation: products.canHaveInstallation,
         },
         variation: {
           id: productVariations.id,

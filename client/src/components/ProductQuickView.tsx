@@ -246,7 +246,7 @@ export function ProductQuickView({ product, isOpen, onClose }: ProductQuickViewP
                     In Winkelmand
                   </Button>
 
-                  {installationEnabled && product.installationPrice && (
+                  {installationEnabled && product.canHaveInstallation && product.installationPrice && (
                     <Button
                       onClick={() => handleAddToCart(true)}
                       disabled={addToCartMutation.isPending}

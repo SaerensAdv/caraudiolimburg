@@ -177,6 +177,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       '/bmw-audio-upgrade-2': '/webshop',
       '/inbouwservice-car-audio-limburg': '/montage',
       '/bedrijfsgegevens': '/over-ons',
+      '/about': '/over-ons',
+      '/about-us': '/over-ons',
       '/landing-page': '/',
       '/cookie-policy': '/privacy-policy',
     };

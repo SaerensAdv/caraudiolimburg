@@ -163,12 +163,12 @@ export default function BlogPostPage() {
   };
 
   const getAuthorName = (author: BlogPostWithDetails['author']) => {
-    if (!author) return null;
+    if (!author) return 'Dennis Geenen';
     if (author.firstName && author.lastName) {
       return `${author.firstName} ${author.lastName}`;
     }
     if (author.firstName) return author.firstName;
-    return null;
+    return 'Dennis Geenen';
   };
 
   if (isLoading) {
@@ -363,11 +363,9 @@ export default function BlogPostPage() {
             </ScrollReveal>
 
             {/* Author Box */}
-            {post.author && (
-              <ScrollReveal delay={100}>
-                <AuthorBox author={post.author} />
-              </ScrollReveal>
-            )}
+            <ScrollReveal delay={100}>
+              <AuthorBox author={post.author || { firstName: 'Dennis', lastName: 'Geenen', profileImageUrl: null }} />
+            </ScrollReveal>
 
             {/* Back to Blog Link */}
             <ScrollReveal delay={200}>

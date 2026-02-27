@@ -70,7 +70,12 @@ Preferred communication style: Simple, everyday language.
 - **Server-side meta injection**: `server/og-middleware.ts` injects page-specific `<title>`, `<meta description>`, canonical URL, and OG tags for all routes. Products get name/description from DB; categories/brands get unique titles; static pages use a predefined map.
 - **Category/brand meta**: `/webshop?category=*` and `/webshop?brand=*` URLs get unique titles and descriptions (e.g., "Multimedia & Navigatie Systemen Kopen | Car Audio Limburg") instead of sharing the generic webshop title.
 - **Canonical URLs**: Every page gets a `<link rel="canonical">` injected server-side, matching the og:url. Uses `SITE_URL` env var for consistent domain.
-- **SEO content injection**: Hidden `<div class="sr-only" aria-hidden="true">` with page-specific H2 + paragraph injected before `<noscript>` for crawlers. All SEO headings use `<h2>` to avoid conflicting with the noscript `<h1>`.
+- **SEO content injection**: Hidden `<div class="sr-only">` (no aria-hidden) with page-specific H2 + paragraph injected before `<noscript>` for crawlers. Blog articles include "Door Dennis Geenen" author attribution. All SEO headings use `<h2>` to avoid conflicting with the noscript `<h1>`.
+- **Privacy/legal nav**: Server-rendered `<nav class="sr-only">` with links to privacy policy, terms, about, and contact injected before `<noscript>` for crawler discoverability.
+- **Cache-Control**: HTML pages served through og-middleware include `Cache-Control: public, max-age=300, s-maxage=600`.
+- **Blog author**: Default author "Dennis Geenen" shown when `authorId` is null (currently all posts). AuthorBox always renders with fallback author data.
+- **Blog images**: Stored as `.webp` copies in `public/blog-images/` to match database references (source files are `.jpg`).
+- **About page redirect**: `/about` and `/about-us` redirect 301 to `/over-ons` for E-E-A-T about page detection.
 - **Sitemaps**: Dynamic sitemap generation at `/sitemap.xml` with sub-sitemaps (pages, products, categories, blog). Non-existent sitemap variants (`sitemap_index.xml`, `news-sitemap.xml`, etc.) return 404 instead of SPA fallback. Base URL derived from request host or `SITE_URL` env var.
 - **HTML structure**: `client/index.html` includes `<main>` landmark, skip-link, and expanded `<noscript>` content (300+ words with product categories, installation info, and full navigation).
 - **Compression**: `compression` middleware enabled globally via `server/index.ts`.

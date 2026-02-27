@@ -22,11 +22,11 @@ const STATIC_PAGE_META: Record<string, { title: string; description: string }> =
     description: 'Premium car audio & professionele installatie. Alpine, Audison, OEM upgrades. Gratis verzending vanaf €50. Vakkundige montage in Limburg.',
   },
   '/webshop': {
-    title: 'Car Audio Webshop - Speakers & Versterkers | Car Audio Limburg',
-    description: 'Ontdek ons assortiment autoradio\'s, versterkers, subwoofers en speakers van Alpine, Kenwood en Audison. Gratis verzending vanaf €50.',
+    title: 'Car Audio Webshop - Autoradio, Speakers & Versterkers Kopen | Car Audio Limburg',
+    description: 'Ontdek ons complete assortiment autoradio\'s, versterkers, subwoofers en speakers van Alpine, Kenwood en Audison. Gratis verzending vanaf €50 en professioneel advies.',
   },
   '/contact': {
-    title: 'Contact Opnemen - Advies & Afspraken | Car Audio Limburg',
+    title: 'Contact Opnemen voor Advies of Afspraak Maken | Car Audio Limburg',
     description: 'Neem contact op met Car Audio Limburg voor persoonlijk advies, offertes of een afspraak in onze showroom. Bezoek ons in Sittard, Limburg of bel 085-27 33 625.',
   },
   '/over-ons': {
@@ -38,7 +38,7 @@ const STATIC_PAGE_META: Record<string, { title: string; description: string }> =
     description: 'Professionele car audio installatie door ervaren monteurs. Van autoradio inbouw tot complete audio upgrades in onze werkplaats in Sittard.',
   },
   '/blog': {
-    title: 'Blog & Kenniscentrum - Car Audio Tips & Nieuws | Car Audio Limburg',
+    title: 'Blog & Kenniscentrum - Car Audio Tips & Handleidingen | Car Audio Limburg',
     description: 'Tips, handleidingen en het laatste nieuws over car audio. Lees onze artikelen over autoradio installatie, speakers kiezen, versterkers aansluiten en meer.',
   },
   '/kenniscentrum': {
@@ -259,11 +259,16 @@ export async function ogMiddleware(req: Request, res: Response, next: NextFuncti
     if (seoContent) {
       html = html.replace(
         '<noscript>',
-        `<div class="sr-only" aria-hidden="true">${seoContent}</div>\n      <noscript>`
+        `<div class="sr-only">${seoContent}</div>\n      <noscript>`
       );
     }
 
-    res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
+    html = html.replace(
+      '<noscript>',
+      `<nav class="sr-only" aria-label="Footer navigatie"><a href="/privacy-policy">Privacybeleid</a> | <a href="/algemene-voorwaarden">Algemene Voorwaarden</a> | <a href="/over-ons">Over Car Audio Limburg</a> | <a href="/contact">Contact</a></nav>\n      <noscript>`
+    );
+
+    res.status(200).set({ 'Content-Type': 'text/html', 'Cache-Control': 'public, max-age=300, s-maxage=600' }).end(html);
   } catch (error) {
     console.error("Error in OG middleware:", error);
     next();
@@ -295,7 +300,7 @@ function generateSeoContent(urlPath: string, meta: OGMetaTags): string {
   }
 
   if (urlPath.startsWith('/blog/') && meta.type === 'article') {
-    return `<h2>${meta.title.replace(' | Car Audio Limburg Blog', '')}</h2><p>${meta.description} Lees dit artikel op het Car Audio Limburg blog. Ontdek tips, handleidingen en nieuws over car audio producten en installatie.</p>`;
+    return `<h2>${meta.title.replace(' | Car Audio Limburg Blog', '')}</h2><p>Door <span class="author">Dennis Geenen</span> — ${meta.description} Lees dit artikel op het Car Audio Limburg blog. Ontdek tips, handleidingen en nieuws over car audio producten en installatie.</p>`;
   }
 
   return '';

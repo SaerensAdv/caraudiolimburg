@@ -51,6 +51,7 @@ TEAMLEADER_CF_MODEL = "53598f6a-67a2-039b-a45c-46cc413881f7"
 TEAMLEADER_CF_VIN = "83cd08c0-d87d-08ba-a259-32cb348881f9"
 TEAMLEADER_CF_BOUWJAAR = "94fdb11b-0952-094d-8d51-c78f267881f8"
 TEAMLEADER_REDIRECT_URI = "https://caraudiolimburg.replit.app/api/teamleader/callback"
+SITE_URL = "https://caraudiolimburg.replit.app"
 
 [objectStorage]
 defaultBucketID = "replit-objstore-4f8266cc-3e05-45e9-ab4a-5b04528ce9fb"

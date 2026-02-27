@@ -67,13 +67,16 @@ Preferred communication style: Simple, everyday language.
 - **Kenteken formatting**: Auto-formats Dutch license plates with dashes after 5+ characters (supports all 14 sidecodes)
 
 ### SEO & Crawler Optimization
-- **Server-side meta injection**: `server/og-middleware.ts` injects page-specific `<title>`, `<meta description>`, and OG tags for all non-homepage routes. Products get their name/description from DB; static pages use a predefined map.
-- **Sitemaps**: Dynamic sitemap generation at `/sitemap.xml` with sub-sitemaps (pages, products, categories, blog). Base URL derived from request host or `SITE_URL` env var.
-- **HTML structure**: `client/index.html` includes `<main>` landmark, skip-link, and `<noscript>` fallback content with internal links for non-JS crawlers.
+- **Server-side meta injection**: `server/og-middleware.ts` injects page-specific `<title>`, `<meta description>`, canonical URL, and OG tags for all routes. Products get name/description from DB; categories/brands get unique titles; static pages use a predefined map.
+- **Category/brand meta**: `/webshop?category=*` and `/webshop?brand=*` URLs get unique titles and descriptions (e.g., "Multimedia & Navigatie Systemen Kopen | Car Audio Limburg") instead of sharing the generic webshop title.
+- **Canonical URLs**: Every page gets a `<link rel="canonical">` injected server-side, matching the og:url. Uses `SITE_URL` env var for consistent domain.
+- **SEO content injection**: Hidden `<div class="sr-only" aria-hidden="true">` with page-specific H2 + paragraph injected before `<noscript>` for crawlers. All SEO headings use `<h2>` to avoid conflicting with the noscript `<h1>`.
+- **Sitemaps**: Dynamic sitemap generation at `/sitemap.xml` with sub-sitemaps (pages, products, categories, blog). Non-existent sitemap variants (`sitemap_index.xml`, `news-sitemap.xml`, etc.) return 404 instead of SPA fallback. Base URL derived from request host or `SITE_URL` env var.
+- **HTML structure**: `client/index.html` includes `<main>` landmark, skip-link, and expanded `<noscript>` content (300+ words with product categories, installation info, and full navigation).
 - **Compression**: `compression` middleware enabled globally via `server/index.ts`.
 - **Google Fonts**: Trimmed from 25+ font families to only Inter (the only font actually used).
 - **Viewport**: Removed `maximum-scale=1` to allow pinch-to-zoom (accessibility compliance).
-- **Squirrelscan audit**: Score improved from 43 (F) → 74 (C). Remaining warnings are dev-environment specific (noindex, HSTS, unminified JS).
+- **Squirrelscan audit**: Production score improved from 43 (F) → 77 (C). Key category scores: Accessibility 100, Mobile 100, Images 100, Analytics 100, Internationalization 100, URL Structure 100, Links 94, Crawlability 93, Security 92, Core SEO 91.
 
 ## External Dependencies
 

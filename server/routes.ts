@@ -3437,6 +3437,10 @@ Disallow: /demo-tools
 Sitemap: ${baseUrl}/sitemap.xml`);
   });
 
+  app.get(['/sitemap_index.xml', '/sitemap-index.xml', '/sitemaps.xml', '/sitemap1.xml', '/post-sitemap.xml', '/wp-sitemap.xml', '/page-sitemap.xml', '/news-sitemap.xml'], (req, res) => {
+    res.status(404).setHeader('Content-Type', 'text/plain').send('Not Found');
+  });
+
   const SITEMAP_BASE_URL = 'https://caraudiolimburg.nl';
 
   function escapeXml(str: string): string {

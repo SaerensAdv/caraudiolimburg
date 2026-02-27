@@ -11,6 +11,11 @@
       "sourceType": "github",
       "computedHash": "2c060290f90340e8bb6009502ec936b8ebb3ff889332a43e24bf210528ebba9f"
     },
+    "backlink-analyzer": {
+      "source": "aaron-he-zhu/seo-geo-claude-skills",
+      "sourceType": "github",
+      "computedHash": "0d327cf508acb7caaa7333b99c4350653e94be4aab2e7c77bc294ef6f3cfea94"
+    },
     "better-auth-best-practices": {
       "source": "better-auth/skills",
       "sourceType": "github",
@@ -25,6 +30,11 @@
       "source": "coreyhaines31/marketingskills",
       "sourceType": "github",
       "computedHash": "39b7a636c7e254a2f08dee43db6b9f6faf6723de999a6bbce2eb5ac95a130207"
+    },
+    "enhance-prompt": {
+      "source": "google-labs-code/stitch-skills",
+      "sourceType": "github",
+      "computedHash": "71cc23e9ec5fc6361e12453495fa8c683f6cf26f3efaf9b230b0f43e0a32cc96"
     },
     "find-skills": {
       "source": "vercel-labs/skills",
@@ -45,6 +55,16 @@
       "source": "anthropics/skills",
       "sourceType": "github",
       "computedHash": "cfbc539377088ca7e44a813b30c306327385bbd973cd7a721e1743f60837dd62"
+    },
+    "programmatic-seo": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "8eed8401fa4980cc67ac308bc9d09e21bb312848f03990ab73dafe7265590c61"
+    },
+    "schema-markup": {
+      "source": "coreyhaines31/marketingskills",
+      "sourceType": "github",
+      "computedHash": "81cab81a871142289a3d7dab32bc04fb611d35e0e098e1aa8592bf48b12a7fb9"
     },
     "seo-audit": {
       "source": "coreyhaines31/marketingskills",

@@ -1,6 +1,6 @@
 [project]
 domains = []
-name = "car-audio-limburg"
+name = "car-audio-limburg-prod"
 
 [crawler]
 max_pages = 100

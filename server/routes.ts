@@ -4146,15 +4146,19 @@ ${items.join('\n')}
       }
 
       let productCount = 0;
+      let modelSpecificCount = 0;
+      let makeCompatibleCount = 0;
       let shopUrl = '/webshop';
 
       if (matchedMake) {
-        const matchedProducts = await storage.getProducts({
-          vehicleMakeId: matchedMake.id,
-          vehicleModelId: matchedModel?.id || undefined,
-          vehicleYear: bouwjaar || undefined,
-        });
-        productCount = matchedProducts.length;
+        const counts = await storage.getVehicleProductCounts(
+          matchedMake.id,
+          matchedModel?.id || undefined,
+          bouwjaar || undefined,
+        );
+        modelSpecificCount = counts.modelSpecificCount;
+        makeCompatibleCount = counts.makeCompatibleCount;
+        productCount = modelSpecificCount + makeCompatibleCount;
 
         const params = new URLSearchParams();
         params.set('vehicleMakeId', matchedMake.id);
@@ -4182,6 +4186,8 @@ ${items.join('\n')}
           confidence,
         },
         productCount,
+        modelSpecificCount,
+        makeCompatibleCount,
         shopUrl,
       });
     } catch (error) {

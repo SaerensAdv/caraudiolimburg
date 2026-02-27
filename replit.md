@@ -50,7 +50,7 @@ Preferred communication style: Simple, everyday language.
 - **E-commerce**: Comprehensive product catalog with categorization, branding, vehicle compatibility filtering, and a shopping cart system.
 - **Booking System**: An integrated calendar-based system for scheduling installation appointments.
 - **Quote System**: Facilitates lead generation through customizable quote request forms.
-- **Vehicle Compatibility**: Enables dynamic product filtering based on vehicle make, model, and year.
+- **Vehicle Compatibility**: Enables dynamic product filtering based on vehicle make, model, and year. Kenteken (license plate) search uses RDW API and excludes universal products for precise results. Products are sorted by compatibility specificity (model-specific first, then make-wide).
 - **Admin Dashboard**: A CRM-like interface for managing products, orders, bookings, and customer interactions.
 
 ## Merk-Onboarding Playbook (Product Data Pipeline)

@@ -107,6 +107,8 @@ export interface IStorage {
   createVehicleMake(make: InsertVehicleMake): Promise<VehicleMake>;
   createVehicleModel(model: InsertVehicleModel): Promise<VehicleModel>;
 
+  getVehicleProductCounts(makeId: string, modelId?: string, year?: number): Promise<{ modelSpecificCount: number; makeCompatibleCount: number }>;
+
   // Cart operations
   getCartItems(userId: string): Promise<CartItem[]>;
   addToCart(cartItem: InsertCartItem): Promise<CartItem>;
@@ -328,16 +330,15 @@ export class DatabaseStorage implements IStorage {
           sql`EXISTS (SELECT 1 FROM ${productVehicleCompatibility} pvc WHERE pvc.product_id = ${products.id} AND (
             (pvc.make_id = ${options.vehicleMakeId} AND pvc.model_id = ${options.vehicleModelId})
             OR (pvc.make_id = ${options.vehicleMakeId} AND pvc.model_id IS NULL)
-            OR (pvc.make_id IS NULL AND pvc.model_id IS NULL)
           ) ${yearCheck})`
         );
       } else if (options.vehicleMakeId) {
         conditions.push(
-          sql`EXISTS (SELECT 1 FROM ${productVehicleCompatibility} pvc WHERE pvc.product_id = ${products.id} AND (pvc.make_id = ${options.vehicleMakeId} OR pvc.make_id IS NULL) ${yearCheck})`
+          sql`EXISTS (SELECT 1 FROM ${productVehicleCompatibility} pvc WHERE pvc.product_id = ${products.id} AND pvc.make_id = ${options.vehicleMakeId} ${yearCheck})`
         );
       } else if (options.vehicleModelId) {
         conditions.push(
-          sql`EXISTS (SELECT 1 FROM ${productVehicleCompatibility} pvc WHERE pvc.product_id = ${products.id} AND (pvc.model_id = ${options.vehicleModelId} OR pvc.model_id IS NULL) ${yearCheck})`
+          sql`EXISTS (SELECT 1 FROM ${productVehicleCompatibility} pvc WHERE pvc.product_id = ${products.id} AND pvc.model_id = ${options.vehicleModelId} ${yearCheck})`
         );
       } else if (options.vehicleYear) {
         conditions.push(
@@ -353,7 +354,23 @@ export class DatabaseStorage implements IStorage {
       queryBuilder = queryBuilder.where(and(...conditions)) as any;
     }
     
-    queryBuilder = queryBuilder.orderBy(desc(products.createdAt)) as any;
+    if (hasVehicleFilter && options.vehicleMakeId && options.vehicleModelId) {
+      const sortYearCheck = options.vehicleYear
+        ? sql`AND (pvc.year_from IS NULL OR pvc.year_from <= ${options.vehicleYear}) AND (pvc.year_to IS NULL OR pvc.year_to >= ${options.vehicleYear})`
+        : sql``;
+      queryBuilder = queryBuilder.orderBy(
+        sql`(SELECT CASE WHEN EXISTS (
+          SELECT 1 FROM ${productVehicleCompatibility} pvc 
+          WHERE pvc.product_id = ${products.id} 
+          AND pvc.make_id = ${options.vehicleMakeId} 
+          AND pvc.model_id = ${options.vehicleModelId}
+          ${sortYearCheck}
+        ) THEN 0 ELSE 1 END)`,
+        desc(products.createdAt)
+      ) as any;
+    } else {
+      queryBuilder = queryBuilder.orderBy(desc(products.createdAt)) as any;
+    }
 
     if (options.limit) {
       queryBuilder = queryBuilder.limit(options.limit) as any;
@@ -364,6 +381,33 @@ export class DatabaseStorage implements IStorage {
     }
 
     return await queryBuilder;
+  }
+
+  async getVehicleProductCounts(makeId: string, modelId?: string, year?: number): Promise<{ modelSpecificCount: number; makeCompatibleCount: number }> {
+    const yearCheck = year
+      ? sql`AND (pvc.year_from IS NULL OR pvc.year_from <= ${year}) AND (pvc.year_to IS NULL OR pvc.year_to >= ${year})`
+      : sql``;
+
+    if (modelId) {
+      const result = await db.execute(sql`
+        SELECT
+          COUNT(DISTINCT CASE WHEN pvc.model_id = ${modelId} THEN p.id END) as model_specific,
+          COUNT(DISTINCT CASE WHEN pvc.model_id IS NULL THEN p.id END) as make_compatible
+        FROM ${products} p
+        INNER JOIN ${productVehicleCompatibility} pvc ON pvc.product_id = p.id
+        WHERE pvc.make_id = ${makeId}
+          AND (pvc.model_id = ${modelId} OR pvc.model_id IS NULL)
+          ${yearCheck}
+      `);
+      const row = (result as any).rows?.[0] || (result as any)[0] || {};
+      return {
+        modelSpecificCount: parseInt(row.model_specific || '0'),
+        makeCompatibleCount: parseInt(row.make_compatible || '0'),
+      };
+    }
+
+    const allProducts = await this.getProducts({ vehicleMakeId: makeId, vehicleYear: year });
+    return { modelSpecificCount: 0, makeCompatibleCount: allProducts.length };
   }
 
   async getProduct(id: string): Promise<Product | undefined> {

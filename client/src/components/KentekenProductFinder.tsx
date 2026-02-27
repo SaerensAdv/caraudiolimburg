@@ -31,6 +31,8 @@ interface KentekenMatchResult {
     confidence: 'exact' | 'partial' | 'make_only' | 'none';
   };
   productCount: number;
+  modelSpecificCount: number;
+  makeCompatibleCount: number;
   shopUrl: string;
 }
 
@@ -168,11 +170,20 @@ export function KentekenProductFinder({ className = "", variant = "compact" }: K
 
             {result.match.confidence !== 'none' && result.productCount > 0 ? (
               <div>
-                <div className="flex items-center gap-2 mb-3">
-                  <CheckCircle className="h-4 w-4 text-emerald-400 shrink-0" />
-                  <span className="text-emerald-400 text-sm font-medium">
-                    {result.productCount} product{result.productCount !== 1 ? 'en' : ''} gevonden voor jouw auto
-                  </span>
+                <div className="flex flex-col gap-1.5 mb-3">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-emerald-400 shrink-0" />
+                    <span className="text-emerald-400 text-sm font-medium">
+                      {result.productCount} product{result.productCount !== 1 ? 'en' : ''} gevonden
+                    </span>
+                  </div>
+                  {result.modelSpecificCount > 0 && result.makeCompatibleCount > 0 && (
+                    <p className="text-white/50 text-xs ml-6">
+                      {result.modelSpecificCount} specifiek voor {result.match.modelName || result.vehicle.model}
+                      {' • '}
+                      {result.makeCompatibleCount} passend voor {result.match.makeName || result.vehicle.merk}
+                    </p>
+                  )}
                 </div>
 
                 {(result.match.confidence === 'make_only' || result.match.confidence === 'partial') && (

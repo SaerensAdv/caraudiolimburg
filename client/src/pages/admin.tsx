@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { SEO } from "@/components/SEO";
 import {
   BarChart,
@@ -83,7 +83,12 @@ import {
   CurrencyEur,
   ChartBar,
   House,
-  Car
+  Car,
+  Copy,
+  DotOutline,
+  Warning,
+  SpinnerGap,
+  DotsSixVertical
 } from "@phosphor-icons/react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -276,6 +281,11 @@ export default function Admin() {
   const queryClient = useQueryClient();
 
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
+  const [isLoadingProductDetails, setIsLoadingProductDetails] = useState(false);
+  const [showUnsavedWarning, setShowUnsavedWarning] = useState(false);
+  const [pendingDialogClose, setPendingDialogClose] = useState(false);
+  const [formDirty, setFormDirty] = useState(false);
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
 
   const generateSlug = (name: string) => {
     return name
@@ -299,7 +309,7 @@ export default function Admin() {
     reset,
     setValue,
     watch,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<ProductFormData>({
     resolver: zodResolver(productFormSchema),
     defaultValues: {
@@ -309,6 +319,8 @@ export default function Admin() {
 
   const isFeatured = watch("isFeatured");
   const canHaveInstallation = watch("canHaveInstallation");
+
+  const hasFormChanges = isDirty || formDirty;
 
   useEffect(() => {
     if (isAuthenticated && user && user.role !== 'admin') {
@@ -450,6 +462,38 @@ export default function Admin() {
     queryKey: ["/api/vehicle-models?all=true"],
     enabled: isAuthenticated && user?.role === 'admin',
   });
+
+  const tabHasContent = useMemo(() => ({
+    algemeen: !!(watch("name") || watch("price")),
+    beschrijving: !!(watch("shortDescription") || watch("description") || overviewContent),
+    media: productImages.length > 0 || !!videoUrl,
+    specificaties: Object.keys(specifications).length > 0,
+    kenmerken: features.length > 0 || boxContent.length > 0 || downloads.length > 0,
+    compatibiliteit: vehicleCompatibility.length > 0,
+    variaties: hasVariations && productVariations.length > 0,
+    instellingen: !!(canHaveInstallation || isFeatured),
+  }), [watch("name"), watch("price"), watch("shortDescription"), watch("description"), overviewContent, productImages, videoUrl, specifications, features, boxContent, downloads, vehicleCompatibility, hasVariations, productVariations, canHaveInstallation, isFeatured]);
+
+  const tabHasError = useMemo(() => ({
+    algemeen: !!(errors.name || errors.price || errors.categoryId),
+    beschrijving: !!(errors.shortDescription || errors.description),
+    media: false,
+    specificaties: false,
+    kenmerken: false,
+    compatibiliteit: false,
+    variaties: false,
+    instellingen: false,
+  }), [errors]);
+
+  const getTabIndicator = (tab: string) => {
+    if (tabHasError[tab as keyof typeof tabHasError]) {
+      return <span className="inline-block w-2 h-2 rounded-full bg-red-500 ml-1.5" />;
+    }
+    if (tabHasContent[tab as keyof typeof tabHasContent]) {
+      return <span className="inline-block w-2 h-2 rounded-full bg-green-500 ml-1.5" />;
+    }
+    return null;
+  };
 
   const filteredProducts = useMemo(() => {
     let result = products.filter((product: Product) => {
@@ -1422,8 +1466,85 @@ export default function Admin() {
     }
   };
 
+  const handleDuplicateProduct = async (product: Product) => {
+    setSelectedProduct(null);
+    setIsLoadingProductDetails(true);
+    setIsProductDialogOpen(true);
+    setFormDirty(false);
+
+    const dupName = `Kopie van ${product.name}`;
+    setValue("name", dupName);
+    setValue("slug", generateSlug(dupName));
+    setValue("description", product.description || "");
+    setValue("shortDescription", product.shortDescription || "");
+    setValue("price", product.price.toString());
+    setValue("originalPrice", product.originalPrice?.toString() || "");
+    setValue("installationPrice", product.installationPrice?.toString() || "");
+    setValue("sku", "");
+    setValue("stock", product.stock || 0);
+    setValue("brandId", product.brandId || "");
+    setValue("categoryId", product.categoryId || "");
+    setValue("upsellCategoryId", product.upsellCategoryId || "");
+    setValue("isFeatured", false);
+    setValue("canHaveInstallation", product.canHaveInstallation || false);
+    setValue("isActive", false);
+    setSlugManuallyEdited(false);
+
+    setProductImages([...(product.images || [])]);
+    setPrimaryImageIndex(product.primaryImageIndex || 0);
+    setFeatures(Array.isArray(product.features) ? [...product.features] : []);
+    setSpecifications(product.specifications ? {...product.specifications} : {});
+    setVideoUrl(product.videoUrl || '');
+    setOverviewContent(product.overviewContent || '');
+    setBoxContent(Array.isArray(product.boxContent) ? [...product.boxContent as string[]] : []);
+    setDownloads(Array.isArray(product.downloads) ? [...product.downloads as {name: string, url: string}[]] : []);
+    setHasVariations(product.hasVariations || false);
+
+    try {
+      if (product.hasVariations) {
+        const variationsResponse = await fetch(`/api/products/${product.id}/variations`, { credentials: 'include' });
+        if (variationsResponse.ok) {
+          const variations = await variationsResponse.json();
+          setProductVariations(variations.map((v: any, i: number) => ({
+            label: v.label,
+            price: v.price?.toString() || '0',
+            originalPrice: v.originalPrice?.toString() || undefined,
+            stock: v.stock || 0,
+            sku: undefined,
+            sortOrder: i,
+            specifications: v.specifications || undefined
+          })));
+        } else {
+          setProductVariations([]);
+        }
+      } else {
+        setProductVariations([]);
+      }
+
+      const response = await fetch(`/api/products/${product.id}/compatibility`, { credentials: 'include' });
+      if (response.ok) {
+        const compatibility = await response.json();
+        setVehicleCompatibility(compatibility.map((c: any) => ({
+          makeId: c.makeId,
+          modelId: c.modelId || undefined
+        })));
+      } else {
+        setVehicleCompatibility([]);
+      }
+    } catch {
+      setProductVariations([]);
+      setVehicleCompatibility([]);
+    }
+
+    setIsLoadingProductDetails(false);
+    setProductFormTab('algemeen');
+  };
+
   const handleEditProduct = async (product: Product) => {
     setSelectedProduct(product);
+    setIsLoadingProductDetails(true);
+    setIsProductDialogOpen(true);
+    setFormDirty(false);
     setValue("name", product.name);
     setValue("slug", product.slug);
     setValue("description", product.description || "");
@@ -1498,8 +1619,22 @@ export default function Admin() {
       setVehicleCompatibility([]);
     }
     
+    setIsLoadingProductDetails(false);
     setIsProductDialogOpen(true);
   };
+
+  const toggleProductStatus = useMutation({
+    mutationFn: async ({ id, isActive }: { id: string; isActive: boolean }) => {
+      await apiRequest("PUT", `/api/products/${id}`, { isActive });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/products"] });
+      toast({ title: "Status bijgewerkt" });
+    },
+    onError: () => {
+      toast({ title: "Fout", description: "Kon status niet bijwerken.", variant: "destructive" });
+    },
+  });
 
   // Calculate stats
   const totalProducts = products?.length || 0;
@@ -2030,7 +2165,52 @@ export default function Admin() {
                     </Button>
                   </div>
 
+                  <AlertDialog open={showUnsavedWarning} onOpenChange={setShowUnsavedWarning}>
+                    <AlertDialogContent className="bg-zinc-900 border-zinc-700">
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="text-white">Niet-opgeslagen wijzigingen</AlertDialogTitle>
+                        <AlertDialogDescription className="text-zinc-400">
+                          Je hebt wijzigingen die nog niet opgeslagen zijn. Weet je zeker dat je wilt afsluiten?
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel className="bg-zinc-800 border-zinc-700 text-zinc-300 hover:bg-zinc-700 rounded-none">
+                          Terug naar formulier
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          className="bg-red-600 text-white hover:bg-red-700 rounded-none"
+                          onClick={() => {
+                            setShowUnsavedWarning(false);
+                            setIsProductDialogOpen(false);
+                            setFormDirty(false);
+                            reset();
+                            setProductImages([]);
+                            setFeatures([]);
+                            setSpecifications({});
+                            setPrimaryImageIndex(0);
+                            setSelectedProduct(null);
+                            setVehicleCompatibility([]);
+                            setVehicleCompatibilityOpen(false);
+                            setHasVariations(false);
+                            setProductVariations([]);
+                            setNewVariationOriginalPrice('');
+                            setProductFormTab('algemeen');
+                            setEditingSpecKey(null);
+                            setNewImageUrl('');
+                            setSlugManuallyEdited(false);
+                          }}
+                        >
+                          Afsluiten zonder opslaan
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+
                   <Dialog open={isProductDialogOpen} onOpenChange={(open) => {
+                    if (!open && hasFormChanges) {
+                      setShowUnsavedWarning(true);
+                      return;
+                    }
                     setIsProductDialogOpen(open);
                     if (!open) {
                       reset();
@@ -2048,6 +2228,7 @@ export default function Admin() {
                       setEditingSpecKey(null);
                       setNewImageUrl('');
                       setSlugManuallyEdited(false);
+                      setFormDirty(false);
                     }
                   }}>
                     <DialogTrigger asChild>
@@ -2070,17 +2251,25 @@ export default function Admin() {
                         </DialogTitle>
                       </DialogHeader>
                       
-                      <form onSubmit={handleSubmit(onSubmitProduct)} className="space-y-6 py-4">
+                      <form onSubmit={handleSubmit(onSubmitProduct)} className="space-y-6 py-4 relative">
+                        {isLoadingProductDetails && (
+                          <div className="absolute inset-0 bg-zinc-900/80 flex items-center justify-center z-50">
+                            <div className="flex flex-col items-center gap-3">
+                              <SpinnerGap className="w-8 h-8 text-[#d0a760] animate-spin" />
+                              <p className="text-zinc-400 text-sm">Productgegevens laden...</p>
+                            </div>
+                          </div>
+                        )}
                         <Tabs value={productFormTab} onValueChange={setProductFormTab}>
                           <TabsList className="w-full bg-zinc-800 border border-zinc-700 p-1 flex flex-wrap h-auto gap-1">
-                            <TabsTrigger value="algemeen" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Algemeen</TabsTrigger>
-                            <TabsTrigger value="beschrijving" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Beschrijving</TabsTrigger>
-                            <TabsTrigger value="media" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Media</TabsTrigger>
-                            <TabsTrigger value="specificaties" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Specificaties</TabsTrigger>
-                            <TabsTrigger value="kenmerken" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Kenmerken</TabsTrigger>
-                            <TabsTrigger value="compatibiliteit" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Compatibiliteit</TabsTrigger>
-                            <TabsTrigger value="variaties" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Variaties</TabsTrigger>
-                            <TabsTrigger value="instellingen" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Instellingen</TabsTrigger>
+                            <TabsTrigger value="algemeen" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Algemeen{getTabIndicator('algemeen')}</TabsTrigger>
+                            <TabsTrigger value="beschrijving" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Beschrijving{getTabIndicator('beschrijving')}</TabsTrigger>
+                            <TabsTrigger value="media" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Media{getTabIndicator('media')}</TabsTrigger>
+                            <TabsTrigger value="specificaties" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Specificaties{getTabIndicator('specificaties')}</TabsTrigger>
+                            <TabsTrigger value="kenmerken" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Kenmerken{getTabIndicator('kenmerken')}</TabsTrigger>
+                            <TabsTrigger value="compatibiliteit" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Compatibiliteit{getTabIndicator('compatibiliteit')}</TabsTrigger>
+                            <TabsTrigger value="variaties" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Variaties{getTabIndicator('variaties')}</TabsTrigger>
+                            <TabsTrigger value="instellingen" className="text-zinc-400 data-[state=active]:bg-[#d0a760] data-[state=active]:text-black rounded-none text-xs px-3 py-2">Instellingen{getTabIndicator('instellingen')}</TabsTrigger>
                           </TabsList>
 
                           {/* Tab 1: Algemeen */}
@@ -2311,56 +2500,93 @@ export default function Admin() {
                               </div>
                               
                               {productImages.length > 0 && (
-                                <div className="mt-4 grid grid-cols-4 gap-2">
-                                  {productImages.map((url, index) => (
-                                    <div 
-                                      key={index} 
-                                      className={`relative aspect-square border-2 group ${
-                                        index === primaryImageIndex 
-                                          ? 'border-[#d0a760]' 
-                                          : 'border-zinc-700'
-                                      }`}
-                                    >
-                                      <img
-                                        src={url}
-                                        alt={`Product ${index + 1}`}
-                                        className="w-full h-full object-cover"
-                                      />
-                                      {index === primaryImageIndex && (
-                                        <div className="absolute bottom-0 left-0 right-0 bg-[#d0a760] text-black text-[10px] text-center py-0.5 font-semibold">
-                                          HOOFD
+                                <div className="mt-4">
+                                  <p className="text-xs text-zinc-500 mb-2">Sleep afbeeldingen om de volgorde te wijzigen</p>
+                                  <div className="grid grid-cols-4 gap-2">
+                                    {productImages.map((url, index) => (
+                                      <div 
+                                        key={`${url}-${index}`} 
+                                        draggable
+                                        onDragStart={(e) => {
+                                          setDragIndex(index);
+                                          e.dataTransfer.effectAllowed = 'move';
+                                          setFormDirty(true);
+                                        }}
+                                        onDragOver={(e) => {
+                                          e.preventDefault();
+                                          e.dataTransfer.dropEffect = 'move';
+                                        }}
+                                        onDrop={(e) => {
+                                          e.preventDefault();
+                                          if (dragIndex === null || dragIndex === index) return;
+                                          const newImages = [...productImages];
+                                          const [moved] = newImages.splice(dragIndex, 1);
+                                          newImages.splice(index, 0, moved);
+                                          let newPrimary = primaryImageIndex;
+                                          if (dragIndex === primaryImageIndex) {
+                                            newPrimary = index;
+                                          } else if (dragIndex < primaryImageIndex && index >= primaryImageIndex) {
+                                            newPrimary--;
+                                          } else if (dragIndex > primaryImageIndex && index <= primaryImageIndex) {
+                                            newPrimary++;
+                                          }
+                                          setProductImages(newImages);
+                                          setPrimaryImageIndex(newPrimary);
+                                          setDragIndex(null);
+                                        }}
+                                        onDragEnd={() => setDragIndex(null)}
+                                        className={`relative aspect-square border-2 group cursor-grab active:cursor-grabbing transition-opacity ${
+                                          dragIndex === index ? 'opacity-50' : 'opacity-100'
+                                        } ${
+                                          index === primaryImageIndex 
+                                            ? 'border-[#d0a760]' 
+                                            : 'border-zinc-700'
+                                        }`}
+                                      >
+                                        <img
+                                          src={url}
+                                          alt={`Product ${index + 1}`}
+                                          className="w-full h-full object-cover pointer-events-none"
+                                        />
+                                        <div className="absolute top-1 left-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                          <DotsSixVertical className="w-4 h-4 text-white drop-shadow-lg" />
                                         </div>
-                                      )}
-                                      <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <button
-                                          type="button"
-                                          onClick={() => setPrimaryImageIndex(index)}
-                                          className={`w-6 h-6 flex items-center justify-center ${
-                                            index === primaryImageIndex 
-                                              ? 'bg-[#d0a760] text-black' 
-                                              : 'bg-zinc-800/90 text-white hover:bg-[#d0a760] hover:text-black'
-                                          }`}
-                                          title="Instellen als hoofdafbeelding"
-                                        >
-                                          <Star className="w-3 h-3" />
-                                        </button>
-                                        <button
-                                          type="button"
-                                          onClick={() => {
-                                            const newImages = productImages.filter((_, i) => i !== index);
-                                            setProductImages(newImages);
-                                            if (primaryImageIndex >= newImages.length) {
-                                              setPrimaryImageIndex(Math.max(0, newImages.length - 1));
-                                            }
-                                          }}
-                                          className="w-6 h-6 bg-red-500/80 text-white flex items-center justify-center hover:bg-red-600"
-                                          title="Verwijderen"
-                                        >
-                                          <X className="w-3 h-3" />
-                                        </button>
+                                        {index === primaryImageIndex && (
+                                          <div className="absolute bottom-0 left-0 right-0 bg-[#d0a760] text-black text-[10px] text-center py-0.5 font-semibold">
+                                            HOOFD
+                                          </div>
+                                        )}
+                                        <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                          <button
+                                            type="button"
+                                            onClick={() => setPrimaryImageIndex(index)}
+                                            className={`w-6 h-6 flex items-center justify-center ${
+                                              index === primaryImageIndex 
+                                                ? 'bg-[#d0a760] text-black' 
+                                                : 'bg-zinc-800/90 text-white hover:bg-[#d0a760] hover:text-black'
+                                            }`}
+                                            title="Instellen als hoofdafbeelding"
+                                          >
+                                            <Star className="w-3 h-3" />
+                                          </button>
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              const newImages = productImages.filter((_, i) => i !== index);
+                                              setProductImages(newImages);
+                                              if (primaryImageIndex >= newImages.length) {
+                                                setPrimaryImageIndex(Math.max(0, newImages.length - 1));
+                                              }
+                                            }}
+                                            className="w-6 h-6 bg-red-500/80 text-white flex items-center justify-center hover:bg-red-600"
+                                            title="Verwijderen"
+                                          >
+                                            <X className="w-3 h-3" />
+                                          </button>
+                                        </div>
                                       </div>
-                                    </div>
-                                  ))}
+                                    ))}
+                                  </div>
                                 </div>
                               )}
                             </div>
@@ -3153,7 +3379,7 @@ export default function Admin() {
                           </TabsContent>
                         </Tabs>
 
-                        <div className="flex justify-end gap-3 pt-4">
+                        <div className="sticky bottom-0 z-40 bg-zinc-900 border-t border-zinc-700 px-4 py-3 -mx-6 -mb-4 flex justify-end gap-3">
                           <Button 
                             type="button" 
                             variant="outline"
@@ -3310,6 +3536,8 @@ export default function Admin() {
                           )}
                         </span>
                       </TableHead>
+                      <TableHead className="text-[#d0a760] font-semibold">Categorie</TableHead>
+                      <TableHead className="text-[#d0a760] font-semibold">Merk</TableHead>
                       <TableHead className="text-[#d0a760] font-semibold">Status</TableHead>
                       <TableHead className="text-[#d0a760] font-semibold text-right">Acties</TableHead>
                     </TableRow>
@@ -3322,18 +3550,23 @@ export default function Admin() {
                           <TableCell><div className="h-4 bg-zinc-800 animate-pulse w-20"></div></TableCell>
                           <TableCell><div className="h-4 bg-zinc-800 animate-pulse w-12"></div></TableCell>
                           <TableCell><div className="h-4 bg-zinc-800 animate-pulse w-16"></div></TableCell>
+                          <TableCell><div className="h-4 bg-zinc-800 animate-pulse w-16"></div></TableCell>
+                          <TableCell><div className="h-4 bg-zinc-800 animate-pulse w-16"></div></TableCell>
                           <TableCell><div className="h-4 bg-zinc-800 animate-pulse w-24"></div></TableCell>
                         </TableRow>
                       ))
                     ) : paginatedProducts?.length === 0 ? (
                       <TableRow className="border-zinc-800">
-                        <TableCell colSpan={5} className="text-center text-zinc-500 py-12">
+                        <TableCell colSpan={7} className="text-center text-zinc-500 py-12">
                           <Package className="w-12 h-12 mx-auto mb-4 opacity-50" />
                           <p>{products.length === 0 ? 'Nog geen producten toegevoegd' : 'Geen producten gevonden'}</p>
                         </TableCell>
                       </TableRow>
                     ) : (
-                      paginatedProducts?.map((product: Product) => (
+                      paginatedProducts?.map((product: Product) => {
+                        const categoryName = categories.find((c: any) => c.id === product.categoryId)?.name;
+                        const brandName = brands.find((b: any) => b.id === product.brandId)?.name;
+                        return (
                         <TableRow key={product.id} className="border-zinc-800 hover:bg-zinc-800/50" data-testid={`product-row-${product.id}`}>
                           <TableCell>
                             <div className="flex items-center gap-3">
@@ -3357,48 +3590,75 @@ export default function Admin() {
                             </span>
                           </TableCell>
                           <TableCell>
-                            <Badge className={`rounded-none ${product.isActive 
-                              ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30' 
-                              : 'bg-zinc-700 text-zinc-400 hover:bg-zinc-600'}`}
+                            <span className="text-sm text-zinc-400">{categoryName || '—'}</span>
+                          </TableCell>
+                          <TableCell>
+                            <span className="text-sm text-zinc-400">{brandName || '—'}</span>
+                          </TableCell>
+                          <TableCell>
+                            <button
+                              type="button"
+                              onClick={() => toggleProductStatus.mutate({ id: product.id, isActive: !product.isActive })}
+                              disabled={toggleProductStatus.isPending}
+                              className="cursor-pointer"
                             >
-                              {product.isActive ? "Actief" : "Inactief"}
-                            </Badge>
+                              <Badge className={`rounded-none transition-colors ${product.isActive 
+                                ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30' 
+                                : 'bg-zinc-700 text-zinc-400 hover:bg-zinc-600'}`}
+                              >
+                                {product.isActive ? "Actief" : "Inactief"}
+                              </Badge>
+                            </button>
                           </TableCell>
                           <TableCell className="text-right">
-                            <div className="flex justify-end gap-2">
+                            <div className="flex justify-end gap-1">
                               <Link href={`/webshop/${product.slug}`}>
                                 <Button 
                                   size="sm" 
-                                  variant="outline"
-                                  className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-[#d0a760] rounded-none"
+                                  variant="ghost"
+                                  className="text-zinc-400 hover:text-[#d0a760] hover:bg-zinc-800 h-8 w-8 p-0"
                                   data-testid={`button-view-product-${product.id}`}
+                                  title="Bekijken"
                                 >
                                   <Eye className="w-4 h-4" />
                                 </Button>
                               </Link>
                               <Button 
                                 size="sm" 
-                                variant="outline"
+                                variant="ghost"
                                 onClick={() => handleEditProduct(product)}
-                                className="bg-transparent border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-[#d0a760] rounded-none"
+                                className="text-zinc-400 hover:text-[#d0a760] hover:bg-zinc-800 h-8 w-8 p-0"
                                 data-testid={`button-edit-product-${product.id}`}
+                                title="Bewerken"
                               >
                                 <PencilSimple className="w-4 h-4" />
                               </Button>
                               <Button 
                                 size="sm" 
-                                variant="outline"
+                                variant="ghost"
+                                onClick={() => handleDuplicateProduct(product)}
+                                className="text-zinc-400 hover:text-blue-400 hover:bg-zinc-800 h-8 w-8 p-0"
+                                data-testid={`button-duplicate-product-${product.id}`}
+                                title="Dupliceren"
+                              >
+                                <Copy className="w-4 h-4" />
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="ghost"
                                 onClick={() => handleDeleteProduct(product)}
                                 disabled={deleteProductMutation.isPending}
-                                className="bg-transparent border-zinc-700 text-red-400 hover:bg-red-500/10 hover:border-red-500/50 rounded-none"
+                                className="text-zinc-400 hover:text-red-400 hover:bg-red-500/10 h-8 w-8 p-0"
                                 data-testid={`button-delete-product-${product.id}`}
+                                title="Verwijderen"
                               >
                                 <Trash className="w-4 h-4" />
                               </Button>
                             </div>
                           </TableCell>
                         </TableRow>
-                      ))
+                        );
+                      })
                     )}
                   </TableBody>
                 </Table>
@@ -3419,7 +3679,10 @@ export default function Admin() {
                     <p className="text-zinc-500">{products.length === 0 ? 'Nog geen producten' : 'Geen producten gevonden'}</p>
                   </div>
                 ) : (
-                  paginatedProducts?.map((product: Product) => (
+                  paginatedProducts?.map((product: Product) => {
+                    const categoryName = categories.find((c: any) => c.id === product.categoryId)?.name;
+                    const brandName = brands.find((b: any) => b.id === product.brandId)?.name;
+                    return (
                     <div key={product.id} className="bg-zinc-900 border border-zinc-800 p-4" data-testid={`product-card-${product.id}`}>
                       <div className="flex gap-3">
                         {product.images?.[0] && (
@@ -3432,16 +3695,23 @@ export default function Admin() {
                         <div className="flex-1 min-w-0">
                           <h3 className="font-medium text-white truncate">{product.name}</h3>
                           <p className="text-[#d0a760] font-semibold">€{parseFloat(product.price).toFixed(2)}</p>
-                          <div className="flex items-center gap-2 mt-1">
+                          <div className="flex items-center gap-2 mt-1 flex-wrap">
                             <span className={`text-xs ${(product.stock || 0) > 0 ? 'text-green-400' : 'text-red-400'}`}>
                               Voorraad: {product.stock || 0}
                             </span>
-                            <Badge className={`rounded-none text-xs ${product.isActive 
-                              ? 'bg-green-500/20 text-green-400' 
-                              : 'bg-zinc-700 text-zinc-400'}`}
+                            {categoryName && <span className="text-xs text-zinc-500">{categoryName}</span>}
+                            {brandName && <span className="text-xs text-zinc-500">{brandName}</span>}
+                            <button
+                              type="button"
+                              onClick={() => toggleProductStatus.mutate({ id: product.id, isActive: !product.isActive })}
                             >
-                              {product.isActive ? "Actief" : "Inactief"}
-                            </Badge>
+                              <Badge className={`rounded-none text-xs ${product.isActive 
+                                ? 'bg-green-500/20 text-green-400' 
+                                : 'bg-zinc-700 text-zinc-400'}`}
+                              >
+                                {product.isActive ? "Actief" : "Inactief"}
+                              </Badge>
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -3465,6 +3735,14 @@ export default function Admin() {
                         </Button>
                         <Button 
                           size="sm" 
+                          onClick={() => handleDuplicateProduct(product)}
+                          className="bg-zinc-800 text-zinc-300 hover:bg-zinc-700 rounded-none"
+                          title="Dupliceren"
+                        >
+                          <Copy className="w-4 h-4" />
+                        </Button>
+                        <Button 
+                          size="sm" 
                           onClick={() => handleDeleteProduct(product)}
                           className="bg-transparent border border-red-500/50 text-red-400 hover:bg-red-500/10 rounded-none"
                         >
@@ -3472,7 +3750,8 @@ export default function Admin() {
                         </Button>
                       </div>
                     </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
 

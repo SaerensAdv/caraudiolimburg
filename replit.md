@@ -38,7 +38,12 @@ Preferred communication style: Simple, everyday language.
 ### Payment Processing
 - **Provider**: Stripe for secure transactions.
 - **Supported Methods**: Credit cards, Bancontact, iDEAL (targeting Belgian and Dutch markets).
-- **Webhooks**: Handles Stripe webhooks for real-time payment and order status updates.
+- **Payment Flow**: PaymentIntent API with automatic_payment_methods enabled, server-side price validation for both authenticated and guest checkout.
+- **Webhooks**: Handles Stripe webhooks for real-time payment and order status updates. Webhook fallback creates orders for both guest (from metadata) and authenticated users (from DB cart) when client-side confirmation doesn't complete.
+- **Order Confirmation**: Three pathways — direct confirm (card payments), redirect confirm (iDEAL/Bancontact), and webhook fallback. All paths verify payment status, check idempotency, and validate amounts.
+- **Variation Support**: All price calculations (payment intent creation, order confirmation, webhook, redirect flow) correctly use variation prices when applicable.
+- **Email**: Order confirmation emails sent via Resend integration on all order creation paths (confirm, guest confirm, webhook).
+- **Shipping Fallback**: Webhook handler parses shipping from PI metadata, with fallback to Stripe billing_details when metadata is missing.
 
 ### File Storage (Product Images)
 - **SDK**: `@replit/object-storage` for persisting product images.

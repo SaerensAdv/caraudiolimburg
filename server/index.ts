@@ -97,12 +97,57 @@ app.post("/api/webhooks/stripe", express.raw({ type: 'application/json' }), asyn
         const userId = metadata.userId || null;
         const guestEmail = metadata.guestEmail || null;
 
-        let cartItems: any[] = [];
+        let shippingDetails: any = {};
         try {
-          cartItems = JSON.parse(metadata.cartItems || "[]");
+          if (metadata.shippingDetails) {
+            shippingDetails = JSON.parse(metadata.shippingDetails);
+          }
         } catch (e) {
-          console.error(`[Stripe Webhook] Failed to parse cart items for payment ${paymentIntent.id}`);
-          break;
+          console.warn(`[Stripe Webhook] Failed to parse shipping details for payment ${paymentIntent.id}`);
+        }
+
+        if (!shippingDetails || Object.keys(shippingDetails).length === 0) {
+          const billing = paymentIntent.latest_charge && typeof paymentIntent.latest_charge === 'object'
+            ? (paymentIntent.latest_charge as any).billing_details
+            : null;
+          if (billing) {
+            shippingDetails = {
+              firstName: billing.name?.split(' ')[0] || '',
+              lastName: billing.name?.split(' ').slice(1).join(' ') || '',
+              email: billing.email || '',
+              address: billing.address?.line1 || '',
+              city: billing.address?.city || '',
+              postalCode: billing.address?.postal_code || '',
+              country: billing.address?.country || 'Nederland',
+            };
+          }
+        }
+
+        let cartItems: any[] = [];
+
+        if (isGuest) {
+          try {
+            cartItems = JSON.parse(metadata.cartItems || "[]");
+          } catch (e) {
+            console.error(`[Stripe Webhook] Failed to parse cart items for guest payment ${paymentIntent.id}`);
+            break;
+          }
+        } else if (userId) {
+          try {
+            const dbCartItems = await storage.getCartItems(userId);
+            cartItems = dbCartItems.map((item: any) => ({
+              productId: item.productId,
+              quantity: item.quantity,
+              needsInstallation: item.needsInstallation || false,
+              variationId: item.variationId || null,
+              price: (item.variation?.price || item.product?.price || "0").toString(),
+              installationPrice: (item.needsInstallation && item.product?.canHaveInstallation && item.product?.installationPrice) ? item.product.installationPrice : null,
+              productName: item.product?.name || 'Product',
+              variationLabel: item.variation?.label || null,
+            }));
+          } catch (e) {
+            console.error(`[Stripe Webhook] Failed to fetch cart items from DB for user ${userId}`);
+          }
         }
 
         if (cartItems.length === 0) {
@@ -135,7 +180,7 @@ app.post("/api/webhooks/stripe", express.raw({ type: 'application/json' }), asyn
           subtotal: subtotal.toString(),
           installationTotal: installationFee.toString(),
           stripePaymentIntentId: paymentIntent.id,
-          shippingAddress: {},
+          shippingAddress: shippingDetails,
         });
 
         for (const cartItem of cartItems) {
@@ -146,15 +191,23 @@ app.post("/api/webhooks/stripe", express.raw({ type: 'application/json' }), asyn
             price: cartItem.price,
             needsInstallation: cartItem.needsInstallation || false,
             variationId: cartItem.variationId || null,
-            variationLabel: null,
+            variationLabel: cartItem.variationLabel || null,
           });
+        }
+
+        if (!isGuest && userId) {
+          try {
+            await storage.clearCart(userId);
+            console.log(`[Stripe Webhook] Cleared cart for user ${userId}`);
+          } catch (e) {
+            console.warn(`[Stripe Webhook] Failed to clear cart for user ${userId}`);
+          }
         }
 
         console.log(`[Stripe Webhook] Created order ${order.orderNumber} for payment ${paymentIntent.id}`);
 
-        // Send confirmation email to all customers (guest or logged-in)
         let customerEmail: string | null = null;
-        let customerName = 'Klant';
+        let customerName = shippingDetails?.firstName || 'Klant';
         
         if (isGuest) {
           customerEmail = guestEmail;
@@ -163,7 +216,7 @@ app.post("/api/webhooks/stripe", express.raw({ type: 'application/json' }), asyn
             const user = await storage.getUser(userId);
             if (user?.email) {
               customerEmail = user.email;
-              customerName = user.firstName || 'Klant';
+              customerName = user.firstName || shippingDetails?.firstName || 'Klant';
             }
           } catch (e) {
             console.error(`[Stripe Webhook] Failed to fetch user ${userId} for email`);
@@ -175,7 +228,7 @@ app.post("/api/webhooks/stripe", express.raw({ type: 'application/json' }), asyn
             const itemsWithDetails = await Promise.all(cartItems.map(async (item: any) => {
               const product = await storage.getProduct(item.productId);
               return {
-                name: product?.name || 'Product',
+                name: product?.name || item.productName || 'Product',
                 quantity: item.quantity,
                 price: (parseFloat(item.price) * item.quantity).toFixed(2),
               };
@@ -190,12 +243,12 @@ app.post("/api/webhooks/stripe", express.raw({ type: 'application/json' }), asyn
               shipping: shipping.toFixed(2),
               total: total.toFixed(2),
               shippingAddress: {
-                firstName: '',
-                lastName: '',
-                address: '',
-                city: '',
-                postalCode: '',
-                country: 'Nederland',
+                firstName: shippingDetails?.firstName || '',
+                lastName: shippingDetails?.lastName || '',
+                address: shippingDetails?.address || '',
+                city: shippingDetails?.city || '',
+                postalCode: shippingDetails?.postalCode || '',
+                country: shippingDetails?.country || 'Nederland',
               },
             });
             console.log(`[Stripe Webhook] Confirmation email sent for order ${order.orderNumber} to ${customerEmail}`);

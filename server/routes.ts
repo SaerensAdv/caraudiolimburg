@@ -1641,10 +1641,14 @@ ${message || 'Geen aanvullende informatie'}`
       const shipping = subtotal >= 100 ? 0 : 15;
       const total = subtotal + installationFee + shipping;
 
-      // Verify amount matches (security check)
       const expectedAmountInCents = Math.round(total * 100);
       if (paymentIntent.amount !== expectedAmountInCents) {
         console.error("Guest payment amount mismatch:", { expected: expectedAmountInCents, received: paymentIntent.amount });
+        return res.status(400).json({ 
+          message: "Payment amount doesn't match cart total. Please contact support.",
+          expected: expectedAmountInCents,
+          received: paymentIntent.amount
+        });
       }
 
       // Generate unique order number
@@ -1913,11 +1917,10 @@ ${message || 'Geen aanvullende informatie'}`
         return res.status(400).json({ message: "Cart is empty" });
       }
 
-      // Calculate totals and verify they match payment intent (need to fetch product details)
       const subtotal = await Promise.all(
         cartItems.map(async (item) => {
-          const product = await storage.getProduct(item.productId);
-          const price = parseFloat(product?.price || "0");
+          const cartItemAny = item as any;
+          let price = parseFloat(cartItemAny.variation?.price || cartItemAny.product?.price || "0");
           return price * item.quantity;
         })
       ).then(prices => prices.reduce((sum, price) => sum + price, 0));
@@ -1948,17 +1951,17 @@ ${message || 'Geen aanvullende informatie'}`
       // Generate unique order number
       const orderNumber = `CAL-${Date.now()}`;
 
-      // Create order
       const order = await storage.createOrder({
         userId,
         orderNumber,
         status: "paid",
         total: total.toString(),
+        subtotal: subtotal.toString(),
+        installationTotal: installationFee.toString(),
         stripePaymentIntentId: paymentIntentId,
         shippingAddress: shippingDetails,
       });
 
-      // Create order items
       for (const cartItem of cartItems) {
         const cartItemAny = cartItem as any;
         await storage.createOrderItem({
@@ -1971,7 +1974,6 @@ ${message || 'Geen aanvullende informatie'}`
           variationLabel: cartItemAny.variation?.label || null,
         });
 
-        // If installation is needed, create a booking placeholder
         if (cartItem.needsInstallation) {
           await storage.createBooking({
             userId,
@@ -1991,10 +1993,40 @@ ${message || 'Geen aanvullende informatie'}`
         }
       }
 
-      // Clear cart
       await storage.clearCart(userId);
 
-      // Send eTrusted review invitation (non-blocking)
+      const customerEmail = shippingDetails?.email;
+      const customerName = shippingDetails?.firstName || 'Klant';
+      if (customerEmail) {
+        const itemsWithDetails = cartItems.map((item: any) => ({
+          name: item.product?.name || 'Product',
+          quantity: item.quantity,
+          price: (parseFloat(item.variation?.price || item.product?.price || "0") * item.quantity).toFixed(2),
+        }));
+
+        emailService.sendOrderConfirmationEmail({
+          orderNumber,
+          customerEmail,
+          customerName,
+          items: itemsWithDetails,
+          subtotal: subtotal.toFixed(2),
+          shipping: shipping.toFixed(2),
+          total: total.toFixed(2),
+          shippingAddress: {
+            firstName: shippingDetails?.firstName || '',
+            lastName: shippingDetails?.lastName || '',
+            address: shippingDetails?.address || '',
+            city: shippingDetails?.city || '',
+            postalCode: shippingDetails?.postalCode || '',
+            country: shippingDetails?.country || 'Nederland',
+          },
+        }).then(() => {
+          console.log(`[Order Confirm] Confirmation email sent for order ${orderNumber} to ${customerEmail}`);
+        }).catch(err => {
+          console.error(`[Order Confirm] Failed to send confirmation email for ${orderNumber}:`, err);
+        });
+      }
+
       if (shippingDetails?.email) {
         const productDetails = await Promise.all(
           cartItems.slice(0, 5).map(async (item: any) => {
@@ -2070,11 +2102,10 @@ ${message || 'Geen aanvullende informatie'}`
         return res.status(400).json({ message: "Cart is empty - order may have already been created. Please check your order history." });
       }
 
-      // Calculate totals
       const subtotal = await Promise.all(
         cartItems.map(async (item) => {
-          const product = await storage.getProduct(item.productId);
-          const price = parseFloat(product?.price || "0");
+          const cartItemAny = item as any;
+          let price = parseFloat(cartItemAny.variation?.price || cartItemAny.product?.price || "0");
           return price * item.quantity;
         })
       ).then(prices => prices.reduce((sum, price) => sum + price, 0));
@@ -2089,7 +2120,6 @@ ${message || 'Geen aanvullende informatie'}`
       const shipping = subtotal >= 100 ? 0 : 15;
       const expectedTotal = subtotal + installationFee + shipping;
 
-      // Verify amount matches payment intent (security check)
       const expectedAmountInCents = Math.round(expectedTotal * 100);
       if (paymentIntent.amount !== expectedAmountInCents) {
         console.error("Payment amount mismatch:", { expected: expectedAmountInCents, received: paymentIntent.amount });
@@ -2100,7 +2130,6 @@ ${message || 'Geen aanvullende informatie'}`
         });
       }
 
-      // Generate unique order number
       const orderNumber = `CAL-${Date.now()}`;
 
       let resolvedShipping = shippingDetails || {};
@@ -2117,6 +2146,8 @@ ${message || 'Geen aanvullende informatie'}`
         orderNumber,
         status: "paid",
         total: expectedTotal.toString(),
+        subtotal: subtotal.toString(),
+        installationTotal: installationFee.toString(),
         stripePaymentIntentId: paymentIntentId,
         shippingAddress: resolvedShipping,
       });

@@ -1,0 +1,364 @@
+Je bent mijn technische projectagent voor dit Replit-project. Dit project betreft een website die momenteel nog niet live staat. Het project heeft een tijdje stilgelegen en zal binnenkort opnieuw worden opgepakt.
+
+Belangrijke context:
+Naar mijn gevoel én naar het gevoel van de klant is de website bijna klaar. Daarom wil ik geen algemene, vage projectanalyse, maar een gerichte en grondige pre-launch review.
+
+Het hoofddoel van deze review is:
+
+“Wat moet er nog gebeuren voordat deze website veilig, professioneel en zonder verrassingen live kan gaan?”
+
+Voer een volledige pre-launch audit uit van het project zoals het er nu bij staat. Ga ervan uit dat het grootste deel van de website al gebouwd is, maar controleer kritisch of alles werkelijk klaar is voor publicatie.
+
+Ik wil dat je de huidige staat van het project analyseert en een duidelijk, concreet overzicht geeft van alle openstaande punten richting livegang.
+
+Controleer minstens de volgende onderdelen:
+
+1. Algemene status van de website
+- Geef een korte samenvatting van wat de website is/doet.
+- Beschrijf welke pagina’s, secties en functionaliteiten momenteel aanwezig zijn.
+- Geef aan welke onderdelen volgens jou klaar lijken.
+- Geef aan welke onderdelen onvolledig, onzeker of risicovol zijn.
+- Beoordeel of de website op dit moment eerder “bijna klaar”, “half klaar” of “nog niet klaar voor livegang” is.
+
+2. Pagina’s en content
+Controleer alle bestaande pagina’s en routes:
+- Welke pagina’s bestaan er?
+- Zijn alle belangrijke pagina’s aanwezig?
+- Ontbreken er logische pagina’s, zoals home, over ons, diensten, contact, privacybeleid, algemene voorwaarden, cookiebeleid, bedankpagina, 404-pagina, enzovoort?
+- Is er placeholdertekst aanwezig?
+- Zijn er lorem ipsum-teksten of tijdelijke teksten?
+- Zijn titels, subtitels, knoppen en CTA’s definitief?
+- Zijn alle teksten klantklaar?
+- Zijn er spellingfouten, taalfouten of inconsistenties?
+- Zijn de teksten consistent qua tone of voice?
+- Zijn alle interne links correct?
+- Zijn externe links correct en openen ze op de juiste manier?
+- Zijn contactgegevens, adresgegevens, e-mailadressen, telefoonnummers en social links correct ingevuld?
+
+Maak een lijst van alle contentpunten die nog moeten worden nagekeken of aangevuld.
+
+3. Design en visuele afwerking
+Controleer de visuele staat van de website:
+- Ziet de website er professioneel en afgewerkt uit?
+- Zijn spacing, marges, padding en uitlijning consistent?
+- Zijn lettertypes, kleuren en stijlen consistent?
+- Zijn knoppen, formulieren, kaarten, navigatie en andere componenten visueel consistent?
+- Zijn er elementen die onafgewerkt, slordig of tijdelijk ogen?
+- Zijn afbeeldingen correct geplaatst?
+- Zijn afbeeldingen scherp genoeg en niet vervormd?
+- Zijn er ontbrekende afbeeldingen of gebroken image links?
+- Zijn logo’s, iconen en visuals correct?
+- Zijn animaties of transitions correct en niet storend?
+- Is er visuele consistentie tussen desktop, tablet en mobiel?
+
+Geef per probleem aan waar het zich bevindt en hoe belangrijk het is om op te lossen vóór livegang.
+
+4. Responsive design en mobiele ervaring
+Controleer de website op verschillende schermformaten:
+- Desktop
+- Laptop
+- Tablet
+- Mobiel
+
+Let specifiek op:
+- Navigatie op mobiel
+- Menu/hamburger menu
+- Leesbaarheid van tekst
+- Knoppen en klikbare elementen
+- Formulieren
+- Afbeeldingen
+- Horizontale scroll
+- Te kleine of te grote elementen
+- Secties die breken of overlappen
+- Footer op mobiel
+- CTA’s op mobiel
+
+Geef duidelijk aan of de mobiele versie klaar is voor livegang.
+
+5. Functionaliteiten
+Controleer alle interactieve onderdelen:
+- Navigatie
+- Menu’s
+- Knoppen
+- CTA’s
+- Formulieren
+- Contactformulier
+- Nieuwsbriefinschrijving, indien aanwezig
+- Filters, zoekfunctie of interactieve modules, indien aanwezig
+- Pop-ups/modals, indien aanwezig
+- Downloads, indien aanwezig
+- Calendly/booking-integraties, indien aanwezig
+- Betaalfunctionaliteit, indien aanwezig
+- Login/accountfunctionaliteit, indien aanwezig
+- Andere specifieke functionaliteiten in dit project
+
+Test of alles werkt zoals verwacht.
+
+Voor elk functioneel probleem:
+- Beschrijf het probleem.
+- Geef aan op welke pagina/route het voorkomt.
+- Geef aan wat het verwachte gedrag is.
+- Geef aan wat het huidige gedrag is.
+- Geef de prioriteit: kritisch, belangrijk of nice-to-have.
+
+6. Formulieren en leadgeneratie
+Controleer alle formulieren zeer grondig:
+- Werkt het formulier technisch?
+- Worden verplichte velden correct gevalideerd?
+- Zijn foutmeldingen duidelijk?
+- Is er een succesmelding of bedankpagina?
+- Worden formulierinzendingen correct verstuurd?
+- Naar welk e-mailadres of systeem gaan inzendingen?
+- Is dit e-mailadres correct?
+- Is er spambeveiliging voorzien, zoals captcha, honeypot of rate limiting?
+- Is de gebruikerservaring goed?
+- Is het duidelijk wat er gebeurt na verzending?
+- Wordt er geen gevoelige data onveilig verwerkt?
+
+Geef aan of de leadgeneratie klaar is voor livegang.
+
+7. Technische staat van het project
+Controleer de technische structuur:
+- Welke stack/frameworks/libraries worden gebruikt?
+- Is de projectstructuur logisch?
+- Zijn er duidelijke entry points?
+- Zijn er ongebruikte bestanden, oude code of testbestanden?
+- Zijn er tijdelijke hacks of quick fixes?
+- Zijn er console errors?
+- Zijn er warnings?
+- Zijn dependencies up-to-date genoeg voor livegang?
+- Zijn er kwetsbaarheden in dependencies?
+- Zijn environment variables correct ingesteld?
+- Zijn secrets veilig opgeslagen en niet hardcoded?
+- Zijn API keys of tokens nergens zichtbaar in de code?
+- Zijn build scripts, start scripts en deploy scripts correct?
+- Kan het project succesvol lokaal/builden/runnen?
+- Zijn er technische blokkades richting deployment?
+
+Geef een overzicht van technische risico’s die livegang kunnen verhinderen.
+
+8. Performance
+Controleer de snelheid en performance van de website:
+- Laadt de website snel genoeg?
+- Zijn afbeeldingen geoptimaliseerd?
+- Worden onnodig grote assets geladen?
+- Is er lazy loading waar nodig?
+- Zijn fonts correct en efficiënt geladen?
+- Is JavaScript niet onnodig zwaar?
+- Zijn er render-blocking resources?
+- Zijn er grote layout shifts?
+- Zijn er performanceproblemen op mobiel?
+- Zijn er optimalisaties nodig vóór livegang?
+
+Geef indien mogelijk aanbevelingen op basis van Core Web Vitals:
+- LCP
+- CLS
+- INP/FID
+- TTFB
+
+Maak onderscheid tussen noodzakelijke performance fixes en optimalisaties die ook na livegang kunnen.
+
+9. SEO-readiness
+Controleer of de website SEO-klaar is:
+- Heeft elke pagina een unieke title tag?
+- Heeft elke pagina een meta description?
+- Zijn headings logisch opgebouwd met H1, H2, H3?
+- Is er exact één duidelijke H1 per pagina?
+- Zijn URL’s logisch en proper?
+- Zijn interne links goed opgezet?
+- Zijn afbeeldingen voorzien van alt-teksten?
+- Is er een sitemap?
+- Is er een robots.txt?
+- Is canonical tagging correct indien relevant?
+- Zijn Open Graph/social sharing tags aanwezig?
+- Is structured data/schema markup nodig of aanwezig?
+- Zijn er indexatieproblemen te verwachten?
+- Zijn er duplicate content problemen?
+- Is de website klaar om gekoppeld te worden aan Google Search Console?
+
+Geef een lijst van SEO-punten die vóór livegang geregeld moeten worden.
+
+10. Analytics, tracking en marketing
+Controleer of alle tracking en marketingintegraties klaar zijn:
+- Is Google Analytics of een alternatief voorzien?
+- Is Google Tag Manager voorzien, indien nodig?
+- Is Meta Pixel, LinkedIn Insight Tag of andere advertentietracking nodig?
+- Zijn conversies/events ingesteld?
+- Worden formulierinzendingen gemeten?
+- Worden CTA-klikken gemeten indien relevant?
+- Is cookie consent nodig?
+- Is cookie consent correct geïmplementeerd?
+- Worden tracking scripts pas geladen na toestemming indien wettelijk vereist?
+- Is er een duidelijke trackingstrategie voor na livegang?
+
+Geef aan wat ontbreekt om marketingtechnisch klaar te zijn voor livegang.
+
+11. Juridische en compliance-check
+Controleer welke juridische elementen nog nodig zijn:
+- Privacybeleid
+- Cookiebeleid
+- Algemene voorwaarden, indien nodig
+- Disclaimer, indien nodig
+- Cookie banner, indien cookies/tracking gebruikt worden
+- GDPR-conforme formulieren
+- Checkboxen voor toestemming, indien nodig
+- Correcte vermelding van bedrijfsgegevens
+- Ondernemingsnummer, btw-nummer of andere verplichte gegevens, indien relevant
+- Verwerkers of tools die persoonsgegevens verwerken
+
+Geef duidelijk aan wat vóór livegang wettelijk of praktisch geregeld moet zijn.
+
+12. Hosting, domein en deployment
+Controleer wat nodig is om live te gaan:
+- Waar zal de website gehost worden?
+- Is Replit bedoeld als productiehosting of enkel development?
+- Is het domein bekend?
+- Zijn DNS-instellingen nodig?
+- Is SSL/HTTPS voorzien?
+- Zijn environment variables correct ingesteld voor productie?
+- Zijn build en deployment processen duidelijk?
+- Is er een staging/prod onderscheid?
+- Zijn redirects nodig van oude URLs, indien er een bestaande website is?
+- Is er een rollback-plan?
+- Zijn er deployment-risico’s?
+
+Geef een concreet deploymentplan richting livegang.
+
+13. Browser- en apparaatcompatibiliteit
+Controleer of de website correct werkt in:
+- Chrome
+- Safari
+- Firefox
+- Edge
+- iOS Safari
+- Android Chrome
+
+Let op:
+- Visuele verschillen
+- Formuliergedrag
+- Menu’s
+- Animaties
+- Fonts
+- Video’s
+- Sticky/fixed elementen
+- Scrollgedrag
+
+Geef aan of er browserproblemen zijn die vóór livegang opgelost moeten worden.
+
+14. Accessibility
+Controleer basis-toegankelijkheid:
+- Is tekst voldoende leesbaar?
+- Is kleurcontrast voldoende?
+- Zijn knoppen duidelijk herkenbaar?
+- Zijn links duidelijk?
+- Is de website bruikbaar met toetsenbordnavigatie?
+- Zijn focus states zichtbaar?
+- Hebben afbeeldingen alt-teksten?
+- Zijn formulieren correct gelabeld?
+- Is de heading-structuur logisch?
+- Zijn ARIA-labels nodig of aanwezig waar relevant?
+
+Geef aan welke accessibility-punten belangrijk zijn vóór livegang.
+
+15. Beveiliging
+Controleer beveiligingsaspecten:
+- Zijn secrets/API keys veilig?
+- Is er geen gevoelige informatie zichtbaar in de frontend?
+- Zijn formulieren beschermd tegen spam en misbruik?
+- Zijn dependencies veilig genoeg?
+- Zijn headers/security headers nodig?
+- Wordt HTTPS gebruikt in productie?
+- Is er risico op XSS, injection of andere veelvoorkomende kwetsbaarheden?
+- Zijn admin- of testpagina’s publiek toegankelijk?
+- Zijn debug logs of development tools zichtbaar?
+
+Geef een lijst van securitypunten die vóór livegang opgelost moeten worden.
+
+16. Foutafhandeling en edge cases
+Controleer:
+- Is er een degelijke 404-pagina?
+- Wat gebeurt er bij foutieve routes?
+- Wat gebeurt er als een formulier faalt?
+- Wat gebeurt er als een API niet beschikbaar is?
+- Zijn foutmeldingen gebruikersvriendelijk?
+- Zijn loading states voorzien waar nodig?
+- Zijn lege staten voorzien waar nodig?
+- Zijn er broken links?
+- Zijn er broken buttons?
+- Zijn er console errors bij normale interactie?
+
+17. Wat moet absoluut nog gebeuren vóór livegang?
+Maak een duidelijke lijst met alleen de noodzakelijke punten die vóór livegang opgelost moeten worden.
+
+Gebruik deze prioriteiten:
+- Kritisch: blokkeert livegang.
+- Belangrijk: sterk aanbevolen vóór livegang.
+- Nice-to-have: mag eventueel na livegang.
+
+Per punt wil ik:
+- Titel
+- Beschrijving
+- Locatie/pagina/bestand indien bekend
+- Waarom dit belangrijk is
+- Aanbevolen oplossing
+- Inschatting van complexiteit: laag, gemiddeld of hoog
+- Prioriteit
+
+18. Wat kan eventueel na livegang?
+Maak ook een aparte lijst van punten die niet noodzakelijk zijn om live te gaan, maar wel later verbeterd kunnen worden.
+
+Denk aan:
+- Extra animaties
+- Verdere SEO-optimalisaties
+- Kleine designverbeteringen
+- Performance-optimalisaties
+- Extra tracking
+- Nieuwe pagina’s
+- Extra functionaliteiten
+
+19. Finale go-live checklist
+Maak op het einde een praktische checklist die we stap voor stap kunnen afwerken om live te gaan.
+
+Structureer deze checklist bijvoorbeeld zo:
+
+A. Content
+B. Design
+C. Mobile/responsive
+D. Functionaliteiten
+E. Formulieren/leads
+F. SEO
+G. Analytics/tracking
+H. Legal/GDPR
+I. Performance
+J. Security
+K. Hosting/domein/deployment
+L. Final QA
+
+20. Eindbeoordeling
+Sluit af met een heldere eindbeoordeling:
+
+- Is de website volgens jou klaar om live te gaan?
+- Zo nee, wat zijn de exacte blockers?
+- Hoeveel werk schat je dat er nog nodig is?
+- Wat is de meest efficiënte volgorde om de resterende taken aan te pakken?
+- Welke risico’s moeten we zeker niet negeren?
+- Wat raad je aan als eerstvolgende stap?
+
+Belangrijk:
+Wees kritisch, praktisch en concreet. Vermijd vage antwoorden zoals “controleer SEO” of “test formulieren”. Ik wil concrete observaties, concrete problemen en concrete aanbevelingen.
+
+Als iets niet gecontroleerd kan worden omdat je geen toegang hebt tot bepaalde externe systemen, credentials, domeininstellingen, analytics accounts of klantinformatie, vermeld dit dan expliciet onder “Niet controleerbaar zonder extra input”.
+
+Outputstructuur:
+Geef je antwoord in deze structuur:
+
+1. Executive summary
+2. Huidige inschatting van livegang-readiness
+3. Kritische blockers voor livegang
+4. Belangrijke punten vóór livegang
+5. Nice-to-have punten na livegang
+6. Detailreview per categorie
+7. Niet controleerbaar zonder extra input
+8. Concrete go-live checklist
+9. Aanbevolen volgorde van aanpak
+10. Finale conclusie
